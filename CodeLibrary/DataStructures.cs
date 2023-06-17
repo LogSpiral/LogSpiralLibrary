@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
+    /// <summary>
+    /// 满足一般顶点绘制需求
+    /// </summary>
     public struct CustomVertexInfo : IVertexType
     {
         private static VertexDeclaration _vertexDeclaration = new VertexDeclaration(new VertexElement[3]
@@ -47,6 +50,9 @@ namespace LogSpiralLibrary.CodeLibrary
             }
         }
     }
+    /// <summary>
+    /// 支持空间顶点，非常酷齐次坐标
+    /// </summary>
     public struct CustomVertexInfoEX : IVertexType
     {
         private static VertexDeclaration _vertexDeclaration = new VertexDeclaration(new VertexElement[3]
@@ -99,5 +105,28 @@ namespace LogSpiralLibrary.CodeLibrary
                 return _vertexDeclaration;
             }
         }
+    }
+    /// <summary>
+    /// 滞留剑气类
+    /// </summary>
+    public class UltraSwoosh
+    {
+        public float rotation;
+        public byte timeLeft;
+        public float xScaler;
+        public Vector2 center;
+        public bool negativeDir;
+        public Texture2D heatMap;
+        public Color color;
+        public Vector3 hsl;
+        public int type;
+        public float checkAirFactor;
+        public float rotationVelocity;
+        public readonly CustomVertexInfo[] vertexInfos = new CustomVertexInfo[60];
+        public bool Active => timeLeft > 0;
+        public float scaler;
+        public byte timeLeftMax;
+        public (float from, float to) angleRange;
+        public bool updateWithData;
     }
 }

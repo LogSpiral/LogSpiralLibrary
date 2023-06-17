@@ -5,6 +5,10 @@ using System.Linq;
 using Terraria.UI;
 using Terraria.Utilities;
 using static Terraria.Utils;
+using static CoolerItemVisualEffect.CoolerItemVisualEffect;
+using static LogSpiralLibrary.LogSpiralLibrary;
+using CoolerItemVisualEffect;
+
 namespace LogSpiralLibrary.CodeLibrary
 {
     /// <summary>
@@ -172,13 +176,16 @@ namespace LogSpiralLibrary.CodeLibrary
             }
         }
         /// <summary>
-        /// 大院人战那里星空背景的，不如用render，建议放弃掉这货
+        /// 大猿人战那里星空背景的，不如用render，建议放弃掉这货
         /// </summary>
         /// <param name="spriteBatch"></param>
         /// <param name="vectors"></param>
         /// <param name="light"></param>
+        [Obsolete]
         public static void DrawOutSide(this SpriteBatch spriteBatch, Vector2[] vectors, float light = 1)
         {
+            return;
+            /*
             #region Outside
             //FileStream fileStream = new FileStream(@"D:\\TestTesseract.txt", FileMode.OpenOrCreate, FileAccess.Write);
             //BinaryWriter binaryWriter = new BinaryWriter(fileStream);
@@ -310,6 +317,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //binaryWriter.Close();
             //fileStream.Close();
             #endregion
+            */
         }
         public static void DrawWhip(this Projectile proj)
         {
@@ -394,7 +402,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public static void VertexDraw(CustomVertexInfo[] vertexs, Texture2D baseTex, Texture2D aniTex, Texture2D heatMap = null, Vector2 uTime = default, bool trailing = false, Matrix? matrix = null, string? pass = null, bool autoStart = true, bool autoComplete = true)
         {
-            Effect effect = StoneOfThePhilosophers.VertexDraw;
+            Effect effect = LogSpiralLibrary.VertexDraw;
             if (effect == null) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
             if (autoStart)
@@ -460,7 +468,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="autoComplete">最后一个true，其它false</param>
         public static void VertexDrawEX(CustomVertexInfoEX[] vertexs, Texture2D baseTex, Texture2D aniTex, Texture2D heatMap = null, Vector2 uTime = default, bool trailing = false, Matrix? matrix = null, string? pass = null, bool autoStart = true, bool autoComplete = true)
         {
-            Effect effect = StoneOfThePhilosophers.VertexDrawEX;
+            Effect effect = LogSpiralLibrary.VertexDrawEX;
             if (effect == null) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
             if (autoStart)
@@ -554,7 +562,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)CoolerSystem.ModTime * 0.03f);
+            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)LogSpiralLibrary.ModTime * 0.03f);
 
             ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
             //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(0);//-(float)Main.time * 0.06f
@@ -563,8 +571,17 @@ namespace LogSpiralLibrary.CodeLibrary
             ShaderSwooshEX.Parameters["gather"].SetValue(false);
             ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
             ShaderSwooshEX.Parameters["distortScaler"].SetValue(0);
-            ShaderSwooshEX.Parameters["alphaFactor"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor);
-            ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor == 0);
+            if (CIVELoaded)
+            {
+                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor);
+                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor == 0);
+            }
+            else 
+            {
+                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
+                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(false);
+            }
+
 
             Main.graphics.GraphicsDevice.Textures[0] = baseTex;
             Main.graphics.GraphicsDevice.Textures[1] = aniTex;
@@ -817,7 +834,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -855,7 +872,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -944,7 +961,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -982,7 +999,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -1070,7 +1087,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1098,7 +1115,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1162,7 +1179,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-                effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1214,7 +1231,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             //effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1263,7 +1280,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1310,7 +1327,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1590,7 +1607,7 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null);
             CustomVertexInfo[] triangleArry = new CustomVertexInfo[6];
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            //Color c = Main.hslToRgb(CoolerSystem.ModTime / 60 % 1, 1f, 0.75f);
+            //Color c = Main.hslToRgb((float)LogSpiralLibrary.ModTime / 60 % 1, 1f, 0.75f);
             var texture = TextureAssets.Item[item.type].Value;
             Vector2 scale = texture.Size();
             //triangleArry[0] = new CustomVertexInfo(item.position, c, new Vector3(0, 0, light));
@@ -1621,7 +1638,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ItemEffect.Parameters["uTime"].SetValue(ModTime / 60f);//CoolerSystem.ModTime / 60
+            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibrary.ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1693,7 +1710,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * projection);
-            ItemEffect.Parameters["uTime"].SetValue(ModTime / 60f % 1);
+            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibrary.ModTime / 60f % 1);
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1758,171 +1775,173 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return new CustomVertexInfo(vec, color, new Vector3((vec.X - Main.screenPosition.X) / 1920f, (vec.Y - Main.screenPosition.Y) / 1120f, light));
         }
-        public static Vector2[] GetVertexPoints(ref Vector2[] points)
-        {
-            //Vector2[] result = new Vector2[4];
-            LoopArray<Vector2> result = new LoopArray<Vector2>(new Vector2[4]);
-            float left = float.MaxValue, bottom = float.MaxValue;
-            float right = float.MinValue, top = float.MinValue;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            //foreach (var vec in points)
-            //{
-            //    if (vec.X < left)
-            //    {
-            //        left = vec.X;
-            //        result[0] = vec;
-            //    }
-            //    if (vec.Y > top)
-            //    {
-            //        top = vec.Y;
-            //        result[1] = vec;
-            //    }
-            //    if (vec.X > right)
-            //    {
-            //        right = vec.X;
-            //        result[2] = vec;
-            //    }
-            //    if (vec.Y < bottom)
-            //    {
-            //        bottom = vec.Y;
-            //        result[3] = vec;
-            //    }
-            //}
+        //[Obsolete]
+        //public static Vector2[] GetVertexPoints(ref Vector2[] points)
+        //{
 
-            for (int n = 0; n < points.Length; n++)
-            {
-                if (sw.ElapsedTicks >= 10000)
-                {
-                    return null;
-                }
+        //    //Vector2[] result = new Vector2[4];
+        //    LoopArray<Vector2> result = new LoopArray<Vector2>(new Vector2[4]);
+        //    float left = float.MaxValue, bottom = float.MaxValue;
+        //    float right = float.MinValue, top = float.MinValue;
+        //    Stopwatch sw = new Stopwatch();
+        //    sw.Start();
+        //    //foreach (var vec in points)
+        //    //{
+        //    //    if (vec.X < left)
+        //    //    {
+        //    //        left = vec.X;
+        //    //        result[0] = vec;
+        //    //    }
+        //    //    if (vec.Y > top)
+        //    //    {
+        //    //        top = vec.Y;
+        //    //        result[1] = vec;
+        //    //    }
+        //    //    if (vec.X > right)
+        //    //    {
+        //    //        right = vec.X;
+        //    //        result[2] = vec;
+        //    //    }
+        //    //    if (vec.Y < bottom)
+        //    //    {
+        //    //        bottom = vec.Y;
+        //    //        result[3] = vec;
+        //    //    }
+        //    //}
 
-                var vec = points[n];
-                //if (!result.array.Contains(vec)) 
-                //{
-                //    if (vec.X < left)
-                //    {
-                //        left = vec.X;
-                //        result[0] = vec;
-                //    }
-                //    if (vec.Y > top)
-                //    {
-                //        top = vec.Y;
-                //        result[1] = vec;
-                //    }
-                //    if (vec.X > right)
-                //    {
-                //        right = vec.X;
-                //        result[2] = vec;
-                //    }
-                //    if (vec.Y < bottom)
-                //    {
-                //        bottom = vec.Y;
-                //        result[3] = vec;
-                //    }
-                //}
-                if (vec.X < left)
-                {
-                    left = vec.X;
-                    result[0] = vec;
-                }
-                if (vec.Y > top)
-                {
-                    top = vec.Y;
-                    result[1] = vec;
-                }
-                if (vec.X > right)
-                {
-                    right = vec.X;
-                    result[2] = vec;
-                }
-                if (vec.Y < bottom)
-                {
-                    bottom = vec.Y;
-                    result[3] = vec;
-                }
-            }
-            //if ((result[0] == result[1] && result[2] == result[3]) || (result[2] == result[1] && result[0] == result[3])) 
-            //{
-            //    return null;
-            //}
-            List<Vector2> newPoints = points.ToList();
+        //    for (int n = 0; n < points.Length; n++)
+        //    {
+        //        if (sw.ElapsedTicks >= 10000)
+        //        {
+        //            return null;
+        //        }
 
-            for (int n = 0; n < 4; n++)
-            {
-                if (sw.ElapsedTicks >= 10000)
-                {
-                    return null;
-                }
+        //        var vec = points[n];
+        //        //if (!result.array.Contains(vec)) 
+        //        //{
+        //        //    if (vec.X < left)
+        //        //    {
+        //        //        left = vec.X;
+        //        //        result[0] = vec;
+        //        //    }
+        //        //    if (vec.Y > top)
+        //        //    {
+        //        //        top = vec.Y;
+        //        //        result[1] = vec;
+        //        //    }
+        //        //    if (vec.X > right)
+        //        //    {
+        //        //        right = vec.X;
+        //        //        result[2] = vec;
+        //        //    }
+        //        //    if (vec.Y < bottom)
+        //        //    {
+        //        //        bottom = vec.Y;
+        //        //        result[3] = vec;
+        //        //    }
+        //        //}
+        //        if (vec.X < left)
+        //        {
+        //            left = vec.X;
+        //            result[0] = vec;
+        //        }
+        //        if (vec.Y > top)
+        //        {
+        //            top = vec.Y;
+        //            result[1] = vec;
+        //        }
+        //        if (vec.X > right)
+        //        {
+        //            right = vec.X;
+        //            result[2] = vec;
+        //        }
+        //        if (vec.Y < bottom)
+        //        {
+        //            bottom = vec.Y;
+        //            result[3] = vec;
+        //        }
+        //    }
+        //    //if ((result[0] == result[1] && result[2] == result[3]) || (result[2] == result[1] && result[0] == result[3])) 
+        //    //{
+        //    //    return null;
+        //    //}
+        //    List<Vector2> newPoints = points.ToList();
 
-                if (result[n] == result[n + 1])
-                {
-                    for (int i = 0; i < newPoints.Count; i++)
-                    {
-                        if (result[n] == newPoints[i])
-                        {
-                            newPoints.Insert(i, result[n]);
-                            break;
-                        }
+        //    for (int n = 0; n < 4; n++)
+        //    {
+        //        if (sw.ElapsedTicks >= 10000)
+        //        {
+        //            return null;
+        //        }
 
-                    }
-                    //var points2 = new Vector2[points.Length + 1];
-                    //int offset = 0;
-                    //for (int i = 0; i < points.Length; i++)
-                    //{
-                    //    points2[i + offset] = points[i];
-                    //    if (points[i] == result[n])
-                    //    {
-                    //        offset++;
-                    //        points2[i + offset] = points[i];
-                    //        //break;
-                    //    }
-                    //}
-                    //points = points2;
+        //        if (result[n] == result[n + 1])
+        //        {
+        //            for (int i = 0; i < newPoints.Count; i++)
+        //            {
+        //                if (result[n] == newPoints[i])
+        //                {
+        //                    newPoints.Insert(i, result[n]);
+        //                    break;
+        //                }
 
-                    //for (int k = 0; k < points.Length; k++)
-                    //{
-                    //    Main.NewText(points[k]);
-                    //}
-                }
-            }
-            points = newPoints.ToArray();
-            //for (int k = 0; k < points.Length; k++)
-            //{
-            //    Main.NewText(points[k]);
-            //}
-            return result;
-        }
-        public static Vector2[] GetVertexPoints(this Vector2[] points)
-        {
-            Vector2[] result = new Vector2[4];
-            float left = float.MaxValue, bottom = float.MaxValue;
-            float right = float.MinValue, top = float.MinValue;
-            foreach (var vec in points)
-            {
-                if (vec.X < left)
-                {
-                    left = vec.X;
-                    result[0] = vec;
-                }
-                if (vec.Y > top)
-                {
-                    top = vec.Y;
-                    result[1] = vec;
-                }
-                if (vec.X > right)
-                {
-                    right = vec.X;
-                    result[2] = vec;
-                }
-                if (vec.Y < bottom)
-                {
-                    bottom = vec.Y;
-                    result[3] = vec;
-                }
-            }
-            return result;
-        }
+        //            }
+        //            //var points2 = new Vector2[points.Length + 1];
+        //            //int offset = 0;
+        //            //for (int i = 0; i < points.Length; i++)
+        //            //{
+        //            //    points2[i + offset] = points[i];
+        //            //    if (points[i] == result[n])
+        //            //    {
+        //            //        offset++;
+        //            //        points2[i + offset] = points[i];
+        //            //        //break;
+        //            //    }
+        //            //}
+        //            //points = points2;
+
+        //            //for (int k = 0; k < points.Length; k++)
+        //            //{
+        //            //    Main.NewText(points[k]);
+        //            //}
+        //        }
+        //    }
+        //    points = newPoints.ToArray();
+        //    //for (int k = 0; k < points.Length; k++)
+        //    //{
+        //    //    Main.NewText(points[k]);
+        //    //}
+        //    return result;
+        //}
+        //public static Vector2[] GetVertexPoints(this Vector2[] points)
+        //{
+        //    Vector2[] result = new Vector2[4];
+        //    float left = float.MaxValue, bottom = float.MaxValue;
+        //    float right = float.MinValue, top = float.MinValue;
+        //    foreach (var vec in points)
+        //    {
+        //        if (vec.X < left)
+        //        {
+        //            left = vec.X;
+        //            result[0] = vec;
+        //        }
+        //        if (vec.Y > top)
+        //        {
+        //            top = vec.Y;
+        //            result[1] = vec;
+        //        }
+        //        if (vec.X > right)
+        //        {
+        //            right = vec.X;
+        //            result[2] = vec;
+        //        }
+        //        if (vec.Y < bottom)
+        //        {
+        //            bottom = vec.Y;
+        //            result[3] = vec;
+        //        }
+        //    }
+        //    return result;
+        //}
         public static Color GetColorFromTex(this Texture2D texture, Vector2 texcoord)
         {
             var w = texture.Width;
@@ -2730,7 +2749,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void ProjFrameChanger(this Projectile projectile, int frames, int time)
         {
             Main.projFrames[projectile.type] = frames;
-            projectile.frame += (int)IllusionBoundMod.ModTime % time == 0 ? 1 : 0;
+            projectile.frame += (int)LogSpiralLibrary.ModTime % time == 0 ? 1 : 0;
             projectile.frame %= frames;
         }
         public static bool ZoneForest(this Player player)

@@ -96,7 +96,7 @@ namespace LogSpiralLibrary
             Render_AirDistort = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
         }
         #endregion
-        public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
+        //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
         public override void Load()
         {
             Instance = this;
@@ -104,7 +104,7 @@ namespace LogSpiralLibrary
             LoadTextures(ref AniTex, nameof(AniTex));
             LoadTextures(ref HeatMap, nameof(HeatMap));
             LoadTextures(ref MagicZone, nameof(MagicZone));
-            LoadTextures(ref HeatMap, nameof(HeatMap));
+            LoadTextures(ref Misc, nameof(Misc));
 
             base.Load();
         }
@@ -129,7 +129,7 @@ namespace LogSpiralLibrary
             assets = new Asset<Texture2D>[i];
             for (int n = 0; n < i; n++)
             {
-                assets[n] = ModContent.Request<Texture2D>($"{path}{i}");
+                assets[n] = ModContent.Request<Texture2D>($"{path}{n}");
             }
         }
     }

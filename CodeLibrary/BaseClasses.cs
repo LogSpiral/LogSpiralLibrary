@@ -1,4 +1,4 @@
-﻿using CoolerItemVisualEffect;
+﻿//using CoolerItemVisualEffect;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.Audio;
-using static CoolerItemVisualEffect.CoolerItemVisualEffect;
+//using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibrary;
 namespace LogSpiralLibrary.CodeLibrary
 {
@@ -204,48 +204,56 @@ namespace LogSpiralLibrary.CodeLibrary
     //TODO 目前这货和CIVE的耦合很严重
     public abstract class VertexHammerProj : HammerProj
     {
-        public override void OnSpawn(IEntitySource source)
-        {
-            if (LogSpiralLibrary.CIVELoaded)
-            {
-                var modplr = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                if (modplr.colorInfo.tex == null)
-                {
-                    Main.RunOnMainThread(() => modplr.colorInfo.tex = new Texture2D(Main.graphics.GraphicsDevice, 300, 1));
-                }
-                if (!TextureAssets.Item[Player.HeldItem.type].IsLoaded) TextureAssets.Item[Player.HeldItem.type] = Main.Assets.Request<Texture2D>("Images/Item_" + Player.HeldItem.type, ReLogic.Content.AssetRequestMode.AsyncLoad);
-                var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
-                if (modplr.colorInfo.type != Player.HeldItem.type)
-                {
-                    var w = itemTex.Width;
-                    var h = itemTex.Height;
-                    var cs = new Color[w * h];
+        //public override void OnSpawn(IEntitySource source)
+        //{
+        //    //if (LogSpiralLibrary.CIVELoaded)
+        //    //{
+        //    //    var civeMod = ModLoader.GetMod("CoolerItemVisualEffect");
+        //    //    dynamic modplr = null;
+        //    //    if (ModContent.TryFind("CoolerItemVisualEffect", "CoolerItemVisualEffectPlayer", out ModPlayer modPlayer))
+        //    //    {
+        //    //        modplr = modPlayer;
+        //    //        if (modplr.colorInfo.tex == null)
+        //    //        {
+        //    //            Main.RunOnMainThread(() => modplr.colorInfo.tex = new Texture2D(Main.graphics.GraphicsDevice, 300, 1));
+        //    //        }
+        //    //        if (!TextureAssets.Item[Player.HeldItem.type].IsLoaded) TextureAssets.Item[Player.HeldItem.type] = Main.Assets.Request<Texture2D>("Images/Item_" + Player.HeldItem.type, ReLogic.Content.AssetRequestMode.AsyncLoad);
+        //    //        var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
+        //    //        if (modplr.colorInfo.type != Player.HeldItem.type)
+        //    //        {
+        //    //            var w = itemTex.Width;
+        //    //            var h = itemTex.Height;
+        //    //            var cs = new Color[w * h];
 
-                    itemTex.GetData(cs);
-                    Vector4 vcolor = default;
-                    float count = 0;
+        //    //            itemTex.GetData(cs);
+        //    //            Vector4 vcolor = default;
+        //    //            float count = 0;
 
-                    for (int n = 0; n < cs.Length; n++)
-                    {
-                        if (cs[n] != default && (n - w < 0 || cs[n - w] != default) && (n - 1 < 0 || cs[n - 1] != default) && (n + w >= cs.Length || cs[n + w] != default) && (n + 1 >= cs.Length || cs[n + 1] != default))
-                        {
-                            var weight = (float)((n + 1) % w * (h - n / w)) / w / h;
-                            vcolor += cs[n].ToVector4() * weight;
-                            count += weight;
-                        }
-                        Vector2 coord = new Vector2(n % w, n / w);
-                        coord /= new Vector2(w, h);
-                    }
-                    vcolor /= count;
-                    var newColor = modplr.colorInfo.color = new Color(vcolor.X, vcolor.Y, vcolor.Z, vcolor.W);
-                    /*var hslVec = */
-                    modplr.hsl = Main.rgbToHsl(newColor);
-                    //if (hslVec.Z < modPlayer.ConfigurationSwoosh.isLighterDecider) { modPlayer.colorInfo.color = Main.hslToRgb(hslVec with { Z = 0 }); }//MathHelper.Clamp(hslVec.Z * .25f, 0, 1)
-                }
-                UpdateHeatMap(ref modplr.colorInfo.tex, modplr.hsl, modplr.ConfigurationSwoosh, TextureAssets.Item[Player.HeldItem.type].Value);
-            }
+        //    //            for (int n = 0; n < cs.Length; n++)
+        //    //            {
+        //    //                if (cs[n] != default && (n - w < 0 || cs[n - w] != default) && (n - 1 < 0 || cs[n - 1] != default) && (n + w >= cs.Length || cs[n + w] != default) && (n + 1 >= cs.Length || cs[n + 1] != default))
+        //    //                {
+        //    //                    var weight = (float)((n + 1) % w * (h - n / w)) / w / h;
+        //    //                    vcolor += cs[n].ToVector4() * weight;
+        //    //                    count += weight;
+        //    //                }
+        //    //                Vector2 coord = new Vector2(n % w, n / w);
+        //    //                coord /= new Vector2(w, h);
+        //    //            }
+        //    //            vcolor /= count;
+        //    //            var newColor = modplr.colorInfo.color = new Color(vcolor.X, vcolor.Y, vcolor.Z, vcolor.W);
+        //    //            /*var hslVec = */
+        //    //            modplr.hsl = Main.rgbToHsl(newColor);
+        //    //            //if (hslVec.Z < modPlayer.ConfigurationSwoosh.isLighterDecider) { modPlayer.colorInfo.color = Main.hslToRgb(hslVec with { Z = 0 }); }//MathHelper.Clamp(hslVec.Z * .25f, 0, 1)
+        //    //        }
+        //    //        Ref<Texture2D> refTex = new(modplr.colorInfo.tex);
+        //    //        civeMod.Call("UpdateHeatMap", refTex, modplr.hsl, modplr.ConfigurationSwoosh, TextureAssets.Item[Player.HeldItem.type].Value);
+        //    //        //UpdateHeatMap(ref modplr.colorInfo.tex, modplr.hsl, modplr.ConfigurationSwoosh, TextureAssets.Item[Player.HeldItem.type].Value);
+        //    //    }
 
-        }
+        //    //}
+
+        //}
         public override float Rotation => base.Rotation;
         public virtual CustomVertexInfo[] CreateVertexs(Vector2 drawCen, float scaler, float startAngle, float endAngle, float alphaLight, ref int[] whenSkip)
         {
@@ -271,12 +279,21 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual void RenderInfomation(ref (float M, float Intensity, float Range) useBloom, ref (float M, float Range, Vector2 director) useDistort, ref (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha) useMask) { }
         public virtual bool RedrawSelf => false;
         public virtual bool WhenVertexDraw => !Charging && Charged;
-        protected Texture2D heatMap;
+        /// <summary>
+        /// 默认使用的热度图，允许被外部修改，除非子类那边重写了属性
+        /// </summary>
+        public Texture2D heatMap;
         public virtual Texture2D HeatMap
         {
             get
             {
-                return (Player?.GetModPlayer<CoolerItemVisualEffectPlayer>()?.colorInfo.tex) ?? heatMap;
+                //dynamic modplr = null;
+                //if (LogSpiralLibrary.CIVELoaded && ModContent.TryFind("CoolerItemVisualEffect", "CoolerItemVisualEffectPlayer", out ModPlayer modPlayer))
+                //{
+                //    modplr = modPlayer;
+                //    return modplr.colorInfo.tex ?? heatMap;
+                //}
+                return heatMap;
             }
         }
         public override bool PreDraw(ref Color lightColor)
@@ -398,14 +415,14 @@ namespace LogSpiralLibrary.CodeLibrary
             //}
             #endregion
             //CoolerItemVisualEffect.bloomValue += useBloom;
-            var passCount = 0;
-            switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
-            {
-                case ConfigurationSwoosh.SwooshColorType.热度图: passCount = 2; break;
-                case ConfigurationSwoosh.SwooshColorType.武器贴图对角线: passCount = 1; break;
-                case ConfigurationSwoosh.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
-                case ConfigurationSwoosh.SwooshColorType.单向渐变: passCount = 4; break;
-            }
+            var passCount = 2;
+            //switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
+            //{
+            //    case ConfigurationSwoosh.SwooshColorType.热度图: passCount = 2; break;
+            //    case ConfigurationSwoosh.SwooshColorType.武器贴图对角线: passCount = 1; break;
+            //    case ConfigurationSwoosh.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
+            //    case ConfigurationSwoosh.SwooshColorType.单向渐变: passCount = 4; break;
+            //}
             if ((useBloom.Range != 0 || useDistort.director != default || useMask.fillTex != null) && (Lighting.Mode == Terraria.Graphics.Light.LightMode.White || Lighting.Mode == Terraria.Graphics.Light.LightMode.Color) && Main.WaveQuality != 0)
             {
                 #region 旧版
@@ -556,18 +573,18 @@ namespace LogSpiralLibrary.CodeLibrary
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)CoolerSystem.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
                 ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
                 ShaderSwooshEX.Parameters["distortScaler"].SetValue(0);
 
-                var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity with { M11 = _v.X, M12 = -_v.Y, M21 = _v.Y, M22 = _v.X });
-                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor);
-                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor == 0);
+                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
+                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
+                ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity);
+                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
+                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(true);
 
 
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
@@ -782,18 +799,18 @@ namespace LogSpiralLibrary.CodeLibrary
 
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)CoolerSystem.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
                 ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
 
-                var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity with { M11 = _v.X, M12 = -_v.Y, M21 = _v.Y, M22 = _v.X });
+                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
+                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
+                ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity);
                 ShaderSwooshEX.Parameters["distortScaler"].SetValue(0);
-                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor);
-                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor == 0);
+                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
+                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(true);
 
 
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
@@ -884,11 +901,12 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             if (Charged)
             {
-                var modplr = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                modplr.NewUltraSwoosh(Color.DarkRed, Player.HeldItem.type, 1, 1
-                    , null, ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length()) * .5f, _negativeDir: false
-                    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
-                modplr.UpdateVertex();
+                //TODO 生成ultra剑气
+                //var modplr = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
+                //modplr.NewUltraSwoosh(Color.DarkRed, Player.HeldItem.type, 1, 1
+                //    , null, ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length()) * .5f, _negativeDir: false
+                //    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
+                //modplr.UpdateVertex();
             }
         }
     }

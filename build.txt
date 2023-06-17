@@ -1,4 +1,3 @@
 displayName = 绘幻轩~LogSpiral's Library
 author = 阿汪(Log_Spiral)
 version = 0.1
-weakReferences = CoolerItemVisualEffect

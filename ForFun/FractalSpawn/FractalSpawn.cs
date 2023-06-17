@@ -107,7 +107,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             effect.Parameters["uRange"].SetValue(new Vector4(-2, -2, 2, 2));
-            effect.Parameters["uM"].SetValue();
+            Vector2 t = CodeLibrary.VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
+            Main.NewText($"屏幕插值{t}");
+            t = CodeLibrary.VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
+            Main.NewText($"系数{t}");
+            effect.Parameters["uM"].SetValue(t);
 
             effect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(renderShift, new Vector2(), Color.White);
@@ -134,11 +138,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             var render = FractalSpawnSystem.render;
             var renderShift = FractalSpawnSystem.renderShift;
             bool drawOnly = Main.MouseScreen == mouseScreen;
-            if (drawOnly)
+            if (false)
             {
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-                gd.Textures[1] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_22").Value;
+                gd.Textures[1] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_1").Value;
                 effect.CurrentTechnique.Passes[1].Apply();
                 gd.SamplerStates[1] = SamplerState.AnisotropicClamp;
                 spriteBatch.Draw(renderShift, new Vector2(460, 0), Color.White);
@@ -147,10 +151,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             }
             else
             {
+                mouseScreen = Main.MouseScreen;
                 ResetFractal();
                 UpdateFractal();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                gd.Textures[1] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_22").Value;
+                gd.Textures[1] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_1").Value;
                 effect.CurrentTechnique.Passes[1].Apply();
                 gd.SamplerStates[1] = SamplerState.AnisotropicClamp;
                 spriteBatch.Draw(renderShift, new Vector2(460, 0), Color.White);

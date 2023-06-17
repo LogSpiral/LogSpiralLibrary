@@ -54,7 +54,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
             //ModContent.Request<Effect>("LogSpiralLibrary/Effects/ColorScreen", AssetRequestMode.ImmediateLoad);
             ScreenTransformData = (ScreenTransformData)new ScreenTransformData(new Ref<Effect>(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad).Value),
-                "ConicSection").UseImage(ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_0").Value, 1).UseImage(ModContent.Request<Texture2D>("LogSpiralLibrary/Images/AniTex/Style_8").Value, 2);
+                "ConicSection");//.UseImage(ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_0").Value, 1).UseImage(LogSpiralLibrary.AniTex[8].Value, 2)
             Filters.Scene["LogSpiralLibrary:WTFScreen"] = new Filter(ScreenTransformData, EffectPriority.Medium);
         }
         public override void PreUpdateEntities()
@@ -173,8 +173,8 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.AnisotropicWrap;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
 
-            Main.instance.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/AniTex/Style_8").Value;
-            Main.instance.GraphicsDevice.Textures[2] = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/AniTex/Style_8").Value;
+            Main.instance.GraphicsDevice.Textures[1] = LogSpiralLibrary.AniTex[8].Value;
+            Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibrary.AniTex[8].Value;
 
             Shader.Parameters["useHeatMap"].SetValue(false);
             base.Apply();

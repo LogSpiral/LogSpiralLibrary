@@ -5,13 +5,15 @@ sampler uImage3 : register(s3);
 
 float4x4 uTransform;
 float uTime;
-float uLighter;
+float uLighter;//已移除完毕
 bool checkAir;
 float airFactor;
 bool gather;
 float lightShift;
 float2x2 heatRotation = float2x2(1, 0, 0, 1);
 float distortScaler;
+bool heatMapAlpha;
+float alphaFactor;
 struct VSInput
 {
 	float2 Pos : POSITION0;
@@ -91,7 +93,10 @@ float4 PixelShaderFunction_VertexColor(PSInput input) : COLOR0
 	float color = getC1(input.Texcoord).r;
 	if (!any(color))
 		return float4(0, 0, 0, 0);
-	return float4(lightLerp(input.Color.rgb, input.Texcoord.z + uLighter * color), color * input.Color.a);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(input.Color.rgb, alpha);
 }
 float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
 {
@@ -103,7 +108,10 @@ float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
 	float color = getC1(input.Texcoord).r;
 	if (!any(color))
 		return float4(0, 0, 0, 0);
-	return float4(lightLerp(tex2D(uImage3, mul(float2(input.Texcoord.x, getY(input.Texcoord.xy)), heatRotation)).xyz, input.Texcoord.z + uLighter * color), color * input.Color.a);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(tex2D(uImage3, mul(float2(input.Texcoord.x, getY(input.Texcoord.xy)), heatRotation)).xyz, alpha);
 }
 float4 PixelShaderFunction_WeaponColor(PSInput input) : COLOR0
 {
@@ -114,7 +122,10 @@ float4 PixelShaderFunction_WeaponColor(PSInput input) : COLOR0
 	float color = getC1(input.Texcoord).r;
 	if (!any(color))
 		return float4(0, 0, 0, 0);
-	return float4(lightLerp(c.rgb, coord.z + uLighter * color), color * input.Color.a);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(c.rgb, alpha);
 }
 float4 PixelShaderFunction_HeatMap(PSInput input) : COLOR0
 {
@@ -128,7 +139,10 @@ float4 PixelShaderFunction_HeatMap(PSInput input) : COLOR0
 	if (!any(light))
 		return float4(0, 0, 0, 0);
 	float4 c = tex2D(uImage3, light);
-	return float4(lightLerp(c.rgb, coord.z + uLighter * light), light * input.Color.a);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= light * alphaFactor;
+	return float4(c.rgb, alpha);
 }
 float4 PixelShaderFunction_BlendMW(PSInput input) : COLOR0
 {
@@ -139,7 +153,10 @@ float4 PixelShaderFunction_BlendMW(PSInput input) : COLOR0
 	float color = getC1(input.Texcoord).r;
 	if (!any(color))
 		return float4(0, 0, 0, 0);
-	return float4(lightLerp((c.rgb + tex2D(uImage3, mul(float2(input.Texcoord.x, getY(input.Texcoord.xy)), heatRotation)).xyz) * .5f, coord.z + uLighter * color), color * input.Color.a);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4((c.rgb + tex2D(uImage3, mul(float2(input.Texcoord.x, getY(input.Texcoord.xy)), heatRotation)).xyz) * .5f, alpha);
 }
 PSInput VertexShaderFunction(VSInput input)
 {

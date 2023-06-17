@@ -1,4 +1,228 @@
-﻿sampler uImage0 : register(s0); //底层静态图
+﻿sampler uImage0 : register(s0);
+sampler uImage1 : register(s1);
+sampler uImage2 : register(s2);
+sampler uImage3 : register(s3);
+
+float4x4 uTransform;
+float uTime;
+float uLighter; //已移除完毕
+bool checkAir;
+float airFactor;
+bool gather;
+float lightShift;
+float2x2 heatRotation = float2x2(1, 0, 0, 1);
+float distortScaler;
+bool heatMapAlpha;
+float alphaFactor;
+struct VSInput
+{
+	float2 Pos : POSITION0;
+	float4 Color : COLOR0;
+	float3 Texcoord : TEXCOORD0;
+};
+struct PSInput
+{
+	float4 Pos : SV_POSITION;
+	float4 Color : COLOR0;
+	float3 Texcoord : TEXCOORD0;
+};
+float getLerpValue(float from, float to, float t, bool clamped = true)
+{
+	float result = (t - from) / (to - from);
+	if (clamped)
+		result = saturate(result);
+	return result;
+}
+
+float modifyY(float2 coord)
+{
+	float start = 0;
+	float end = 1;
+	if (gather)
+	{
+		start = coord.x;
+	}
+	if (distortScaler > 0)
+	{
+		start /= distortScaler;
+		//end是一个二次函数f
+		//f(0)=f(1)=1 / d，f(0.5) = 1
+		//这里d是扭曲缩放倍数，空气扭曲部分的绘制会比原来的宽d倍，
+		//但是我希望它和正常绘制的两端能连上，于是就有了这个迫真插值
+		end = (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
+	}
+	return getLerpValue(start, end, coord.y);
+	//if (distortScaler > 0 && gather)
+	//{
+	//	float start = coord.x / distortScaler;
+	//	float end = (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
+	//	return (coord.y - start) / (end - start);
+	//}
+	//if (distortScaler > 0)
+	//{
+	//	//分母是一个二次函数f
+	//	//f(0)=f(1)=1 / d，f(0.5) = 1
+	//	//这里d是扭曲缩放倍数，空气扭曲部分的绘制会比原来的宽d倍，
+	//	//但是我希望它和正常绘制的两端能连上，于是就有了这个迫真插值
+		
+	//	return coord.y / (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
+	//}
+	//if (gather)
+	//{
+	//	if (coord.x >= 1)
+	//		return 1;
+	//	return getLerpValue(coord.x, 1, coord.y, true);
+	//}
+	//return coord.y;
+}
+
+float4 weaponColor(float coordy)
+{
+	return tex2D(uImage2, lerp(float2(0, 1), float2(1, 0), coordy * airFactor));
+}
+
+float4 getBaseValue(float3 coord)
+{
+	float x = uTime + coord.x;
+	float y = modifyY(coord.xy);
+	//if (y > 1)
+	//	return float4(coord.x, coord.y, 0, 1);
+	if (y != saturate(y))
+		return float4(0, 0, 0, 0);
+	float4 c1 = tex2D(uImage0, float2(coord.x, y));
+	float4 c3 = tex2D(uImage1, float2(x, y));
+	c1 *= c3;
+	//return saturate(c1.a + lightShift);
+	return saturate(c1 + lightShift);
+}
+float3 LightInterpolation(float3 c, float l)
+{
+	if (l >= 0.5)
+	{
+		return lerp(c, float3(1, 1, 1), 2 * l - 1);
+	}
+	else
+	{
+		return lerp(float3(0, 0, 0), c, 2 * l);
+	}
+}
+float4 PixelShaderFunction_VertexColor(PSInput input) : COLOR0
+{
+	if (checkAir)
+	{
+		if (!any(weaponColor(input.Texcoord.y)))
+			return float4(0, 0, 0, 0);
+	}
+	float color = getBaseValue(input.Texcoord).r;
+	if (!any(color))
+		return float4(0, 0, 0, 0);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(input.Color.rgb, alpha);
+}
+float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
+{
+	if (checkAir)
+	{
+		if (!any(weaponColor(input.Texcoord.y)))
+			return float4(0, 0, 0, 0);
+	}
+	float color = getBaseValue(input.Texcoord).r;
+	if (!any(color))
+		return float4(0, 0, 0, 0);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz, alpha);
+}
+float4 PixelShaderFunction_WeaponColor(PSInput input) : COLOR0
+{
+	float3 coord = input.Texcoord;
+	float4 c = weaponColor(coord.y);
+	if (!any(c))
+		return float4(0, 0, 0, 0);
+	float color = getBaseValue(input.Texcoord).r;
+	if (!any(color))
+		return float4(0, 0, 0, 0);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4(c.rgb, alpha);
+}
+float4 PixelShaderFunction_HeatMap(PSInput input) : COLOR0
+{
+	if (checkAir)
+	{
+		if (!any(weaponColor(input.Texcoord.y)))
+			return float4(0, 0, 0, 0);
+	}
+	float3 coord = input.Texcoord;
+	float light = getBaseValue(coord).r;
+	if (!any(light))
+		return float4(0, 0, 0, 0);
+	float4 c = tex2D(uImage3, light);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= light * alphaFactor;
+	return float4(c.rgb, alpha);
+}
+float4 PixelShaderFunction_BlendMW(PSInput input) : COLOR0
+{
+	float3 coord = input.Texcoord;
+	float4 c = weaponColor(coord.y);
+	if (!any(c))
+		return float4(0, 0, 0, 0);
+	float color = getBaseValue(input.Texcoord).r;
+	if (!any(color))
+		return float4(0, 0, 0, 0);
+	float alpha = input.Color.a;
+	if (heatMapAlpha)
+		alpha *= color * alphaFactor;
+	return float4((c.rgb + tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz) * .5f, alpha);
+}
+PSInput VertexShaderFunction(VSInput input)
+{
+	PSInput output;
+	output.Color = input.Color;
+	output.Texcoord = input.Texcoord;
+	output.Pos = mul(float4(input.Pos, 0, 1), uTransform);
+	return output;
+}
+
+
+technique Technique1
+{
+	pass VertexColor
+	{
+		VertexShader = compile vs_2_0 VertexShaderFunction();
+		PixelShader = compile ps_2_0 PixelShaderFunction_VertexColor();
+	}
+	pass WeaponColor
+	{
+		VertexShader = compile vs_2_0 VertexShaderFunction();
+		PixelShader = compile ps_2_0 PixelShaderFunction_WeaponColor();
+	}
+	pass HeatMap
+	{
+		VertexShader = compile vs_2_0 VertexShaderFunction();
+		PixelShader = compile ps_2_0 PixelShaderFunction_HeatMap();
+	}
+	pass BlendMW
+	{
+		VertexShader = compile vs_2_0 VertexShaderFunction();
+		PixelShader = compile ps_2_0 PixelShaderFunction_BlendMW();
+	}
+	pass MapColor
+	{
+		VertexShader = compile vs_2_0 VertexShaderFunction();
+		PixelShader = compile ps_2_0 PixelShaderFunction_MapColor();
+	}
+}
+
+
+/*   ↓↓↓↓↓↓↓放弃的UL↓↓↓↓↓↓↓↓
+sampler uImage0 : register(s0); //底层静态图
 sampler uImage1 : register(s1); //偏移灰度图
 sampler uImage2 : register(s2); //武器本体贴图
 sampler uImage3 : register(s3); //采样/着色图
@@ -73,20 +297,20 @@ float4 LightInterpolation(float4 origin, float value)
 		return lerp(float4(0, 0, 0, origin.a), origin, value * 2);
 	return lerp(origin, float4(1, 1, 1, origin.a), value * 2 - 1);
 }
-bool AirCheck(float2 coord)
+bool AirCheck(float y)
 {
-	return coord.y / airFactor > 1 || !any(tex2D(uImage2, float2(1 - coord.y, coord.y)));
+	return y / airFactor > 1 || !any(tex2D(uImage2, float2(1 - y, y)));
 }
 
 float4 PixelShaderFunction_OriginColor(PSInput input) : COLOR0
 {
-	if (checkAir && AirCheck(input.Texcoord.xy))
+	if (checkAir && AirCheck(input.Texcoord.y))
 		return float4(0, 0, 0, 0);
 	return GetBaseValue(input.Texcoord.xy / float2(1, airFactor)) * input.Texcoord.z;
 }
 float4 PixelShaderFunction_VertexColor(PSInput input) : COLOR0
 {
-	if (checkAir && AirCheck(input.Texcoord.xy))
+	if (checkAir && AirCheck(input.Texcoord.y))
 		return float4(0, 0, 0, 0);
 	
 	float greyValue = GetGreyValue(input.Texcoord.xy / float2(1, airFactor));
@@ -100,7 +324,7 @@ float4 PixelShaderFunction_VertexColor(PSInput input) : COLOR0
 }
 float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
 {
-	if (checkAir && AirCheck(input.Texcoord.xy))
+	if (checkAir && AirCheck(input.Texcoord.y))
 		return float4(0, 0, 0, 0);
 	float3 coord = input.Texcoord;
 	float4 weaponColor = tex2D(uImage2, float2(1 - coord.y, coord.y));
@@ -144,3 +368,4 @@ technique Technique1
 		PixelShader = compile ps_3_0 PixelShaderFunction_MapColor();
 	}
 }
+*/

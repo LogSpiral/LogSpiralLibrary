@@ -5,9 +5,9 @@ using System.Linq;
 using Terraria.UI;
 using Terraria.Utilities;
 using static Terraria.Utils;
-using static CoolerItemVisualEffect.CoolerItemVisualEffect;
+//using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibrary;
-using CoolerItemVisualEffect;
+//using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
@@ -571,21 +571,13 @@ namespace LogSpiralLibrary.CodeLibrary
             ShaderSwooshEX.Parameters["gather"].SetValue(false);
             ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
             ShaderSwooshEX.Parameters["distortScaler"].SetValue(0);
-            if (CIVELoaded)
-            {
-                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor);
-                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(ConfigurationSwoosh.ConfigSwooshInstance.alphaFactor == 0);
-            }
-            else 
-            {
-                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
-                ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(false);
-            }
+            ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
+            ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(true);
 
 
             Main.graphics.GraphicsDevice.Textures[0] = baseTex;
             Main.graphics.GraphicsDevice.Textures[1] = aniTex;
-            Main.graphics.GraphicsDevice.Textures[2] = GetWeaponDisplayImage("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[2] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
 
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -2295,6 +2287,62 @@ namespace LogSpiralLibrary.CodeLibrary
     public static class VectorMethods
     {
         #region 向量
+
+        public static Vector2 Lerp(Vector2 from, Vector2 to, Vector2 t, bool clamp = true) 
+        {
+            Vector2 result = default;
+            result.X = MathHelper.Lerp(from.X, to.X, t.X);
+            result.Y = MathHelper.Lerp(from.Y, to.Y, t.Y);
+            if (clamp)
+                result = Vector2.Clamp(result, from, to);
+            return result;
+        }
+        public static Vector3 Lerp(Vector3 from, Vector3 to, Vector3 t, bool clamp = true)
+        {
+            Vector3 result = default;
+            result.X = MathHelper.Lerp(from.X, to.X, t.X);
+            result.Y = MathHelper.Lerp(from.Y, to.Y, t.Y);
+            result.Z = MathHelper.Lerp(from.Z, to.Z, t.Z);
+
+            if (clamp)
+                result = Vector3.Clamp(result, from, to);
+            return result;
+        }
+        public static Vector4 Lerp(Vector4 from, Vector4 to, Vector4 t, bool clamp = true)
+        {
+            Vector4 result = default;
+            result.X = MathHelper.Lerp(from.X, to.X, t.X);
+            result.Y = MathHelper.Lerp(from.Y, to.Y, t.Y);
+            result.Z = MathHelper.Lerp(from.Z, to.Z, t.Z);
+            result.W = MathHelper.Lerp(from.W, to.W, t.W);
+            if (clamp)
+                result = Vector4.Clamp(result, from, to);
+            return result;
+        }
+        public static Vector2 GetLerpValue(Vector2 from,Vector2 to,Vector2 t,bool clamped = false) 
+        {
+            return new Vector2(
+                Utils.GetLerpValue(from.X, to.X, t.X, clamped),
+                Utils.GetLerpValue(from.Y, to.Y, t.Y, clamped)
+                );
+        }
+        public static Vector3 GetLerpValue(Vector3 from, Vector3 to, Vector3 t, bool clamped = false)
+        {
+            return new Vector3(
+                Utils.GetLerpValue(from.X, to.X, t.X, clamped),
+                Utils.GetLerpValue(from.Y, to.Y, t.Y, clamped),
+                Utils.GetLerpValue(from.Z, to.Z, t.Z, clamped)
+                );
+        }
+        public static Vector4 GetLerpValue(Vector4 from, Vector4 to, Vector4 t, bool clamped = false)
+        {
+            return new Vector4(
+                Utils.GetLerpValue(from.X, to.X, t.X, clamped),
+                Utils.GetLerpValue(from.Y, to.Y, t.Y, clamped),
+                Utils.GetLerpValue(from.Z, to.Z, t.Z, clamped),
+                Utils.GetLerpValue(from.W, to.W, t.W, clamped)
+                );
+        }
         public static Vector2 Projectile(this Vector3 vector, float height, Vector2 center = default)
         {
             return (new Vector2(vector.X, vector.Y) - center) * height / (height - vector.Z) + center;

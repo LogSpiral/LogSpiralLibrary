@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.Audio;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
-using static LogSpiralLibrary.LogSpiralLibrary;
+using static LogSpiralLibrary.LogSpiralLibraryMod;
 namespace LogSpiralLibrary.CodeLibrary
 {
     public interface IChannelProj
@@ -33,16 +33,146 @@ namespace LogSpiralLibrary.CodeLibrary
         (int X, int Y) FrameMax { get; }
         Player Player { get; }
     }
-    public abstract class HammerProj : ModProjectile, IHammerProj
+    public abstract class HeldProjectile : ModProjectile, IChannelProj
     {
+        public Player Player => Main.player[Projectile.owner];
 
+        public virtual void OnCharging(bool left, bool right) { }
+        public virtual void OnRelease(bool charged, bool left) { Projectile.Kill(); }
+        public virtual bool UseLeft => true;
+        public virtual bool UseRight => false;
+        public virtual bool Charging => (UseLeft && Player.controlUseItem) || (UseRight && Player.controlUseTile);
+        public virtual bool Charged => true;
+        public virtual (int X, int Y) FrameMax => (1, 1);
+        public virtual Texture2D GlowEffect
+        {
+            get
+            {
+                if (ModContent.HasAsset(GlowTexture))
+                {
+                    return ModContent.Request<Texture2D>(GlowTexture).Value;
+                }
+                return null;
+            }
+        }
+        public virtual float Factor => 0;
+        public virtual Color GlowColor => Color.White;
+        public byte controlState;
+        public Texture2D projTex => TextureAssets.Projectile[Projectile.type].Value;
+
+    }
+    public abstract class RangedHeldProjectile : HeldProjectile
+    {
+        //public byte controlState
+        //{
+        //    get => (byte)Projectile.ai[1];
+        //    set => Projectile.ai[1] = value;
+        //}
+        public override void SetDefaults()
+        {
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.alpha = 0;
+            Projectile.aiStyle = -1;
+            Projectile.tileCollide = false;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.penetrate = -1;
+            Projectile.hide = true;
+        }
+        public override bool Charging => base.Charging && Projectile.frame == 0;
+        //Texture2D glowEffect;
+        //public override void Load()
+        //{
+        //    base.Load();
+        //    if (Mod.HasAsset(GlowTexture.Replace("VirtualDream/", "")))
+        //    {
+        //        glowEffect = IllusionBoundMod.GetTexture(GlowTexture, false);
+        //    }
+        //}
+
+        public override bool Charged => Factor == 1;
+        public virtual Vector2 ShootCenter => HeldCenter;
+        public virtual Vector2 HeldCenter => Player.Center;
+        public virtual void UpdatePlayer()
+        {
+            Player.ChangeDir(Projectile.direction);
+            Player.heldProj = Projectile.whoAmI;
+            Player.itemTime = 2;
+            Player.itemAnimation = 2;
+            Player.itemRotation = (float)Math.Atan2(Projectile.velocity.Y * Projectile.direction, Projectile.velocity.X * Projectile.direction);
+            Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Player.itemRotation - MathHelper.PiOver2 - (Player.direction == -1 ? MathHelper.Pi : 0));
+            Projectile.Center = Player.Center;
+        }
+        public override void AI()
+        {
+            base.AI();
+            #region 更新玩家
+            UpdatePlayer();
+            #endregion
+            #region 更新弹幕
+            if (Charging)
+            {
+                Projectile.timeLeft = 2;
+                Projectile.ai[0]++;
+                Projectile.velocity = Terraria.Utils.SafeNormalize(Main.MouseWorld - HeldCenter, Vector2.One);
+                Projectile.rotation = Projectile.velocity.ToRotation();
+                Projectile.ai[1] = Player.controlUseItem ? 1 : 0;
+                if (Player.controlUseItem)
+                {
+                    controlState = 1;
+                }
+                if (Player.controlUseTile)
+                {
+                    controlState = 2;
+                }
+                OnCharging(Player.controlUseItem, Player.controlUseTile);
+            }
+            else
+            {
+                OnRelease(Charged, Projectile.ai[1] == 1);
+                Projectile.frame = 1;
+            }
+            //Main.NewText(Charged);
+            #endregion
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
+            Vector2 center = HeldCenter - Main.screenPosition + new Vector2(0, Player.gfxOffY);
+            Rectangle? frame = null;
+            float rotation = Projectile.rotation;
+            float scale = 1f;
+            SpriteEffects effect = Player.direction == -1 ? SpriteEffects.FlipVertically : 0;
+            Vector2 texSize = texture.Size() / new Vector2(FrameMax.X, FrameMax.Y);
+            Vector2 origin = texSize * new Vector2(0, 1);
+            GetDrawInfos(ref texture, ref center, ref frame, ref lightColor, ref rotation, ref origin, ref scale, ref effect);
+            FlipOrigin(ref origin, effect, texSize);
+            Main.EntitySpriteDraw(texture, center, frame, lightColor, rotation, origin, scale, effect, 0);
+            if (GlowEffect != null)
+            {
+                Main.EntitySpriteDraw(GlowEffect, center, frame, GlowColor, rotation, origin, scale, effect, 0);
+            }
+
+            return false;
+        }
+        public virtual void GetDrawInfos(ref Texture2D texture, ref Vector2 center, ref Rectangle? frame, ref Color color, ref float rotation, ref Vector2 origin, ref float scale, ref SpriteEffects spriteEffects)
+        {
+
+        }
+        public virtual void FlipOrigin(ref Vector2 origin, SpriteEffects spriteEffects, Vector2 textureSize)
+        {
+            origin.Y = spriteEffects == SpriteEffects.FlipVertically ? textureSize.Y - origin.Y : origin.Y;
+            origin.X = spriteEffects == SpriteEffects.FlipHorizontally ? textureSize.X - origin.X : origin.X;
+        }
+    }
+    public abstract class HammerProj : HeldProjectile, IHammerProj
+    {
         public virtual Vector2 scale => new Vector2(1);
         public virtual Rectangle? frame => null;
         public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY);
         public Projectile projectile => Projectile;
-        public virtual bool Charged => factor > 0.75f;
+        public override bool Charged => Factor > 0.75f;
         public virtual SpriteEffects flip => Player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
-        public virtual (int X, int Y) FrameMax => (1, 1);
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault(HammerName);
@@ -65,11 +195,7 @@ namespace LogSpiralLibrary.CodeLibrary
             projectile.tileCollide = false;
             projectile.friendly = true;
         }
-        public virtual void OnCharging(bool left, bool right)
-        {
-
-        }
-        public virtual void OnRelease(bool charged, bool left)
+        public override void OnRelease(bool charged, bool left)
         {
             if (Charged)
             {
@@ -136,7 +262,6 @@ namespace LogSpiralLibrary.CodeLibrary
 
             }
         }
-        public Player Player => Main.player[projectile.owner];
 
         public virtual float timeCount
         {
@@ -146,7 +271,6 @@ namespace LogSpiralLibrary.CodeLibrary
                 projectile.ai[0] = MathHelper.Clamp(value, 0, MaxTime);
             }
         }
-        public Texture2D projTex => TextureAssets.Projectile[projectile.type].Value;
         public virtual string HammerName => "做个锤子";
         public virtual float MaxTime => 15;
         public virtual float factor => timeCount / MaxTime;
@@ -156,9 +280,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
         public virtual Color color => /*projectile.GetAlpha(Color.White);*/Lighting.GetColor((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16, Color.White);
         public virtual float MaxTimeLeft => 5;
-        public virtual bool UseLeft => true;
-        public virtual bool UseRight => false;
-        public virtual bool Charging => (UseLeft && Player.controlUseItem) || (UseRight && Player.controlUseTile) && projectile.ai[1] == 0;
+        public override bool Charging => base.Charging && projectile.ai[1] == 0;
         public override void AI()
         {
             //Projectiles.KluexEnergyCrystal.KluexEnergyZone
@@ -191,7 +313,6 @@ namespace LogSpiralLibrary.CodeLibrary
             projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
 
         }
-        public byte controlState;
         public override bool PreDraw(ref Color lightColor)
         {
             Main.spriteBatch.DrawHammer(this);
@@ -276,7 +397,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public virtual Color VertexColor(float time) => Color.White;
         public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap) { }
-        public virtual void RenderInfomation(ref (float M, float Intensity, float Range) useBloom, ref (float M, float Range, Vector2 director) useDistort, ref (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha) useMask) { }
+        public virtual void RenderInfomation(ref (float M, float Intensity, float Range) useBloom, ref (float M, float Range, Vector2 director) useDistort, ref (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask) { }
         public virtual bool RedrawSelf => false;
         public virtual bool WhenVertexDraw => !Charging && Charged;
         /// <summary>
@@ -301,7 +422,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bool predraw = false;
             if (!RedrawSelf)
                 predraw = base.PreDraw(ref lightColor);
-            if (!WhenVertexDraw || LogSpiralLibrary.ShaderSwooshEX == null || Main.GameViewMatrix == null || LogSpiralLibrary.DistortEffect == null) goto mylable; //
+            if (!WhenVertexDraw || LogSpiralLibraryMod.ShaderSwooshEX == null || Main.GameViewMatrix == null || LogSpiralLibraryMod.DistortEffect == null) goto mylable; //
             var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
 
 
@@ -345,7 +466,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bool useHeatMap = HeatMap != null;
             (float M, float Intensity, float Range) useBloom = default;
             (float M, float Range, Vector2 director) useDistort = default;
-            (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha) useMask = default;
+            (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask = default;
             VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap);
             RenderInfomation(ref useBloom, ref useDistort, ref useMask);
             int[] whenSkip = new int[0];
@@ -573,7 +694,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
@@ -749,7 +870,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
                     DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
                     DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["inverse"].SetValue(useMask.inverse);
+                    DistortEffect.Parameters["inverse"].SetValue(useMask.inverse);
 
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                     gd.SetRenderTarget(Main.screenTarget);
@@ -771,7 +892,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 {
                     //sb.End();
                     //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    Main.instance.GraphicsDevice.BlendState = LogSpiralLibrary.AllOne;
+                    Main.instance.GraphicsDevice.BlendState = LogSpiralLibraryMod.AllOne;
                     sb.Draw(render, Vector2.Zero, Color.White);
                     Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
                     //sb.End();
@@ -799,7 +920,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
@@ -1144,6 +1265,14 @@ namespace LogSpiralLibrary.CodeLibrary
         {
         }
     }
+    /// <summary>
+    /// 武器手持弹幕对应的基类
+    /// 以下是需要经常重写的属性
+    /// Charged
+    /// FrameMax
+    /// Factor
+    /// </summary>
+
     public abstract class GlowItem : ModItem
     {
         public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)

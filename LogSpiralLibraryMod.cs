@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace LogSpiralLibrary
 {
-    public class LogSpiralLibrary : Mod
+    public class LogSpiralLibraryMod : Mod
     {
         #region Effects
         private static Effect itemEffect;
@@ -56,10 +56,10 @@ namespace LogSpiralLibrary
         public static double ModTime => LogSpiralLibrarySystem.ModTime;
         public static double ModTime2 => LogSpiralLibrarySystem.ModTime2;
 
-        public static LogSpiralLibrary Instance;
+        public static LogSpiralLibraryMod Instance;
 
         public static BlendState AllOne;
-        public LogSpiralLibrary()
+        public LogSpiralLibraryMod()
         {
             AllOne = new BlendState();
             AllOne.ColorDestinationBlend = AllOne.AlphaDestinationBlend = AllOne.ColorSourceBlend = AllOne.AlphaSourceBlend = Blend.One;

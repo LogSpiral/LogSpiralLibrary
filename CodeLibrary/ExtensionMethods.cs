@@ -6,7 +6,7 @@ using Terraria.UI;
 using Terraria.Utilities;
 using static Terraria.Utils;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
-using static LogSpiralLibrary.LogSpiralLibrary;
+using static LogSpiralLibrary.LogSpiralLibraryMod;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -21,6 +21,110 @@ namespace LogSpiralLibrary.CodeLibrary
     public static class DrawingMethods
     {
         #region 直接用来绘制的b崽子们
+        //不好用，用新的
+    //    public static void DrawShaderTail(SpriteBatch spriteBatch, Projectile projectile, ShaderTailTexture shaderTail = ShaderTailTexture.Fire, ShaderTailStyle tailStyle = ShaderTailStyle.Dust, float Width = 30, ShaderTailMainStyle shaderTailMainStyle = ShaderTailMainStyle.MiddleLine, Vector2 Offset = default, float alpha = 1, bool additive = false)
+    //    {
+    //        //这里有几个我自己定义的枚举类型
+    //        //ShaderTailTexture这个对应的是颜色
+    //        //tailStyle这个是弹幕的动态亮度贴图（？
+    //        //shaderTailMainStyle这个是弹幕的静态亮度贴图（？
+    //        //它们分别对应uImage0 uImage2 uImage1
+    //        List<CustomVertexInfo> bars = new List<CustomVertexInfo>();
+
+    //        // 把所有的点都生成出来，按照顺序
+    //        for (int i = 1; i < projectile.oldPos.Length; ++i)
+    //        {
+    //            if (projectile.oldPos[i] == Vector2.Zero)
+    //            {
+    //                break;
+    //            }
+    //            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, projectile.oldPos[i] - Main.screenPosition,
+    //            //    new Rectangle(0, 0, 1, 1), Color.White, 0f, new Vector2(0.5f, 0.5f), 5f, SpriteEffects.None, 0f);
+
+    //            //int width = 30;
+    //            var normalDir = projectile.oldPos[i - 1] - projectile.oldPos[i];
+    //            normalDir = Vector2.Normalize(new Vector2(-normalDir.Y, normalDir.X));
+
+    //            var factor = i / (float)projectile.oldPos.Length;
+    //            var color = Color.Lerp(Color.White, Color.Red, factor);//后来发现底下那些if似乎没用（
+    //            if (shaderTail == ShaderTailTexture.Frozen)
+    //            {
+    //                color = Color.Lerp(Color.White, Color.Blue, factor);
+    //            }
+    //            if (shaderTail == ShaderTailTexture.Yellow)
+    //            {
+    //                color = Color.Lerp(Color.White, Color.Yellow, factor);
+    //            }
+    //            if (shaderTail == ShaderTailTexture.White)
+    //            {
+    //                color = Color.Lerp(Color.Black, Color.White, factor);
+    //            }
+    //            var w = 1 - factor;
+    //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, color, new Vector3((float)Math.Sqrt(factor), 1, w * alpha)));//这里还是在截图画图吧
+    //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, color, new Vector3((float)Math.Sqrt(factor), 0, w * alpha)));
+    //        }
+
+    //        List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();//这里是三角形的顶点
+
+    //        if (bars.Count > 2)
+    //        {
+
+    //            // 按照顺序连接三角形
+    //            triangleList.Add(bars[0]);//等腰直角三角形的底角1的顶点
+    //            var vertex = new CustomVertexInfo((bars[0].Position + bars[1].Position) * 0.5f + Vector2.Normalize(projectile.velocity) * 30, Color.White,
+    //                new Vector3(0, 0.5f, alpha));
+    //            triangleList.Add(bars[1]);//底角2的顶点
+    //            triangleList.Add(vertex);//顶角顶点
+    //            for (int i = 0; i < bars.Count - 2; i += 2)
+    //            {
+    //                triangleList.Add(bars[i]);
+    //                triangleList.Add(bars[i + 2]);
+    //                triangleList.Add(bars[i + 1]);
+
+    //                triangleList.Add(bars[i + 1]);
+    //                triangleList.Add(bars[i + 2]);
+    //                triangleList.Add(bars[i + 3]);
+    //            }//每次消耗两个点生成新三角形
+
+
+    //            spriteBatch.End();
+    //            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+    //            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+    //            // 干掉注释掉就可以只显示三角形栅格
+    //            //RasterizerState rasterizerState = new RasterizerState();
+    //            //rasterizerState.CullMode = CullMode.None;
+    //            //rasterizerState.FillMode = FillMode.WireFrame;
+    //            //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
+
+    //            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+    //            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));//这个矩阵没仔细看，应该是负责把图像丢到三角形栅格中
+
+    //            // 把变换和所需信息丢给shader
+    //            IllusionBoundMod.DefaultEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+    //            IllusionBoundMod.DefaultEffect.Parameters["uTime"].SetValue(-(float)IllusionBoundMod.ModTime * 0.03f);//会动的那个贴图的横向偏移量(就是这个才能让它动起来Main.time
+    //            Main.graphics.GraphicsDevice.Textures[0] = IllusionBoundMod.HeatMap[(int)shaderTail];
+    //            Main.graphics.GraphicsDevice.Textures[1] = IllusionBoundMod.BaseTexes[(int)shaderTailMainStyle];
+    //            Main.graphics.GraphicsDevice.Textures[2] = IllusionBoundMod.AniTexes[(int)tailStyle];
+    //            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+    //            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+    //            Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
+    //            //Main.graphics.GraphicsDevice.Textures[0] = TextureAssets.MagicPixel.Value;
+    //            //Main.graphics.GraphicsDevice.Textures[1] = TextureAssets.MagicPixel.Value;
+    //            //Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.MagicPixel.Value;
+    //            /*if (isCyan)
+				//{
+				//	IllusionBoundMod.CleverEffect.CurrentTechnique.Passes["Clever"].Apply();
+				//}*/
+    //            IllusionBoundMod.DefaultEffect.CurrentTechnique.Passes[0].Apply();
+
+
+    //            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList.ToArray(), 0, triangleList.Count / 3);//连接三角形顶点
+
+    //            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+    //            spriteBatch.End();
+    //            spriteBatch.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+    //        }
+    //    }
         public static void DrawProjShadow(this SpriteBatch spriteBatch, Projectile projectile, Color lightColor)
         {
             Texture2D projectileTexture = TextureAssets.Projectile[projectile.type].Value;
@@ -402,7 +506,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public static void VertexDraw(CustomVertexInfo[] vertexs, Texture2D baseTex, Texture2D aniTex, Texture2D heatMap = null, Vector2 uTime = default, bool trailing = false, Matrix? matrix = null, string? pass = null, bool autoStart = true, bool autoComplete = true)
         {
-            Effect effect = LogSpiralLibrary.VertexDraw;
+            Effect effect = LogSpiralLibraryMod.VertexDraw;
             if (effect == null) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
             if (autoStart)
@@ -468,7 +572,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="autoComplete">最后一个true，其它false</param>
         public static void VertexDrawEX(CustomVertexInfoEX[] vertexs, Texture2D baseTex, Texture2D aniTex, Texture2D heatMap = null, Vector2 uTime = default, bool trailing = false, Matrix? matrix = null, string? pass = null, bool autoStart = true, bool autoComplete = true)
         {
-            Effect effect = LogSpiralLibrary.VertexDrawEX;
+            Effect effect = LogSpiralLibraryMod.VertexDrawEX;
             if (effect == null) return;
             SpriteBatch spriteBatch = Main.spriteBatch;
             if (autoStart)
@@ -562,7 +666,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)LogSpiralLibrary.ModTime * 0.03f);
+            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)LogSpiralLibraryMod.ModTime * 0.03f);
 
             ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
             //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(0);//-(float)Main.time * 0.06f
@@ -826,7 +930,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -864,7 +968,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -953,7 +1057,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -991,7 +1095,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -1079,7 +1183,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1107,7 +1211,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1171,7 +1275,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1223,7 +1327,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             //effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1272,7 +1376,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1319,7 +1423,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrary.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1583,6 +1687,113 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         #endregion
 
+        #region 绘制空间平面，不好用，该换
+        public static void Draw3DPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, VertexTriangle3List loti, string pass = default)
+        {
+            if (loti.tris == null)
+            {
+                return;
+            }
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+            RasterizerState rasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.None
+            };
+            Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTime"].SetValue(-(float)Main.time * 0.03f);
+            Main.graphics.GraphicsDevice.Textures[0] = baseTex;
+            Main.graphics.GraphicsDevice.Textures[1] = aniTex;
+            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+            if (pass != null) { effect.CurrentTechnique.Passes[pass].Apply(); } else { effect.CurrentTechnique.Passes[0].Apply(); }
+            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, loti.ToVertexInfo(), 0, loti.Length);
+            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        public static void Draw3DPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, string pass = default, params VertexTriangle3[] tris)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+
+            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+            RasterizerState rasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.None
+            };
+            Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTime"].SetValue(-(float)Main.time * 0.03f);
+            Main.graphics.GraphicsDevice.Textures[0] = baseTex;
+            Main.graphics.GraphicsDevice.Textures[1] = aniTex;
+            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+            if (pass != null) { effect.CurrentTechnique.Passes[pass].Apply(); } else { effect.CurrentTechnique.Passes[0].Apply(); }
+            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, VertexTriangle3.ToVertexInfo(tris), 0, tris.Length);
+            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        public static void DrawPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, VertexTriangleList vttl, string pass = default)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+
+            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+            RasterizerState rasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.None
+            };
+            Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTime"].SetValue(-(float)Main.time * 0.03f);
+            Main.graphics.GraphicsDevice.Textures[0] = baseTex;
+            Main.graphics.GraphicsDevice.Textures[1] = aniTex;
+            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+            if (pass != null) { effect.CurrentTechnique.Passes[pass].Apply(); } else { effect.CurrentTechnique.Passes[0].Apply(); }
+            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vttl.ToVertexInfo(), 0, vttl.Length);
+            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        public static void DrawPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, string pass = default, params VertexTriangle[] tris)
+        {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+
+            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+            RasterizerState rasterizerState = new RasterizerState
+            {
+                CullMode = CullMode.None
+            };
+            Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTime"].SetValue(-(float)Main.time * 0.03f);
+            Main.graphics.GraphicsDevice.Textures[0] = baseTex;
+            Main.graphics.GraphicsDevice.Textures[1] = aniTex;
+            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+            if (pass != null) { effect.CurrentTechnique.Passes[pass].Apply(); } else { effect.CurrentTechnique.Passes[0].Apply(); }
+            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, VertexTriangle.ToVertexInfo(tris), 0, tris.Length);
+            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        }
+        #endregion
+
         /// <summary>
         /// 给物品上fumo光泽，但是这次是在世界
         /// </summary>
@@ -1630,7 +1841,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibrary.ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
+            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1702,7 +1913,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * projection);
-            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibrary.ModTime / 60f % 1);
+            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f % 1);
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -2168,6 +2379,17 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             //return Clamp((center - Math.Abs(center - value)) / center / whenGetMax, 0, 1);
             return (1 - (float)Math.Cos(MathHelper.TwoPi * Math.Sqrt(value / maxTimeWhen))) * 0.5f;
+        }
+        /// <summary>
+        /// 阿汪超喜欢用的插值函数，获得一个先迅速增加再慢慢变小的插值
+        /// </summary>
+        /// <param name="value">丢进去的变量，取值范围一般是[0,maxTimeWhen]</param>
+        /// <param name="maxTimeWhen">什么时候插值结束呢</param>
+        /// <returns>自己画函数图像去，真的像是一个小山丘一样(</returns>
+        public static float HillFactor(this float value, float maxTimeWhen = 1)
+        {
+            //return Clamp((center - Math.Abs(center - value)) / center / whenGetMax, 0, 1);
+            return (float)Math.Sin(MathHelper.Pi * Math.Sqrt(value / maxTimeWhen));
         }
         #region 数组插值
 
@@ -2679,6 +2901,10 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public static class OtherMethods
     {
+        public static T HardmodeValue<T>(T normalValue, T expertValue, T masterValue)
+        {
+            return Main.expertMode ? (Main.masterMode ? masterValue : expertValue) : normalValue;
+        }
         #region 线条粒子
         public static void LinerDust(Vector2 vec1, Vector2 vec2, int type = MyDustId.Fire, float step = 2)
         {
@@ -2797,7 +3023,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void ProjFrameChanger(this Projectile projectile, int frames, int time)
         {
             Main.projFrames[projectile.type] = frames;
-            projectile.frame += (int)LogSpiralLibrary.ModTime % time == 0 ? 1 : 0;
+            projectile.frame += (int)LogSpiralLibraryMod.ModTime % time == 0 ? 1 : 0;
             projectile.frame %= frames;
         }
         public static bool ZoneForest(this Player player)

@@ -173,8 +173,8 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.AnisotropicWrap;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
 
-            Main.instance.GraphicsDevice.Textures[1] = LogSpiralLibrary.AniTex[8].Value;
-            Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibrary.AniTex[8].Value;
+            Main.instance.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.AniTex[8].Value;
+            Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.AniTex[8].Value;
 
             Shader.Parameters["useHeatMap"].SetValue(false);
             base.Apply();

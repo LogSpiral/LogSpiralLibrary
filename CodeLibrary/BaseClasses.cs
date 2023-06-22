@@ -209,12 +209,12 @@ namespace LogSpiralLibrary.CodeLibrary
                 projectile.damage = 0;
                 if (Charged)
                 {
-                    projectile.damage = (int)(Player.GetWeaponDamage(Player.HeldItem) * (3 * factor * factor));
+                    projectile.damage = (int)(Player.GetWeaponDamage(Player.HeldItem) * (3 * Factor * Factor));
                     SoundEngine.PlaySound(SoundID.Item71);
                 }
             }
             projectile.ai[1]++;
-            if (projectile.ai[1] > (Charged ? (MaxTimeLeft * factor) : timeCount))
+            if (projectile.ai[1] > (Charged ? (MaxTimeLeft * Factor) : timeCount))
             {
                 projectile.Kill();
             }
@@ -243,13 +243,13 @@ namespace LogSpiralLibrary.CodeLibrary
             get
             {
                 //Main.NewText(timeCount);
-                var theta = ((float)Math.Pow(factor, 2)).Lerp(MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8);
+                var theta = ((float)Math.Pow(Factor, 2)).Lerp(MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8);
                 if (projectile.ai[1] > 0)
                 {
                     if (Charged)
                     {
                         //Main.NewText(projectile.ai[1] / MaxTimeLeft / factor);
-                        theta = (projectile.ai[1] / MaxTimeLeft / factor).Lerp(theta, MathHelper.Pi / 8 * 3);
+                        theta = (projectile.ai[1] / MaxTimeLeft / Factor).Lerp(theta, MathHelper.Pi / 8 * 3);
                         //return player.direction == -1 ? MathHelper.Pi * 1.5f - theta : theta;
                     }
                     else
@@ -273,7 +273,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public virtual string HammerName => "做个锤子";
         public virtual float MaxTime => 15;
-        public virtual float factor => timeCount / MaxTime;
+        public override float Factor => timeCount / MaxTime;
         public virtual Vector2 CollidingSize => new Vector2(32);
         public virtual Vector2 CollidingCenter => new Vector2(projTex.Size().X / FrameMax.X - 16, 16);
         public virtual Vector2 DrawOrigin => new Vector2(16, projTex.Size().Y / FrameMax.Y - 16);
@@ -315,7 +315,12 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            Main.spriteBatch.DrawHammer(this);
+            if (GlowEffect != null)
+            {
+                Main.spriteBatch.DrawHammer(this, GlowEffect, GlowColor, frame);
+            }
+            else Main.spriteBatch.DrawHammer(this);
+            //Main.spriteBatch.DrawHammer(this);
             return false;
         }
         public virtual void OnChargedShoot()

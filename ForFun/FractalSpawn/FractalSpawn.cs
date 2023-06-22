@@ -41,8 +41,12 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
 
         public override void Unload()
         {
-            render.Dispose();
-            renderShift.Dispose();
+            Main.RunOnMainThread(() =>
+            {
+                render.Dispose();
+                renderShift.Dispose();
+            });
+
             base.Unload();
         }
     }

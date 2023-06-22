@@ -707,7 +707,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="shineColor"></param>
         public static void DrawPrettyStarSparkle(this Projectile projectile, SpriteBatch spriteBatch, SpriteEffects dir, Vector2 drawpos, Color drawColor, Color shineColor)
         {
-            Texture2D value = GetTexture("FinalFractalLight");
+            Texture2D value = Misc[13].Value;
             Color color = shineColor * projectile.Opacity * 0.5f;
             color.A = 0;
             Vector2 origin = value.Size() / 2f;
@@ -772,7 +772,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Vector2 value2 = projectile.Center + vector;
             Texture2D value3 = TextureAssets.Projectile[projectile.type].Value;
             //new Microsoft.Xna.Framework.Rectangle(0, 0, value3.Width, value3.Height).Size() /= 2f;
-            Texture2D value4 = GetTexture("FinalFractalTail");
+            Texture2D value4 = Misc[14].Value;
             Rectangle rectangle = Utils.Frame(value4, 1, 1, 0, 0, 0, 0);
             Vector2 origin2 = new Vector2((float)rectangle.Width / 2f, 10f);
             //Microsoft.Xna.Framework.Color.Cyan * 0.5f * scale;
@@ -818,7 +818,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 num13 = num13 * 0.5f + 0.5f;*/
                 Vector2 position = projectile.Center - Main.screenPosition;
                 //Main.instance.LoadItem(75);
-                Texture2D value9 = GetTexture("FinalFractalTail2");
+                Texture2D value9 = Misc[15].Value;
                 Rectangle rectangle2 = Utils.Frame(value9, 1, 8, 0, 0, 0, 0);
                 Vector2 origin3 = rectangle2.Size() / 2f;
                 spriteBatch.Draw(value9, position, new Microsoft.Xna.Framework.Rectangle?(rectangle2), color, rotation, origin3, projectile.scale, SpriteEffects.None, 0);
@@ -931,7 +931,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
                 effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-                Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+                Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = colorBar;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -969,7 +969,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = colorBar;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1058,7 +1058,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
                 effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-                Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+                Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = heatMap;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1096,7 +1096,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = heatMap;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1184,7 +1184,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
                 effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-                Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+                Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
                 Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -1212,7 +1212,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -1276,7 +1276,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-                Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+                Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
                 Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -1328,7 +1328,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             //effect.Parameters["maxFactor"].SetValue(maxFactor);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -1377,7 +1377,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
@@ -1424,7 +1424,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
-            Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_8");
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;

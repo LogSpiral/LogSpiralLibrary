@@ -5,6 +5,10 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogSpiralLibrary", "LogSpiralLibrary.csproj", "{C835A213-DD50-42AF-A00D-4A40304347E3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoolerItemVisualEffect", "..\CoolerItemVisualEffect\CoolerItemVisualEffect.csproj", "{92B9F262-C037-4F6C-B938-CFB3AC394132}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualDream", "..\VirtualDream\VirtualDream.csproj", "{DD1EDEDF-AC53-4FE7-8660-E9B2EEB6DD50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{C835A213-DD50-42AF-A00D-4A40304347E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C835A213-DD50-42AF-A00D-4A40304347E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C835A213-DD50-42AF-A00D-4A40304347E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B9F262-C037-4F6C-B938-CFB3AC394132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B9F262-C037-4F6C-B938-CFB3AC394132}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92B9F262-C037-4F6C-B938-CFB3AC394132}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92B9F262-C037-4F6C-B938-CFB3AC394132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD1EDEDF-AC53-4FE7-8660-E9B2EEB6DD50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD1EDEDF-AC53-4FE7-8660-E9B2EEB6DD50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD1EDEDF-AC53-4FE7-8660-E9B2EEB6DD50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD1EDEDF-AC53-4FE7-8660-E9B2EEB6DD50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

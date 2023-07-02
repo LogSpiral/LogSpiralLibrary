@@ -1,0 +1,5 @@
+鉴于现在阿汪掌握了全新的抛瓦，这些只剩xnb的可以慢慢被恢复到fx了
+将xnb拖到那个exe上反编译xnb
+
+以下是已经复原成功变为EX版本的
+TransformEffect

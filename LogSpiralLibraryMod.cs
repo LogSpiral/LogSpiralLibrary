@@ -26,6 +26,8 @@ namespace LogSpiralLibrary
         private static Effect vertexDraw;
         private static Effect vertexDrawEX;
         private static Effect transformEffect;
+        private static Effect transformEffectEX;
+
 
         public static Effect ItemEffect => itemEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ItemGlowEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEffect => shaderSwooshEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ShaderSwooshEffect", AssetRequestMode.ImmediateLoad).Value;
@@ -38,6 +40,8 @@ namespace LogSpiralLibrary
         public static Effect VertexDraw => vertexDraw ??= ModContent.Request<Effect>("StoneOfThePhilosophers/Effects/VertexDraw", AssetRequestMode.ImmediateLoad).Value;
         public static Effect VertexDrawEX => vertexDrawEX ??= ModContent.Request<Effect>("StoneOfThePhilosophers/Effects/VertexDrawEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect TransformEffect => transformEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/TransformEffect", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect TransformEffectEX => transformEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/TransformEffectEX", AssetRequestMode.ImmediateLoad).Value;
+
 
         #endregion
 
@@ -48,14 +52,14 @@ namespace LogSpiralLibrary
         public static Asset<Texture2D>[] MagicZone;
         /// <summary>
         /// 杂图，以下是内容表(0-17)
-        /// <para>0-2:也许是给物品附魔光泽用的贴图</para>
-        /// <para>3:刀光的灰度图，为什么会在这里有一张？？</para>
-        /// <para>4-5:箭头和磁场点叉</para>
-        /// <para>6:符文条带</para>
-        /// <para>7-10:闪电激光</para>
-        /// <para>11:车万激光</para>
-        /// <para>12:压扁的白色箭头？？</para>
-        /// <para>13-17:有些来着原版的Extra，有些是我自己瞎画，给最终分形那些用</para>
+        /// <br>0-2:也许是给物品附魔光泽用的贴图</br>
+        /// <br>3:刀光的灰度图，为什么会在这里有一张？？</br>
+        /// <br>4-5:箭头和磁场点叉</br>
+        /// <br>6:符文条带</br>
+        /// <br>7-10:闪电激光</br>
+        /// <br>11:车万激光</br>
+        /// <br>12:压扁的白色箭头？？</br>
+        /// <br>13-17:有些来着原版的Extra，有些是我自己瞎画，给最终分形那些用</br>
         /// </summary>
         public static Asset<Texture2D>[] Misc;
         //public static string BaseTex = nameof(BaseTex);
@@ -121,19 +125,28 @@ namespace LogSpiralLibrary
             LoadTextures(ref MagicZone, nameof(MagicZone));
             LoadTextures(ref Misc, nameof(Misc));
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
-            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture_LSLib; ;
+            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On.Terraria.Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
             base.Load();
         }
 
         private void FilterManager_EndCapture_LSLib(On.Terraria.Graphics.Effects.FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
-            orig.Invoke(self, finalTexture, screenTarget1, screenTarget2, clearColor);
-            if (!CanUseRender) return;
+            if (!CanUseRender) goto label;
             foreach (var renderDrawing in LogSpiralLibrarySystem.renderBasedDrawings) 
             {
-                renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, Render, Render_AirDistort);
+                try
+                {
+                    renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, Render, Render_AirDistort);
+                }
+                catch 
+                {
+                    goto label;
+                }
             }
+            label:
+            orig.Invoke(self, finalTexture, screenTarget1, screenTarget2, clearColor);
+
         }
 
         private void Main_DrawProjectiles_LSLib(On.Terraria.Main.orig_DrawProjectiles orig, Main self)
@@ -179,6 +192,7 @@ namespace LogSpiralLibrary
         protected override void Register()
         {
             ModTypeLookup<RenderBasedDrawing>.Register(this);
+            LogSpiralLibrarySystem.renderBasedDrawings.Add(this);
         }
         /// <summary>
         /// 对需要Render的弹幕进行合批绘制！！

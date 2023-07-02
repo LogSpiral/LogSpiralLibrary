@@ -14,6 +14,8 @@ float2x2 heatRotation = float2x2(1, 0, 0, 1);
 float distortScaler;
 bool heatMapAlpha;
 float alphaFactor;
+float3 AlphaVector; //ultra版本新增变量，自己看下面的颜色矩阵√
+
 struct VSInput
 {
 	float2 Pos : POSITION0;
@@ -52,28 +54,6 @@ float modifyY(float2 coord)
 		end = (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
 	}
 	return getLerpValue(start, end, coord.y);
-	//if (distortScaler > 0 && gather)
-	//{
-	//	float start = coord.x / distortScaler;
-	//	float end = (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
-	//	return (coord.y - start) / (end - start);
-	//}
-	//if (distortScaler > 0)
-	//{
-	//	//分母是一个二次函数f
-	//	//f(0)=f(1)=1 / d，f(0.5) = 1
-	//	//这里d是扭曲缩放倍数，空气扭曲部分的绘制会比原来的宽d倍，
-	//	//但是我希望它和正常绘制的两端能连上，于是就有了这个迫真插值
-		
-	//	return coord.y / (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
-	//}
-	//if (gather)
-	//{
-	//	if (coord.x >= 1)
-	//		return 1;
-	//	return getLerpValue(coord.x, 1, coord.y, true);
-	//}
-	//return coord.y;
 }
 
 float4 weaponColor(float coordy)
@@ -181,6 +161,50 @@ float4 PixelShaderFunction_BlendMW(PSInput input) : COLOR0
 		alpha *= color * alphaFactor;
 	return float4((c.rgb + tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz) * .5f, alpha);
 }
+float4 PixelShaderFunction_OriginColor(PSInput input) : COLOR0
+{
+	float3 coord = input.Texcoord;
+	float4 c = weaponColor(coord.y);
+	if (!any(c))
+		return float4(0, 0, 0, 0);
+	return getBaseValue(input.Texcoord) * input.Texcoord.z;
+}
+float4 PixelShaderFunction_VertexColor2(PSInput input) : COLOR0
+{
+	float3 coord = input.Texcoord;
+	float4 c = weaponColor(coord.y);
+	if (!any(c))
+		return float4(0, 0, 0, 0);
+	float greyValue = getBaseValue(input.Texcoord).r;
+	float4 result = float4(LightInterpolation(input.Color.rgb, greyValue + lightShift) * input.Texcoord.z, input.Color.a);
+	if (heatMapAlpha)
+	{
+		result.a *= greyValue * airFactor;
+		result.a = saturate(result.a);
+	}
+	return result;
+}
+float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
+{
+	float3 coord = input.Texcoord;
+	float4 _weaponColor = weaponColor(coord.y);
+	if (!any(_weaponColor))
+		return float4(0, 0, 0, 0);
+	float4 _mapColor = float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz, 1);
+	//float4 mapColor = tex2D(uImage3, mul(float4(coord, 1) - float4(0.5, 0.5, 0, 0), heatRotation).xy + float2(0.5, 0.5));
+	float greyValue = getBaseValue(input.Texcoord).r;
+	float4 _heatColor = tex2D(uImage3, greyValue);
+	float3x4 colorMatrix = float3x4(_mapColor, _weaponColor, _heatColor);
+	float4 result = mul(AlphaVector, colorMatrix) * coord.z;
+	result.a = input.Color.a;
+	if (heatMapAlpha)
+	{
+		result.a *= greyValue * airFactor;
+		result.a = saturate(result.a);
+	}
+	return result;
+}
+
 PSInput VertexShaderFunction(VSInput input)
 {
 	PSInput output;
@@ -195,28 +219,43 @@ technique Technique1
 {
 	pass VertexColor
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_VertexColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_VertexColor();
 	}
 	pass WeaponColor
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_WeaponColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_WeaponColor();
 	}
 	pass HeatMap
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_HeatMap();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_HeatMap();
 	}
 	pass BlendMW
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_BlendMW();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_BlendMW();
 	}
 	pass MapColor
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_MapColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_MapColor();
+	}
+	pass OriginColor // 单纯对两张图变换然后叠加，不使用采样图或者武器贴图
+	{
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_OriginColor();
+	}
+	pass VertexColor2 // 使用灰度图，颜色由传入颜色决定，渐变之类的还是用采样图代替吧
+	{
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_VertexColor2();
+	}
+	pass MapColor2 // 使用采样图和武器贴图，颜色由线性插值决定(a,b,c)*(v1,v2,v3),a+b+c=1那种
+	{
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_MapColor2();
 	}
 }
 

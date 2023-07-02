@@ -1,0 +1,401 @@
+Effect
+{
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage0
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage1
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage2
+    }
+    Parameter
+    {
+        Class matrix rows, Type float
+        {
+        }
+        Name: uTransform
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uTime
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: maxFactor
+    }
+    Technique Technique1
+    {
+        Pass EightTrigramsFurnaceEffect
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass EightTrigramsFurnaceEffect_ColorBar
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass EightTrigramsFurnaceEffect_ColorBar_TimeOffset
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass EightTrigramsFurnaceEffect_HeatMap
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass EightTrigramsFurnaceEffect_HeatMap_TimeOffset
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_HeatMap_TimeOffset
+    {
+        // "CTAB\x1c\x00\x00\x00\xe3\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xdc\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00maxFactor\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.000000, -1.000000, -0.500000, 0.500000
+        def c4 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        cmp r.w, t.y, c3.x, c3.y
+        mul r.x, r.w, t.y
+        frc r.x, r.x
+        mad r.x, r.w, r.x, c3.z
+        cmp r.y, t.x, c3.x, c3.y
+        mul r.z, r.y, t.x
+        frc r.z, r.z
+        mul r1.z, r.y, r.z
+        mad r1.y, r.y, r.z, c2.x
+        mul r.y, r1.z, c.x
+        mov r2.xw, c3
+        cmp r.y, c1.x, r2.x, r.y
+        add r.z, -r.y, c3.x
+        rsq r.y, r.y
+        cmp r.y, r.z, r.y, c3.x
+        mad r.x, r.x, r.y, c3.w
+        mul r.y, r1.z, r1.z
+        cmp r1.w, -r.y, c3.w, r.x
+        mov r.x, r1.y
+        mov r.y, r1.w
+        mov r2.x, r1.z
+        mov r2.y, r1.w
+        texld r, r, s1
+        texld r3, r2, s
+        mul r.xyz, r, r3
+        max r1.z, r.x, r.y
+        max r2.x, r1.z, r.z
+        min r1.z, r.y, r.x
+        min r2.y, r.z, r1.z
+        add r.x, r2.x, r2.y
+        add r.y, r.x, c3.y
+        mad r1.x, r.x, r2.w, c2.x
+        mov r1.y, r1.w
+        texld r2, r1, s2
+        add r1.xyz, -r2, c3.x
+        mad r.yzw, r.y, r1.wzyx, r2.wzyx
+        mul r1.xyz, r.x, r2
+        mad r.x, r.x, c3.w, c3.z
+        cmp r.xyz, r.x, r.wzyx, r1
+        mov_sat r.w, t.z
+        mul r.xyz, r, r.w
+        add r1.x, -r1.w, c3.x
+        cmp r1.y, r1.w, c4.x, c4.y
+        cmp r1.x, r1.x, c4.x, c4.y
+        add r1.x, r1.y, r1.x
+        mov r.w, v.w
+        cmp r, -r1.x, r, c4.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_HeatMap_TimeOffset
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_HeatMap
+    {
+        // "CTAB\x1c\x00\x00\x00\xe3\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xdc\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00maxFactor\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.000000, -1.000000, -0.500000, 0.500000
+        def c4 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        cmp r.w, t.y, c3.x, c3.y
+        mul r.x, r.w, t.y
+        frc r.x, r.x
+        mad r.x, r.w, r.x, c3.z
+        cmp r.y, t.x, c3.x, c3.y
+        mul r.z, r.y, t.x
+        frc r.z, r.z
+        mul r1.z, r.y, r.z
+        mad r1.y, r.y, r.z, c2.x
+        mul r.y, r1.z, c.x
+        mov r2.w, c3.x
+        cmp r.y, c1.x, r2.w, r.y
+        add r.z, -r.y, c3.x
+        rsq r.y, r.y
+        cmp r.y, r.z, r.y, c3.x
+        mad r.x, r.x, r.y, c3.w
+        mul r.y, r1.z, r1.z
+        cmp r1.w, -r.y, c3.w, r.x
+        mov r.x, r1.y
+        mov r.y, r1.w
+        mov r2.x, r1.z
+        mov r2.y, r1.w
+        texld r, r, s1
+        texld r2, r2, s
+        mul r.xyz, r, r2
+        max r1.z, r.x, r.y
+        max r2.x, r1.z, r.z
+        min r1.z, r.y, r.x
+        min r2.y, r.z, r1.z
+        add r.x, r2.x, r2.y
+        add r.y, r.x, c3.y
+        mul r1.x, r.x, c3.w
+        mov r1.y, r1.w
+        texld r2, r1, s2
+        add r1.xyz, -r2, c3.x
+        mad r.yzw, r.y, r1.wzyx, r2.wzyx
+        mul r1.xyz, r.x, r2
+        mad r.x, r.x, c3.w, c3.z
+        cmp r.xyz, r.x, r.wzyx, r1
+        mov_sat r.w, t.z
+        mul r.xyz, r, r.w
+        add r1.x, -r1.w, c3.x
+        cmp r1.y, r1.w, c4.x, c4.y
+        cmp r1.x, r1.x, c4.x, c4.y
+        add r1.x, r1.y, r1.x
+        mov r.w, v.w
+        cmp r, -r1.x, r, c4.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_HeatMap
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_ColorBar_TimeOffset
+    {
+        // "CTAB\x1c\x00\x00\x00\xe3\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xdc\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00maxFactor\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.000000, -1.000000, -0.500000, 0.500000
+        def c4 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        cmp r.w, t.y, c3.x, c3.y
+        mul r.x, r.w, t.y
+        frc r.x, r.x
+        mad r.x, r.w, r.x, c3.z
+        cmp r.y, t.x, c3.x, c3.y
+        mul r.z, r.y, t.x
+        frc r.z, r.z
+        mul r1.y, r.y, r.z
+        mad r1.x, r.y, r.z, c2.x
+        mul r1.w, r1.y, c.x
+        mov r2.w, c3.x
+        cmp r1.w, c1.x, r2.w, r1.w
+        add r.y, -r1.w, c3.x
+        rsq r1.w, r1.w
+        cmp r1.w, r.y, r1.w, c3.x
+        mad r1.w, r.x, r1.w, c3.w
+        mul r.x, r1.y, r1.y
+        cmp r1.z, -r.x, c3.w, r1.w
+        mov r.xy, r1.yzxw
+        mov r1.y, r1.z
+        texld r, r, s
+        texld r2, r1, s1
+        texld r3, r1, s2
+        mul r.xyz, r, r2
+        max r3.w, r.x, r.y
+        max r1.x, r3.w, r.z
+        min r3.w, r.y, r.x
+        min r1.y, r.z, r3.w
+        add r3.w, r1.x, r1.y
+        add r.x, r3.w, c3.y
+        add r.yzw, -r3.wzyx, c3.x
+        mad r.xyz, r.x, r.wzyx, r3
+        mul r2.xyz, r3, r3.w
+        mad r.w, r3.w, c3.w, c3.z
+        cmp r.xyz, r.w, r, r2
+        mov_sat r.w, t.z
+        mul r.xyz, r, r.w
+        add r1.x, -r1.z, c3.x
+        cmp r1.y, r1.z, c4.x, c4.y
+        cmp r1.x, r1.x, c4.x, c4.y
+        add r1.x, r1.y, r1.x
+        mov r.w, v.w
+        cmp r, -r1.x, r, c4.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_ColorBar_TimeOffset
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_ColorBar
+    {
+        // "CTAB\x1c\x00\x00\x00\xe3\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xdc\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00maxFactor\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.000000, -1.000000, -0.500000, 0.500000
+        def c4 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        cmp r.w, t.y, c3.x, c3.y
+        mul r.x, r.w, t.y
+        frc r1.x, r.x
+        mad r.x, r.w, r1.x, c3.z
+        cmp r.y, t.x, c3.x, c3.y
+        mul r.z, r.y, t.x
+        frc r.z, r.z
+        mul r1.y, r.y, r.z
+        mad r1.x, r.y, r.z, c2.x
+        mul r.y, r1.y, c.x
+        mov r2.w, c3.x
+        cmp r.y, c1.x, r2.w, r.y
+        add r.z, -r.y, c3.x
+        rsq r.y, r.y
+        cmp r.y, r.z, r.y, c3.x
+        mad r.x, r.x, r.y, c3.w
+        mul r.y, r1.y, r1.y
+        cmp r1.z, -r.y, c3.w, r.x
+        mov r.x, r1.x
+        mov r.y, r1.z
+        mov r1.xy, r1.yzxw
+        texld r, r, s1
+        texld r2, r1, s
+        texld r3, r1, s2
+        mul r.xyz, r, r2
+        max r3.w, r.x, r.y
+        max r2.x, r3.w, r.z
+        min r3.w, r.y, r.x
+        min r2.y, r.z, r3.w
+        add r3.w, r2.x, r2.y
+        add r.x, r3.w, c3.y
+        add r.yzw, -r3.wzyx, c3.x
+        mad r.xyz, r.x, r.wzyx, r3
+        mul r2.xyz, r3, r3.w
+        mad r.w, r3.w, c3.w, c3.z
+        cmp r.xyz, r.w, r, r2
+        mov_sat r.w, t.z
+        mul r.xyz, r, r.w
+        add r1.x, -r1.z, c3.x
+        cmp r1.y, r1.z, c4.x, c4.y
+        cmp r1.x, r1.x, c4.x, c4.y
+        add r1.x, r1.y, r1.x
+        mov r.w, v.w
+        cmp r, -r1.x, r, c4.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect_ColorBar
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect
+    {
+        // "CTAB\x1c\x00\x00\x00\xb7\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb0\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00x\x00\x00\x00\x00\x00\x00\x00\x88\x00\x00\x00\x02\x00\x02\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00maxFactor\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.000000, -1.000000, -0.500000, 0.500000
+        def c4 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        cmp r.w, t.y, c3.x, c3.y
+        mul r.x, r.w, t.y
+        frc r1.x, r.x
+        mad r.x, r.w, r1.x, c3.z
+        cmp r.y, t.x, c3.x, c3.y
+        mul r.z, r.y, t.x
+        frc r.z, r.z
+        mul r1.y, r.y, r.z
+        mad r1.x, r.y, r.z, c2.x
+        mul r.y, r1.y, c.x
+        mov r2.w, c3.x
+        cmp r.y, c1.x, r2.w, r.y
+        add r.z, -r.y, c3.x
+        rsq r.y, r.y
+        cmp r.y, r.z, r.y, c3.x
+        mad r.x, r.x, r.y, c3.w
+        mul r.y, r1.y, r1.y
+        cmp r1.z, -r.y, c3.w, r.x
+        mov r.x, r1.x
+        mov r.y, r1.z
+        mov r1.xy, r1.yzxw
+        texld r2, r1, s
+        texld r, r, s1
+        mul r.xyz, r2, r
+        max r2.x, r.x, r.y
+        max r3.w, r2.x, r.z
+        min r2.x, r.y, r.x
+        min r3.x, r.z, r2.x
+        add r.x, r3.w, r3.x
+        add r.y, r.x, c3.y
+        add r2.xyz, -v, c3.x
+        mad r.yzw, r.y, r2.wzyx, v.wzyx
+        mad r1.x, r.x, c3.w, c3.z
+        mul r2.xyz, r.x, v
+        cmp r.xyz, r1.x, r.wzyx, r2
+        mov_sat r.w, t.z
+        mul r.xyz, r, r.w
+        add r1.x, -r1.z, c3.x
+        cmp r1.y, r1.z, c4.x, c4.y
+        cmp r1.x, r1.x, c4.x, c4.y
+        add r1.x, r1.y, r1.x
+        mov r.w, v.w
+        cmp r, -r1.x, r, c4.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass EightTrigramsFurnaceEffect
+    {
+parseVertexShader
+    }
+}

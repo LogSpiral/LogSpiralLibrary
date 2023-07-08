@@ -57,6 +57,11 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public virtual float Factor => 0;
         public virtual Color GlowColor => Color.White;
+        /// <summary>
+        /// 1为左键
+        /// 2为右键
+        /// 3自由发挥
+        /// </summary>
         public byte controlState;
         public Texture2D projTex => TextureAssets.Projectile[Projectile.type].Value;
 

@@ -125,12 +125,12 @@ namespace LogSpiralLibrary
             LoadTextures(ref MagicZone, nameof(MagicZone));
             LoadTextures(ref Misc, nameof(Misc));
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
-            On.Terraria.Graphics.Effects.FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
-            On.Terraria.Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
+            Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
+            Terraria.On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
             base.Load();
         }
 
-        private void FilterManager_EndCapture_LSLib(On.Terraria.Graphics.Effects.FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
+        private void FilterManager_EndCapture_LSLib(Terraria.Graphics.Effects.On_FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
             if (!CanUseRender) goto label;
             foreach (var renderDrawing in LogSpiralLibrarySystem.renderBasedDrawings) 
@@ -149,7 +149,7 @@ namespace LogSpiralLibrary
 
         }
 
-        private void Main_DrawProjectiles_LSLib(On.Terraria.Main.orig_DrawProjectiles orig, Main self)
+        private void Main_DrawProjectiles_LSLib(Terraria.On_Main.orig_DrawProjectiles orig, Main self)
         {
             orig.Invoke(self);
             if (CanUseRender) return;
@@ -163,8 +163,8 @@ namespace LogSpiralLibrary
         {
             Instance = null;
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
-            On.Terraria.Graphics.Effects.FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
-            On.Terraria.Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
+            Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
+            Terraria.On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
             base.Unload();
         }
         private static void LoadTextures(ref Asset<Texture2D>[] assets, string textureName)

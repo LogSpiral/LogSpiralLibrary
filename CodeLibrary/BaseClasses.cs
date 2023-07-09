@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 using Terraria.Audio;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
@@ -180,9 +181,9 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual SpriteEffects flip => Player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault(HammerName);
+            // DisplayName.SetDefault(HammerName);
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.immune[projectile.owner] = 5;
         }
@@ -1052,9 +1053,9 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual (int X, int Y) FrameMax => (1, 1);
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault(ProjName);
+            // DisplayName.SetDefault(ProjName);
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.immune[projectile.owner] = 5;
         }

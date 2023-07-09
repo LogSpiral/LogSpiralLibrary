@@ -1,0 +1,13 @@
+
+Mods: {
+	LogSpiralLibrary: {
+		Items: {
+			FractalSpawnItem.DisplayName: Fractal Spawn Item
+
+			GeogebraShin: {
+				DisplayName: 圆神
+				Tooltip: 你知道我要说什么的对吧
+			}
+		}
+	}
+}

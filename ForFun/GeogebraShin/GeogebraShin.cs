@@ -19,8 +19,8 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("圆神");
-            Tooltip.SetDefault("你知道我要说什么的对吧");
+            // DisplayName.SetDefault("圆神");
+            // Tooltip.SetDefault("你知道我要说什么的对吧");
         }
         public override void SetDefaults()
         {

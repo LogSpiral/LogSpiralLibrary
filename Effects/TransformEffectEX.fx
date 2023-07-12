@@ -175,6 +175,16 @@ float4 PixelShaderFunction_Moon2(float2 coord : TEXCOORD0, float4 color : COLOR0
 	float y = coord.y + factor2;
 	return tex2D(uImage0, float2(x, y)) * color;
 }
+float4 PixelShaderFunction_Tooth(float2 coord : TEXCOORD0, float4 color : COLOR0) : COLOR0
+{
+	float to = sqrt((coord.y + factor1 - 0.5) * (factor1 + 1 - coord.y) + 0.25) - factor1;
+	float x = GetLerpValue(0, to, coord.x - 0.5) + 0.5;
+	if (x - 1 != saturate(x - 1) && x + 1 != saturate(x + 1))
+		return 0;
+	
+	float y = coord.y + factor2;
+	return tex2D(uImage0, float2(x, y)) * color;
+}
 technique Technique1
 {
 	pass Gapped
@@ -204,6 +214,10 @@ technique Technique1
 	pass Moon2
 	{
 		PixelShader = compile ps_3_0 PixelShaderFunction_Moon2();
+	}
+	pass Tooth
+	{
+		PixelShader = compile ps_3_0 PixelShaderFunction_Tooth();
 	}
 }
 

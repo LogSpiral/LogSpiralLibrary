@@ -333,59 +333,8 @@ namespace LogSpiralLibrary.CodeLibrary
         {
         }
     }
-    //TODO 目前这货和CIVE的耦合很严重
     public abstract class VertexHammerProj : HammerProj
     {
-        //public override void OnSpawn(IEntitySource source)
-        //{
-        //    //if (LogSpiralLibrary.CIVELoaded)
-        //    //{
-        //    //    var civeMod = ModLoader.GetMod("CoolerItemVisualEffect");
-        //    //    dynamic modplr = null;
-        //    //    if (ModContent.TryFind("CoolerItemVisualEffect", "CoolerItemVisualEffectPlayer", out ModPlayer modPlayer))
-        //    //    {
-        //    //        modplr = modPlayer;
-        //    //        if (modplr.colorInfo.tex == null)
-        //    //        {
-        //    //            Main.RunOnMainThread(() => modplr.colorInfo.tex = new Texture2D(Main.graphics.GraphicsDevice, 300, 1));
-        //    //        }
-        //    //        if (!TextureAssets.Item[Player.HeldItem.type].IsLoaded) TextureAssets.Item[Player.HeldItem.type] = Main.Assets.Request<Texture2D>("Images/Item_" + Player.HeldItem.type, ReLogic.Content.AssetRequestMode.AsyncLoad);
-        //    //        var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
-        //    //        if (modplr.colorInfo.type != Player.HeldItem.type)
-        //    //        {
-        //    //            var w = itemTex.Width;
-        //    //            var h = itemTex.Height;
-        //    //            var cs = new Color[w * h];
-
-        //    //            itemTex.GetData(cs);
-        //    //            Vector4 vcolor = default;
-        //    //            float count = 0;
-
-        //    //            for (int n = 0; n < cs.Length; n++)
-        //    //            {
-        //    //                if (cs[n] != default && (n - w < 0 || cs[n - w] != default) && (n - 1 < 0 || cs[n - 1] != default) && (n + w >= cs.Length || cs[n + w] != default) && (n + 1 >= cs.Length || cs[n + 1] != default))
-        //    //                {
-        //    //                    var weight = (float)((n + 1) % w * (h - n / w)) / w / h;
-        //    //                    vcolor += cs[n].ToVector4() * weight;
-        //    //                    count += weight;
-        //    //                }
-        //    //                Vector2 coord = new Vector2(n % w, n / w);
-        //    //                coord /= new Vector2(w, h);
-        //    //            }
-        //    //            vcolor /= count;
-        //    //            var newColor = modplr.colorInfo.color = new Color(vcolor.X, vcolor.Y, vcolor.Z, vcolor.W);
-        //    //            /*var hslVec = */
-        //    //            modplr.hsl = Main.rgbToHsl(newColor);
-        //    //            //if (hslVec.Z < modPlayer.ConfigurationSwoosh.isLighterDecider) { modPlayer.colorInfo.color = Main.hslToRgb(hslVec with { Z = 0 }); }//MathHelper.Clamp(hslVec.Z * .25f, 0, 1)
-        //    //        }
-        //    //        Ref<Texture2D> refTex = new(modplr.colorInfo.tex);
-        //    //        civeMod.Call("UpdateHeatMap", refTex, modplr.hsl, modplr.ConfigurationSwoosh, TextureAssets.Item[Player.HeldItem.type].Value);
-        //    //        //UpdateHeatMap(ref modplr.colorInfo.tex, modplr.hsl, modplr.ConfigurationSwoosh, TextureAssets.Item[Player.HeldItem.type].Value);
-        //    //    }
-
-        //    //}
-
-        //}
         public override float Rotation => base.Rotation;
         public virtual CustomVertexInfo[] CreateVertexs(Vector2 drawCen, float scaler, float startAngle, float endAngle, float alphaLight, ref int[] whenSkip)
         {
@@ -407,7 +356,7 @@ namespace LogSpiralLibrary.CodeLibrary
             return bars;
         }
         public virtual Color VertexColor(float time) => Color.White;
-        public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap) { }
+        public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap,ref int passCount) { }
         public virtual void RenderInfomation(ref (float M, float Intensity, float Range) useBloom, ref (float M, float Range, Vector2 director) useDistort, ref (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask) { }
         public virtual bool RedrawSelf => false;
         public virtual bool WhenVertexDraw => !Charging && Charged;
@@ -478,7 +427,10 @@ namespace LogSpiralLibrary.CodeLibrary
             (float M, float Intensity, float Range) useBloom = default;
             (float M, float Range, Vector2 director) useDistort = default;
             (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask = default;
-            VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap);
+            var passCount = 3;
+
+            VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap,ref passCount);
+            if (useHeatMap) passCount = 2;
             RenderInfomation(ref useBloom, ref useDistort, ref useMask);
             int[] whenSkip = new int[0];
             endAngle = Player.gravDir == -1 ? MathHelper.PiOver2 - endAngle : endAngle;
@@ -547,7 +499,6 @@ namespace LogSpiralLibrary.CodeLibrary
             //}
             #endregion
             //CoolerItemVisualEffect.bloomValue += useBloom;
-            var passCount = 2;
             //switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
             //{
             //    case ConfigurationSwoosh.SwooshColorType.热度图: passCount = 2; break;
@@ -1291,6 +1242,50 @@ namespace LogSpiralLibrary.CodeLibrary
             string glowPath = Texture + "_Glow";
             if (ModContent.HasAsset(glowPath) && ModContent.Request<Texture2D>(glowPath) is Asset<Texture2D> texture)
                 spriteBatch.Draw(texture.Value, Item.Center - Main.screenPosition, null, Color.White, rotation, texture.Size() * .5f, scale, 0, 0);
+        }
+    }
+
+    /// <summary>
+    /// 简化使用的<see cref = "ModTileEntity"/>
+    /// </summary>
+    /// <typeparam name="T">对应绑定物块的类型</typeparam>
+    public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile 
+    {
+        /// <summary>
+        /// 必须和tileObjectData那边一样
+        /// </summary>
+        public abstract Point16 Origin { get; }
+        public override bool IsTileValidForEntity(int x, int y)
+        {
+            Tile tile = Main.tile[x, y];
+            return tile.HasTile && tile.TileType == ModContent.TileType<T>();
+        }
+        public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                // Sync the entire multitile's area.  Modify "width" and "height" to the size of your multitile in tiles
+                int width = 2;
+                int height = 2;
+                NetMessage.SendTileSquare(Main.myPlayer, i, j, width, height);
+
+                // Sync the placement of the tile entity with other clients
+                // The "type" parameter refers to the tile type which placed the tile entity, so "Type" (the type of the tile entity) needs to be used here instead
+                NetMessage.SendData(MessageID.TileEntityPlacement, number: i, number2: j, number3: Type);
+            }
+
+            // ModTileEntity.Place() handles checking if the entity can be placed, then places it for you
+            // Set "tileOrigin" to the same value you set TileObjectData.newTile.Origin to in the ModTile
+            Point16 tileOrigin = Origin;
+            int placedEntity = Place(i - tileOrigin.X, j - tileOrigin.Y);
+            return placedEntity;
+        }
+        public override void OnNetPlace()
+        {
+            if (Main.netMode == NetmodeID.Server)
+            {
+                NetMessage.SendData(MessageID.TileEntitySharing, number: ID, number2: Position.X, number3: Position.Y);
+            }
         }
     }
 }

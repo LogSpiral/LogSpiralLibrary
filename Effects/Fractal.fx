@@ -2,6 +2,7 @@
 sampler uImage1 : register(s1); //颜色图,由z作为横坐标决定最终颜色
 float4 uRange = float4(-2, -2, 2, 2); //区域，前两位是左下角，后两位是右上角
 float2 uM;
+
 float GetLerpValue(float from, float to, float value)
 {
 	return (value - from) / (to - from);
@@ -10,6 +11,10 @@ float2 GetLerpValue(float2 from, float2 to, float2 value)
 {
 	return float2(GetLerpValue(from.x, to.x, value.x), GetLerpValue(from.y, to.y, value.y));
 
+}
+float2 ComplexMul(float2 z1, float2 z2)
+{
+	return float2(z1.x * z2.x - z1.y * z2.y, z1.x * z2.y + z1.y * z2.x);
 }
 
 float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
@@ -23,22 +28,27 @@ float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
 	for (n = 0; n < 30; n++)
 	{
 		//经典曼德勃特迭代
-		//z = float2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + z0;
+		//z = ComplexMul(z, z) + z0;
 		//if (length(z) > 2 || color.z + 0.03 * n >= 1)
 		//	break;
 		
 		//玫瑰分形！z^2 - z + z0
-		//z = float2(z.x * z.x - z.y * z.y - z.x, 2 * z.x * z.y - z.y) + z0; 
+		//z = ComplexMul(z, z) - z + z0;
 		//if (length(z) > 2 || color.z + 0.03 * n >= 1)
 		//	break;
 		
 		//翅膀分形！
-		//z = float2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + z0 - exp(z.x) * float2(cos(z.y), sin(z.y));
+		//z = ComplexMul(z,z) + z0 - exp(z.x) * float2(cos(z.y), sin(z.y));
 		//if (length(z) > 64 || color.z + 0.001 * n >= 1)
 		//	break;
 		
-		//二次分形！  z^2 + uM * z + z0
-		z = float2(z.x * (z.x + uM.x) - z.y * (z.y + uM.y), z.x * (z.y + uM.y) + z.y * (z.x + uM.x)) + z0;
+		//二次分形！ z ^ 2 + uM * z + z0
+		//z = ComplexMul(z, z + uM) + z0;
+		//if (length(z) > 2 || color.z + 0.03 * n >= 1)
+		//	break;
+		
+		//二次分形2！  z^2 * uM  + z0
+		z = ComplexMul(ComplexMul(z, z) + z0, uM);
 		if (length(z) > 2 || color.z + 0.03 * n >= 1)
 			break;
 	}

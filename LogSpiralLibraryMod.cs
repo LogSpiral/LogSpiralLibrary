@@ -19,7 +19,7 @@ namespace LogSpiralLibrary
         //↑但是很不幸的是，都丢失.fx了，等阿汪做出第三代吧
         private static Effect shaderSwooshUL;//第三代，目前有问题
 
-        private static Effect distortEffect;
+        private static Effect renderEffect;
         private static Effect finalFractalTailEffect;
         private static Effect colorfulEffect;
         private static Effect eightTrigramsFurnaceEffect;//第一代抛物激光effect，下次做第二代
@@ -27,13 +27,13 @@ namespace LogSpiralLibrary
         private static Effect vertexDrawEX;
         private static Effect transformEffect;
         private static Effect transformEffectEX;
-
-
+        private static Effect fadeEffect;
+        private static Effect airDistortEffect;
         public static Effect ItemEffect => itemEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ItemGlowEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEffect => shaderSwooshEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ShaderSwooshEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEX => shaderSwooshEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshUL => shaderSwooshUL ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectUL", AssetRequestMode.ImmediateLoad).Value;
-        public static Effect DistortEffect => distortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/DistortEffect", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect RenderEffect => renderEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/RenderEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect FinalFractalTailEffect => finalFractalTailEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/FinalFractalTailEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ColorfulEffect => colorfulEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ColorfulEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect EightTrigramsFurnaceEffect => eightTrigramsFurnaceEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/EightTrigramsFurnaceEffect", AssetRequestMode.ImmediateLoad).Value;
@@ -41,8 +41,8 @@ namespace LogSpiralLibrary
         public static Effect VertexDrawEX => vertexDrawEX ??= ModContent.Request<Effect>("StoneOfThePhilosophers/Effects/VertexDrawEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect TransformEffect => transformEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/TransformEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect TransformEffectEX => transformEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/TransformEffectEX", AssetRequestMode.ImmediateLoad).Value;
-
-
+        public static Effect AirDistortEffect => airDistortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/AirDistortEffect", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect FadeEffect => fadeEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/FadeEffect", AssetRequestMode.ImmediateLoad).Value;
         #endregion
 
         #region Textures
@@ -60,6 +60,8 @@ namespace LogSpiralLibrary
         /// <br>11:车万激光</br>
         /// <br>12:压扁的白色箭头？？</br>
         /// <br>13-17:有些来着原版的Extra，有些是我自己瞎画，给最终分形那些用</br>
+        /// <br>18:高斯模糊用加权贴图</br>
+        /// <br>19:光玉</br>
         /// </summary>
         public static Asset<Texture2D>[] Misc;
         //public static string BaseTex = nameof(BaseTex);
@@ -126,7 +128,7 @@ namespace LogSpiralLibrary
             LoadTextures(ref Misc, nameof(Misc));
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
-            Terraria.On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
+            On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
             base.Load();
         }
 
@@ -164,7 +166,7 @@ namespace LogSpiralLibrary
             Instance = null;
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
-            Terraria.On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
+            On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
             base.Unload();
         }
         private static void LoadTextures(ref Asset<Texture2D>[] assets, string textureName)

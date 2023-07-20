@@ -487,7 +487,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     scale = 1.3f;
                     Projectile.GetWhipSettings(proj, out float timeToFlyOut, out int _, out float _);
                     float t = proj.ai[0] / timeToFlyOut;
-                    float amount = Terraria.Utils.GetLerpValue(0.1f, 0.7f, t, clamped: true) * Terraria.Utils.GetLerpValue(0.9f, 0.7f, t, clamped: true);
+                    float amount = GetLerpValue(0.1f, 0.7f, t, clamped: true) * GetLerpValue(0.9f, 0.7f, t, clamped: true);
                     scale = MathHelper.Lerp(0.5f, 1.5f, amount);
                 }
 
@@ -667,7 +667,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
 
             ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
             //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(0);//-(float)Main.time * 0.06f
@@ -931,7 +931,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -969,7 +969,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = colorBar;
@@ -1058,7 +1058,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -1096,7 +1096,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.Textures[2] = heatMap;
@@ -1184,7 +1184,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1212,7 +1212,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1276,7 +1276,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-                effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+                effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = style;
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1328,7 +1328,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             //effect.Parameters["maxFactor"].SetValue(maxFactor);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1377,7 +1377,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1424,7 +1424,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);
+            effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1842,7 +1842,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
+            ItemEffect.Parameters["uTime"].SetValue((float)ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -1914,7 +1914,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * projection);
-            ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f % 1);
+            ItemEffect.Parameters["uTime"].SetValue((float)ModTime / 60f % 1);
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = effectTex;
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
@@ -2345,7 +2345,10 @@ namespace LogSpiralLibrary.CodeLibrary
             var g = MathF.Sin(MathHelper.TwoPi * t) / MathHelper.TwoPi + t - .5f;
             return MathHelper.Lerp(f, g, Math.Abs(f - g) * 2);
         }
-
+        public static float SmoothSymmetricFactor(this float value, float whenGetMax)
+        {
+            return MathHelper.SmoothStep(0, 1, SymmetricalFactor(value, 0.5f, whenGetMax));
+        }
         /// <summary>
         /// 阿汪超喜欢用的插值函数，获得一个先上后下的插值
         /// </summary>
@@ -2376,10 +2379,10 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="value">丢进去的变量，取值范围一般是[0,maxTimeWhen]</param>
         /// <param name="maxTimeWhen">什么时候插值结束呢</param>
         /// <returns>自己画函数图像去，真的像是一个小山丘一样(</returns>
-        public static float HillFactor2(this float value, float maxTimeWhen = 1)
+        public static float HillFactor2(this float value, float maxTimeWhen = 1) => MathF.Sqrt(value / maxTimeWhen).CosFactor(1);
+        public static float CosFactor(this float value, float maxTimeWhen = 1)
         {
-            //return Clamp((center - Math.Abs(center - value)) / center / whenGetMax, 0, 1);
-            return (1 - (float)Math.Cos(MathHelper.TwoPi * Math.Sqrt(value / maxTimeWhen))) * 0.5f;
+            return (1 - (float)Math.Cos(MathHelper.TwoPi * value / maxTimeWhen)) * 0.5f;
         }
         /// <summary>
         /// 阿汪超喜欢用的插值函数，获得一个先迅速增加再慢慢变小的插值
@@ -3024,7 +3027,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void ProjFrameChanger(this Projectile projectile, int frames, int time)
         {
             Main.projFrames[projectile.type] = frames;
-            projectile.frame += (int)LogSpiralLibraryMod.ModTime % time == 0 ? 1 : 0;
+            projectile.frame += (int)ModTime % time == 0 ? 1 : 0;
             projectile.frame %= frames;
         }
         public static bool ZoneForest(this Player player)
@@ -3820,7 +3823,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Vector2 worldPos = new Vector2(mountedCenter.X + 15, mountedCenter.Y + 15);
                 Vector2 size = FontAssets.MouseText.Value.MeasureString(name);
                 Vector2 texPos = worldPos + new Vector2(-size.X * 0.5f, name.Length) - Main.screenPosition;
-                Terraria.Utils.DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, name, texPos.X, texPos.Y, color1, color2, Vector2.Zero);
+                DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, name, texPos.X, texPos.Y, color1, color2, Vector2.Zero);
             }
 
         }

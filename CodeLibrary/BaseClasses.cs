@@ -1,4 +1,5 @@
 ﻿//using CoolerItemVisualEffect;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,7 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 Projectile.timeLeft = 2;
                 Projectile.ai[0]++;
-                Projectile.velocity = Terraria.Utils.SafeNormalize(Main.MouseWorld - HeldCenter, Vector2.One);
+                Projectile.velocity = Utils.SafeNormalize(Main.MouseWorld - HeldCenter, Vector2.One);
                 Projectile.rotation = Projectile.velocity.ToRotation();
                 Projectile.ai[1] = Player.controlUseItem ? 1 : 0;
                 if (Player.controlUseItem)
@@ -195,7 +196,7 @@ namespace LogSpiralLibrary.CodeLibrary
             projectile.penetrate = -1;
             projectile.scale = 1f;
             //projectile.alpha = 255;
-            projectile.hide = false;
+            projectile.hide = true;
             projectile.ownerHitCheck = true;
             projectile.DamageType = DamageClass.Melee;
             projectile.tileCollide = false;
@@ -382,7 +383,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bool predraw = false;
             if (!RedrawSelf)
                 predraw = base.PreDraw(ref lightColor);
-            if (!WhenVertexDraw || LogSpiralLibraryMod.ShaderSwooshEX == null || Main.GameViewMatrix == null || LogSpiralLibraryMod.DistortEffect == null) goto mylable; //
+            if (!WhenVertexDraw || ShaderSwooshEX == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylable; //
             var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
 
 
@@ -656,7 +657,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
@@ -681,7 +682,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.SamplerStates[0] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
-                Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
+                Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
                 ShaderSwooshEX.CurrentTechnique.Passes[passCount].Apply();
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
@@ -701,6 +702,7 @@ namespace LogSpiralLibrary.CodeLibrary
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(false);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
                     ShaderSwooshEX.Parameters["distortScaler"].SetValue(useDistort.Range);
+                    //sb.Draw(AniTex[8].Value, new Vector2(200, 200), Color.White);
                     Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
                     Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
                     Main.graphics.GraphicsDevice.Textures[2] = itemTex;
@@ -710,7 +712,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     Main.graphics.GraphicsDevice.SamplerStates[0] = sampler;
                     Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
                     Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
-                    Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
+                    Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
                     //var passCount = 0;
 
                     //switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
@@ -739,27 +741,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(0);
 
 
-                DistortEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-                DistortEffect.Parameters["tex0"].SetValue(render);
-                if (useBloom.Range != 0)
-                {
-                    DistortEffect.Parameters["position"].SetValue(new Vector2(useBloom.M, useBloom.Range));
-                    DistortEffect.Parameters["tier2"].SetValue(useBloom.Intensity);
-                    for (int n = 0; n < 1; n++)
-                    {
-                        gd.SetRenderTarget(Main.screenTargetSwap);
-                        gd.Clear(Color.Transparent);
-                        DistortEffect.CurrentTechnique.Passes[7].Apply();
-                        sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-
-
-                        gd.SetRenderTarget(Main.screenTarget);
-                        gd.Clear(Color.Transparent);
-                        DistortEffect.CurrentTechnique.Passes[6].Apply();
-                        sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    }
-                }
+                //DistortEffect.Parameters["tex0"].SetValue(render);
                 if (useDistort.director != default)
                 {
                     //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(new Vector2(useDistort.M, useDistort.Range));
@@ -780,10 +762,17 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个
                     gd.Clear(Color.Transparent);//清空
                                                 //Vector2 direct = (instance.swooshFactorStyle == SwooshFactorStyle.每次开始时决定系数 ? modPlayer.kValue : ((modPlayer.kValue + modPlayer.kValueNext) * .5f)).ToRotationVector2() * -0.1f * fac.SymmetricalFactor2(0.5f, 0.2f) * instance.distortFactor;//(u + v)
-                    DistortEffect.Parameters["offset"].SetValue(useDistort.director);//设置参数时间
-                    DistortEffect.Parameters["invAlpha"].SetValue(0);
-                    DistortEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
-                    DistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
+                                                //RenderEffect.Parameters["offset"].SetValue(useDistort.director);//设置参数时间
+                                                //RenderEffect.Parameters["invAlpha"].SetValue(0);
+                                                //RenderEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                                                //RenderEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
+                    Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
+                    AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+                    AirDistortEffect.Parameters["strength"].SetValue(.0005f);
+                    AirDistortEffect.Parameters["rotation"].SetValue(0);
+                    AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                    AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
+
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
@@ -792,6 +781,43 @@ namespace LogSpiralLibrary.CodeLibrary
 
                     //Main.spriteBatch.Begin(SpriteSortMode.Immediate, alphaBlend ? BlendState.NonPremultiplied : BlendState.Additive, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
                     //Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
+                    //sb.End();
+                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                }
+                if (useBloom.Range != 0)
+                {
+                    RenderEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+
+                    RenderEffect.Parameters["position"].SetValue(new Vector2(useBloom.M, useBloom.Range));
+                    RenderEffect.Parameters["tier2"].SetValue(useBloom.Intensity);
+                    RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
+                    for (int n = 0; n < 2; n++)
+                    {
+                        //gd.SetRenderTarget(Main.screenTargetSwap);
+                        //gd.Clear(Color.Transparent);
+                        //DistortEffect.CurrentTechnique.Passes[9].Apply();
+                        //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+
+
+
+                        //gd.SetRenderTarget(Main.screenTarget);
+                        //gd.Clear(Color.Transparent);
+                        //DistortEffect.CurrentTechnique.Passes[8].Apply();
+                        //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                        gd.SetRenderTarget(Instance.Render_AirDistort);
+                        RenderEffect.Parameters["tex0"].SetValue(render);
+                        gd.Clear(Color.Transparent);
+                        RenderEffect.CurrentTechnique.Passes[9].Apply();
+                        sb.Draw(render, Vector2.Zero, Color.White);
+
+
+
+                        gd.SetRenderTarget(render);
+                        RenderEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                        gd.Clear(Color.Transparent);
+                        RenderEffect.CurrentTechnique.Passes[8].Apply();
+                        sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                    }
                     sb.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 }
@@ -823,16 +849,16 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.SetRenderTarget(Main.screenTargetSwap);
                     gd.Clear(Color.Transparent);
                     Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                    DistortEffect.CurrentTechnique.Passes[1].Apply();
-                    DistortEffect.Parameters["tex0"].SetValue(render);
-                    DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                    DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                    DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                    DistortEffect.Parameters["position"].SetValue(useMask.offset);
-                    DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                    DistortEffect.Parameters["inverse"].SetValue(useMask.inverse);
+                    RenderEffect.CurrentTechnique.Passes[1].Apply();
+                    RenderEffect.Parameters["tex0"].SetValue(render);
+                    RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
+                    RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
+                    RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
+                    RenderEffect.Parameters["position"].SetValue(useMask.offset);
+                    RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
+                    RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
+                    RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
+                    RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
 
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                     gd.SetRenderTarget(Main.screenTarget);
@@ -849,12 +875,13 @@ namespace LogSpiralLibrary.CodeLibrary
                 //gd.SetRenderTarget(Main.screenTarget);
                 //gd.Clear(Color.Transparent);
                 //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                gd.SetRenderTarget(Main.screenTarget);
                 sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                 if (useMask.fillTex == null)
                 {
                     //sb.End();
                     //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    Main.instance.GraphicsDevice.BlendState = LogSpiralLibraryMod.AllOne;
+                    Main.instance.GraphicsDevice.BlendState = AllOne;
                     sb.Draw(render, Vector2.Zero, Color.White);
                     Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
                     //sb.End();
@@ -882,7 +909,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
                 ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)LogSpiralLibraryMod.ModTime * 0.03f);//-(float)Main.time * 0.06f
+                ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshEX.Parameters["gather"].SetValue(true);
@@ -905,7 +932,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.SamplerStates[0] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
-                Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
+                Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
                 ShaderSwooshEX.CurrentTechnique.Passes[passCount].Apply();
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);

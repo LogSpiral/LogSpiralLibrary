@@ -1,47 +1,7 @@
-﻿//sampler uImage0 : register(s0);
-//sampler uImage1 : register(s1);
-//sampler uImage2 : register(s2);
-//float uTime;
-//float4x4 uTransform;
-//float2 unit;
-//struct VSInput 
-//{
-//	float2 Pos : POSITION0;
-//	float4 Color : COLOR0;
-//	float3 Texcoord : TEXCOORD0;
-//};
-//struct PSInput 
-//{
-//	float4 Pos : SV_POSITION;
-//	float4 Color : COLOR0;
-//	float3 Texcoord : TEXCOORD0;
-//};
-//float4 PixelShaderFunction(PSInput input) : COLOR0
-//{
-//	return tex2D(uImage0, input.Color.rg + unit * input.Texcoord.z * tex2D(uImage1, input.Texcoord.xy).r * tex2D(uImage2, input.Texcoord.xy + float2(uTime, 0)).r);
-//}
-//PSInput VertexShaderFunction(VSInput input)
-//{
-//	PSInput output;
-//	output.Color = input.Color;
-//	output.Texcoord = input.Texcoord;
-//	output.Pos = mul(float4(input.Pos, 0, 1), uTransform);
-//	return output;
-//}
+﻿sampler uImage0 : register(s0); //背景
+sampler uImage2 : register(s1); //辅助贴图
 
-
-//technique Technique1 
-//{
-//	pass Distort
-//	{
-//		VertexShader = compile vs_2_0 VertexShaderFunction();
-//		PixelShader = compile ps_2_0 PixelShaderFunction();
-//	}
-//}
-sampler uImage0 : register(s0);
-sampler uImage2 : register(s1);
-
-texture2D tex0;
+texture2D tex0; //画到rendertarget2D上的内容
 sampler2D uImage1 = sampler_state
 {
 	Texture = <tex0>;
@@ -89,6 +49,7 @@ float2 position;
 float2 ImageSize;
 bool lightAsAlpha;
 bool inverse;
+//超过阈值替换纹理
 float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 {
 	float4 c = tex2D(uImage1, coords);
@@ -97,7 +58,9 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 		float v = getValue(c) * c.a;
 		if (inverse)
 			v = 1 - v;
-		if (v < invAlpha)
+		if (v < invAlpha) 
+		//此处invAlpha只是作为一个参数使用，不是字面意思
+		//小于invAlpha的会被替换成颜色插值
 		{
 			if (lightAsAlpha)
 				return tex2D(uImage0, coords) + maskGlowColor * maskGlowColor.a * v / invAlpha * float4(1, 1, 1, v);
@@ -134,6 +97,11 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 //	return color;
 //}
 float gauss[7] = { 0.05, 0.1, 0.24, 0.4, 0.24, 0.1, 0.05 };
+//此处几个全局变量都不是字面意义
+//position实际上是两个float，阈值和步长
+//offset 屏幕大小
+//tier2 亮度
+//x方向模糊
 float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
@@ -149,6 +117,7 @@ float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
+//y方向模糊
 float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
@@ -188,6 +157,40 @@ float4 PSFunction_BloomY_Weak(float2 coords : TEXCOORD0) : COLOR0
 		float2 v = float2(0, n);
 		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
 		if (dot(_color, 0.25) > position.x && dot(_color, 0.25) < 0.9)
+		{
+			color += _color * gauss[n + 3] * tier2;
+		}
+	}
+	return color;
+}
+float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
+{
+	float2 vec = coords;
+	float4 color = tex2D(uImage0, vec);
+	if (dot(color, 0.25) > invAlpha)
+		return color;
+	for (int n = -3; n <= 3; n++)
+	{
+		float2 v = float2(n, 0);
+		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
+		if (dot(_color, 0.25) > position.x)
+		{
+			color += _color * gauss[n + 3] * tier2;
+		}
+	}
+	return color;
+}
+float4 PSFunction_BloomY_New(float2 coords : TEXCOORD0) : COLOR0
+{
+	float2 vec = coords;
+	float4 color = tex2D(uImage0, vec);
+	if (dot(color, 0.25) > invAlpha)
+		return color;
+	for (int n = -3; n <= 3; n++)
+	{
+		float2 v = float2(0, n);
+		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
+		if (dot(_color, 0.25) > position.x)
 		{
 			color += _color * gauss[n + 3] * tier2;
 		}
@@ -258,5 +261,13 @@ technique Technique1
 	pass BloomEffectY_Weak
 	{
 		PixelShader = compile ps_2_0 PSFunction_BloomY_Weak();
+	}
+	pass BloomEffectX_New
+	{
+		PixelShader = compile ps_2_0 PSFunction_BloomX_New();
+	}
+	pass BloomEffectY_New
+	{
+		PixelShader = compile ps_2_0 PSFunction_BloomY_New();
 	}
 }

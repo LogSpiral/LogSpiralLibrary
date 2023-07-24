@@ -185,6 +185,27 @@ float4 PixelShaderFunction_Tooth(float2 coord : TEXCOORD0, float4 color : COLOR0
 	float y = coord.y + factor2;
 	return tex2D(uImage0, float2(x, y)) * color;
 }
+float4 PixelShaderFunction_Spear(float2 coord : TEXCOORD0, float4 color : COLOR0) : COLOR0
+{
+	float targetWidth = 0;
+	float f = coord.x * 8;
+	if (f > 5.5)
+		targetWidth = 2.6 + 52 / (5 * f - 60);
+	else if (f > 3.5)
+		targetWidth = 1;
+	else if (f > 2)
+		targetWidth = 0.66 + 0.8333 / (f - 1);
+	else if (f > 1)
+		targetWidth = 0.5 + 1 / (3 - f);
+	else
+		targetWidth = f;
+	targetWidth *= .5f;
+	float y = GetLerpValue(0.5 - targetWidth, 0.5 + targetWidth, coord.y);
+	if (y != saturate(y))
+		return float4(0, 0, 0, 0);
+	return tex2D(uImage0, float2(coord.x, y)) * color;
+}
+
 technique Technique1
 {
 	pass Gapped
@@ -218,6 +239,10 @@ technique Technique1
 	pass Tooth
 	{
 		PixelShader = compile ps_3_0 PixelShaderFunction_Tooth();
+	}
+	pass Spear
+	{
+		PixelShader = compile ps_3_0 PixelShaderFunction_Spear();
 	}
 }
 

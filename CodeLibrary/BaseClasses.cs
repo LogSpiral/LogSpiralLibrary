@@ -336,6 +336,9 @@ namespace LogSpiralLibrary.CodeLibrary
     }
     public abstract class VertexHammerProj : HammerProj
     {
+        BloomEffectInfo useBloom = default;
+        AirDistortEffectInfo useDistort = default;
+        MaskEffectInfo useMask = default;
         public override float Rotation => base.Rotation;
         public virtual CustomVertexInfo[] CreateVertexs(Vector2 drawCen, float scaler, float startAngle, float endAngle, float alphaLight, ref int[] whenSkip)
         {
@@ -357,8 +360,8 @@ namespace LogSpiralLibrary.CodeLibrary
             return bars;
         }
         public virtual Color VertexColor(float time) => Color.White;
-        public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap,ref int passCount) { }
-        public virtual void RenderInfomation(ref (float M, float Intensity, float Range) useBloom, ref (float M, float Range, Vector2 director) useDistort, ref (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask) { }
+        public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap, ref int passCount) { }
+        public virtual void RenderInfomation(ref BloomEffectInfo useBloom, ref AirDistortEffectInfo useDistort, ref MaskEffectInfo useMask) { }
         public virtual bool RedrawSelf => false;
         public virtual bool WhenVertexDraw => !Charging && Charged;
         /// <summary>
@@ -425,14 +428,11 @@ namespace LogSpiralLibrary.CodeLibrary
             int indexOfGreyTex = 7;
             float endAngle = Player.direction == -1 ? MathHelper.Pi / 8 : (-MathHelper.PiOver2 - MathHelper.Pi / 8);
             bool useHeatMap = HeatMap != null;
-            (float M, float Intensity, float Range) useBloom = default;
-            (float M, float Range, Vector2 director) useDistort = default;
-            (Texture2D fillTex, Vector2 texSize, Color glowColor, Color boundColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) useMask = default;
-            var passCount = 3;
 
-            VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap,ref passCount);
-            if (useHeatMap) passCount = 2;
             RenderInfomation(ref useBloom, ref useDistort, ref useMask);
+            var passCount = 3;
+            VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap, ref passCount);
+            if (useHeatMap) passCount = 2;
             int[] whenSkip = new int[0];
             endAngle = Player.gravDir == -1 ? MathHelper.PiOver2 - endAngle : endAngle;
             CustomVertexInfo[] bars = CreateVertexs(drawCen, scaler, Player.gravDir == -1 ? MathHelper.PiOver2 - Rotation : Rotation, endAngle, additive ? 0.5f : Lighting.GetColor((projCenter / 16).ToPoint().X, (projCenter / 16).ToPoint().Y).R / 255f * .5f, ref whenSkip);
@@ -507,7 +507,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //    case ConfigurationSwoosh.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
             //    case ConfigurationSwoosh.SwooshColorType.单向渐变: passCount = 4; break;
             //}
-            if ((useBloom.Range != 0 || useDistort.director != default || useMask.fillTex != null) && (Lighting.Mode == Terraria.Graphics.Light.LightMode.White || Lighting.Mode == Terraria.Graphics.Light.LightMode.Color) && Main.WaveQuality != 0)
+            if ((useBloom.Active || useDistort.Active || useMask.Active) && LogSpiralLibraryMod.CanUseRender)
             {
                 #region 旧版
 
@@ -667,7 +667,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
                 //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
                 ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity);
-                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
+                ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1f);
                 ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(true);
 
 
@@ -688,7 +688,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
                 Main.graphics.GraphicsDevice.RasterizerState = originalState;
 
-                if (useDistort.director != default)
+                if (useDistort.Active)
                 {
                     sb.End();
                     gd.SetRenderTarget(Instance.Render_AirDistort);
@@ -701,7 +701,7 @@ namespace LogSpiralLibrary.CodeLibrary
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(false);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-                    ShaderSwooshEX.Parameters["distortScaler"].SetValue(useDistort.Range);
+                    ShaderSwooshEX.Parameters["distortScaler"].SetValue(useDistort.distortScaler);
                     //sb.Draw(AniTex[8].Value, new Vector2(200, 200), Color.White);
                     Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
                     Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
@@ -725,7 +725,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     ShaderSwooshEX.CurrentTechnique.Passes[passCount].Apply();
                     for (int n = 0; n < triangleList.Length; n++)
                     {
-                        triangleList[n].Position = (triangleList[n].Position - Player.Center) * useDistort.Range + Player.Center;
+                        triangleList[n].Position = (triangleList[n].Position - Player.Center) * useDistort.distortScaler + Player.Center;
                     }
                     Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
                     Main.graphics.GraphicsDevice.RasterizerState = originalState;
@@ -742,7 +742,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
 
                 //DistortEffect.Parameters["tex0"].SetValue(render);
-                if (useDistort.director != default)
+                if (useDistort.Active)
                 {
                     //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(new Vector2(useDistort.M, useDistort.Range));
                     //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useDistort.director);
@@ -784,14 +784,72 @@ namespace LogSpiralLibrary.CodeLibrary
                     //sb.End();
                     //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 }
-                if (useBloom.Range != 0)
+                if (useMask.Active)
+                {
+                    #region MyRegion
+                    //gd.SetRenderTarget(Main.screenTargetSwap);
+                    //gd.Clear(Color.Transparent);
+                    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
+                    //CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[1].Apply();
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(useMask.offset);
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
+                    //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
+                    //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+                    //sb.End();
+                    //gd.SetRenderTarget(Main.screenTarget);
+                    //gd.Clear(Color.Transparent);
+                    //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+                    //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    //sb.End();
+                    #endregion
+                    //Main.NewText("Mask!!");
+                    gd.SetRenderTarget(useBloom.Active ? LogSpiralLibraryMod.Instance.Render_AirDistort : Main.screenTargetSwap);
+                    gd.Clear(Color.Transparent);
+                    Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
+                    RenderEffect.Parameters["tex0"].SetValue(render);
+                    RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
+                    RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
+                    RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
+                    RenderEffect.Parameters["position"].SetValue(useMask.offset);
+                    RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
+                    RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
+                    RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
+                    RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
+                    RenderEffect.CurrentTechnique.Passes[1].Apply();
+
+                    sb.Draw(useBloom.Active ? render : Main.screenTarget, Vector2.Zero, Color.White);
+                    if (!useBloom.Active)
+                    {
+                        gd.SetRenderTarget(Main.screenTarget);
+                        gd.Clear(Color.Transparent);
+                        sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    }
+                    else
+                    {
+                        gd.SetRenderTarget(render);
+                        gd.Clear(Color.Transparent);
+                        sb.Draw(LogSpiralLibraryMod.Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                    }
+                    //else { }
+                    //sb.End();
+                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    //sb.Draw(render, Vector2.Zero, Color.White);
+                }
+                if (useBloom.Active)
                 {
                     RenderEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
 
-                    RenderEffect.Parameters["position"].SetValue(new Vector2(useBloom.M, useBloom.Range));
-                    RenderEffect.Parameters["tier2"].SetValue(useBloom.Intensity);
+                    RenderEffect.Parameters["position"].SetValue(new Vector2(useBloom.threshold, useBloom.range));
+                    RenderEffect.Parameters["tier2"].SetValue(useBloom.intensity);
                     RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
-                    for (int n = 0; n < 2; n++)
+                    RenderEffect.Parameters["uBloomAdditive"].SetValue(useBloom.additive);
+                    for (int n = 0; n < useBloom.times - 1; n++)
                     {
                         //gd.SetRenderTarget(Main.screenTargetSwap);
                         //gd.Clear(Color.Transparent);
@@ -818,66 +876,35 @@ namespace LogSpiralLibrary.CodeLibrary
                         RenderEffect.CurrentTechnique.Passes[8].Apply();
                         sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
                     }
+                    gd.SetRenderTarget(Main.screenTargetSwap);
+                    gd.Clear(Color.Transparent);
+                    RenderEffect.Parameters["tex0"].SetValue(render);
+                    RenderEffect.CurrentTechnique.Passes[9].Apply();
+                    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+
+
+
+                    gd.SetRenderTarget(Main.screenTarget);
+                    gd.Clear(Color.Transparent);
+                    RenderEffect.CurrentTechnique.Passes[8].Apply();
+                    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                     sb.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 }
-                if (useMask.fillTex != null)
+                else
                 {
-                    #region MyRegion
-                    //gd.SetRenderTarget(Main.screenTargetSwap);
-                    //gd.Clear(Color.Transparent);
-                    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                    //CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[1].Apply();
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(useMask.offset);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
                     //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                     //sb.End();
+
+                    ////最后在screenTarget上把刚刚的结果画上
                     //gd.SetRenderTarget(Main.screenTarget);
                     //gd.Clear(Color.Transparent);
-                    //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                    //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    //sb.End();
-                    #endregion
-
-                    gd.SetRenderTarget(Main.screenTargetSwap);
-                    gd.Clear(Color.Transparent);
-                    Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                    RenderEffect.CurrentTechnique.Passes[1].Apply();
-                    RenderEffect.Parameters["tex0"].SetValue(render);
-                    RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                    RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                    RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                    RenderEffect.Parameters["position"].SetValue(useMask.offset);
-                    RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                    RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
-
-                    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+                    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                 }
-
-
-
-                //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                //sb.End();
-
-                ////最后在screenTarget上把刚刚的结果画上
-                //gd.SetRenderTarget(Main.screenTarget);
-                //gd.Clear(Color.Transparent);
-                //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                gd.SetRenderTarget(Main.screenTarget);
-                sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                if (useMask.fillTex == null)
+                if (useBloom.Active || !useMask.Active)
                 {
                     //sb.End();
                     //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -1017,6 +1044,14 @@ namespace LogSpiralLibrary.CodeLibrary
                 //    , null, ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length()) * .5f, _negativeDir: false
                 //    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
                 //modplr.UpdateVertex();
+                var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
+                UltraSwoosh.NewUltraSwoosh(VertexColor, 30, length, Player.Center, LogSpiralLibraryMod.HeatMap[0].Value, false, 0);//HeatMap
+                if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraSwoosh), out var instance) && instance is UltraSwoosh ultra)
+                {
+                    ultra.RenderDrawInfos[0] = useDistort;
+                    ultra.RenderDrawInfos[1] = useMask;
+                    ultra.RenderDrawInfos[2] = useBloom;
+                }
             }
         }
     }
@@ -1276,7 +1311,7 @@ namespace LogSpiralLibrary.CodeLibrary
     /// 简化使用的<see cref = "ModTileEntity"/>
     /// </summary>
     /// <typeparam name="T">对应绑定物块的类型</typeparam>
-    public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile 
+    public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile
     {
         /// <summary>
         /// 必须和tileObjectData那边一样

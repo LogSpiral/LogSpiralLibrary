@@ -15,7 +15,7 @@ float distortScaler;
 bool heatMapAlpha;
 float alphaFactor;
 float3 AlphaVector; //ultra版本新增变量，自己看下面的颜色矩阵√
-
+bool stab; //ultra版本新增变量，打造突刺的感觉
 struct VSInput
 {
 	float2 Pos : POSITION0;
@@ -38,11 +38,29 @@ float getLerpValue(float from, float to, float t, bool clamped = true)
 
 float modifyY(float2 coord)
 {
+	float2 _coord = coord;
+	if (stab)
+	{
+		float targetWidth = 0;
+		float f = coord.x * 8;
+		if (f > 5.5)
+			targetWidth = 2.6 + 52 / (5 * f - 60);
+		else if (f > 3.5)
+			targetWidth = 1;
+		else if (f > 2)
+			targetWidth = 0.66 + 0.8333 / (f - 1);
+		else if (f > 1)
+			targetWidth = 0.5 + 1 / (3 - f);
+		else
+			targetWidth = f;
+		targetWidth *= .5f;
+		_coord.y = getLerpValue(0.5 - targetWidth, 0.5 + targetWidth, coord.y);
+	}
 	float start = 0;
 	float end = 1;
 	if (gather)
 	{
-		start = coord.x;
+		start = _coord.x;
 	}
 	if (distortScaler > 0)
 	{
@@ -51,9 +69,9 @@ float modifyY(float2 coord)
 		//f(0)=f(1)=1 / d，f(0.5) = 1
 		//这里d是扭曲缩放倍数，空气扭曲部分的绘制会比原来的宽d倍，
 		//但是我希望它和正常绘制的两端能连上，于是就有了这个迫真插值
-		end = (1 - (1 - 1 / distortScaler) * pow(2 * coord.x - 1, 2));
+		end = (1 - (1 - 1 / distortScaler) * pow(2 * _coord.x - 1, 2));
 	}
-	return getLerpValue(start, end, coord.y);
+	return getLerpValue(start, end, _coord.y);
 }
 
 float4 weaponColor(float coordy)

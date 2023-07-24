@@ -8,6 +8,7 @@ using static Terraria.Utils;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
+using Terraria;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -23,109 +24,109 @@ namespace LogSpiralLibrary.CodeLibrary
     {
         #region 直接用来绘制的b崽子们
         //不好用，用新的
-    //    public static void DrawShaderTail(SpriteBatch spriteBatch, Projectile projectile, ShaderTailTexture shaderTail = ShaderTailTexture.Fire, ShaderTailStyle tailStyle = ShaderTailStyle.Dust, float Width = 30, ShaderTailMainStyle shaderTailMainStyle = ShaderTailMainStyle.MiddleLine, Vector2 Offset = default, float alpha = 1, bool additive = false)
-    //    {
-    //        //这里有几个我自己定义的枚举类型
-    //        //ShaderTailTexture这个对应的是颜色
-    //        //tailStyle这个是弹幕的动态亮度贴图（？
-    //        //shaderTailMainStyle这个是弹幕的静态亮度贴图（？
-    //        //它们分别对应uImage0 uImage2 uImage1
-    //        List<CustomVertexInfo> bars = new List<CustomVertexInfo>();
+        //    public static void DrawShaderTail(SpriteBatch spriteBatch, Projectile projectile, ShaderTailTexture shaderTail = ShaderTailTexture.Fire, ShaderTailStyle tailStyle = ShaderTailStyle.Dust, float Width = 30, ShaderTailMainStyle shaderTailMainStyle = ShaderTailMainStyle.MiddleLine, Vector2 Offset = default, float alpha = 1, bool additive = false)
+        //    {
+        //        //这里有几个我自己定义的枚举类型
+        //        //ShaderTailTexture这个对应的是颜色
+        //        //tailStyle这个是弹幕的动态亮度贴图（？
+        //        //shaderTailMainStyle这个是弹幕的静态亮度贴图（？
+        //        //它们分别对应uImage0 uImage2 uImage1
+        //        List<CustomVertexInfo> bars = new List<CustomVertexInfo>();
 
-    //        // 把所有的点都生成出来，按照顺序
-    //        for (int i = 1; i < projectile.oldPos.Length; ++i)
-    //        {
-    //            if (projectile.oldPos[i] == Vector2.Zero)
-    //            {
-    //                break;
-    //            }
-    //            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, projectile.oldPos[i] - Main.screenPosition,
-    //            //    new Rectangle(0, 0, 1, 1), Color.White, 0f, new Vector2(0.5f, 0.5f), 5f, SpriteEffects.None, 0f);
+        //        // 把所有的点都生成出来，按照顺序
+        //        for (int i = 1; i < projectile.oldPos.Length; ++i)
+        //        {
+        //            if (projectile.oldPos[i] == Vector2.Zero)
+        //            {
+        //                break;
+        //            }
+        //            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, projectile.oldPos[i] - Main.screenPosition,
+        //            //    new Rectangle(0, 0, 1, 1), Color.White, 0f, new Vector2(0.5f, 0.5f), 5f, SpriteEffects.None, 0f);
 
-    //            //int width = 30;
-    //            var normalDir = projectile.oldPos[i - 1] - projectile.oldPos[i];
-    //            normalDir = Vector2.Normalize(new Vector2(-normalDir.Y, normalDir.X));
+        //            //int width = 30;
+        //            var normalDir = projectile.oldPos[i - 1] - projectile.oldPos[i];
+        //            normalDir = Vector2.Normalize(new Vector2(-normalDir.Y, normalDir.X));
 
-    //            var factor = i / (float)projectile.oldPos.Length;
-    //            var color = Color.Lerp(Color.White, Color.Red, factor);//后来发现底下那些if似乎没用（
-    //            if (shaderTail == ShaderTailTexture.Frozen)
-    //            {
-    //                color = Color.Lerp(Color.White, Color.Blue, factor);
-    //            }
-    //            if (shaderTail == ShaderTailTexture.Yellow)
-    //            {
-    //                color = Color.Lerp(Color.White, Color.Yellow, factor);
-    //            }
-    //            if (shaderTail == ShaderTailTexture.White)
-    //            {
-    //                color = Color.Lerp(Color.Black, Color.White, factor);
-    //            }
-    //            var w = 1 - factor;
-    //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, color, new Vector3((float)Math.Sqrt(factor), 1, w * alpha)));//这里还是在截图画图吧
-    //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, color, new Vector3((float)Math.Sqrt(factor), 0, w * alpha)));
-    //        }
+        //            var factor = i / (float)projectile.oldPos.Length;
+        //            var color = Color.Lerp(Color.White, Color.Red, factor);//后来发现底下那些if似乎没用（
+        //            if (shaderTail == ShaderTailTexture.Frozen)
+        //            {
+        //                color = Color.Lerp(Color.White, Color.Blue, factor);
+        //            }
+        //            if (shaderTail == ShaderTailTexture.Yellow)
+        //            {
+        //                color = Color.Lerp(Color.White, Color.Yellow, factor);
+        //            }
+        //            if (shaderTail == ShaderTailTexture.White)
+        //            {
+        //                color = Color.Lerp(Color.Black, Color.White, factor);
+        //            }
+        //            var w = 1 - factor;
+        //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, color, new Vector3((float)Math.Sqrt(factor), 1, w * alpha)));//这里还是在截图画图吧
+        //            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, color, new Vector3((float)Math.Sqrt(factor), 0, w * alpha)));
+        //        }
 
-    //        List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();//这里是三角形的顶点
+        //        List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();//这里是三角形的顶点
 
-    //        if (bars.Count > 2)
-    //        {
+        //        if (bars.Count > 2)
+        //        {
 
-    //            // 按照顺序连接三角形
-    //            triangleList.Add(bars[0]);//等腰直角三角形的底角1的顶点
-    //            var vertex = new CustomVertexInfo((bars[0].Position + bars[1].Position) * 0.5f + Vector2.Normalize(projectile.velocity) * 30, Color.White,
-    //                new Vector3(0, 0.5f, alpha));
-    //            triangleList.Add(bars[1]);//底角2的顶点
-    //            triangleList.Add(vertex);//顶角顶点
-    //            for (int i = 0; i < bars.Count - 2; i += 2)
-    //            {
-    //                triangleList.Add(bars[i]);
-    //                triangleList.Add(bars[i + 2]);
-    //                triangleList.Add(bars[i + 1]);
+        //            // 按照顺序连接三角形
+        //            triangleList.Add(bars[0]);//等腰直角三角形的底角1的顶点
+        //            var vertex = new CustomVertexInfo((bars[0].Position + bars[1].Position) * 0.5f + Vector2.Normalize(projectile.velocity) * 30, Color.White,
+        //                new Vector3(0, 0.5f, alpha));
+        //            triangleList.Add(bars[1]);//底角2的顶点
+        //            triangleList.Add(vertex);//顶角顶点
+        //            for (int i = 0; i < bars.Count - 2; i += 2)
+        //            {
+        //                triangleList.Add(bars[i]);
+        //                triangleList.Add(bars[i + 2]);
+        //                triangleList.Add(bars[i + 1]);
 
-    //                triangleList.Add(bars[i + 1]);
-    //                triangleList.Add(bars[i + 2]);
-    //                triangleList.Add(bars[i + 3]);
-    //            }//每次消耗两个点生成新三角形
-
-
-    //            spriteBatch.End();
-    //            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-    //            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-    //            // 干掉注释掉就可以只显示三角形栅格
-    //            //RasterizerState rasterizerState = new RasterizerState();
-    //            //rasterizerState.CullMode = CullMode.None;
-    //            //rasterizerState.FillMode = FillMode.WireFrame;
-    //            //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
-
-    //            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
-    //            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));//这个矩阵没仔细看，应该是负责把图像丢到三角形栅格中
-
-    //            // 把变换和所需信息丢给shader
-    //            IllusionBoundMod.DefaultEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-    //            IllusionBoundMod.DefaultEffect.Parameters["uTime"].SetValue(-(float)IllusionBoundMod.ModTime * 0.03f);//会动的那个贴图的横向偏移量(就是这个才能让它动起来Main.time
-    //            Main.graphics.GraphicsDevice.Textures[0] = IllusionBoundMod.HeatMap[(int)shaderTail];
-    //            Main.graphics.GraphicsDevice.Textures[1] = IllusionBoundMod.BaseTexes[(int)shaderTailMainStyle];
-    //            Main.graphics.GraphicsDevice.Textures[2] = IllusionBoundMod.AniTexes[(int)tailStyle];
-    //            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
-    //            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
-    //            Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
-    //            //Main.graphics.GraphicsDevice.Textures[0] = TextureAssets.MagicPixel.Value;
-    //            //Main.graphics.GraphicsDevice.Textures[1] = TextureAssets.MagicPixel.Value;
-    //            //Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.MagicPixel.Value;
-    //            /*if (isCyan)
-				//{
-				//	IllusionBoundMod.CleverEffect.CurrentTechnique.Passes["Clever"].Apply();
-				//}*/
-    //            IllusionBoundMod.DefaultEffect.CurrentTechnique.Passes[0].Apply();
+        //                triangleList.Add(bars[i + 1]);
+        //                triangleList.Add(bars[i + 2]);
+        //                triangleList.Add(bars[i + 3]);
+        //            }//每次消耗两个点生成新三角形
 
 
-    //            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList.ToArray(), 0, triangleList.Count / 3);//连接三角形顶点
+        //            spriteBatch.End();
+        //            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        //            RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
+        //            // 干掉注释掉就可以只显示三角形栅格
+        //            //RasterizerState rasterizerState = new RasterizerState();
+        //            //rasterizerState.CullMode = CullMode.None;
+        //            //rasterizerState.FillMode = FillMode.WireFrame;
+        //            //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
 
-    //            Main.graphics.GraphicsDevice.RasterizerState = originalState;
-    //            spriteBatch.End();
-    //            spriteBatch.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-    //        }
-    //    }
+        //            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+        //            var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));//这个矩阵没仔细看，应该是负责把图像丢到三角形栅格中
+
+        //            // 把变换和所需信息丢给shader
+        //            IllusionBoundMod.DefaultEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+        //            IllusionBoundMod.DefaultEffect.Parameters["uTime"].SetValue(-(float)IllusionBoundMod.ModTime * 0.03f);//会动的那个贴图的横向偏移量(就是这个才能让它动起来Main.time
+        //            Main.graphics.GraphicsDevice.Textures[0] = IllusionBoundMod.HeatMap[(int)shaderTail];
+        //            Main.graphics.GraphicsDevice.Textures[1] = IllusionBoundMod.BaseTexes[(int)shaderTailMainStyle];
+        //            Main.graphics.GraphicsDevice.Textures[2] = IllusionBoundMod.AniTexes[(int)tailStyle];
+        //            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+        //            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+        //            Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
+        //            //Main.graphics.GraphicsDevice.Textures[0] = TextureAssets.MagicPixel.Value;
+        //            //Main.graphics.GraphicsDevice.Textures[1] = TextureAssets.MagicPixel.Value;
+        //            //Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.MagicPixel.Value;
+        //            /*if (isCyan)
+        //{
+        //	IllusionBoundMod.CleverEffect.CurrentTechnique.Passes["Clever"].Apply();
+        //}*/
+        //            IllusionBoundMod.DefaultEffect.CurrentTechnique.Passes[0].Apply();
+
+
+        //            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList.ToArray(), 0, triangleList.Count / 3);//连接三角形顶点
+
+        //            Main.graphics.GraphicsDevice.RasterizerState = originalState;
+        //            spriteBatch.End();
+        //            spriteBatch.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        //        }
+        //    }
         public static void DrawProjShadow(this SpriteBatch spriteBatch, Projectile projectile, Color lightColor)
         {
             Texture2D projectileTexture = TextureAssets.Projectile[projectile.type].Value;
@@ -1975,6 +1976,71 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
+        public static void DrawVertexInfo(this IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort, params object[] contextArgument)
+        {
+            if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
+            var newInfos = from info in infos where info != null && info.Active select info;
+            if (newInfos.Count() == 0) return;
+            var newRenderInfos = from info in instance.RenderDrawInfos where info.Active select info;
+            if (newRenderInfos.Count() == 0)
+            {
+                instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                foreach (var info in newInfos) info.Draw(spriteBatch, new EmptyEffectInfo(), contextArgument);
+                instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+            }
+            else
+            {
+                foreach (var renderInfo in instance.RenderDrawInfos)
+                {
+                    instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                    if (graphicsDevice != null)
+                        renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                    foreach (var info in newInfos) info.Draw(spriteBatch, renderInfo, contextArgument);
+                    instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                    if (graphicsDevice != null)
+                        renderInfo.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                }
+            }
+        }
+        public static void DrawVertexInfo<T>(this IEnumerable<T> infos, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort, params object[] contextArgument) where T : VertexDrawInfo
+            => infos.DrawVertexInfo(typeof(T), spriteBatch, graphicsDevice, render, renderAirDistort, contextArgument);
+        public static void UpdateVertexInfo(this VertexDrawInfo[] infos)
+        {
+            foreach (var info in infos)
+            {
+                if (info != null && info.Active)
+                    info.Uptate();
+            }
+        }
+        public static CustomVertexInfo[] CreateTriList(CustomVertexInfo[] source, Vector2 center, float scaler, bool addedCenter = false)
+        {
+            var length = source.Length;
+            CustomVertexInfo[] triangleList = new CustomVertexInfo[3 * length - 6];
+            for (int i = 0; i < length - 2; i += 2)
+            {
+                triangleList[3 * i] = source[i];
+                triangleList[3 * i + 1] = source[i + 2];
+                triangleList[3 * i + 2] = source[i + 1];
+                triangleList[3 * i + 3] = source[i + 1];
+                triangleList[3 * i + 4] = source[i + 2];
+                triangleList[3 * i + 5] = source[i + 3];
+            }
+            for (int n = 0; n < triangleList.Length; n++)
+            {
+                var vertex = triangleList[n];
+                if (addedCenter)
+                {
+                    if (scaler != 1) vertex.Position = (vertex.Position - center) * scaler + center;
+                }
+                else
+                {
+                    if (scaler != 1) vertex.Position *= scaler;
+                    vertex.Position += center;
+                }
+                triangleList[n] = vertex;
+            }
+            return triangleList;
+        }
         public static CustomVertexInfo VertexInScreen(this Vector2 vec, Color color, float light = 1)
         {
             return new CustomVertexInfo(vec, color, new Vector3((vec.X - Main.screenPosition.X) / 1920f, (vec.Y - Main.screenPosition.Y) / 1120f, light));
@@ -2514,7 +2580,7 @@ namespace LogSpiralLibrary.CodeLibrary
     {
         #region 向量
 
-        public static Vector2 Lerp(Vector2 from, Vector2 to, Vector2 t, bool clamp = true) 
+        public static Vector2 Lerp(Vector2 from, Vector2 to, Vector2 t, bool clamp = true)
         {
             Vector2 result = default;
             result.X = MathHelper.Lerp(from.X, to.X, t.X);
@@ -2545,7 +2611,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 result = Vector4.Clamp(result, from, to);
             return result;
         }
-        public static Vector2 GetLerpValue(Vector2 from,Vector2 to,Vector2 t,bool clamped = false) 
+        public static Vector2 GetLerpValue(Vector2 from, Vector2 to, Vector2 t, bool clamped = false)
         {
             return new Vector2(
                 Utils.GetLerpValue(from.X, to.X, t.X, clamped),
@@ -3802,7 +3868,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         #endregion
     }
-    public static class UIMethods 
+    public static class UIMethods
     {
         /// <summary>
         /// 绘制鼠标在某矩形下的悬浮字
@@ -3931,7 +3997,7 @@ namespace LogSpiralLibrary.CodeLibrary
             return list3[index];
         }
     }
-    public static class ArrayMethods 
+    public static class ArrayMethods
     {
         public static List<T> CopyList<T>(this List<T> l)
         {

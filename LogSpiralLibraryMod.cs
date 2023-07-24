@@ -7,6 +7,8 @@ global using Terraria.DataStructures;
 global using Terraria.GameContent;
 using ReLogic.Content;
 using System.Collections.Generic;
+using LogSpiralLibrary.CodeLibrary;
+using System;
 
 namespace LogSpiralLibrary
 {
@@ -135,18 +137,18 @@ namespace LogSpiralLibrary
         private void FilterManager_EndCapture_LSLib(Terraria.Graphics.Effects.On_FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
             if (!CanUseRender) goto label;
-            foreach (var renderDrawing in LogSpiralLibrarySystem.renderBasedDrawings) 
+            foreach (var renderDrawing in LogSpiralLibrarySystem.renderBasedDrawings)
             {
                 try
                 {
                     renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, Render, Render_AirDistort);
                 }
-                catch 
+                catch
                 {
                     goto label;
                 }
             }
-            label:
+        label:
             orig.Invoke(self, finalTexture, screenTarget1, screenTarget2, clearColor);
 
         }
@@ -191,7 +193,7 @@ namespace LogSpiralLibrary
     }
     public abstract class RenderBasedDrawing : ModType
     {
-        protected override void Register()
+        protected sealed override void Register()
         {
             ModTypeLookup<RenderBasedDrawing>.Register(this);
             LogSpiralLibrarySystem.renderBasedDrawings.Add(this);
@@ -212,22 +214,59 @@ namespace LogSpiralLibrary
     }
     public class LogSpiralLibrarySystem : ModSystem
     {
-        public static List<RenderBasedDrawing> renderBasedDrawings;
+        public static List<RenderBasedDrawing> renderBasedDrawings = new List<RenderBasedDrawing>();
+        public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
         public override void OnModLoad()
         {
-            renderBasedDrawings = new List<RenderBasedDrawing>();
+            //renderBasedDrawings = new List<RenderBasedDrawing>();
+            //vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
             base.OnModLoad();
         }
         public static double ModTime;
         public static double ModTime2;
-
         public override void UpdateUI(GameTime gameTime)
         {
             ModTime++;
             ModTime2 += Main.gamePaused ? 0 : 1;
+            //Main.NewText(vertexDrawInfoInstance.Count);
             //Main.NewText(Filters.Scene["CoolerItemVisualEffect:InvertGlass"].GetShader().CombinedOpacity);
         }
+        public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[100];
+        public override void PostUpdateEverything() => UpdateVertexInfo();
+        public static void UpdateVertexInfo() => vertexEffects.UpdateVertexInfo();
     }
+    public class LogSpitalLibraryRenderDrawing : RenderBasedDrawing
+    {
+        static void DrawVertexEffects(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+        {
+            Dictionary<Type, List<VertexDrawInfo>> dict = new();
+            foreach (var instance in LogSpiralLibrarySystem.vertexDrawInfoInstance.Values)
+            {
+                dict.Add(instance.GetType(), new List<VertexDrawInfo>());
+            }
+            foreach (var vertexDraw in LogSpiralLibrarySystem.vertexEffects)
+            {
+                if (vertexDraw != null && vertexDraw.Active && dict.TryGetValue(vertexDraw.GetType(), out var list))
+                {
+                    list.Add(vertexDraw);
+                }
+            }
+            foreach (var pair in dict)
+            {
+                if (pair.Value.Count > 0)
+                    pair.Value.DrawVertexInfo(pair.Key, spriteBatch, graphicsDevice, render, renderAirDistort);
+            }
+        }
+        public override void CommonDrawingMethods(SpriteBatch spriteBatch)
+        {
+            DrawVertexEffects(spriteBatch, null, null, null);
+        }
 
+        public override void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+        {
+            DrawVertexEffects(spriteBatch, graphicsDevice, render, renderAirDistort);
+        }
+
+    }
 
 }

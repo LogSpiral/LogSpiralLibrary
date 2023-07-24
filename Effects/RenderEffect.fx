@@ -163,10 +163,11 @@ float4 PSFunction_BloomY_Weak(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
+bool uBloomAdditive;
 float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
+	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
 	if (dot(color, 0.25) > invAlpha)
 		return color;
 	for (int n = -3; n <= 3; n++)
@@ -183,7 +184,7 @@ float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
 float4 PSFunction_BloomY_New(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
+	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
 	if (dot(color, 0.25) > invAlpha)
 		return color;
 	for (int n = -3; n <= 3; n++)

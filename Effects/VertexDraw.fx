@@ -103,37 +103,37 @@ technique Technique1
 {
 	pass VertexColor // 使用采样图，颜色由传入颜色决定，比较单调
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_VertexColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_VertexColor();
 	}
 	pass HeatMap // 使用采样图，颜色由两份灰度图的叠加进行hsl插值决定
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_HeatMap();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_HeatMap();
 	}
 	pass ColorMap //使用采样图，颜色由纹理坐标决定
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_ColorMap();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_ColorMap();
 	}
 	pass OriginColor // 最简单的模式，单纯的图元变换，颜色乘上传入顶点的
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_OriginColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_OriginColor();
 	}
 	pass OriginColorAddVertexColor // 原来的图图附加上一层顶点色，我会有用到这个模式的一天吗
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_OriginColorAddVertexColor();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_OriginColorAddVertexColor();
 	}
 	pass OriginColorAddHeatMap // 原来的图图附加上一层热度色，我会有用到这个模式的一天吗
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_OriginColorAddHeatMap();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_OriginColorAddHeatMap();
 	}
 	pass OriginColorAddColorMap // 原来的图图附加上一层坐标色，我会有用到这个模式的一天吗
 	{
-		VertexShader = compile vs_2_0 VertexShaderFunction();
-		PixelShader = compile ps_2_0 PixelShaderFunction_OriginColorAddColorMap();
+		VertexShader = compile vs_3_0 VertexShaderFunction();
+		PixelShader = compile ps_3_0 PixelShaderFunction_OriginColorAddColorMap();
 	}
 }

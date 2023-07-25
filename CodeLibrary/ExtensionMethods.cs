@@ -1990,20 +1990,22 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             else
             {
-                foreach (var renderInfo in instance.RenderDrawInfos)
+                foreach (var renderInfo in newRenderInfos)
                 {
-                    instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                    if (graphicsDevice != null)
-                        renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                    foreach (var info in newInfos) info.Draw(spriteBatch, renderInfo, contextArgument);
-                    instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                    if (renderInfo.ReDraw)
+                    {
+                        instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                        if (graphicsDevice != null)
+                            renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                        foreach (var info in newInfos) info.Draw(spriteBatch, renderInfo, contextArgument);
+                        instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+                    }
+
                     if (graphicsDevice != null)
                         renderInfo.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
                 }
             }
         }
-        public static void DrawVertexInfo<T>(this IEnumerable<T> infos, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort, params object[] contextArgument) where T : VertexDrawInfo
-            => infos.DrawVertexInfo(typeof(T), spriteBatch, graphicsDevice, render, renderAirDistort, contextArgument);
         public static void UpdateVertexInfo(this VertexDrawInfo[] infos)
         {
             foreach (var info in infos)

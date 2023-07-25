@@ -808,8 +808,43 @@ namespace LogSpiralLibrary.CodeLibrary
                     //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                     //sb.End();
                     #endregion
-                    //Main.NewText("Mask!!");
-                    gd.SetRenderTarget(useBloom.Active ? LogSpiralLibraryMod.Instance.Render_AirDistort : Main.screenTargetSwap);
+                    #region MyRegion
+                    ////Main.NewText("Mask!!");
+                    //gd.SetRenderTarget(useBloom.Active ? LogSpiralLibraryMod.Instance.Render_AirDistort : Main.screenTargetSwap);
+                    //gd.Clear(Color.Transparent);
+                    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
+                    //RenderEffect.Parameters["tex0"].SetValue(render);
+                    //RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
+                    //RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
+                    //RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
+                    //RenderEffect.Parameters["position"].SetValue(useMask.offset);
+                    //RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
+                    //RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
+                    //RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
+                    //RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
+                    //RenderEffect.CurrentTechnique.Passes[1].Apply();
+                    //sb.Draw(useBloom.Active ? render : Main.screenTarget, Vector2.Zero, Color.White);
+                    //if (!useBloom.Active)
+                    //{
+                    //    gd.SetRenderTarget(Main.screenTarget);
+                    //    gd.Clear(Color.Transparent);
+                    //    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    //}
+                    //else
+                    //{
+                    //    gd.SetRenderTarget(render);
+                    //    gd.Clear(Color.Transparent);
+                    //    sb.Draw(LogSpiralLibraryMod.Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                    //}
+                    ////else { }
+                    ////sb.End();
+                    ////Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    ////sb.Draw(render, Vector2.Zero, Color.White);
+                    #endregion
+                    gd.SetRenderTarget(Main.screenTargetSwap);
+                    gd.Clear(Color.Transparent);
+                    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+                    gd.SetRenderTarget(LogSpiralLibraryMod.Instance.Render_AirDistort);
                     gd.Clear(Color.Transparent);
                     Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
                     RenderEffect.Parameters["tex0"].SetValue(render);
@@ -822,24 +857,22 @@ namespace LogSpiralLibrary.CodeLibrary
                     RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
                     RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
                     RenderEffect.CurrentTechnique.Passes[1].Apply();
+                    sb.Draw(render, Vector2.Zero, Color.White);
 
-                    sb.Draw(useBloom.Active ? render : Main.screenTarget, Vector2.Zero, Color.White);
-                    if (!useBloom.Active)
-                    {
-                        gd.SetRenderTarget(Main.screenTarget);
-                        gd.Clear(Color.Transparent);
-                        sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    }
-                    else
-                    {
-                        gd.SetRenderTarget(render);
-                        gd.Clear(Color.Transparent);
-                        sb.Draw(LogSpiralLibraryMod.Instance.Render_AirDistort, Vector2.Zero, Color.White);
-                    }
-                    //else { }
-                    //sb.End();
-                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    //sb.Draw(render, Vector2.Zero, Color.White);
+                    sb.End();
+                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                    gd.SetRenderTarget(render);
+                    gd.Clear(Color.Transparent);
+                    sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+
+                    gd.SetRenderTarget(Main.screenTarget);
+                    gd.Clear(Color.Transparent);
+                    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+
+                    sb.End();
+                    sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
                 }
                 if (useBloom.Active)
                 {
@@ -904,16 +937,9 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                 }
-                if (useBloom.Active || !useMask.Active)
-                {
-                    //sb.End();
-                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    Main.instance.GraphicsDevice.BlendState = AllOne;
-                    sb.Draw(render, Vector2.Zero, Color.White);
-                    Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
-                    //sb.End();
-                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                }
+                Main.instance.GraphicsDevice.BlendState = AllOne;
+                sb.Draw(render, Vector2.Zero, Color.White);
+                Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             }
             else
             {
@@ -1045,13 +1071,24 @@ namespace LogSpiralLibrary.CodeLibrary
                 //    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
                 //modplr.UpdateVertex();
                 var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
-                UltraSwoosh.NewUltraSwoosh(VertexColor, 30, length, Player.Center, LogSpiralLibraryMod.HeatMap[0].Value, false, 0);//HeatMap
+                UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, MathHelper.Pi, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
                 if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraSwoosh), out var instance) && instance is UltraSwoosh ultra)
                 {
                     ultra.RenderDrawInfos[0] = useDistort;
+                    if (useMask.Active) useBloom.ReDraw = false;
                     ultra.RenderDrawInfos[1] = useMask;
                     ultra.RenderDrawInfos[2] = useBloom;
                 }
+                //var stab = UltraStab.NewUltraStab(VertexColor, 60, length, Player.Center, HeatMap, false, (Main.MouseWorld - Player.Center).ToRotation(), 1, -3, 8, new Vector3(0, 0, 1));
+                //if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraStab), out var _instance) && _instance is UltraStab stab1)
+                //{
+                //    stab1.RenderDrawInfos[0] = useDistort;
+                //    if (useMask.Active) useBloom.ReDraw = false;
+                //    stab1.RenderDrawInfos[1] = useMask;
+                //    stab1.RenderDrawInfos[2] = useBloom;
+                //}
+
+                //Main.NewText(stab == null);
             }
         }
     }

@@ -130,6 +130,14 @@ namespace LogSpiralLibrary.CodeLibrary
             /// </summary>
             void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
             bool Active { get; }
+            /// <summary>
+            /// 是否重绘
+            /// <br>如果为false且不是第一个就不会执行</br>
+            /// <br><see cref="VertexDrawInfo.PreDraw"/></br>
+            /// <br><see cref="IRenderDrawInfo.PreDraw"/></br>
+            /// <br><see cref="VertexDrawInfo.Draw"/></br>
+            /// </summary>
+            bool ReDraw { get; set; }
         }
         protected sealed override void Register()
         {
@@ -179,6 +187,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <see cref="LogSpiralLibraryMod.BaseTex"/>的下标，取值范围为[0,11]
         /// </summary>
         public int baseTexIndex;
+        public BlendState blendState;
         /// <summary>
         /// 顶点数据，存起来不每帧更新降低运算负担
         /// </summary>
@@ -191,7 +200,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="spriteBatch"></param>
         public virtual void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, VertexDrawInfo.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, blendState ?? BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, VertexDrawInfo.TransformationMatrix);
         }
         public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true), 0, VertexInfos.Length - 2);
         /// <summary>
@@ -262,7 +271,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public Vector3 ColorVector;
         public bool normalize;
         public override IRenderDrawInfo[] RenderDrawInfos => _rendeDrawInfos;
-        IRenderDrawInfo[] _rendeDrawInfos = new IRenderDrawInfo[] { new AirDistortEffectInfo(), new BloomEffectInfo(), new MaskEffectInfo() };
+        IRenderDrawInfo[] _rendeDrawInfos = new IRenderDrawInfo[] { new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo() };
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
@@ -290,7 +299,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
         {
             LogSpiralLibraryMod.ShaderSwooshUL.Parameters["gather"].SetValue(gather);
-            if (heatMap == null) 
+            if (heatMap == null)
             {
                 ColorVector = new Vector3(0, 1, 0);
             }
@@ -311,7 +320,8 @@ namespace LogSpiralLibrary.CodeLibrary
     public class UltraStab : MeleeVertexInfo
     {
         #region 参数和属性
-        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[4];
+        //TODO 改成用ps实现
+        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
         #endregion
         #region 生成函数
@@ -335,8 +345,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var effect = vertexEffects[n];
                 if (effect == null || !effect.Active)
                 {
-                    if (effect == null) effect = vertexEffects[n] = new UltraStab();
-
+                    effect = vertexEffects[n] = new UltraStab();
                     if (!effect.Active && effect is UltraStab swoosh)
                     {
                         swoosh.color = colorFunc;
@@ -380,7 +389,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["stab"].SetValue(true);
+            //LogSpiralLibraryMod.ShaderSwooshUL.Parameters["stab"].SetValue(true);
             //graphicsDevice.SetRenderTarget(render);
             //graphicsDevice.Clear(Color.White);
         }
@@ -391,16 +400,35 @@ namespace LogSpiralLibrary.CodeLibrary
             => base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
         public override void Uptate()
         {
-            if (OnSpawn)
+            //if (OnSpawn)
+            //{
+            //    var realColor = Color.White;
+            //    Vector2 offsetVec = 20f * new Vector2(8, 3 / xScaler) * scaler;
+            //    if (negativeDir) offsetVec.Y *= -1;
+            //    VertexInfos[0] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 1, 0.5f));
+            //    VertexInfos[2] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 1, 0.5f));
+            //    offsetVec.Y *= -1;
+            //    VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
+            //    VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 0.5f));
+            //}
+            for (int i = 0; i < 45; i++)
             {
-                var realColor = Color.White;
-                Vector2 offsetVec = 20f * new Vector2(8, 3 / xScaler) * scaler;
+                var f = i / 44f;
+                var num = 1 - factor;
+                var realColor = color.Invoke(f);
+                //realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
+                float width;
+                var t = 8 * f;
+                if (t < 1) width = t;
+                else if (t < 2) width = .5f + 1 / (3 - t);
+                else if (t < 3.5f) width = 0.66f + 5f / (t - 1) / 6f;
+                else if (t < 5.5f) width = 1;
+                else width = 2.6f + 52 / (5 * t - 60);
+                Vector2 offsetVec = scaler / 8 * new Vector2(t, width / xScaler * 2);
                 if (negativeDir) offsetVec.Y *= -1;
-                VertexInfos[0] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 1, 0.5f));
-                VertexInfos[2] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 1, 0.5f));
+                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(1 - f, 1, 0.5f));
                 offsetVec.Y *= -1;
-                VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
-                VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 0.5f));
+                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
             }
             timeLeft--;
         }
@@ -409,7 +437,7 @@ namespace LogSpiralLibrary.CodeLibrary
     public class UltraSwoosh : MeleeVertexInfo
     {
         #region 参数和属性
-        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[60];
+        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
 
         public (float from, float to) angleRange;
@@ -540,11 +568,13 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void Uptate()
         {
             timeLeft--;
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 45; i++)
             {
-                var f = i / 29f;
+                var f = i / 44f;
                 var num = 1 - factor;
-                float theta2 = (1.8375f * MathHelper.Lerp(num, 1f, f) - 1.125f) * MathHelper.Pi;
+                //float theta2 = (1.8375f * MathHelper.Lerp(num, 1f, f) - 1.125f) * MathHelper.Pi;
+                var lerp = f.Lerp(num, 1);
+                float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi + MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
                 Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
@@ -566,6 +596,12 @@ namespace LogSpiralLibrary.CodeLibrary
         /// 不是导演是方向
         /// </summary>
         public Vector2 director;
+        public bool ReDraw 
+        {
+            get => true;
+            set => Main.NewText("这货不需要设置，固定是true的");
+        }
+
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             graphicsDevice.SetRenderTarget(renderAirDistort);
@@ -624,6 +660,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// 翻转亮度决定值
         /// </summary>
         public bool inverse;
+        public bool ReDraw { get; set; } = true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             graphicsDevice.SetRenderTarget(render);
@@ -635,8 +672,10 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            graphicsDevice.SetRenderTarget(renderAirDistort);
+            graphicsDevice.Clear(Color.Transparent);
             Main.graphics.GraphicsDevice.Textures[1] = fillTex;
-            RenderEffect.CurrentTechnique.Passes[1].Apply();
             RenderEffect.Parameters["tex0"].SetValue(render);
             RenderEffect.Parameters["invAlpha"].SetValue(tier1);
             RenderEffect.Parameters["lightAsAlpha"].SetValue(lightAsAlpha);
@@ -646,10 +685,21 @@ namespace LogSpiralLibrary.CodeLibrary
             RenderEffect.Parameters["maskBoundColor"].SetValue(boundColor.ToVector4());
             RenderEffect.Parameters["ImageSize"].SetValue(texSize);
             RenderEffect.Parameters["inverse"].SetValue(inverse);
-            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            //spriteBatch.Draw(render, Vector2.Zero, Color.White);
+            RenderEffect.CurrentTechnique.Passes[1].Apply();
+            spriteBatch.Draw(render, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            graphicsDevice.SetRenderTarget(render);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
+
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
+
             spriteBatch.End();
 
         }
@@ -689,6 +739,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// 是否启动加法模式
         /// </summary>
         public bool additive;
+        public bool ReDraw { get; set; } = true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             graphicsDevice.SetRenderTarget(render);
@@ -705,16 +756,16 @@ namespace LogSpiralLibrary.CodeLibrary
             RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
             for (int n = 0; n < times - 1; n++)
             {
-                graphicsDevice.SetRenderTarget(Instance.Render_AirDistort);
+                graphicsDevice.SetRenderTarget(renderAirDistort);
                 RenderEffect.Parameters["tex0"].SetValue(render);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[9].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(render);
-                RenderEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                RenderEffect.Parameters["tex0"].SetValue(renderAirDistort);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[8].Apply();
-                spriteBatch.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
             }
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
@@ -728,6 +779,11 @@ namespace LogSpiralLibrary.CodeLibrary
             graphicsDevice.Clear(Color.Transparent);
             RenderEffect.CurrentTechnique.Passes[8].Apply();
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            Main.instance.GraphicsDevice.BlendState = AllOne;
+            spriteBatch.Draw(render, Vector2.Zero, Color.White);
+            Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             spriteBatch.End();
 
         }
@@ -749,6 +805,7 @@ namespace LogSpiralLibrary.CodeLibrary
     public struct EmptyEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
         public bool Active => true;
+        public bool ReDraw { get; set; }
 
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {

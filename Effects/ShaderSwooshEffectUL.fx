@@ -222,6 +222,25 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 	}
 	return result;
 }
+//生成法线图
+//float4 PixelShaderFunction_Normal(PSInput input) : COLOR0
+//{
+//	float3 coord = input.Texcoord;
+//	float4 _weaponColor = weaponColor(coord.y);
+//	if (!any(_weaponColor))
+//		return float4(0, 0, 0, 0);
+//	float4 _mapColor = float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz, 1);
+//	//float4 mapColor = tex2D(uImage3, mul(float4(coord, 1) - float4(0.5, 0.5, 0, 0), heatRotation).xy + float2(0.5, 0.5));
+//	float greyValue = getBaseValue(input.Texcoord).r;
+//	float4 pos = input.texcoor
+//	return DirectionToColor();
+//}
+//float4 DirectionToColor(float2 direction)
+//{
+//	direction += float2(1, 1);
+//	direction *= .5f;
+//	return float4(0, direction, 1);
+//}
 
 PSInput VertexShaderFunction(VSInput input)
 {

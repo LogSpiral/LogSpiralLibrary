@@ -615,8 +615,9 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.Misc[18].Value;
             LogSpiralLibraryMod.AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
             LogSpiralLibraryMod.AirDistortEffect.Parameters["strength"].SetValue(.0005f);
-            LogSpiralLibraryMod.AirDistortEffect.Parameters["rotation"].SetValue(director.ToRotation());
+            LogSpiralLibraryMod.AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);
             LogSpiralLibraryMod.AirDistortEffect.Parameters["tex0"].SetValue(renderAirDistort);
+            AirDistortEffect.Parameters["colorOffset"].SetValue(0);
             LogSpiralLibraryMod.AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
             graphicsDevice.SetRenderTarget(Main.screenTarget);
@@ -1029,10 +1030,15 @@ namespace LogSpiralLibrary.CodeLibrary
             #endregion
             #region 背景
             //spriteBatch.Draw(texture, rectangle, new Rectangle(210, 0, 40, 40), Color.White);
-            if (backgroundTexture != null)
+            if (backgroundTexture != null) 
+            {
                 DrawComplexPanel_BackGround(spriteBatch, backgroundTexture, rectangle, backgroundFrame ?? new Rectangle(0, 0, backgroundTexture.Width, backgroundTexture.Height), backgroundUnitSize * scaler, backgroundColor);
-            else
-                DrawComplexPanel_BackGround(spriteBatch, texture, destination, new Vector2(40 * scaler));
+
+            }
+            else 
+            {
+                DrawComplexPanel_BackGround(spriteBatch, texture, rectangle, new Vector2(40 * scaler));
+            }
             #endregion
             #region 四个边框
             DrawComplexPanel_Bound(spriteBatch, texture, new Vector2(left - 28 * clampVec.X, center.Y), rectangle.Height - 24, clampVec.X, -MathHelper.PiOver2, glowEffectColor, glowShakingStrength, yBorderCount, glowHueOffsetRange);

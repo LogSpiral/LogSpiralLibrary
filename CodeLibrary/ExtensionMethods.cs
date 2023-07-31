@@ -646,9 +646,9 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="mainColor">主体颜色</param>
         public static void DrawShaderTail(this SpriteBatch spriteBatch, Projectile projectile, Texture2D heatMap, Texture2D aniTex, Texture2D baseTex, float Width = 30, Vector2 Offset = default, float alpha = 1, bool VeloTri = false, bool additive = false, Color? mainColor = null)
         {
-            var triangleList = projectile.TailVertexFromProj(Offset, Width, alpha, VeloTri, mainColor);
+            var triangleList = projectile.TailVertexFromProj(Offset, Width, alpha, VeloTri, mainColor);//顶点信息准备
             if (triangleList.Length < 3) return;
-            spriteBatch.End();
+            spriteBatch.End();//调用End以结束先前的绘制，将内容画下   第一个参数是立即绘制不缓存信息 第二个是混合模式 第三个采样模式 第四个深度状态?不熟 第五个不熟 第六个Effect，这里传null因为我们自己搞
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             //RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
             //var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
@@ -667,32 +667,33 @@ namespace LogSpiralLibrary.CodeLibrary
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
-            ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-            ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
-
-            ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-            //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(0);//-(float)Main.time * 0.06f
-            ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
-            ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
-            ShaderSwooshEX.Parameters["gather"].SetValue(false);
-            ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-            ShaderSwooshEX.Parameters["distortScaler"].SetValue(0);
-            ShaderSwooshEX.Parameters["alphaFactor"].SetValue(1.5f);
-            ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(true);
-
-
-            Main.graphics.GraphicsDevice.Textures[0] = baseTex;
+            ShaderSwooshUL.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
+            //这里是依次右乘这些矩阵
+            //先是model，它的作用和-Main.screenPosition一样
+            //然后是Main.GameViewMatrix.TransformationMatrix，包括画面缩放翻转之类(我记得有翻转
+            //最后是projection，这个就是最后进行压缩区间的
+            ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
+            ShaderSwooshUL.Parameters["uLighter"].SetValue(0);
+            ShaderSwooshUL.Parameters["checkAir"].SetValue(false);
+            ShaderSwooshUL.Parameters["airFactor"].SetValue(1);
+            ShaderSwooshUL.Parameters["gather"].SetValue(false);
+            ShaderSwooshUL.Parameters["lightShift"].SetValue(0);
+            ShaderSwooshUL.Parameters["distortScaler"].SetValue(0);
+            ShaderSwooshUL.Parameters["alphaFactor"].SetValue(1.5f);
+            ShaderSwooshUL.Parameters["heatMapAlpha"].SetValue(true);
+            ShaderSwooshUL.Parameters["AlphaVector"].SetValue(new Vector3(0, 0, 1));
+            Main.graphics.GraphicsDevice.Textures[0] = baseTex;//传入各种辅助贴图，对应.fx那边的sampler(s[n])
             Main.graphics.GraphicsDevice.Textures[1] = aniTex;
             Main.graphics.GraphicsDevice.Textures[2] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
 
-            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
-            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
+            Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;//设置采样模式，Wrap就是模1，Clamp是夹在[0,1]
+            Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;//不想写跳过就行，上面Begin那里已经设置过了
             Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.PointClamp;
 
-            ShaderSwooshEX.CurrentTechnique.Passes[mainColor == null ? 2 : 0].Apply();
-            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);
+            ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();//启用shader
+            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);//传入绘制信息
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);

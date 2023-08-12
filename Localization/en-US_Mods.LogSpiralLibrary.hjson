@@ -1,0 +1,11 @@
+Items: {
+	FractalSpawnItem: {
+		DisplayName: Fractal Spawn Item
+		Tooltip: ""
+	}
+
+	GeogebraShin: {
+		DisplayName: Geogebra Shin
+		Tooltip: ""
+	}
+}

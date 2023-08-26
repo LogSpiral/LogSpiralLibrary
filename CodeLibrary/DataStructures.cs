@@ -139,7 +139,7 @@ namespace LogSpiralLibrary.CodeLibrary
             /// </summary>
             bool ReDraw { get; set; }
         }
-        protected sealed override void Register()
+        public sealed override void Register()
         {
             ModTypeLookup<VertexDrawInfo>.Register(this);
             LogSpiralLibrarySystem.vertexDrawInfoInstance.Add(this.GetType(), this);

@@ -9,6 +9,9 @@ using ReLogic.Content;
 using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary;
 using System;
+using Terraria.Audio;
+using Microsoft.Xna.Framework.Audio;
+using XPT.Core.Audio.MP3Sharp;
 
 namespace LogSpiralLibrary
 {
@@ -48,10 +51,10 @@ namespace LogSpiralLibrary
         #endregion
 
         #region Textures
-        public static Asset<Texture2D>[] BaseTex;
-        public static Asset<Texture2D>[] AniTex;
-        public static Asset<Texture2D>[] HeatMap;
-        public static Asset<Texture2D>[] MagicZone;
+        public static List<Asset<Texture2D>> BaseTex;
+        public static List<Asset<Texture2D>> AniTex;
+        public static List<Asset<Texture2D>> HeatMap;
+        public static List<Asset<Texture2D>> MagicZone;
         /// <summary>
         /// 杂图，以下是内容表(0-17)
         /// <br>0-2:也许是给物品附魔光泽用的贴图</br>
@@ -65,7 +68,7 @@ namespace LogSpiralLibrary
         /// <br>18:高斯模糊用加权贴图</br>
         /// <br>19:光玉</br>
         /// </summary>
-        public static Asset<Texture2D>[] Misc;
+        public static List<Asset<Texture2D>> Misc;
         //public static string BaseTex = nameof(BaseTex);
         //public static string AniTex = nameof(AniTex);
         //public static string HeatMap = nameof(HeatMap);
@@ -123,14 +126,16 @@ namespace LogSpiralLibrary
         public override void Load()
         {
             Instance = this;
-            LoadTextures(ref BaseTex, nameof(BaseTex));
-            LoadTextures(ref AniTex, nameof(AniTex));
-            LoadTextures(ref HeatMap, nameof(HeatMap));
-            LoadTextures(ref MagicZone, nameof(MagicZone));
-            LoadTextures(ref Misc, nameof(Misc));
+            LoadTextures(nameof(BaseTex), out BaseTex);
+            LoadTextures(nameof(AniTex), out AniTex);
+            LoadTextures(nameof(HeatMap), out HeatMap);
+            LoadTextures(nameof(MagicZone), out MagicZone);
+            LoadTextures(nameof(Misc), out Misc);
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
-            On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib; ;
+            On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
+            //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
+
             base.Load();
         }
 
@@ -171,29 +176,103 @@ namespace LogSpiralLibrary
             On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
             base.Unload();
         }
-        private static void LoadTextures(ref Asset<Texture2D>[] assets, string textureName)
+        private void LoadTextures(string textureName, out List<Asset<Texture2D>> assets)
         {
-            int i = 0;
-            string path = $"LogSpiralLibrary/Images/{textureName}/{textureName}_";
-            while (true)
+            string basePath = $"Images/{textureName}/{textureName}_";
+            assets = new();
+            for (int i = 0; ; i++)
             {
-                if (ModContent.HasAsset($"{path}{i}"))
+                string path = $"{basePath}{i}";
+                if (!RootContentSource.HasAsset(path))
                 {
-                    i++;
-                }
-                else
                     break;
-            }
-            assets = new Asset<Texture2D>[i];
-            for (int n = 0; n < i; n++)
-            {
-                assets[n] = ModContent.Request<Texture2D>($"{path}{n}", AssetRequestMode.ImmediateLoad);
+                }
+                assets.Add(Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad));
             }
         }
+        #region TestCode
+        public static byte[] musicBuffer;
+        private void MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer(Terraria.Audio.On_MP3AudioTrack.orig_ReadAheadPutAChunkIntoTheBuffer orig, MP3AudioTrack self)
+        {
+            //if (NPC.AnyNPCs(ModContent.NPCType<AsraNox>()) && Main.gamePaused && Main.audioSystem is LegacyAudioSystem audioSystem)
+            //{
+            //    audioSystem.PauseAll();
+            //    //var track = audioSystem.AudioTracks[Main.curMusic];
+
+            //    //track.Stop(AudioStopOptions.Immediate);
+            //}
+            //else
+            //{
+
+            //}
+
+            //orig.Invoke(self);
+
+            //var fieldInfo = typeof(MP3AudioTrack).GetField("_mp3Stream", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var fieldInfo2 = typeof(MP3AudioTrack).GetField("_bufferToSubmit", BindingFlags.NonPublic | BindingFlags.Instance);
+            //var fieldInfo3 = typeof(MP3AudioTrack).GetField("_soundEffectInstance", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            //var mp3str = (XPT.Core.Audio.MP3Sharp.MP3Stream)fieldInfo.GetValue(self);
+            //long position = mp3str.Position;
+            //Main.NewText($"Mp3Length更新前:{position}");
+
+            //{
+            //    byte[] bufferToSubmit = (byte[])fieldInfo2.GetValue(self);
+            //    int count = mp3str.Read(bufferToSubmit, 0, bufferToSubmit.Length);
+            //    Main.NewText("读取了" + count);
+            //    if (count < 1)
+            //    {
+            //        self.Stop(AudioStopOptions.Immediate);
+            //    }
+            //    else
+            //    {
+            //        byte[] newbuffer = new byte[bufferToSubmit.Length];
+            //        int offsetor = (int)(ModTime / 10) % 32;
+            //        for (int n = 0; n < bufferToSubmit.Length; n++)
+            //        {
+            //            newbuffer[n] = bufferToSubmit[n];
+            //        }
+            //        musicBuffer = newbuffer;
+            //        ((DynamicSoundEffectInstance)fieldInfo3.GetValue(self)).SubmitBuffer(newbuffer);
+            //    }
+            //}
+            //Main.NewText($"Mp3Length更新后:{mp3str.Position}");
+            //Main.NewText($"Mp3Length差值:{mp3str.Position - position}");
+            //float MyFunc(float t) => MathF.Cos(t * 55);//t取值范围0,1 函数值取值范围-1，1
+            float MyFunc(float t) 
+            {
+                float result = 0f;
+                float a = .5f * (Main.GlobalTimeWrappedHourly / 10f).CosFactor();
+                float b = 5f;//(Main.GlobalTimeWrappedHourly / 10f).CosFactor() *
+                for (int n = 0; n < 20; n++) 
+                {
+                    result += MathF.Pow(a, n) * MathF.Cos(MathF.Pow(b, n) * MathHelper.Pi * t);
+                }
+                return result;
+            }
+
+            byte[] bufferToSubmit = self._bufferToSubmit;
+            if (self._mp3Stream.Read(bufferToSubmit, 0, bufferToSubmit.Length) < 1)
+                self.Stop(AudioStopOptions.Immediate);
+            else
+            {
+                byte[] newbuffer = new byte[bufferToSubmit.Length];
+                float scale = 64;
+                for (int n = 0; n < bufferToSubmit.Length; n++)
+                {
+                    //newbuffer[n] = bufferToSubmit[n];
+                    //newbuffer[n] = (byte)((n / 4096f * 220).CosFactor() * 255);
+                    newbuffer[n] = (byte)(MyFunc(n / 4096f * 4) * scale);
+                }
+                musicBuffer = newbuffer;
+                self._soundEffectInstance.SubmitBuffer(newbuffer);
+            }
+        }
+        #endregion
     }
     public abstract class RenderBasedDrawing : ModType
     {
-        protected sealed override void Register()
+        public sealed override void Register()
         {
             ModTypeLookup<RenderBasedDrawing>.Register(this);
             LogSpiralLibrarySystem.renderBasedDrawings.Add(this);
@@ -234,6 +313,48 @@ namespace LogSpiralLibrary
         public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[100];
         public override void PostUpdateEverything() => UpdateVertexInfo();
         public static void UpdateVertexInfo() => vertexEffects.UpdateVertexInfo();
+        public override void PostDrawInterface(SpriteBatch spriteBatch)
+        {
+            #region MusicBufferTest
+            /*var buffer = LogSpiralLibraryMod.musicBuffer;
+            int length = buffer.Length;
+            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, 1920, 1120), Color.White * .5f);
+            //float rows = 16f;
+            //float screenHeight = 1024f;
+            //for (int n = 0; n < length - 1; n++)
+            //{
+            //    float factor1 = n / (length - 1f);
+            //    float factor2 = (n + 1) / (length - 1f);
+            //    float offsetY = (int)(factor1 * rows) / rows;
+            //    if (offsetY != (int)(factor2 * rows) / rows) continue;
+            //    else offsetY *= screenHeight;
+            //    factor1 = factor1 * rows % 1;
+            //    factor2 = factor2 * rows % 1;
+            //    Main.spriteBatch.DrawLine(new Vector2(factor1 * 1920, buffer[n] * (screenHeight / rows / 255f * .75f) + offsetY), new Vector2(factor2 * 1920, buffer[n + 1] * (screenHeight / rows / 255f * .75f) + offsetY), Color.Red, 4);
+            //}
+            //for (int n = 0; n < length; n++)
+            //{
+            //    float factor = n / (length - 1f);
+            //    int offsetY = buffer[n];
+            //    if (offsetY > 127) offsetY -= 255;
+            //    Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(factor * 1920, 560 + offsetY - 127), new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4, 0, 0);
+            //}
+            for (int n = 0; n < length - 1; n++)
+            {
+                float factor = n / (length - 1f);
+                int offsetY = buffer[n];
+                if (offsetY > 127) offsetY -= 255;
+                var pos1 = new Vector2(factor * 1920, 560 + offsetY - 127);
+                offsetY = buffer[n + 1];
+                if (offsetY > 127) offsetY -= 255;
+                var pos2 = new Vector2(factor * 1920, 560 + offsetY - 127);
+                Main.spriteBatch.DrawLine(pos1, pos2, Color.Red, 4);
+
+            }*/
+            #endregion
+
+            base.PostDrawInterface(spriteBatch);
+        }
     }
     public class LogSpitalLibraryRenderDrawing : RenderBasedDrawing
     {

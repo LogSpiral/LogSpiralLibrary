@@ -1083,15 +1083,21 @@ namespace LogSpiralLibrary.CodeLibrary
                 //    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
                 //modplr.UpdateVertex();
                 var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
-                UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, MathHelper.Pi, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
-                if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraSwoosh), out var instance) && instance is UltraSwoosh ultra)
-                {
-                    ultra.RenderDrawInfos[0] = useDistort;
-                    if (useMask.Active) useBloom.ReDraw = false;
-                    ultra.RenderDrawInfos[1] = useMask;
-                    ultra.RenderDrawInfos[2] = useBloom;
-                }
-                //var stab = UltraStab.NewUltraStab(VertexColor, 60, length, Player.Center, HeatMap, false, (Main.MouseWorld - Player.Center).ToRotation(), 1, -3, 8, new Vector3(0, 0, 1));
+                var u = UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, 0, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
+                //if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraSwoosh), out var instance) && instance is UltraSwoosh ultra)
+                //{
+                //    ultra.RenderDrawInfos[0] = useDistort;
+                //    if (useMask.Active) useBloom.ReDraw = false;
+                //    ultra.RenderDrawInfos[1] = useMask;
+                //    ultra.RenderDrawInfos[2] = useBloom;
+                //}
+                u.GetVertexDrawInfoInstance().blendState = null;
+                u.GetVertexDrawInfoInstance().SetEffectValue = null;
+                if (useMask.Active) useBloom.ReDraw = false;
+                u.ModityAllRenderInfo(useDistort, useMask, useBloom);
+                //var stab = UltraStab.NewUltraStab(VertexColor, 15, length, Player.Center, HeatMap, false, (Main.MouseWorld - Player.Center).ToRotation(), 1, -3, 8, new Vector3(0, 0, 1));
+                //stab.ModityAllRenderInfo(useDistort, useMask, useBloom);
+
                 //if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraStab), out var _instance) && _instance is UltraStab stab1)
                 //{
                 //    stab1.RenderDrawInfos[0] = useDistort;

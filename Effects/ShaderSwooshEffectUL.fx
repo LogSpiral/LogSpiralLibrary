@@ -211,6 +211,8 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 	float4 _mapColor = float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz, 1);
 	//float4 mapColor = tex2D(uImage3, mul(float4(coord, 1) - float4(0.5, 0.5, 0, 0), heatRotation).xy + float2(0.5, 0.5));
 	float greyValue = getBaseValue(input.Texcoord).r;
+	if (!any(greyValue))
+		return float4(0, 0, 0, 0);
 	float4 _heatColor = tex2D(uImage3, greyValue);
 	float3x4 colorMatrix = float3x4(_mapColor, _weaponColor, _heatColor);
 	float4 result = mul(AlphaVector, colorMatrix) * coord.z;

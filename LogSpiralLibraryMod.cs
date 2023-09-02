@@ -67,6 +67,7 @@ namespace LogSpiralLibrary
         /// <br>13-17:有些来着原版的Extra，有些是我自己瞎画，给最终分形那些用</br>
         /// <br>18:高斯模糊用加权贴图</br>
         /// <br>19:光玉</br>
+        /// <br>20:星空</br>
         /// </summary>
         public static List<Asset<Texture2D>> Misc;
         //public static string BaseTex = nameof(BaseTex);
@@ -311,7 +312,10 @@ namespace LogSpiralLibrary
             //Main.NewText(Filters.Scene["CoolerItemVisualEffect:InvertGlass"].GetShader().CombinedOpacity);
         }
         public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[100];
-        public override void PostUpdateEverything() => UpdateVertexInfo();
+        public override void PostUpdateEverything() 
+        {
+            UpdateVertexInfo();
+        }
         public static void UpdateVertexInfo() => vertexEffects.UpdateVertexInfo();
         public override void PostDrawInterface(SpriteBatch spriteBatch)
         {

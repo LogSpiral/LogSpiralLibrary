@@ -149,6 +149,23 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <br>代码的耦合度持续放飞自我</br>
         /// </summary>
         public abstract IRenderDrawInfo[] RenderDrawInfos { get; }
+        public void ModityRenderInfo(IRenderDrawInfo newInfo, int index)
+        {
+            var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+            array[index] = newInfo;
+            OnModifyRenderInfo(array);
+        }
+        public void ModityAllRenderInfo(params IRenderDrawInfo[] newInfos)
+        {
+            var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+            for (int n = 0; n < newInfos.Length; n++)
+                array[n] = newInfos[n];
+            OnModifyRenderInfo(array);
+        }
+        public virtual void OnModifyRenderInfo(IRenderDrawInfo[] infos)
+        {
+
+        }
         /// <summary>
         /// 存在时长
         /// </summary>
@@ -272,6 +289,8 @@ namespace LogSpiralLibrary.CodeLibrary
         public bool normalize;
         public override IRenderDrawInfo[] RenderDrawInfos => _rendeDrawInfos;
         IRenderDrawInfo[] _rendeDrawInfos = new IRenderDrawInfo[] { new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo() };
+        public Action<Effect> SetEffectValue;
+
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
@@ -284,7 +303,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.Parameters["heatRotation"].SetValue(Matrix.Identity);
             effect.Parameters["lightShift"].SetValue(0f);
             effect.Parameters["distortScaler"].SetValue(scaler);
-            effect.Parameters["alphaFactor"].SetValue(2);
+            effect.Parameters["alphaFactor"].SetValue(2f);
             effect.Parameters["heatMapAlpha"].SetValue(true);
             effect.Parameters["stab"].SetValue(false);
 
@@ -295,6 +314,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.AnisotropicClamp;
+            SetEffectValue?.Invoke(effect);
         }
         public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
         {
@@ -316,6 +336,13 @@ namespace LogSpiralLibrary.CodeLibrary
 
             base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
         }
+        public override void OnModifyRenderInfo(IRenderDrawInfo[] infos)
+        {
+            dynamic mask = infos[1];
+            dynamic bloom = infos[2];
+            if (mask.Active) bloom.ReDraw = false;
+            base.OnModifyRenderInfo(infos);
+        }
     }
     public class UltraStab : MeleeVertexInfo
     {
@@ -325,28 +352,22 @@ namespace LogSpiralLibrary.CodeLibrary
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
         #endregion
         #region 生成函数
-        /// <summary>
-        /// 生成新的穿刺于指定数组中
-        /// </summary>
-        public static UltraStab NewUltraStab(
-            Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
-
-        /// <summary>
-        /// 生成新的穿刺于指定数组中
-        /// </summary>
-        public static UltraStab NewUltraStab(
-            Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+        public static T NewUltraStab<T>(
+    Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraStab, new()
+            => NewUltraStab<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+        public static T NewUltraStab<T>(
+    Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraStab, new()
         {
-            UltraStab result = null;
+            T result = null;
             for (int n = 0; n < vertexEffects.Length; n++)
             {
                 var effect = vertexEffects[n];
                 if (effect == null || !effect.Active)
                 {
-                    effect = vertexEffects[n] = new UltraStab();
-                    if (!effect.Active && effect is UltraStab swoosh)
+                    effect = vertexEffects[n] = new T();
+                    if (effect is T swoosh)
                     {
                         swoosh.color = colorFunc;
                         swoosh.timeLeftMax = swoosh.timeLeft = timeLeft;
@@ -367,6 +388,22 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             return result;
         }
+
+
+        /// <summary>
+        /// 生成新的穿刺于指定数组中
+        /// </summary>
+        public static UltraStab NewUltraStab(
+            Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+
+        /// <summary>
+        /// 生成新的穿刺于指定数组中
+        /// </summary>
+        public static UltraStab NewUltraStab(
+            Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+            => NewUltraStab<UltraStab>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的穿刺于<see cref="LogSpiralLibrarySystem.vertexEffects"/>
@@ -426,9 +463,9 @@ namespace LogSpiralLibrary.CodeLibrary
                 else width = 2.6f + 52 / (5 * t - 60);
                 Vector2 offsetVec = scaler / 8 * new Vector2(t, width / xScaler * 2);
                 if (negativeDir) offsetVec.Y *= -1;
-                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(1 - f, 1, 0.5f));
+                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(1 - f, 1, 1));
                 offsetVec.Y *= -1;
-                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
+                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 1));
             }
             timeLeft--;
         }
@@ -464,7 +501,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var effect = vertexEffects[n];
                 if (effect == null || !effect.Active)
                 {
-                    if (effect == null) effect = vertexEffects[n] = new T();
+                    effect = vertexEffects[n] = new T();
 
                     if (!effect.Active && effect is T swoosh)
                     {
@@ -497,38 +534,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
             (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
-        {
-            UltraSwoosh result = null;
-            for (int n = 0; n < vertexEffects.Length; n++)
-            {
-                var effect = vertexEffects[n];
-                if (effect == null || !effect.Active)
-                {
-                    if (effect == null) effect = vertexEffects[n] = new UltraSwoosh();
-
-                    if (!effect.Active && effect is UltraSwoosh swoosh)
-                    {
-                        swoosh.color = colorFunc;
-                        swoosh.timeLeftMax = swoosh.timeLeft = timeLeft;
-                        swoosh.scaler = _scaler;
-                        swoosh.center = center ?? Main.LocalPlayer.Center;
-                        swoosh.heatMap = heat;
-                        swoosh.negativeDir = _negativeDir;
-                        swoosh.rotation = _rotation;
-                        swoosh.xScaler = xscaler;
-                        swoosh.angleRange = angleRange ?? (-1.125f, 0.7125f);
-                        result = swoosh;
-
-                        swoosh.aniTexIndex = _aniIndex;
-                        swoosh.baseTexIndex = _baseIndex;
-                        swoosh.ColorVector = colorVec == default ? new Vector3(0.33f) : colorVec;
-                        swoosh.normalize = normalize;
-                    }
-                    break;
-                }
-            }
-            return result;
-        }
+            => NewUltraSwoosh<UltraSwoosh>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
 
         public static UltraSwoosh NewUltraSwoosh(
     Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
@@ -574,14 +580,14 @@ namespace LogSpiralLibrary.CodeLibrary
                 var num = 1 - factor;
                 //float theta2 = (1.8375f * MathHelper.Lerp(num, 1f, f) - 1.125f) * MathHelper.Pi;
                 var lerp = f.Lerp(num, 1);
-                float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi + MathHelper.Pi;
+                float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
                 Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
                 var realColor = color.Invoke(f);
                 realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
-                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec + adder, realColor, new Vector3(1 - f, 1, 0.5f));
-                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + adder, realColor, new Vector3(0, 0, 0.5f));
+                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec + adder, realColor, new Vector3(1 - f, 1, 1));
+                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + adder, realColor, new Vector3(0, 0, 1));
             }
         }
         #endregion
@@ -596,7 +602,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// 不是导演是方向
         /// </summary>
         public Vector2 director;
-        public bool ReDraw 
+        public bool ReDraw
         {
             get => true;
             set => Main.NewText("这货不需要设置，固定是true的");
@@ -1030,12 +1036,12 @@ namespace LogSpiralLibrary.CodeLibrary
             #endregion
             #region 背景
             //spriteBatch.Draw(texture, rectangle, new Rectangle(210, 0, 40, 40), Color.White);
-            if (backgroundTexture != null) 
+            if (backgroundTexture != null)
             {
                 DrawComplexPanel_BackGround(spriteBatch, backgroundTexture, rectangle, backgroundFrame ?? new Rectangle(0, 0, backgroundTexture.Width, backgroundTexture.Height), backgroundUnitSize * scaler, backgroundColor);
 
             }
-            else 
+            else
             {
                 DrawComplexPanel_BackGround(spriteBatch, texture, rectangle, new Vector2(40 * scaler));
             }

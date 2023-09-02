@@ -9,6 +9,7 @@ using static Terraria.Utils;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
 using Terraria;
+using System.Collections;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -1977,6 +1978,9 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
+        public static T GetVertexDrawInfoInstance<T>() where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[typeof(T)] as T;
+        public static T GetVertexDrawInfoInstance<T>(this T instance) where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[instance.GetType()] as T;
+
         public static void DrawVertexInfo(this IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort, params object[] contextArgument)
         {
             if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
@@ -2012,7 +2016,9 @@ namespace LogSpiralLibrary.CodeLibrary
             foreach (var info in infos)
             {
                 if (info != null && info.Active)
+                {
                     info.Uptate();
+                }
             }
         }
         public static CustomVertexInfo[] CreateTriList(CustomVertexInfo[] source, Vector2 center, float scaler, bool addedCenter = false)
@@ -2582,7 +2588,42 @@ namespace LogSpiralLibrary.CodeLibrary
     public static class VectorMethods
     {
         #region 向量
-
+        public static (Vector2, float) AvgStd(this IEnumerable<Vector2> vectors) => (vectors.Avg(), vectors.Std());
+        /// <summary>
+        /// 求向量的标准差
+        /// </summary>
+        /// <param name="vectors"></param>
+        /// <returns></returns>
+        public static float Std(this IEnumerable<Vector2> vectors) 
+        {
+            Vector2 avg = vectors.Avg();
+            float value = 0f;
+            foreach (var vec in vectors)
+                value += (vec - avg).LengthSquared();
+            value /= vectors.Count();
+            value = MathF.Sqrt(value);
+            return value;
+        }
+        /// <summary>
+        /// 求向量的平均值
+        /// </summary>
+        /// <param name="vectors"></param>
+        /// <returns></returns>
+        public static Vector2 Avg(this IEnumerable<Vector2> vectors) 
+        {
+            Vector2 result = default;
+            foreach (var vec in vectors)
+                result += vec;
+            result /= vectors.Count();
+            return result;
+        }
+        public static float Cos(Vector2 a, Vector2 b, Vector2 center = default)
+        {
+            a -= center;
+            b -= center;
+            if (a == default || b == default) return 0;
+            return Vector2.Dot(a, b) / a.Length() / b.Length();
+        }
         public static Vector2 Lerp(Vector2 from, Vector2 to, Vector2 t, bool clamp = true)
         {
             Vector2 result = default;

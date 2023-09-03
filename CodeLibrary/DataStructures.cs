@@ -205,6 +205,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         public int baseTexIndex;
         public BlendState blendState;
+        public bool autoUpdate = true;
         /// <summary>
         /// 顶点数据，存起来不每帧更新降低运算负担
         /// </summary>
@@ -230,6 +231,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //{
             //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, -Main.screenPosition);
             //}
+            //Main.NewText(("绘制中!!", Active, timeLeft, autoUpdate));
             var scaler = 1f;
             if (renderDrawInfo is AirDistortEffectInfo airDistort)
             {
@@ -432,7 +434,9 @@ namespace LogSpiralLibrary.CodeLibrary
         }
 
         public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
-            => base.Draw(spriteBatch, renderDrawInfo, contextArgument);
+        {
+            base.Draw(spriteBatch, renderDrawInfo, contextArgument);
+        }
         public override void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
             => base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
         public override void Uptate()
@@ -761,6 +765,8 @@ namespace LogSpiralLibrary.CodeLibrary
             RenderEffect.Parameters["position"].SetValue(new Vector2(threshold, range));
             RenderEffect.Parameters["tier2"].SetValue(intensity);
             RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
+            RenderEffect.Parameters["uBloomAdditive"].SetValue(additive);
+
             for (int n = 0; n < times - 1; n++)
             {
                 graphicsDevice.SetRenderTarget(renderAirDistort);
@@ -768,6 +774,22 @@ namespace LogSpiralLibrary.CodeLibrary
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[9].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
+
+                //if (n == 0) 
+                //{
+                //    string path = "E:/图片测试/shader/图_";
+                //    int count = 0;
+                //    while (File.Exists(path + count + ".png"))
+                //    {
+                //        count++;
+                //    }
+                //    path += count + ".png";
+                //    using (var stream = new FileStream(path, FileMode.CreateNew))
+                //    {
+                //        renderAirDistort.SaveAsPng(stream, renderAirDistort.Width, renderAirDistort.Height);
+                //    }
+                //}
+
                 graphicsDevice.SetRenderTarget(render);
                 RenderEffect.Parameters["tex0"].SetValue(renderAirDistort);
                 graphicsDevice.Clear(Color.Transparent);
@@ -775,6 +797,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
             }
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+
             graphicsDevice.Clear(Color.Transparent);
             RenderEffect.Parameters["tex0"].SetValue(render);
             RenderEffect.CurrentTechnique.Passes[9].Apply();

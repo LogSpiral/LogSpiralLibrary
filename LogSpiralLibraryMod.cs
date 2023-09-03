@@ -68,6 +68,7 @@ namespace LogSpiralLibrary
         /// <br>18:高斯模糊用加权贴图</br>
         /// <br>19:光玉</br>
         /// <br>20:星空</br>
+        /// <br>21:星空2</br>
         /// </summary>
         public static List<Asset<Texture2D>> Misc;
         //public static string BaseTex = nameof(BaseTex);

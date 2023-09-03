@@ -2015,7 +2015,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             foreach (var info in infos)
             {
-                if (info != null && info.Active)
+                if (info != null && info.Active && info.autoUpdate)
                 {
                     info.Uptate();
                 }

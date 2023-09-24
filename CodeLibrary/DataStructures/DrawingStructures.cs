@@ -10,8 +10,9 @@ using Terraria;
 using System.IO;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.GameContent.NetModules;
+using LogSpiralLibrary.CodeLibrary;
 
-namespace LogSpiralLibrary.CodeLibrary
+namespace LogSpiralLibrary.CodeLibrary.DataStructures
 {
     /// <summary>
     /// 满足一般顶点绘制需求
@@ -37,7 +38,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public CustomVertexInfo(Vector2 position, float alpha, Vector3 texCoord)
         {
             Position = position;
-            Color = Color.White with { A = (byte)(MathHelper.Clamp(255 * alpha, 0, 255)) };
+            Color = Color.White with { A = (byte)MathHelper.Clamp(255 * alpha, 0, 255) };
             TexCoord = texCoord;
         }
         public CustomVertexInfo(Vector2 position, Vector3 texCoord)
@@ -134,15 +135,15 @@ namespace LogSpiralLibrary.CodeLibrary
             /// 是否重绘
             /// <br>如果为false且不是第一个就不会执行</br>
             /// <br><see cref="VertexDrawInfo.PreDraw"/></br>
-            /// <br><see cref="IRenderDrawInfo.PreDraw"/></br>
-            /// <br><see cref="VertexDrawInfo.Draw"/></br>
+            /// <br><see cref="PreDraw"/></br>
+            /// <br><see cref="Draw"/></br>
             /// </summary>
             bool ReDraw { get; set; }
         }
         public sealed override void Register()
         {
             ModTypeLookup<VertexDrawInfo>.Register(this);
-            LogSpiralLibrarySystem.vertexDrawInfoInstance.Add(this.GetType(), this);
+            LogSpiralLibrarySystem.vertexDrawInfoInstance.Add(GetType(), this);
         }
         /// <summary>
         /// 仅给<see  cref="LogSpiralLibrarySystem.vertexDrawInfoInstance"/>中的实例使用
@@ -197,11 +198,11 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         public byte timeLeftMax;
         /// <summary>
-        /// 加上11为<see cref="LogSpiralLibraryMod.AniTex"/>的下标，取值范围为[0,5]
+        /// 加上11为<see cref="AniTex"/>的下标，取值范围为[0,5]
         /// </summary>
         public int aniTexIndex;
         /// <summary>
-        /// <see cref="LogSpiralLibraryMod.BaseTex"/>的下标，取值范围为[0,11]
+        /// <see cref="BaseTex"/>的下标，取值范围为[0,11]
         /// </summary>
         public int baseTexIndex;
         public BlendState blendState;
@@ -218,7 +219,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="spriteBatch"></param>
         public virtual void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState ?? BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, VertexDrawInfo.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, blendState ?? BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
         }
         public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true), 0, VertexInfos.Length - 2);
         /// <summary>
@@ -237,13 +238,13 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 scaler = airDistort.distortScaler;
             }
-            Main.graphics.GraphicsDevice.Textures[0] = LogSpiralLibraryMod.BaseTex[baseTexIndex].Value;
-            Main.graphics.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.AniTex[aniTexIndex + 11].Value;
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
+            Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
             Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
-            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["lightShift"].SetValue(factor - 1f);
-            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["distortScaler"].SetValue(scaler);
-            LogSpiralLibraryMod.ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
+            ShaderSwooshUL.Parameters["lightShift"].SetValue(factor - 1f);
+            ShaderSwooshUL.Parameters["distortScaler"].SetValue(scaler);
+            ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
 
 
             DrawPrimitives(scaler);
@@ -269,9 +270,9 @@ namespace LogSpiralLibrary.CodeLibrary
         static Matrix model => Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
         /// <summary>
         /// 丢给顶点坐标变换的矩阵
-        /// <br>先右乘<see cref="VertexDrawInfo.model"/>将世界坐标转屏幕坐标</br>
-        /// <br>再右乘<see cref="VertexDrawInfo.TransformationMatrix"/>进行画面缩放等</br>
-        /// <br>最后右乘<see cref="VertexDrawInfo.projection"/>将坐标压缩至[0,1]</br>
+        /// <br>先右乘<see cref="model"/>将世界坐标转屏幕坐标</br>
+        /// <br>再右乘<see cref="TransformationMatrix"/>进行画面缩放等</br>
+        /// <br>最后右乘<see cref="projection"/>将坐标压缩至[0,1]</br>
         /// </summary>
         public static Matrix uTransform => model * TransformationMatrix * projection;
     }
@@ -296,8 +297,8 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-            Effect effect = LogSpiralLibraryMod.ShaderSwooshUL;
-            effect.Parameters["uTransform"].SetValue(VertexDrawInfo.uTransform);
+            Effect effect = ShaderSwooshUL;
+            effect.Parameters["uTransform"].SetValue(uTransform);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrarySystem.ModTime * 0.03f);
             effect.Parameters["checkAir"].SetValue(false);
             effect.Parameters["airFactor"].SetValue(1);
@@ -320,7 +321,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
         {
-            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["gather"].SetValue(gather);
+            ShaderSwooshUL.Parameters["gather"].SetValue(gather);
             if (heatMap == null)
             {
                 ColorVector = new Vector3(0, 1, 0);
@@ -329,7 +330,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 ColorVector = new Vector3(0.33f);
             else if (normalize)
                 ColorVector /= Vector3.Dot(ColorVector, Vector3.One);
-            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["AlphaVector"].SetValue(ColorVector);
+            ShaderSwooshUL.Parameters["AlphaVector"].SetValue(ColorVector);
 
             base.Draw(spriteBatch, renderDrawInfo, contextArgument);
         }
@@ -598,14 +599,31 @@ namespace LogSpiralLibrary.CodeLibrary
     }
     public struct AirDistortEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
+        int tier;
+        public int Tier
+        {
+            get => tier;
+            set => tier = Math.Clamp(value, 0, 2);
+        }
+        ///// <summary>
+        ///// 相对于原图像的缩放大小
+        ///// </summary>
         /// <summary>
-        /// 相对于原图像的缩放大小
+        /// 步长系数
         /// </summary>
         public float distortScaler;
+        ///// <summary>
+        ///// 不是导演是方向
+        ///// </summary>
+        //public Vector2 director;
         /// <summary>
-        /// 不是导演是方向
+        /// 偏移方向偏移量
         /// </summary>
-        public Vector2 director;
+        public float director;
+        /// <summary>
+        /// 色差距离
+        /// </summary>
+        public float colorOffset;
         public bool ReDraw
         {
             get => true;
@@ -622,24 +640,26 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个
             graphicsDevice.Clear(Color.Transparent);
-            Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.Misc[18].Value;
-            LogSpiralLibraryMod.AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-            LogSpiralLibraryMod.AirDistortEffect.Parameters["strength"].SetValue(.0005f);
-            LogSpiralLibraryMod.AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);
-            LogSpiralLibraryMod.AirDistortEffect.Parameters["tex0"].SetValue(renderAirDistort);
-            AirDistortEffect.Parameters["colorOffset"].SetValue(0);
-            LogSpiralLibraryMod.AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
+            Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
+            AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+            AirDistortEffect.Parameters["strength"].SetValue(distortScaler);
+            AirDistortEffect.Parameters["rotation"].SetValue(Matrix.CreateRotationZ(director));
+            AirDistortEffect.Parameters["tex0"].SetValue(renderAirDistort);
+            AirDistortEffect.Parameters["colorOffset"].SetValue(colorOffset);
+            AirDistortEffect.CurrentTechnique.Passes[1].Apply();//ApplyPass
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             spriteBatch.End();
         }
-        public bool Active => distortScaler > 0 && director != default;
-        public AirDistortEffectInfo(float Range, Vector2 Director)
+        public bool Active => distortScaler > 0;
+        public AirDistortEffectInfo(float Range, float Director = 0f, float ColorOffset = 0f, int tier = 1)
         {
             distortScaler = Range;
             director = Director;
+            colorOffset = ColorOffset;
+            Tier = tier;
         }
     }
     public struct MaskEffectInfo : VertexDrawInfo.IRenderDrawInfo
@@ -976,7 +996,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <summary>
         /// 指定背景贴图，为null的时候使用默认背景
         /// </summary>
-        public Texture2D? backgroundTexture;
+        public Texture2D backgroundTexture;
         public virtual Texture2D StyleTexture { get; set; }
         /// <summary>
         /// 指定贴图背景的部分，和绘制那边一个用法

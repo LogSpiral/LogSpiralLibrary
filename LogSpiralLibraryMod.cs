@@ -12,6 +12,7 @@ using System;
 using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
 using XPT.Core.Audio.MP3Sharp;
+using LogSpiralLibrary.CodeLibrary.DataStructures;
 
 namespace LogSpiralLibrary
 {

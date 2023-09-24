@@ -10,6 +10,7 @@ using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
 using Terraria;
 using System.Collections;
+using LogSpiralLibrary.CodeLibrary.DataStructures;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -1987,7 +1988,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var newInfos = from info in infos where info != null && info.Active select info;
             if (newInfos.Count() == 0) return;
             var newRenderInfos = from info in instance.RenderDrawInfos where info.Active select info;
-            if (newRenderInfos.Count() == 0)
+            if (newRenderInfos.Count() == 0 || !CanUseRender)
             {
                 instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
                 foreach (var info in newInfos) info.Draw(spriteBatch, new EmptyEffectInfo(), contextArgument);

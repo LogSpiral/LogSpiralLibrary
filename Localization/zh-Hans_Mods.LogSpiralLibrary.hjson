@@ -5,18 +5,18 @@ Items: {
 	}
 
 	GeogebraShin: {
-		DisplayName: Geogebra Shin
-		Tooltip: ""
+		DisplayName: Բ��
+		Tooltip: ��֪����Ҫ˵ʲô�Ķ԰�
 	}
 }
 
 Configs: {
 	SurroundStateConfig: {
-		DisplayName: Surround State Config
+		// DisplayName: Surround State Config
 
 		CheckCycleLength: {
-			Label: Check Cycle Length
-			Tooltip: ""
+			// Label: Check Cycle Length
+			// Tooltip: ""
 		}
 	}
 }

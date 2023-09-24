@@ -1,13 +1,23 @@
 ﻿//using CoolerItemVisualEffect;
+using LogSpiralLibrary.CodeLibrary.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent.UI.Elements;
+using Terraria.GameContent.UI.States;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Config;
+using Terraria.ModLoader.Config.UI;
+using Terraria.ModLoader.UI;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 namespace LogSpiralLibrary.CodeLibrary
@@ -665,7 +675,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                 ShaderSwooshUL.Parameters["uTransform"].SetValue(model * trans * projection);
                 ShaderSwooshUL.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f * 0);//-(float)Main.time * 0.06f
+                ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
                 ShaderSwooshUL.Parameters["checkAir"].SetValue(false);
                 ShaderSwooshUL.Parameters["airFactor"].SetValue(1);
                 ShaderSwooshUL.Parameters["gather"].SetValue(true);
@@ -777,11 +787,11 @@ namespace LogSpiralLibrary.CodeLibrary
                                                 //RenderEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
                     Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
                     AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-                    AirDistortEffect.Parameters["strength"].SetValue(.0035f);
+                    AirDistortEffect.Parameters["strength"].SetValue(5f);
                     AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);//MathHelper.Pi * Main.GlobalTimeWrappedHourly
                     AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
-                    AirDistortEffect.Parameters["colorOffset"].SetValue(1f);
-                    AirDistortEffect.CurrentTechnique.Passes[1].Apply();//ApplyPass 
+                    AirDistortEffect.Parameters["colorOffset"].SetValue(0f);
+                    AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass 
                     //0    1     2
                     //.001 .0035 .005
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
@@ -1402,6 +1412,345 @@ namespace LogSpiralLibrary.CodeLibrary
             if (Main.netMode == NetmodeID.Server)
             {
                 NetMessage.SendData(MessageID.TileEntitySharing, number: ID, number2: Position.X, number3: Position.Y);
+            }
+        }
+    }
+    //[CustomModConfigItem(typeof(AvailableConfigElement))]
+    /// <summary>
+    /// 因为一些讨厌的原因，必须用上<see cref="CustomModConfigItemAttribute"/>在相应的字段/属性处
+    /// </summary>
+    public interface IAvailabilityChangableConfig
+    {
+        public bool Available { get; set; }
+    }
+    /// <summary>
+    /// 请不要把这玩意和<see cref="SeparatePageAttribute"/>一起用，目前会出冲突(x
+    /// </summary>
+    public class AvailableConfigElement : ConfigElement<IAvailabilityChangableConfig>
+    {
+        protected Func<string> AbridgedTextDisplayFunction { get; set; }
+
+        private readonly bool ignoreSeparatePage;
+        //private SeparatePageAttribute separatePageAttribute;
+        //private object data;
+        private bool separatePage;
+        private bool pendingChanges;
+        private bool expanded = true;
+        private NestedUIList dataList;
+        private UIModConfigHoverImage initializeButton;
+        private UIModConfigHoverImage deleteButton;
+        private UIModConfigHoverImage expandButton;
+        private UIPanel separatePagePanel;
+        private UITextPanel<FuncStringWrapper> separatePageButton;
+
+        // Label:
+        //  Members
+        //  Members
+        public AvailableConfigElement()
+        {
+        }
+
+        public override void OnBind()
+        {
+            base.OnBind();
+
+            if (List != null)
+            {
+                // TODO: only do this if ToString is overriden.
+
+                var listType = MemberInfo.Type.GetGenericArguments()[0];
+
+                System.Reflection.MethodInfo methodInfo = listType.GetMethod("ToString", Array.Empty<Type>());
+                bool hasToString = methodInfo != null && methodInfo.DeclaringType != typeof(object);
+
+                if (hasToString)
+                {
+                    TextDisplayFunction = () => Index + 1 + ": " + (List[Index]?.ToString() ?? "null");
+                    AbridgedTextDisplayFunction = () => (List[Index]?.ToString() ?? "null");
+                }
+                else
+                {
+                    TextDisplayFunction = () => Index + 1 + ": ";
+                }
+            }
+            else
+            {
+                bool hasToString = MemberInfo.Type.GetMethod("ToString", Array.Empty<Type>()).DeclaringType != typeof(object);
+
+                if (hasToString)
+                {
+                    TextDisplayFunction = () => Label + (Value == null ? "" : ": " + Value.ToString());
+                    AbridgedTextDisplayFunction = () => Value?.ToString() ?? "";
+                }
+            }
+
+            // Null values without AllowNullAttribute aren't allowed, but could happen with modder mistakes, so not automatically populating will hint to modder the issue.
+            if (Value == null && List != null)
+            {
+                // This should never actually happen, but I guess a bad Json file could.
+                object data = Activator.CreateInstance(MemberInfo.Type, true);
+                string json = JsonDefaultValueAttribute?.Json ?? "{}";
+
+                JsonConvert.PopulateObject(json, data, ConfigManager.serializerSettings);
+
+                Value = (IAvailabilityChangableConfig)data;
+            }
+
+            separatePage = ConfigManager.GetCustomAttributeFromMemberThenMemberType<SeparatePageAttribute>(MemberInfo, Item, List) != null;
+
+            //separatePage = separatePage && !ignoreSeparatePage;
+            //separatePage = (SeparatePageAttribute)Attribute.GetCustomAttribute(memberInfo.MemberInfo, typeof(SeparatePageAttribute)) != null;
+
+            if (separatePage && !ignoreSeparatePage)
+            {
+                // TODO: UITextPanel doesn't update...
+                separatePageButton = new UITextPanel<FuncStringWrapper>(new FuncStringWrapper(TextDisplayFunction));
+                separatePageButton.HAlign = 0.5f;
+                //e.Recalculate();
+                //elementHeight = (int)e.GetOuterDimensions().Height;
+                separatePageButton.OnLeftClick += (a, c) =>
+                {
+                    UIModConfig.SwitchToSubConfig(this.separatePagePanel);
+                    /*	Interface.modConfig.uIElement.RemoveChild(Interface.modConfig.configPanelStack.Peek());
+                        Interface.modConfig.uIElement.Append(separateListPanel);
+                        Interface.modConfig.configPanelStack.Push(separateListPanel);*/
+                    //separateListPanel.SetScrollbar(Interface.modConfig.uIScrollbar);
+
+                    //UIPanel panel = new UIPanel();
+                    //panel.Width.Set(200, 0);
+                    //panel.Height.Set(200, 0);
+                    //panel.Left.Set(200, 0);
+                    //panel.Top.Set(200, 0);
+                    //Interface.modConfig.Append(panel);
+
+                    //Interface.modConfig.subMenu.Enqueue(subitem);
+                    //Interface.modConfig.DoMenuModeState();
+                };
+                //e = new UIText($"{memberInfo.Name} click for more ({type.Name}).");
+                //e.OnLeftClick += (a, b) => { };
+            }
+
+            //data = _GetValue();// memberInfo.GetValue(this.item);
+            //drawLabel = false;
+
+            if (List == null)
+            {
+                // Member > Class
+                var expandAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<ExpandAttribute>(MemberInfo, Item, List);
+                if (expandAttribute != null)
+                    expanded = expandAttribute.Expand;
+            }
+            else
+            {
+                // ListMember's ExpandListElements > Class
+                var listType = MemberInfo.Type.GetGenericArguments()[0];
+                var expandAttribute = (ExpandAttribute)Attribute.GetCustomAttribute(listType, typeof(ExpandAttribute), true);
+                if (expandAttribute != null)
+                    expanded = expandAttribute.Expand;
+                expandAttribute = (ExpandAttribute)Attribute.GetCustomAttribute(MemberInfo.MemberInfo, typeof(ExpandAttribute), true);
+                if (expandAttribute != null && expandAttribute.ExpandListElements.HasValue)
+                    expanded = expandAttribute.ExpandListElements.Value;
+            }
+
+            dataList = new NestedUIList();
+            dataList.Width.Set(-14, 1f);
+            dataList.Left.Set(14, 0f);
+            dataList.Height.Set(-30, 1f);
+            dataList.Top.Set(30, 0);
+            dataList.ListPadding = 5f;
+
+            if (expanded)
+                Append(dataList);
+
+            //string name = memberInfo.Name;
+            //if (labelAttribute != null) {
+            //	name = labelAttribute.Label;
+            //}
+            if (List == null)
+            {
+                // drawLabel = false; TODO uncomment
+            }
+
+            initializeButton = new UIModConfigHoverImage(PlayTexture, "Initialize");
+            initializeButton.Top.Pixels += 4;
+            initializeButton.Left.Pixels -= 3;
+            initializeButton.HAlign = 1f;
+            initializeButton.OnLeftClick += (a, b) =>
+            {
+                SoundEngine.PlaySound(21);
+
+                object data = Activator.CreateInstance(MemberInfo.Type, true);
+                string json = JsonDefaultValueAttribute?.Json ?? "{}";
+
+                JsonConvert.PopulateObject(json, data, ConfigManager.serializerSettings);
+
+                Value = (IAvailabilityChangableConfig)data;
+
+                //SeparatePageAttribute here?
+
+                pendingChanges = true;
+                //RemoveChild(initializeButton);
+                //Append(deleteButton);
+                //Append(expandButton);
+
+                SetupList();
+                Interface.modConfig.RecalculateChildren();
+                Interface.modConfig.SetPendingChanges();
+            };
+            expandButton = new UIModConfigHoverImage(expanded ? ExpandedTexture : CollapsedTexture, expanded ? "Collapse" : "Expand");
+            expandButton.Top.Set(4, 0f); // 10, -25: 4, -52
+            expandButton.Left.Set(-52, 1f);
+            expandButton.OnLeftClick += (a, b) =>
+            {
+                expanded = !expanded;
+                pendingChanges = true;
+            };
+
+            deleteButton = new UIModConfigHoverImage(DeleteTexture, "Clear");
+            deleteButton.Top.Set(4, 0f);
+            deleteButton.Left.Set(-25, 1f);
+            deleteButton.OnLeftClick += (a, b) =>
+            {
+                Value = null;
+                pendingChanges = true;
+
+                SetupList();
+                //Interface.modConfig.RecalculateChildren();
+                Interface.modConfig.SetPendingChanges();
+            };
+
+            if (Value != null)
+            {
+                //Append(expandButton);
+                //Append(deleteButton);
+                SetupList();
+            }
+            else
+            {
+                Append(initializeButton);
+                //sortedContainer.Append(initializeButton);
+            }
+
+            pendingChanges = true;
+            Recalculate();
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (!pendingChanges)
+                return;
+            pendingChanges = false;
+            DrawLabel = !separatePage || ignoreSeparatePage;
+
+            RemoveChild(deleteButton);
+            RemoveChild(expandButton);
+            RemoveChild(initializeButton);
+            RemoveChild(dataList);
+            if (separatePage && !ignoreSeparatePage)
+                RemoveChild(separatePageButton);
+            if (Value == null)
+            {
+                Append(initializeButton);
+                DrawLabel = true;
+            }
+            else
+            {
+                if (List == null && !(separatePage && ignoreSeparatePage) && NullAllowed)
+                    Append(deleteButton);
+
+                if (!separatePage || ignoreSeparatePage)
+                {
+                    if (!ignoreSeparatePage)
+                        Append(expandButton);
+                    if (expanded)
+                    {
+                        Append(dataList);
+                        expandButton.HoverText = "Collapse";
+                        expandButton.SetImage(ExpandedTexture);
+                    }
+                    else
+                    {
+                        RemoveChild(dataList);
+                        expandButton.HoverText = "Expand";
+                        expandButton.SetImage(CollapsedTexture);
+                    }
+                }
+                else
+                {
+                    Append(separatePageButton);
+                }
+            }
+        }
+
+        private void SetupList()
+        {
+            dataList.Clear();
+
+            object data = Value;
+
+            if (data != null)
+            {
+                if (separatePage && !ignoreSeparatePage)
+                {
+                    separatePagePanel = UIModConfig.MakeSeparateListPanel(Item, data, MemberInfo, List, Index, AbridgedTextDisplayFunction);
+                }
+                else
+                {
+                    var variables = ConfigManager.GetFieldsAndProperties(data);
+                    int order = 0;
+                    {
+                        PropertyInfo propInfo = data.GetType().GetProperty(nameof(IAvailabilityChangableConfig.Available), BindingFlags.Public | BindingFlags.Instance);
+                        PropertyFieldWrapper availableProp = new PropertyFieldWrapper(propInfo);
+                        int top = 0;
+                        UIModConfig.HandleHeader(dataList, ref top, ref order, availableProp);
+                        var wrapped = UIModConfig.WrapIt(dataList, ref top, availableProp, data, order++);
+                        wrapped.Item2.OnLeftClick += (e, element) =>
+                        {
+                            pendingChanges = true;
+                            SetupList();
+                        };
+                    }
+                    if (Value.Available)
+                        foreach (PropertyFieldWrapper variable in variables)
+                        {
+                            if (Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)) || variable.Name == nameof(IAvailabilityChangableConfig.Available))
+                                continue;
+
+
+                            int top = 0;
+
+                            UIModConfig.HandleHeader(dataList, ref top, ref order, variable);
+
+                            var wrapped = UIModConfig.WrapIt(dataList, ref top, variable, data, order++);
+                            if (List != null)
+                            {
+                                //wrapped.Item1.Left.Pixels -= 20;
+                                wrapped.Item1.Width.Pixels += 20;
+                            }
+                            else
+                            {
+                                //wrapped.Item1.Left.Pixels += 20;
+                                //wrapped.Item1.Width.Pixels -= 20;
+                            }
+                        }
+                }
+            }
+        }
+
+        public override void Recalculate()
+        {
+            base.Recalculate();
+
+            float defaultHeight = separatePage ? 40 : 30;
+            float h = dataList.Parent != null ? dataList.GetTotalHeight() + defaultHeight : defaultHeight;
+
+            Height.Set(h, 0f);
+
+            if (Parent != null && Parent is UISortableElement)
+            {
+                Parent.Height.Set(h, 0f);
             }
         }
     }

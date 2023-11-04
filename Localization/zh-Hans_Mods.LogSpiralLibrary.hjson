@@ -8,6 +8,11 @@ Items: {
 		DisplayName: Բ��
 		Tooltip: ��֪����Ҫ˵ʲô�Ķ԰�
 	}
+
+	TestBlade: {
+		// DisplayName: Test Blade
+		// Tooltip: ""
+	}
 }
 
 Configs: {
@@ -20,3 +25,5 @@ Configs: {
 		}
 	}
 }
+
+// Projectiles.TestBladeProj.DisplayName: Test Blade Proj

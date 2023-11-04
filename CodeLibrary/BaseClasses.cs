@@ -1355,6 +1355,132 @@ namespace LogSpiralLibrary.CodeLibrary
         }
     }
     /// <summary>
+    /// 来基剑吧
+    /// </summary>
+    public abstract class MeleeSequenceProj : ModProjectile, IHammerProj ,IChannelProj
+    {
+
+        public MeleeSequence MeleeSequenceData 
+        {
+            get => meleeSequence;
+            init => SetUpSequence(meleeSequence);
+        }
+        public IMeleeAttackData currentData => MeleeSequenceData.currentData;
+
+        public virtual Vector2 CollidingSize => throw new NotImplementedException();
+
+        public virtual Vector2 CollidingCenter => throw new NotImplementedException();
+
+        public virtual Vector2 DrawOrigin => currentData.offsetOrigin * projTex.Size();
+
+        public virtual Texture2D projTex => TextureAssets.Projectile[Type].Value;
+        public virtual Texture2D GlowEffect
+        {
+            get
+            {
+                if (ModContent.HasAsset(GlowTexture))
+                {
+                    return ModContent.Request<Texture2D>(GlowTexture).Value;
+                }
+                return null;
+            }
+        }
+        public virtual Vector2 projCenter => currentData.offsetCenter + Player.Center + new Vector2(0, Player.gfxOffY);
+
+        public virtual Rectangle? frame => null;
+
+        public virtual Color color => Lighting.GetColor((int)Projectile.Center.X / 16, (int)Projectile.Center.Y / 16, Color.White);
+
+        public virtual float Rotation => currentData.Rotation;
+
+        public virtual Vector2 scale => Vector2.One;
+
+        public virtual SpriteEffects flip => default;
+        public virtual Color GlowColor => Color.White;
+
+
+        public (int X, int Y) FrameMax => (1,1);
+
+        public Player Player => Main.player[Projectile.owner];
+
+        public virtual bool Charging => true;
+
+        public virtual bool Charged => throw new NotImplementedException();
+
+        public abstract void SetUpSequence(MeleeSequence meleeSequence);
+        MeleeSequence meleeSequence = new MeleeSequence();
+        
+        public sealed override void SetDefaults()
+        {
+            Projectile.timeLeft = 10;
+            Projectile.width = Projectile.height = 1;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.aiStyle = -1;
+            Projectile.hide = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 2;
+            base.SetDefaults();
+        }
+        public override void AI()
+        {
+            Player.heldProj = Projectile.whoAmI;
+            Projectile.damage = Player.GetWeaponDamage(Player.HeldItem);
+            if (Player.controlUseItem || currentData == null || meleeSequence.timer > 0)
+            {
+                meleeSequence.Update(Player);
+                Projectile.timeLeft = 2;
+            }
+            Projectile.Center = Player.Center + currentData.offsetCenter;
+
+            base.AI();
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            if (GlowEffect != null)
+            {
+                Main.spriteBatch.DrawHammer(this, GlowEffect, GlowColor, frame);
+            }
+            else Main.spriteBatch.DrawHammer(this);
+
+            /*SpriteBatch spriteBatch = Main.spriteBatch;
+            spriteBatch.Draw(TextureAssets.Projectile[Projectile.type].Value,
+                player.Center - Main.screenPosition + currentData.offsetCenter,
+                null, Color.White, currentData.Rotation + MathHelper.PiOver4,
+                currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
+            */
+            return false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            if (!currentData.Attacktive) return false;
+            return this.HammerCollide(targetHitbox);
+
+
+            float point = 0f;
+            return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center,
+                Projectile.Center + currentData.Rotation.ToRotationVector2() * currentData.ModifyData.actionOffsetSize * TextureAssets.Projectile[Projectile.type].Size().Length(), 48f, ref point);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.Knockback *= meleeSequence.currentData.ModifyData.actionOffsetKnockBack;
+            target.immune[Player.whoAmI] = 0;
+            base.ModifyHitNPC(target, ref modifiers);
+        }
+
+        public void OnCharging(bool left, bool right)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnRelease(bool charged, bool left)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    /// <summary>
     /// 武器手持弹幕对应的基类
     /// 以下是需要经常重写的属性
     /// Charged

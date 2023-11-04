@@ -8,6 +8,11 @@ Items: {
 		DisplayName: Geogebra Shin
 		Tooltip: ""
 	}
+
+	TestBlade: {
+		DisplayName: Test Blade
+		Tooltip: ""
+	}
 }
 
 Configs: {
@@ -20,3 +25,5 @@ Configs: {
 		}
 	}
 }
+
+Projectiles.TestBladeProj.DisplayName: Test Blade Proj

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AsmResolver.PE.DotNet.Cil;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -54,7 +55,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <summary>
         /// 当前周期的进度
         /// </summary>
-        float Factor { get; }
+        float Factor { get; set; }
+
         /// <summary>
         /// 旋转量
         /// </summary>
@@ -98,7 +100,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         void OnCharge();
         Condition Condition { get; }
-        void Update(ref int timer, out bool canReduceTimer);
+        void Update(ref int timer, int timerMax, ref bool canReduceTimer);
     }
 
     public class MeleeSequence
@@ -183,6 +185,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 resultGroups.AddRange(wrap.GetMeleeGroups());
             counter = 0;
             timer = 0;
+            timerMax = 0;
         }
         public void Add(MeleeGSWraper wraper)
         {
@@ -214,14 +217,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public string SequenceName = "My MeleeSequence";
         public int counter;
         public int timer;
+        public int timerMax;
         public bool Attacktive;
+
         public void Update(Player player)
         {
             if (timer <= 0 || currentData == null)
             {
                 if (currentData != null) currentData.OnDeactive();
                 currentData = resultGroups[counter % resultGroups.Count].GetCurrentMeleeData();
-                timer = (int)(player.itemAnimationMax * currentData.ModifyData.actionOffsetSpeed);
+                currentData.OnActive();
+                timerMax = timer = (int)(player.itemAnimationMax * currentData.ModifyData.actionOffsetSpeed);
                 counter++;
             }
             if (currentData != null)
@@ -236,10 +242,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                     currentData.OnEndAttack();
                 if (Attacktive) currentData.OnAttack();
                 else currentData.OnCharge();
-                currentData.Update(ref timer, out bool flag);
+                bool flag = true;
+                currentData.Update(ref timer, timerMax, ref flag);
                 if (flag)
                     timer--;
             }
+            player.itemTime = 2;
         }
     }
     public class SwooshInfo : IMeleeAttackData
@@ -251,7 +259,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         {
         }
 
-        public virtual float Factor => throw new NotImplementedException();
+        public virtual float Factor { get; set; }
 
         public float Rotation => throw new NotImplementedException();
 
@@ -291,7 +299,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             throw new NotImplementedException();
         }
 
-        public virtual void Update(ref int timer, out bool canReduceTimer)
+        public virtual void Update(ref int timer, int timerMax, ref bool canReduceTimer)
         {
             throw new NotImplementedException();
         }
@@ -307,59 +315,84 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public int Cycle { get => realCycle; set => givenCycle = value; }
         protected int realCycle;
         protected int givenCycle;
-        public virtual float Factor => throw new NotImplementedException();
+        public virtual float Factor
+        {
+            get;
+            set;
+        }
 
-        public float Rotation => throw new NotImplementedException();
+        public float Rotation { get; set; }
 
-        public float Size => throw new NotImplementedException();
+        public float Size { get; set; }
 
-        public bool Attacktive => throw new NotImplementedException();
+        public bool Attacktive => Factor >= .75f;
 
         public Condition Condition { get; set; } = new Condition("Always", () => true);
 
-        public Vector2 offsetCenter => throw new NotImplementedException();
+        public Vector2 offsetCenter => new Vector2(16 * Factor, 0).RotatedBy(Rotation);
 
         public virtual void OnAttack()
         {
-            throw new NotImplementedException();
         }
 
         public virtual void OnCharge()
         {
-            throw new NotImplementedException();
         }
 
         public virtual void OnEndAttack()
         {
-            throw new NotImplementedException();
         }
 
         public virtual void OnStartAttack()
         {
-            throw new NotImplementedException();
+            Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
         }
 
         public virtual void OnActive()
         {
-            throw new NotImplementedException();
+            Rotation = (Main.MouseWorld - Main.LocalPlayer.Center).ToRotation();
         }
 
         public virtual void OnDeactive()
         {
-            throw new NotImplementedException();
         }
 
-        public virtual void Update(ref int timer, out bool canReduceTimer)
+        public virtual void Update(ref int timer, int timerMax, ref bool canReduceTimer)
         {
-            throw new NotImplementedException();
+            Main.LocalPlayer.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, Rotation - MathHelper.PiOver2);
+            #region Factor
+            {
+                float max = (float)timerMax / Cycle;
+                Factor = timer % max / max;
+                Factor = 1 - Factor;
+                Factor *= Factor;
+                Factor = Factor.CosFactor();
+                return;
+
+                //float k = 4;
+                //float t = timer % max;
+                //float result;
+                //if (t >= k)
+                //{
+                //    result = MathHelper.SmoothStep(1, 1.125f, Utils.GetLerpValue(max, k, t, true));
+                //}
+                //else
+                //{
+                //    result = MathHelper.SmoothStep(0, 1.125f, t / k);
+                //}
+                //Main.NewText((t, max));
+                //Factor = result;
+            }
+
+            #endregion
         }
     }
     public class RapidlyStabInfo : StabInfo
     {
-        public (int min, int max) CycleOffsetRange 
+        public (int min, int max) CycleOffsetRange
         {
             get => range;
-            set 
+            set
             {
                 var v = value;
                 v.min = Math.Clamp(v.min, int.MinValue, v.max);
@@ -368,7 +401,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             }
         }
         (int, int) range;
-        void ResetCycle() => realCycle = Math.Clamp(givenCycle + Main.rand.Next(range.Item1, range.Item2), 1, int.MaxValue);
+        void ResetCycle() 
+        {
+            realCycle = Math.Clamp(givenCycle + Main.rand.Next(range.Item1, range.Item2), 1, int.MaxValue);
+        }
         public override void OnActive()
         {
             ResetCycle();
@@ -382,7 +418,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public class ConvoluteInfo : IMeleeAttackData
     {
-        public float Factor => throw new NotImplementedException();
+        public float Factor { get; set; }
 
         public float Rotation => throw new NotImplementedException();
 
@@ -422,14 +458,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             throw new NotImplementedException();
         }
 
-        public void Update(ref int timer, out bool canReduceTimer)
+        public void Update(ref int timer, int timerMax, ref bool canReduceTimer)
         {
             throw new NotImplementedException();
         }
     }
     public class ShockingDashInfo : IMeleeAttackData
     {
-        public float Factor => throw new NotImplementedException();
+        public float Factor { get; set; }
 
         public float Rotation => throw new NotImplementedException();
 
@@ -469,7 +505,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             throw new NotImplementedException();
         }
 
-        public void Update(ref int timer, out bool canReduceTimer)
+        public void Update(ref int timer, int timerMax, ref bool canReduceTimer)
         {
             throw new NotImplementedException();
         }

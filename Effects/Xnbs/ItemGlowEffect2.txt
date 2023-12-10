@@ -1,0 +1,176 @@
+Effect
+{
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage0
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage1
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage2
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uGlowTex
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uTime
+    }
+    Parameter
+    {
+        Class matrix rows, Type float
+        {
+        }
+        Name: uTransform
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uItemColor
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uItemGlowColor
+    }
+    Technique Technique1
+    {
+        Pass Bell
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass Item
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ItemAdditive
+        {
+            Class object, Type vertexshader
+            {
+            }
+            Class object, Type pixelshader
+            {
+            }
+        }
+    }
+    Resource for Technique Technique1 Pass ItemAdditive
+    {
+        // "CTAB\x1c\x00\x00\x00g\x01\x00\x00\x00\x02\xff\xff\x07\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 `\x01\x00\x00\xa8\x00\x00\x00\x03\x00\x03\x00\x01\x00\x00\x00\xb4\x00\x00\x00\x00\x00\x00\x00\xc4\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xcc\x00\x00\x00\x00\x00\x00\x00\xdc\x00\x00\x00\x03\x00\x01\x00\x01"...
+        def c3 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        dcl_2d s3
+        add r.y, t.y, c.x
+        mov r.x, t.x
+        texld r, r, s1
+        texld r1, t, s2
+        texld r2, t, s
+        texld r3, t, s3
+        max r1.w, r.x, r.y
+        max r4.w, r1.w, r.z
+        min r1.w, r.y, r.x
+        min r4.x, r.z, r1.w
+        add r1.w, r4.w, r4.x
+        max r.x, r1.x, r1.y
+        max r4.x, r.x, r1.z
+        min r.x, r1.y, r1.x
+        min r4.y, r1.z, r.x
+        add r.x, r4.x, r4.y
+        mul r.x, r.x, c3.x
+        mad r.x, r1.w, c3.x, r.x
+        mul r.x, r.x, t.z
+        mul r1, r2, c1
+        dp4 r.y, r2, r2
+        mad r1, r.x, v, r1
+        mad r2, r3, c2, r1
+        dp4 r.x, r3, r3
+        cmp r1, -r.x, r1, r2
+        cmp r, -r.y, c3.y, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ItemAdditive
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass Item
+    {
+        // "CTAB\x1c\x00\x00\x00\xe7\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe0\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x01\x00\x01"...
+        def c2 = 0.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        add r.y, t.y, c.x
+        mov r.x, t.x
+        texld r, r, s1
+        texld r1, t, s
+        mul r.x, r.x, t.z
+        mul r2, r1, c1
+        dp4 r.y, r1, r1
+        mad r1, r.x, v, r2
+        cmp r, -r.y, c2.x, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass Item
+    {
+parseVertexShader
+    }
+    Resource for Technique Technique1 Pass Bell
+    {
+        // "CTAB\x1c\x00\x00\x00\xb7\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb0\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00x\x00\x00\x00\x00\x00\x00\x00\x88\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        def c1 = 0.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xyz
+        dcl_2d s
+        dcl_2d s1
+        add r.y, t.y, c.x
+        mov r.x, t.x
+        texld r, r, s1
+        texld r1, t, s
+        mul r.x, r.x, t.z
+        mul r, r.x, v
+        dp4 r1.x, r1, r1
+        cmp r, -r1.x, c1.x, r
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass Bell
+    {
+parseVertexShader
+    }
+}

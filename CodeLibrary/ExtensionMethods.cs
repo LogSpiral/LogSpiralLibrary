@@ -11,13 +11,15 @@ using Terraria.ObjectData;
 using Terraria;
 using System.Collections;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using Microsoft.Xna.Framework.Graphics;
+using static LogSpiralLibrary.CodeLibrary.DataStructures.IMeleeAttackData;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
-    public static class ProjectileMethods 
+    public static class ProjectileMethods
     {
-        public static bool HammerCollide(this IHammerProj hammerProj, Rectangle targetHitbox) 
+        public static bool HammerCollide(this IHammerProj hammerProj, Rectangle targetHitbox)
         {
             float point = 0f;
             var center = hammerProj.CollidingCenter;
@@ -25,7 +27,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var projCenter = hammerProj.projCenter;
             var size = hammerProj.CollidingSize;
             var rotation = hammerProj.Rotation;
-            return targetHitbox.Intersects(CenteredRectangle((center - origin).RotatedBy(rotation) + projCenter, size)) 
+            return targetHitbox.Intersects(CenteredRectangle((center - origin).RotatedBy(rotation) + projCenter, size))
                 || Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projCenter, (center - origin).RotatedBy(rotation) + projCenter, 8, ref point);
         }
     }
@@ -1993,6 +1995,30 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
+
+        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
+        {
+            //对数据进行矩阵变换吧！
+            Matrix matrix =
+            Matrix.CreateTranslation(-origin.X, origin.Y - 1, 0) *
+                Matrix.CreateScale(texture.Width, texture.Height, 1) *
+                Matrix.CreateRotationZ(rotation) *
+                Matrix.CreateScale(1, 1 / KValue, 1) *
+                Matrix.CreateScale(size);
+            Vector2[] vecs = new Vector2[4];
+            for (int i = 0; i < 4; i++)
+                vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2 % 2), matrix);
+            CustomVertexInfo[] c = new CustomVertexInfo[6];
+            float light = 1f;
+            int num0 = flip.ToInt();
+            c[0] = new CustomVertexInfo(vecs[0] + drawCen, new Vector3(0, 1, light));
+            c[1] = new CustomVertexInfo(vecs[1] + drawCen, new Vector3(num0 ^ 1, num0 ^ 1, light));
+            c[2] = new CustomVertexInfo(vecs[2] + drawCen, new Vector3(num0, num0, light));
+            c[3] = c[1];
+            c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(1, 0, light));
+            c[5] = c[2];
+            return c;
+        }
         public static T GetVertexDrawInfoInstance<T>() where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[typeof(T)] as T;
         public static T GetVertexDrawInfoInstance<T>(this T instance) where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[instance.GetType()] as T;
 
@@ -2609,7 +2635,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         /// <param name="vectors"></param>
         /// <returns></returns>
-        public static float Std(this IEnumerable<Vector2> vectors) 
+        public static float Std(this IEnumerable<Vector2> vectors)
         {
             Vector2 avg = vectors.Avg();
             float value = 0f;
@@ -2624,7 +2650,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         /// <param name="vectors"></param>
         /// <returns></returns>
-        public static Vector2 Avg(this IEnumerable<Vector2> vectors) 
+        public static Vector2 Avg(this IEnumerable<Vector2> vectors)
         {
             Vector2 result = default;
             foreach (var vec in vectors)

@@ -3,10 +3,12 @@ using LogSpiralLibrary.CodeLibrary.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria.Audio;
 using Terraria.ID;
+using static Humanizer.In;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
 {
@@ -39,22 +41,79 @@ namespace LogSpiralLibrary.ForFun.TestBlade
     }
     public class TestBladeProj : MeleeSequenceProj
     {
-        public override string Texture => base.Texture.Replace("Proj", "");
+        class TestBladeStabInfo : RapidlyStabInfo
+        {
+            public TestBladeStabInfo(int cycle, (int, int) _range, MeleeModifyData? data = null) : base(cycle, _range, data)
+            {
+            }
 
+            public override void OnEndAttack()
+            {
+                var u = UltraStab.NewUltraStab(Color.Gray, 30, 120, Owner.Center, null, negativeDir, Rotation, KValue * 3);
+                u.ResetAllRenderInfo();
+                //                var u = UltraStab.NewUltraStab(Color.Purple, 30, 120, Owner.Center,
+                //LogSpiralLibraryMod.HeatMap[1].Value, negativeDir, Rotation,
+                //KValue, -3, 8, colorVec: new Vector3(0, 0, 1));
+                //                var useDistort = new AirDistortEffectInfo(10);
+                //                var useBloom = new BloomEffectInfo(0,1,3,2,true);
+                //                useBloom.range = 4;
+                //                var useMask = new MaskEffectInfo(LogSpiralLibraryMod.Misc[21].Value, LogSpiralLibraryMod.Misc[21].Size(), Color.Cyan, Color.White, 0.1f, 0.15f, default, true, false);
+                //                useMask.offset = Owner.Center + new Vector2(0.707f) *
+                //                    (float)LogSpiralLibraryMod.ModTime * 8;
+                //                useBloom.ReDraw = !useMask.Active;
+                //                u.autoUpdate = false;
+                //                u.GetVertexDrawInfoInstance().blendState = null;
+                //                u.GetVertexDrawInfoInstance().SetEffectValue = null;
+                //                u.ModityAllRenderInfo(useDistort, useMask, useBloom);
+                //u.ModityAllRenderInfo(new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo());
+                base.OnEndAttack();
+            }
+        }
+        class TestBladeSwooshInfo : SwooshInfo
+        {
+            public TestBladeSwooshInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+            {
+            }
+            public override void OnEndAttack()
+            {
+                var u = UltraSwoosh.NewUltraSwoosh(Color.Gray, 15, 100, Owner.Center, null, this.flip, Rotation, KValue, (.625f, -.75f));
+                u.ResetAllRenderInfo();
+
+                base.OnEndAttack();
+            }
+            public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+            {
+                base.Draw(spriteBatch, texture);
+            }
+        }
+        class TestBladeConvoluteInfo : ConvoluteInfo
+        {
+            public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+            {
+                base.Draw(spriteBatch, texture);
+            }
+            public override void OnAttack()
+            {
+                base.OnAttack();
+            }
+            public TestBladeConvoluteInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+            {
+            }
+        }
+        public override string Texture => base.Texture.Replace("Proj", "");
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
-            RapidlyStabInfo stabInfo = new RapidlyStabInfo();
-            //SwooshInfo swooshInfo = new SwooshInfo();
-            stabInfo.Cycle = 4;
-            stabInfo.CycleOffsetRange = (-2, 2);
-            stabInfo.kValue = 1;
-            MeleeSequence.MeleeGroup groupStab = new MeleeSequence.MeleeGroup();
-            groupStab.meleeAttackDatas.Add(stabInfo);
-            meleeSequence.Add(groupStab);
-            //MeleeSequence.MeleeGroup groupSlash = new MeleeSequence.MeleeGroup();
-            //meleeSequence.Add(groupSlash);
-            //MeleeSequence.MeleeGroup groupShoot = new MeleeSequence.MeleeGroup();
-            //meleeSequence.Add(groupShoot);
+            SwooshInfo swooshInfo = new TestBladeSwooshInfo(4);
+            swooshInfo.KValue = 3;
+            swooshInfo.ModifyData = new MeleeModifyData() with { actionOffsetSpeed = 4f };
+            meleeSequence.Add(swooshInfo);
+            RapidlyStabInfo stabInfo = new TestBladeStabInfo(5, (0, 1));
+            stabInfo.KValue = 3;
+            meleeSequence.Add(stabInfo);
+            ConvoluteInfo convoluteInfo = new TestBladeConvoluteInfo(4);
+            convoluteInfo.ModifyData = new MeleeModifyData() with { actionOffsetSpeed = 2f };
+            meleeSequence.Add(convoluteInfo);
+            meleeSequence.Add(stabInfo);
         }
     }
     //public class TestBladeProj : ModProjectile

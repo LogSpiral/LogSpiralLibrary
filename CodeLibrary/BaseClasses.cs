@@ -1357,7 +1357,77 @@ namespace LogSpiralLibrary.CodeLibrary
     /// <summary>
     /// 来基剑吧
     /// </summary>
-    public abstract class MeleeSequenceProj : ModProjectile, IHammerProj ,IChannelProj
+    public abstract class MeleeSequenceProj : ModProjectile
+    {
+        public MeleeSequence MeleeSequenceData
+        {
+            get => meleeSequence;
+        }
+        public abstract void SetUpSequence(MeleeSequence meleeSequence);
+        MeleeSequence meleeSequence = new MeleeSequence();
+        public IMeleeAttackData currentData => meleeSequence.currentData;
+        public override void SetDefaults()
+        {
+            Projectile.timeLeft = 10;
+            Projectile.width = Projectile.height = 1;
+            Projectile.friendly = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.tileCollide = false;
+            Projectile.penetrate = -1;
+            Projectile.aiStyle = -1;
+            Projectile.hide = true;
+            Projectile.usesLocalNPCImmunity = true;
+            Projectile.localNPCHitCooldown = 2;
+            //if (!Main.gameMenu)
+            SetUpSequence(meleeSequence);
+            base.SetDefaults();
+        }
+        Player player => Main.player[Projectile.owner];
+        public override void AI()
+        {
+            player.heldProj = Projectile.whoAmI;
+            Projectile.damage = player.GetWeaponDamage(player.HeldItem);
+            if (
+                player.controlUseItem ||
+                currentData == null || 
+                meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || 
+                (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0)
+                )
+            {
+                meleeSequence.Update(player, Projectile, new IMeleeAttackData.StandardInfo() with { standardRotation = -MathHelper.PiOver4, standardOrigin = new Vector2(0.1f, 0.9f), standardTimer = player.itemAnimationMax });
+                Projectile.timeLeft = 2;
+            }
+            Projectile.Center = player.Center + currentData.offsetCenter;
+
+            base.AI();
+        }
+        public override bool PreDraw(ref Color lightColor)
+        {
+            //SpriteBatch spriteBatch = Main.spriteBatch;
+            //spriteBatch.Draw(TextureAssets.Projectile[Projectile.type].Value,
+            //    player.Center - Main.screenPosition + currentData.offsetCenter,
+            //    null, Color.White, currentData.offsetRotation + MathHelper.PiOver4,
+            //    currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
+            meleeSequence.currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
+            return false;
+        }
+        public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
+        {
+            if (!currentData.Attacktive) return false;
+            return meleeSequence.currentData.Collide(targetHitbox);
+            //float point = 0f;
+            //return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center,
+            //    Projectile.Center + currentData.offsetRotation.ToRotationVector2() * currentData.ModifyData.actionOffsetSize * TextureAssets.Projectile[Projectile.type].Size().Length(), 48f, ref point);
+        }
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            modifiers.Knockback *= meleeSequence.currentData.ModifyData.actionOffsetKnockBack;
+            target.immune[player.whoAmI] = 0;
+            base.ModifyHitNPC(target, ref modifiers);
+        }
+
+    }
+    /*public abstract class MeleeSequenceProj : ModProjectile, IHammerProj ,IChannelProj
     {
 
         public MeleeSequence MeleeSequenceData 
@@ -1450,7 +1520,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 player.Center - Main.screenPosition + currentData.offsetCenter,
                 null, Color.White, currentData.Rotation + MathHelper.PiOver4,
                 currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
-            */
+            //
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -1479,7 +1549,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             throw new NotImplementedException();
         }
-    }
+    }*/
     /// <summary>
     /// 武器手持弹幕对应的基类
     /// 以下是需要经常重写的属性

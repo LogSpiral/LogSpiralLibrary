@@ -122,6 +122,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public interface IRenderDrawInfo
         {
+            void Reset();
             /// <summary>
             /// 绘制前做些手脚(切换rendertarget还有参数准备之类
             /// </summary>
@@ -163,6 +164,24 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 array[n] = newInfos[n];
             OnModifyRenderInfo(array);
         }
+        public void ResetAllRenderInfo() 
+        {
+            var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i].Reset();
+            }
+            OnModifyRenderInfo(array);
+        }
+        //public void ResetAllRenderInfo()
+        //{
+        //    var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+        //    for (int i = 0; i < array.Length; i++)
+        //    {
+        //        array[i] = (IRenderDrawInfo)(array[i].GetType().GetConstructors()[0].Invoke(new object[0]));
+        //    }
+        //    OnModifyRenderInfo(array);
+        //}
         public virtual void OnModifyRenderInfo(IRenderDrawInfo[] infos)
         {
 
@@ -599,6 +618,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public struct AirDistortEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
+        public void Reset() => this = new AirDistortEffectInfo();
         int tier;
         public int Tier
         {
@@ -664,6 +684,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public struct MaskEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
+        public void Reset() => this = new MaskEffectInfo();
+
         /// <summary>
         /// 到达阈值之后替换的贴图
         /// </summary>
@@ -750,6 +772,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public struct BloomEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
+        public void Reset() => this = new BloomEffectInfo();
+
         /// <summary>
         /// 阈值
         /// </summary>
@@ -854,6 +878,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     /// </summary>
     public struct EmptyEffectInfo : VertexDrawInfo.IRenderDrawInfo
     {
+        public void Reset() => this = new EmptyEffectInfo();
+
         public bool Active => true;
         public bool ReDraw { get; set; }
 

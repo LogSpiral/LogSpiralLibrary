@@ -20,6 +20,7 @@ namespace LogSpiralLibrary
     {
         #region Effects
         private static Effect itemEffect;
+        private static Effect itemEffectEX;
         private static Effect shaderSwooshEffect;//第一代刀光effect
         private static Effect shaderSwooshEX;//第二代
         //↑但是很不幸的是，都丢失.fx了，等阿汪做出第三代吧
@@ -36,6 +37,7 @@ namespace LogSpiralLibrary
         private static Effect fadeEffect;
         private static Effect airDistortEffect;
         public static Effect ItemEffect => itemEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ItemGlowEffect", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect ItemGlowEffectEX => itemEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ItemGlowEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEffect => shaderSwooshEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ShaderSwooshEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEX => shaderSwooshEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshUL => shaderSwooshUL ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectUL", AssetRequestMode.ImmediateLoad).Value;

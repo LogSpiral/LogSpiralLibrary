@@ -108,7 +108,7 @@ Effect
         texld r1, t, s
         texld r2, t, s1
 
-        ↓获取r的亮度
+        ↓获取r的最终亮度(u2)
         max r3.w, r.x, r.y
         max r4.w, r3.w, r.z
         min r3.x, r.y, r.x
@@ -116,8 +116,9 @@ Effect
         add r.x, r4.w, r4.x
         mul r.x, r.x, t.z
         mul r.x, r.x, c2.x
+        存至r.x
 
-
+        将物品与它应该的颜色相乘，并且获取当前色彩模长
         mul r3, r1, c
         dp4 r.y, r1, r1
 

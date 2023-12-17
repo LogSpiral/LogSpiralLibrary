@@ -3,3 +3,4 @@
 
 以下是已经复原成功变为EX版本的
 TransformEffect
+ItemGlowEffect

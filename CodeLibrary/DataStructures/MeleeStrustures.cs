@@ -17,14 +17,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     public struct MeleeModifyData
     {
         public float actionOffsetSize = 1;
+        /// <summary>
+        /// 必须得好好地吐槽下这个Speed越大越慢，因为是标准持续时间的倍数
+        /// </summary>
         public float actionOffsetSpeed = 1;
         public float actionOffsetKnockBack = 1;
         public float actionOffsetDamage = 1;
         public int actionOffsetCritAdder = 0;
         public float actionOffsetCritMultiplyer = 1;
 
-        public MeleeModifyData()
+        public MeleeModifyData(float size = 1, float speed = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1)
         {
+            actionOffsetSize = size;
+            actionOffsetSpeed = speed;
+            actionOffsetKnockBack = knockBack;
+            actionOffsetDamage = damage;
+            actionOffsetCritAdder = critAdder;
+            actionOffsetCritMultiplyer = critMultiplyer;
         }
         /// <summary>
         /// 将除了速度以外的值赋给目标
@@ -455,9 +464,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             public float standardRotation = MathHelper.PiOver4;
             public Vector2 standardOrigin = new Vector2(.1f, .9f);
             public int standardTimer;
+            public Color standardColor;
 
             public StandardInfo()
             {
+            }
+            public StandardInfo(float rotation, Vector2 origin, int timer, Color color)
+            {
+                standardRotation = rotation;
+                standardOrigin = origin;
+                standardTimer = timer;
+                standardColor = color;
             }
         }
         #endregion
@@ -469,15 +486,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public class MeleeGroup
         {
+            public static MeleeSAWraper skipper = new MeleeSAWraper(new SkipAction(0));
+            class SkipAction : NormalAttackAction
+            {
+                public SkipAction(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+                {
+                }
+                public override int Cycle => 1;
+            }
             public List<MeleeSAWraper> wrapers = new List<MeleeSAWraper>();
             public MeleeSAWraper GetCurrentWraper()
             {
                 foreach (var wraper in wrapers)
                 {
-                    if (wraper.condition.IsMet())
+                    if (wraper.condition.IsMet()) 
                         return wraper;
                 }
-                return wrapers[^1];
+                return skipper;
             }
             public bool ContainsSequence(MeleeSequence meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
@@ -540,11 +565,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                         return;
                     }
                     sequenceInfo.Update(entity, projectile, standardInfo);
+                    meleeAttackData = sequenceInfo.currentData;
                 }
                 else
                 {
+                    if (attackInfo.SkipCheck()) 
+                    {
+                        timer = 0;
+                        timerMax = 0;
+                        attackInfo.counter = 0;
+                        finished = true;
+                    }
                     if (timer <= 0)//计时器小于等于0时
                     {
+
                         if (attackInfo.counter < attackInfo.Cycle || attackInfo.Cycle == 0)//如果没执行完所有次数
                         {
                             attackInfo.Owner = entity;
@@ -555,8 +589,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                             attackInfo.OnStartSingle();
                             attackInfo.Projectile = projectile;
                             attackInfo.standardInfo = standardInfo;
-                            timerMax = timer = (int)(standardInfo.standardTimer * attackInfo.ModifyData.actionOffsetSpeed / attackInfo.Cycle);
-
+                            var result = (int)(standardInfo.standardTimer * attackInfo.ModifyData.actionOffsetSpeed / attackInfo.Cycle);
+                            timerMax = timer = result;
                             attackInfo.counter++;
                         }
                         //迁移至下方
@@ -587,6 +621,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                     }
                     meleeAttackData = attackInfo;
                 }
+            }
+            public MeleeSAWraper SetCondition(Condition _condition)
+            {
+                condition = _condition;
+                return this;
             }
         }
         public void Add(IMeleeAttackData meleeAttackData)
@@ -698,7 +737,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <summary>
         /// 近战数据修改
         /// </summary>
-        public MeleeModifyData ModifyData { get; set; } = new MeleeModifyData();
+        public MeleeModifyData ModifyData { get; set; } = new MeleeModifyData(1);
         /// <summary>
         /// 执行次数
         /// </summary>
@@ -813,9 +852,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <summary>
         /// 辅助用的量，指向末端
         /// </summary>
-        Vector2 targetedVector;
+        public Vector2 targetedVector;
         public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
+            //spriteBatch.Draw(LogSpiralLibraryMod.Misc[24].Value, new Vector2(0,0), Color.White);
             Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
             float finalRotation = Rotation + offsetRotation + standardInfo.standardRotation;
             #region 好久前的绘制代码，直接搬过来用用试试
@@ -825,8 +865,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             }
             Vector2 drawCen = offsetCenter + Owner.Center;
             CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, texture, KValue, offsetSize, drawCen, flip);
-            bool flag = false;
-            Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemGlowEffectEX : LogSpiralLibraryMod.ItemEffect;
+            //bool flag = LogSpiralLibraryMod.ModTime / 60 % 2 < 1;
+            //Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemEffectEX : LogSpiralLibraryMod.ItemEffect;
+            //if (flag)
+            //{
+            //    spriteBatch.DrawString(FontAssets.MouseText.Value, "好", Owner.Center + new Vector2(-600, 0) - Main.screenPosition, Main.DiscoColor);
+            //}
+            Effect ItemEffect = LogSpiralLibraryMod.ItemEffectEX;
             if (ItemEffect == null) return;
             SamplerState sampler = SamplerState.AnisotropicWrap;
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
@@ -834,18 +879,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             var trans = Main.GameViewMatrix != null ? Main.GameViewMatrix.TransformationMatrix : Matrix.Identity;
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
             Matrix result = model * trans * projection;
-            int _counter = 0;
-            foreach (var pass in ItemEffect.CurrentTechnique.Passes)
-            {
+            //int _counter = 0;
+            //foreach (var pass in ItemEffect.CurrentTechnique.Passes)
+            //{
 
-                spriteBatch.DrawString(FontAssets.MouseText.Value, pass.Name, new Vector2(200, 200 + _counter * 20), Main.DiscoColor);
-                _counter++;
-            }
+            //    spriteBatch.DrawString(FontAssets.MouseText.Value, pass.Name, new Vector2(200, 200 + _counter * 20), Main.DiscoColor);
+            //    _counter++;
+            //}
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
             ItemEffect.Parameters["uTransform"].SetValue(result);
             ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f % 1);
-            ItemEffect.Parameters["uItemColor"].SetValue(Vector4.One);
+            ItemEffect.Parameters["uItemColor"].SetValue(Lighting.GetColor((Owner.Center / 16).ToPoint().X, (Owner.Center / 16).ToPoint().Y).ToVector4());
             ItemEffect.Parameters["uItemGlowColor"].SetValue(new Color(250, 250, 250, 0).ToVector4());
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.Misc[0].Value;
@@ -856,7 +901,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
-            ItemEffect.CurrentTechnique.Passes[0].Apply();
+            ItemEffect.CurrentTechnique.Passes[2].Apply();
+            for (int n = 0; n < c.Length; n++) c[n].Color = standardInfo.standardColor;
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, c, 0, 2);
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             Main.spriteBatch.End();

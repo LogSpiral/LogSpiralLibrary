@@ -1,8 +1,10 @@
 ﻿//using CoolerItemVisualEffect;
+using log4net.Util;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using ReLogic.Content;
+using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1363,6 +1365,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get => meleeSequence;
         }
+        public virtual IMeleeAttackData.StandardInfo StandardInfo => new IMeleeAttackData.StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White);
         public abstract void SetUpSequence(MeleeSequence meleeSequence);
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
@@ -1382,23 +1385,29 @@ namespace LogSpiralLibrary.CodeLibrary
             SetUpSequence(meleeSequence);
             base.SetDefaults();
         }
-        Player player => Main.player[Projectile.owner];
+        public Player player => Main.player[Projectile.owner];
+        public override bool ShouldUpdatePosition()
+        {
+            return false;
+        }
         public override void AI()
         {
             player.heldProj = Projectile.whoAmI;
+            var ssp = player.GetModPlayer<SurroundStatePlayer>();
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
             if (
                 player.controlUseItem ||
-                currentData == null || 
-                meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || 
+                currentData == null ||
+                meleeSequence.currentData.counter < meleeSequence.currentData.Cycle ||
                 (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0)
                 )
             {
-                meleeSequence.Update(player, Projectile, new IMeleeAttackData.StandardInfo() with { standardRotation = -MathHelper.PiOver4, standardOrigin = new Vector2(0.1f, 0.9f), standardTimer = player.itemAnimationMax });
+                meleeSequence.Update(player, Projectile, StandardInfo);
                 Projectile.timeLeft = 2;
+                Projectile.velocity = Projectile.position - Projectile.oldPosition;
             }
             Projectile.Center = player.Center + currentData.offsetCenter;
-
+            //Main.NewText(currentData.offsetCenter);
             base.AI();
         }
         public override bool PreDraw(ref Color lightColor)
@@ -1408,7 +1417,19 @@ namespace LogSpiralLibrary.CodeLibrary
             //    player.Center - Main.screenPosition + currentData.offsetCenter,
             //    null, Color.White, currentData.offsetRotation + MathHelper.PiOver4,
             //    currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
-            meleeSequence.currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
+            if (currentData != null)
+            {
+                meleeSequence.currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
+            }
+            var spb = Main.spriteBatch;
+            //spb.End();
+            //spb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone);
+            spb.DrawMeleeSequence(meleeSequence, new Vector2(400, 400)/*, 0, out _*/);
+            //spb.End();
+            //spb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
+
+
+            //Main.spriteBatch.DrawString(FontAssets.MouseText.Value, currentData.GetType().Name, player.Center - Main.screenPosition + new Vector2(0, -64), Color.Cyan);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)

@@ -33,6 +33,7 @@ float4 PSFunction_Bell(PSInput input) : COLOR0
 	c = tex2D(uImage1, float2(0, uTime) + coord);
 	c *= input.Texcoord.z;
 	c *= input.Color;
+	c.a = 0;
 	return c;
 }
 float4 PSFunction_Item(PSInput input) : COLOR0
@@ -66,8 +67,8 @@ float4 PSFunction_ItemGlow(PSInput input) : COLOR0
 {
 	float2 coord = input.Texcoord.xy;
 	float4 cItem = tex2D(uImage0, coord);
-	float4 cItemGlow = tex2D(uImage3, coord);
-	if (!any(cItem) && !any(cItemGlow))
+	float4 cItemGlow = tex2D(uImage1, coord);
+	if (!any(cItem))// && !any(cItemGlow)
 		return 0;
 	float4 c = tex2D(uImage2, coord);
 	c *= input.Texcoord.z;

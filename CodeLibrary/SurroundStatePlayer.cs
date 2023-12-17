@@ -88,11 +88,7 @@ namespace LogSpiralLibrary.CodeLibrary
             targetFront = targetF;
             #endregion
             #region 切换状态
-            if (frontTargets.Count + otherTargets.Count == 0)
-            {
-                state = SurroundState.None;
-                return;
-            }
+
             if (Player.velocity.Y != 0)
             {
                 int h = 0;
@@ -102,6 +98,11 @@ namespace LogSpiralLibrary.CodeLibrary
                     h++;
                 }
                 state = h == 5 ? SurroundState.MidAir : SurroundState.CloseToGround;
+                return;
+            }
+            if (frontTargets.Count + otherTargets.Count == 0)
+            {
+                state = SurroundState.None;
                 return;
             }
             state = otherTargets.Count > frontTargets.Count ? SurroundState.SurroundThreat : SurroundState.FrontThreat;

@@ -37,7 +37,7 @@ namespace LogSpiralLibrary
         private static Effect fadeEffect;
         private static Effect airDistortEffect;
         public static Effect ItemEffect => itemEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ItemGlowEffect", AssetRequestMode.ImmediateLoad).Value;
-        public static Effect ItemGlowEffectEX => itemEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ItemGlowEffectEX", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect ItemEffectEX => itemEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ItemGlowEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEffect => shaderSwooshEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ShaderSwooshEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEX => shaderSwooshEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshUL => shaderSwooshUL ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ShaderSwooshEffectUL", AssetRequestMode.ImmediateLoad).Value;
@@ -140,7 +140,6 @@ namespace LogSpiralLibrary
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
             //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
-
             base.Load();
         }
 

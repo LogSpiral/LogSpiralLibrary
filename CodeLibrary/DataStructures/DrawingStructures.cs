@@ -164,7 +164,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 array[n] = newInfos[n];
             OnModifyRenderInfo(array);
         }
-        public void ResetAllRenderInfo() 
+        public void ResetAllRenderInfo()
         {
             var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
             for (int i = 0; i < array.Length; i++)
@@ -893,6 +893,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public class ComplexPanelInfo
     {
+        public static void DrawComplexPanel_Bound(List<DrawDataBuffer> drawDatas, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation)
+        {
+            int count = (int)(length / 192f) + 1;
+            Vector2 start = rotation.ToRotationVector2() * length * .5f;
+            Vector2 end = center + start;
+            start = end - 2 * start;
+            float lengthScaler = length / 192f / count;
+            for (int n = 0; n < count; n++)
+            {
+                drawDatas.Add(new(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(336, 0, 192, 40), Color.White, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0));
+            }
+
+        }
         public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation)
         {
             int count = (int)(length / 192f) + 1;
@@ -985,6 +998,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 }
             }
         }
+        public static void DrawComplexPanel_BackGround(List<DrawDataBuffer> drawDatas, Texture2D texture, Rectangle destination, Rectangle frame, Vector2 size, Color color)
+        {
+            (float sizeX, float sizeY) = (size.X, size.Y);
+            int countX = (int)(destination.Width / sizeX) + 1;
+            int countY = (int)(destination.Height / sizeY) + 1;
+            float width = frame.Width;
+            for (int i = 0; i < countX; i++)
+            {
+                if (i == countX - 1) width = (destination.Width - i * sizeX) / sizeX * width;
+                float height = frame.Height;
+                for (int j = 0; j < countY; j++)
+                {
+                    if (j == countY - 1) height = (destination.Height - j * sizeY) / sizeY * height;
+                    drawDatas.Add(new (texture, destination.TopLeft() + new Vector2(i * sizeX, j * sizeY), new Rectangle(frame.X, frame.Y, (int)width, (int)height), color, 0, default, new Vector2(sizeX, sizeY) / frame.Size() * 1.025f, 0, 0));
+                }
+            }
+        }
         /// <summary>
         /// 使用config材质
         /// </summary>
@@ -1006,6 +1036,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 {
                     if (j == countY - 1) height = (rectangle.Height - j * size.Y) / size.Y * 40;
                     spriteBatch.Draw(texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0, 0);
+                }
+            }
+        }
+
+        public static void DrawComplexPanel_BackGround(List<DrawDataBuffer> drawDatas, Texture2D texture, Rectangle rectangle, Vector2 size)
+        {
+            int countX = (int)(rectangle.Width / size.X) + 1;
+            int countY = (int)(rectangle.Height / size.Y) + 1;
+            float width = 40;
+            for (int i = 0; i < countX; i++)
+            {
+                if (i == countX - 1) width = (rectangle.Width - i * size.X) / size.X * 40;
+                float height = 40;
+                for (int j = 0; j < countY; j++)
+                {
+                    if (j == countY - 1) height = (rectangle.Height - j * size.Y) / size.Y * 40;
+                    drawDatas.Add(new (texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0, 0));
                 }
             }
         }
@@ -1132,6 +1179,53 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             #endregion
             return rectangle;
         }
+        /*
+        public virtual Rectangle DrawComplexPanel(List<DrawDataBuffer> drawDatas)
+        {
+            var rectangle = ModifiedRectangle;
+            #region 参数准备
+            //ConfigElement.DrawPanel2(spriteBatch, rectangle.TopLeft(), TextureAssets.SettingsPanel.Value, rectangle.Width, rectangle.Height, color);
+            Vector2 center = rectangle.Center();
+            Vector2 scalerVec = rectangle.Size() / new Vector2(64);
+            var clampVec = Vector2.Clamp(scalerVec, default, Vector2.One);
+            bool flagX = scalerVec.X == clampVec.X;
+            bool flagY = scalerVec.Y == clampVec.Y;
+            Texture2D texture = StyleTexture;
+            float left = flagX ? center.X : rectangle.X + 32;
+            float top = flagY ? center.Y : rectangle.Y + 32;
+            float right = flagX ? center.X : rectangle.X + rectangle.Width - 32;
+            float bottom = flagY ? center.Y : rectangle.Y + rectangle.Height - 32;
+            #endregion
+            #region 背景
+            //spriteBatch.Draw(texture, rectangle, new Rectangle(210, 0, 40, 40), Color.White);
+            if (backgroundTexture != null)
+            {
+                DrawComplexPanel_BackGround(drawDatas, backgroundTexture, rectangle, backgroundFrame ?? new Rectangle(0, 0, backgroundTexture.Width, backgroundTexture.Height), backgroundUnitSize * scaler, backgroundColor);
+
+            }
+            else
+            {
+                DrawComplexPanel_BackGround(drawDatas, texture, rectangle, new Vector2(40 * scaler));
+            }
+            #endregion
+            #region 四个边框
+            DrawComplexPanel_Bound(drawDatas, texture, new Vector2(left - 28 * clampVec.X, center.Y), rectangle.Height - 24, clampVec.X, -MathHelper.PiOver2, glowEffectColor, glowShakingStrength, yBorderCount, glowHueOffsetRange);
+            DrawComplexPanel_Bound(drawDatas, texture, new Vector2(right + 28 * clampVec.X, center.Y), rectangle.Height - 24, clampVec.X, MathHelper.PiOver2, glowEffectColor, glowShakingStrength, yBorderCount, glowHueOffsetRange);
+            DrawComplexPanel_Bound(drawDatas, texture, new Vector2(center.X, top - 28 * clampVec.Y), rectangle.Width - 24, clampVec.Y, 0, glowEffectColor, glowShakingStrength, xBorderCount, glowHueOffsetRange);
+            DrawComplexPanel_Bound(drawDatas, texture, new Vector2(center.X, bottom + 28 * clampVec.Y), rectangle.Width - 24, clampVec.Y, MathHelper.Pi, glowEffectColor, glowShakingStrength, xBorderCount, glowHueOffsetRange);
+            #endregion
+            #region 四个角落
+            drawDatas.Add(new(texture, new Vector2(left, top), new Rectangle(0, 0, 40, 40), Color.White, 0, new Vector2(40), clampVec, 0, 0));
+            drawDatas.Add(new(texture, new Vector2(left, bottom), new Rectangle(42, 0, 40, 40), Color.White, 0, new Vector2(40, 0), clampVec, SpriteEffects.FlipVertically, 0));
+            drawDatas.Add(new(texture, new Vector2(right, bottom), new Rectangle(42, 0, 40, 40), Color.White, MathHelper.Pi, new Vector2(40), clampVec, 0, 0));
+            drawDatas.Add(new(texture, new Vector2(right, top), new Rectangle(42, 0, 40, 40), Color.White, 0, new Vector2(0, 40), clampVec, SpriteEffects.FlipHorizontally, 0));
+            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(left, top), new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4f, 0, 0);
+            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(960, 560), new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4f, 0, 0);
+
+            #endregion
+            return rectangle;
+        }
+        */
     }
     public interface IVertexTriangle
     {

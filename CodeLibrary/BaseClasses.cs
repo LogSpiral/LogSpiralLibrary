@@ -1,6 +1,7 @@
 ﻿//using CoolerItemVisualEffect;
 using log4net.Util;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using ReLogic.Content;
@@ -1424,7 +1425,9 @@ namespace LogSpiralLibrary.CodeLibrary
             var spb = Main.spriteBatch;
             //spb.End();
             //spb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone);
+
             spb.DrawMeleeSequence(meleeSequence, new Vector2(400, 400)/*, 0, out _*/);
+
             //spb.End();
             //spb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
 

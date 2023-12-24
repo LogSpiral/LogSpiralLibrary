@@ -1,4 +1,5 @@
 ﻿using AsmResolver.PE.DotNet.Cil;
+using LogSpiralLibrary.CodeLibrary;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
@@ -10,9 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader;
 using Terraria.ModLoader.UI;
-using static LogSpiralLibrary.CodeLibrary.DataStructures.IMeleeAttackData;
+using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.IMeleeAttackData;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
     public struct MeleeModifyData
     {
@@ -44,7 +45,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             float speed = target.actionOffsetSpeed;
             target = this with { actionOffsetSpeed = speed };
         }
-        public void SetActionSpeed(ref MeleeModifyData target) => target.actionOffsetSpeed = this.actionOffsetSpeed;
+        public void SetActionSpeed(ref MeleeModifyData target) => target.actionOffsetSpeed = actionOffsetSpeed;
     }
 
     //↓旧版代码
@@ -486,23 +487,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public class MeleeGroup
         {
-            public static MeleeSAWraper skipper = new MeleeSAWraper(new SkipAction(0));
-            class SkipAction : NormalAttackAction
-            {
-                public SkipAction(int cycle, MeleeModifyData? data = null) : base(cycle, data)
-                {
-                }
-                public override int Cycle => 1;
-            }
             public List<MeleeSAWraper> wrapers = new List<MeleeSAWraper>();
             public MeleeSAWraper GetCurrentWraper()
             {
                 foreach (var wraper in wrapers)
                 {
-                    if (wraper.condition.IsMet()) 
+                    if (wraper.condition.IsMet())
                         return wraper;
                 }
-                return skipper;
+                return null;
             }
             public bool ContainsSequence(MeleeSequence meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
@@ -569,13 +562,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 }
                 else
                 {
-                    if (attackInfo.SkipCheck()) 
-                    {
-                        timer = 0;
-                        timerMax = 0;
-                        attackInfo.counter = 0;
-                        finished = true;
-                    }
                     if (timer <= 0)//计时器小于等于0时
                     {
 
@@ -670,16 +656,26 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public IReadOnlyList<MeleeGroup> MeleeGroups => meleeGroups;
         public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo)
         {
-            if (currentWrapper == null)
+            if (currentWrapper == null || currentWrapper.finished) 
             {
-                currentWrapper = meleeGroups[0].GetCurrentWraper();
-            }
-            if (currentWrapper.finished)
-            {
-                currentWrapper.finished = false;
-                counter++;
-                currentWrapper = meleeGroups[counter % meleeGroups.Count].GetCurrentWraper();
-
+                if (currentWrapper != null) 
+                {
+                    currentWrapper.finished = false;
+                    counter++;
+                }
+                int offsetor = 0;
+                int maxCount = meleeGroups.Count;
+                do
+                {
+                    currentWrapper = meleeGroups[(counter + offsetor) % maxCount].GetCurrentWraper();
+                    if (currentWrapper != null)
+                    {
+                        counter += offsetor;
+                        break;
+                    }
+                    offsetor++;
+                }
+                while (currentWrapper == null && offsetor < maxCount);
             }
             currentWrapper.Update(entity, projectile, standardInfo, ref currentData);
             /*

@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;

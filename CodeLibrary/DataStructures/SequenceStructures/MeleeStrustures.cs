@@ -15,38 +15,7 @@ using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.IMel
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
-    public struct MeleeModifyData
-    {
-        public float actionOffsetSize = 1;
-        /// <summary>
-        /// 必须得好好地吐槽下这个Speed越大越慢，因为是标准持续时间的倍数
-        /// </summary>
-        public float actionOffsetSpeed = 1;
-        public float actionOffsetKnockBack = 1;
-        public float actionOffsetDamage = 1;
-        public int actionOffsetCritAdder = 0;
-        public float actionOffsetCritMultiplyer = 1;
 
-        public MeleeModifyData(float size = 1, float speed = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1)
-        {
-            actionOffsetSize = size;
-            actionOffsetSpeed = speed;
-            actionOffsetKnockBack = knockBack;
-            actionOffsetDamage = damage;
-            actionOffsetCritAdder = critAdder;
-            actionOffsetCritMultiplyer = critMultiplyer;
-        }
-        /// <summary>
-        /// 将除了速度以外的值赋给目标
-        /// </summary>
-        /// <param name="target"></param>
-        public void SetActionValue(ref MeleeModifyData target)
-        {
-            float speed = target.actionOffsetSpeed;
-            target = this with { actionOffsetSpeed = speed };
-        }
-        public void SetActionSpeed(ref MeleeModifyData target) => target.actionOffsetSpeed = actionOffsetSpeed;
-    }
 
     //↓旧版代码
     /*public interface IMeleeAttackData
@@ -348,367 +317,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     //    Projectile Projectile { get; set; }
     //}
     */
-    public interface IMeleeAttackData
+    public interface IMeleeAttackData : ISequenceElement
     {
-        #region 属性
-        #region 编排序列时调整
-        //持续时间 角度 位移 修改数据
-        /// <summary>
-        /// 近战数据修改
-        /// </summary>
-        MeleeModifyData ModifyData => new MeleeModifyData();
-        /// <summary>
-        /// 执行次数
-        /// </summary>
-        int Cycle => 1;
-        #endregion
-        #region 动态调整，每次执行时重设
-        bool flip { get; set; }
-        /// <summary>
-        /// 旋转角，非插值
-        /// </summary>
-        float Rotation { get; set; }
-        /// <summary>
-        /// 扁平程度？
-        /// </summary>
-        float KValue { get; set; }
-        /// <summary>
-        /// 执行第几次？
-        /// </summary>
-        int counter { get; set; }
-        int timer { get; set; }
-        int timerMax { get; set; }
-        #endregion
-        #region 插值生成，最主要的实现内容的地方
-        /// <summary>
-        /// 当前周期的进度
-        /// </summary>
-        float Factor { get; }
-        /// <summary>
-        /// 中心偏移量，默认零向量
-        /// </summary>
-        Vector2 offsetCenter => default;
-        /// <summary>
-        /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
-        /// </summary>
-        Vector2 offsetOrigin => new Vector2(.1f, .9f);
-        /// <summary>
-        /// 旋转量
-        /// </summary>
-        float offsetRotation { get; }
-        /// <summary>
-        /// 大小
-        /// </summary>
-        float offsetSize { get; }
-        /// <summary>
-        /// 是否具有攻击性
-        /// </summary>
-        bool Attacktive { get; }
-        #endregion
-        #endregion
-        #region 函数
-        #region 切换
-        /// <summary>
-        /// 被切换时调用,脉冲性
-        /// </summary>
-        void OnActive();
-
-        /// <summary>
-        /// 被换走时调用,脉冲性
-        /// </summary>
-        void OnDeactive();
-        #endregion
-
-        #region 吟唱
-        /// <summary>
-        /// 攻击期间调用,持续性
-        /// </summary>
-        void OnAttack();
-
-        /// <summary>
-        /// 攻击以外时间调用,持续性
-        /// </summary>
-        void OnCharge();
-        #endregion
-
-        #region 每轮
-        void OnStartSingle();
-        void OnEndSingle();
-        #endregion
-
-        #region 每次攻击
-        /// <summary>
-        /// 结束时调用,脉冲性
-        /// </summary>
-        void OnEndAttack();
-
-        /// <summary>
-        /// 开始攻击时调用,脉冲性
-        /// </summary>
-        void OnStartAttack();
-        #endregion
-
-        #region 具体传入
-        void Update();
-
-        void Draw(SpriteBatch spriteBatch, Texture2D texture);
-
         bool Collide(Rectangle rectangle);
-        #endregion
-        #endregion
-        #region 吃闲饭的
-        Entity Owner { get; set; }
-        Projectile Projectile { get; set; }
-        StandardInfo standardInfo { get; set; }
-        public struct StandardInfo
-        {
-            public float standardRotation = MathHelper.PiOver4;
-            public Vector2 standardOrigin = new Vector2(.1f, .9f);
-            public int standardTimer;
-            public Color standardColor;
 
-            public StandardInfo()
-            {
-            }
-            public StandardInfo(float rotation, Vector2 origin, int timer, Color color)
-            {
-                standardRotation = rotation;
-                standardOrigin = origin;
-                standardTimer = timer;
-                standardColor = color;
-            }
-        }
-        #endregion
     }
-    public class MeleeSequence
+    public class MeleeSequence : SequenceBase<IMeleeAttackData>
     {
-        /// <summary>
-        /// 非常简单的临时结构
-        /// </summary>
-        public class MeleeGroup
-        {
-            public List<MeleeSAWraper> wrapers = new List<MeleeSAWraper>();
-            public MeleeSAWraper GetCurrentWraper()
-            {
-                foreach (var wraper in wrapers)
-                {
-                    if (wraper.condition.IsMet())
-                        return wraper;
-                }
-                return null;
-            }
-            public bool ContainsSequence(MeleeSequence meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
-            public bool ContainsSequence(int hashCode)
-            {
-                foreach (var wraper in wrapers)
-                    if (wraper.ContainsSequence(hashCode))
-                        return true;
-                return false;
-            }
-        }
-        /// <summary>
-        /// 把两个类打包在一个类的实用寄巧
-        /// </summary>
-        public class MeleeSAWraper
-        {
-            public readonly IMeleeAttackData attackInfo;
-            public readonly MeleeSequence sequenceInfo;
-            public bool finished;
-            public Condition condition = new Condition("Always", () => true);
-            public bool IsAttack => attackInfo != null && !IsSequence;
-            public bool IsSequence => sequenceInfo != null;
-            public bool Available => IsSequence || IsAttack;
-            public int timer { get => attackInfo.timer; set => attackInfo.timer = value; }
-            public int timerMax { get => attackInfo.timerMax; set => attackInfo.timerMax = value; }
-            public bool Attacktive;
-            //public string Name => groupInfo?.GroupName ?? sequenceInfo.SequenceName ?? "null";//暂时用不到这b玩意好像
-            public MeleeSAWraper(IMeleeAttackData meleeAttackData)
-            {
-                attackInfo = meleeAttackData;
-            }
-
-            public MeleeSAWraper(MeleeSequence sequence)
-            {
-                sequenceInfo = sequence;
-            }
-            //public static implicit operator MeleeSAWraper(IMeleeAttackData meleeAttackData) => new MeleeSAWraper(meleeAttackData);
-            public static implicit operator MeleeSAWraper(MeleeSequence sequence) => new MeleeSAWraper(sequence);
-            public bool ContainsSequence(MeleeSequence meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
-            public bool ContainsSequence(int hashCode)
-            {
-                if (!IsSequence) return false;
-                if (sequenceInfo.GetHashCode() == hashCode) return true;
-                foreach (var groups in sequenceInfo.meleeGroups)
-                {
-                    if (groups.ContainsSequence(hashCode)) return true;
-                }
-                return false;
-            }
-            public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, ref IMeleeAttackData meleeAttackData)
-            {
-                if (!Available) throw new Exception("序列不可用");
-                if (finished) throw new Exception("咱已经干完活了");
-                if (IsSequence)
-                {
-                    if (sequenceInfo.counter >= sequenceInfo.meleeGroups.Count)
-                    {
-                        sequenceInfo.currentWrapper = null;
-                        sequenceInfo.counter = 0;
-                        finished = true;
-                        return;
-                    }
-                    sequenceInfo.Update(entity, projectile, standardInfo);
-                    meleeAttackData = sequenceInfo.currentData;
-                }
-                else
-                {
-                    if (timer <= 0)//计时器小于等于0时
-                    {
-
-                        if (attackInfo.counter < attackInfo.Cycle || attackInfo.Cycle == 0)//如果没执行完所有次数
-                        {
-                            attackInfo.Owner = entity;
-
-                            if (attackInfo.counter == 0)//标志着刚切换上
-                                attackInfo.OnActive();
-                            else attackInfo.OnEndSingle();
-                            attackInfo.OnStartSingle();
-                            attackInfo.Projectile = projectile;
-                            attackInfo.standardInfo = standardInfo;
-                            var result = (int)(standardInfo.standardTimer * attackInfo.ModifyData.actionOffsetSpeed / attackInfo.Cycle);
-                            timerMax = timer = result;
-                            attackInfo.counter++;
-                        }
-                        //迁移至下方
-                        else
-                        {
-                            attackInfo.OnEndSingle();
-                            attackInfo.OnDeactive();//要被换掉了
-                            timer = 0;
-                            timerMax = 0;
-                            attackInfo.counter = 0;
-                            finished = true;
-                        }
-                    }
-                    if (attackInfo != null)
-                    {
-                        bool oldValue = Attacktive;
-                        Attacktive = attackInfo.Attacktive;
-                        if (!oldValue && Attacktive)
-                        {
-                            attackInfo.OnStartAttack();
-                        }
-                        if (oldValue && !Attacktive)
-                            attackInfo.OnEndAttack();
-                        if (Attacktive) attackInfo.OnAttack();
-                        else attackInfo.OnCharge();
-                        attackInfo.Update();
-
-                    }
-                    meleeAttackData = attackInfo;
-                }
-            }
-            public MeleeSAWraper SetCondition(Condition _condition)
-            {
-                condition = _condition;
-                return this;
-            }
-        }
-        public void Add(IMeleeAttackData meleeAttackData)
-        {
-            MeleeSAWraper wraper = new(meleeAttackData);
-            Add(wraper);
-        }
-        public void Add(MeleeSAWraper wraper)
-        {
-            if (wraper.ContainsSequence(this))
-            {
-                Main.NewText("不可调用自己");
-                return;
-            }
-            MeleeGroup meleeGroup = new MeleeGroup();
-            meleeGroup.wrapers.Add(wraper);
-            Add(meleeGroup);
-        }
-        public void Add(MeleeGroup meleeGroup)
-        {
-            if (meleeGroup.ContainsSequence(this))
-            {
-                Main.NewText("不可调用自己");
-                return;
-            }
-            meleeGroups.Add(meleeGroup);
-        }
-        public void Insert(int index, MeleeGroup meleeGroup)
-        {
-            if (meleeGroup.ContainsSequence(this))
-            {
-                Main.NewText("不可调用自己");
-                return;
-            }
-            meleeGroups.Insert(index, meleeGroup);
-        }
-        public string SequenceName = "My MeleeSequence";
-        public int counter;
-        public MeleeSAWraper currentWrapper;
-        public IMeleeAttackData currentData;
-        List<MeleeGroup> meleeGroups = new List<MeleeGroup>();
-        public IReadOnlyList<MeleeGroup> MeleeGroups => meleeGroups;
-        public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo)
-        {
-            if (currentWrapper == null || currentWrapper.finished) 
-            {
-                if (currentWrapper != null) 
-                {
-                    currentWrapper.finished = false;
-                    counter++;
-                }
-                int offsetor = 0;
-                int maxCount = meleeGroups.Count;
-                do
-                {
-                    currentWrapper = meleeGroups[(counter + offsetor) % maxCount].GetCurrentWraper();
-                    if (currentWrapper != null)
-                    {
-                        counter += offsetor;
-                        break;
-                    }
-                    offsetor++;
-                }
-                while (currentWrapper == null && offsetor < maxCount);
-            }
-            currentWrapper.Update(entity, projectile, standardInfo, ref currentData);
-            /*
-            if (timer <= 0 || currentData == null)
-            {
-                if (currentData != null) currentData.OnDeactive();
-                currentData = resultGroups[counter % resultGroups.Count].GetCurrentMeleeData();
-                currentData.OnActive();
-                currentData.Player = player;
-                currentData.Projectile = projectile;
-                timerMax = timer = (int)(player.itemAnimationMax * currentData.ModifyData.actionOffsetSpeed);
-                counter++;
-            }
-            if (currentData != null)
-            {
-                bool oldValue = Attacktive;
-                Attacktive = currentData.Attacktive;
-                if (!oldValue && Attacktive)
-                {
-                    currentData.OnStartAttack();
-                }
-                if (oldValue && !Attacktive)
-                    currentData.OnEndAttack();
-                if (Attacktive) currentData.OnAttack();
-                else currentData.OnCharge();
-                bool flag = true;
-                currentData.Update(ref timer, timerMax, ref flag);
-                if (flag)
-                    timer--;
-            }
-            player.itemTime = 2;
-            */
-        }
+        public IReadOnlyList<Group> MeleeGroups => Groups;
     }
     public abstract class NormalAttackAction : IMeleeAttackData
     {
@@ -721,7 +337,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Action<NormalAttackAction> _OnStartAttack;
         public Action<NormalAttackAction> _OnStartSingle;
 
-        public NormalAttackAction(int cycle, MeleeModifyData? data = null)
+        public NormalAttackAction(int cycle, ActionModifyData? data = null)
         {
             Cycle = cycle;
             if (data != null)
@@ -733,7 +349,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 近战数据修改
         /// </summary>
-        public MeleeModifyData ModifyData { get; set; } = new MeleeModifyData(1);
+        public ActionModifyData ModifyData { get; set; } = new ActionModifyData(1);
         /// <summary>
         /// 执行次数
         /// </summary>
@@ -930,7 +546,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class SwooshInfo : NormalAttackAction
     {
-        public SwooshInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+        public SwooshInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
         {
 
         }
@@ -988,6 +604,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             flip ^= true;
             KValue = Main.rand.NextFloat(1, 2);
         }
+        public override void OnDeactive()
+        {
+            flip ^= true;
+            base.OnDeactive();
+        }
         public override void OnActive()
         {
             flip = Main.rand.NextBool();
@@ -997,7 +618,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public class StabInfo : NormalAttackAction
     {
         public bool negativeDir = false;
-        public StabInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+        public StabInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
         {
 
         }
@@ -1040,7 +661,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public int realCycle;
         public int givenCycle;
 
-        public RapidlyStabInfo(int cycle, (int, int) _range, MeleeModifyData? data = null) : base(cycle, data)
+        public RapidlyStabInfo(int cycle, (int, int) _range, ActionModifyData? data = null) : base(cycle, data)
         {
             CycleOffsetRange = _range;
             ResetCycle();
@@ -1058,7 +679,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class ConvoluteInfo : NormalAttackAction
     {
-        public ConvoluteInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+        public ConvoluteInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
         {
 
         }
@@ -1080,7 +701,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class ShockingDashInfo : NormalAttackAction
     {
-        public ShockingDashInfo(int cycle, MeleeModifyData? data) : base(cycle, data)
+        public ShockingDashInfo(int cycle, ActionModifyData? data) : base(cycle, data)
         {
         }
     }

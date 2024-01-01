@@ -13,6 +13,7 @@ using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
 using XPT.Core.Audio.MP3Sharp;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using Terraria.GameContent.UI.Chat;
 
 namespace LogSpiralLibrary
 {
@@ -301,6 +302,10 @@ namespace LogSpiralLibrary
         public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
         public override void OnModLoad()
         {
+            if (Main.chatMonitor is RemadeChatMonitor remade)
+            {
+                remade._showCount = 40;
+            }
             //renderBasedDrawings = new List<RenderBasedDrawing>();
             //vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
             base.OnModLoad();

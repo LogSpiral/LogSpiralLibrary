@@ -24,6 +24,31 @@ Configs: {
 			Tooltip: ""
 		}
 	}
+
+	SequenceConfig: {
+		DisplayName: Sequence Config
+
+		ShowWrapBox: {
+			Label: Show Wrap Box
+			Tooltip: ""
+		}
+
+		ShowGroupBox: {
+			Label: Show Group Box
+			Tooltip: ""
+		}
+
+		ShowSequenceBox: {
+			Label: Show Sequence Box
+			Tooltip: ""
+		}
+
+		Step: {
+			Label: Step
+			Tooltip: ""
+		}
+	}
 }
 
 Projectiles.TestBladeProj.DisplayName: Test Blade Proj
+Keybinds.展示序列列表.DisplayName: 展示序列列表

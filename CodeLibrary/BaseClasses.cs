@@ -2,6 +2,7 @@
 using log4net.Util;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using ReLogic.Content;
@@ -1366,7 +1367,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get => meleeSequence;
         }
-        public virtual IMeleeAttackData.StandardInfo StandardInfo => new IMeleeAttackData.StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White);
+        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White);
         public abstract void SetUpSequence(MeleeSequence meleeSequence);
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
@@ -1382,8 +1383,11 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            //if (!Main.gameMenu)
+            meleeSequence.SequenceName = Name;
             SetUpSequence(meleeSequence);
+            SequenceSystem.sequenceBases[FullName] = meleeSequence;
+            if (SequenceUI.Visible)
+                SequenceSystem.instance.sequenceUI.SetupConfigList();
             base.SetDefaults();
         }
         public Player player => Main.player[Projectile.owner];
@@ -1394,13 +1398,17 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void AI()
         {
             player.heldProj = Projectile.whoAmI;
-            var ssp = player.GetModPlayer<SurroundStatePlayer>();
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
+            bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;
+            bool flag2 = false;
+            if (currentData != null)
+            {
+                flag2 = meleeSequence.currentData.counter < meleeSequence.currentData.Cycle;
+                flag2 |= meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer >= 0;
+                flag2 &= !meleeSequence.currentWrapper.finished;
+            }
             if (
-                player.controlUseItem ||
-                currentData == null ||
-                meleeSequence.currentData.counter < meleeSequence.currentData.Cycle ||
-                (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0)
+               flag1 || flag2// 
                 )
             {
                 meleeSequence.Update(player, Projectile, StandardInfo);
@@ -1426,7 +1434,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //spb.End();
             //spb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone);
 
-            spb.DrawMeleeSequence(meleeSequence, new Vector2(400, 400)/*, 0, out _*/);
+            //spb.DrawMeleeSequence(meleeSequence, new Vector2(400, 400)/*, 0, out _*/);
 
             //spb.End();
             //spb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);

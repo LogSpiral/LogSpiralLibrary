@@ -44,7 +44,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
     {
         class TestBladeStabInfo : RapidlyStabInfo
         {
-            public TestBladeStabInfo(int cycle, (int, int) _range, MeleeModifyData? data = null) : base(cycle, _range, data)
+            public TestBladeStabInfo(int cycle, (int, int) _range, ActionModifyData? data = null) : base(cycle, _range, data)
             {
             }
 
@@ -72,8 +72,12 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         }
         class TestBladeSwooshInfo : SwooshInfo
         {
-            public TestBladeSwooshInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+            public TestBladeSwooshInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
             {
+            }
+            public override void Update()
+            {
+                base.Update();
             }
             public override void OnEndAttack()
             {
@@ -97,22 +101,23 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             {
                 base.OnAttack();
             }
-            public TestBladeConvoluteInfo(int cycle, MeleeModifyData? data = null) : base(cycle, data)
+            public TestBladeConvoluteInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
             {
             }
         }
         public override string Texture => base.Texture.Replace("Proj", "");
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
+            meleeSequence.SequenceName = $"测试剑i:[{ModContent.ItemType<TestBlade>()}]";
             SwooshInfo swooshInfo = new TestBladeSwooshInfo(4);
             swooshInfo.KValue = 3;
-            swooshInfo.ModifyData = new MeleeModifyData() with { actionOffsetSpeed = 4f };
+            swooshInfo.ModifyData = new ActionModifyData() with { actionOffsetTimeScaler = 4f };
             meleeSequence.Add(swooshInfo);
             RapidlyStabInfo stabInfo = new TestBladeStabInfo(5, (0, 1));
             stabInfo.KValue = 3;
             meleeSequence.Add(stabInfo);
             ConvoluteInfo convoluteInfo = new TestBladeConvoluteInfo(4);
-            convoluteInfo.ModifyData = new MeleeModifyData() with { actionOffsetSpeed = 2f };
+            convoluteInfo.ModifyData = new ActionModifyData() with { actionOffsetTimeScaler = 2f };
             meleeSequence.Add(convoluteInfo);
             meleeSequence.Add(stabInfo);
         }

@@ -469,14 +469,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             //spriteBatch.Draw(LogSpiralLibraryMod.Misc[24].Value, new Vector2(0,0), Color.White);
             Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
-            float finalRotation = Rotation + offsetRotation + standardInfo.standardRotation;
+            float finalRotation = offsetRotation + standardInfo.standardRotation;
             #region 好久前的绘制代码，直接搬过来用用试试
             if (Owner == null)
             {
                 return;
             }
             Vector2 drawCen = offsetCenter + Owner.Center;
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, texture, KValue, offsetSize, drawCen, flip);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize, drawCen, flip);
             //bool flag = LogSpiralLibraryMod.ModTime / 60 % 2 < 1;
             //Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemEffectEX : LogSpiralLibraryMod.ItemEffect;
             //if (flag)
@@ -617,7 +617,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class StabInfo : NormalAttackAction
     {
-        public bool negativeDir = false;
         public StabInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
         {
 
@@ -630,7 +629,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnStartSingle();
             KValue = Main.rand.NextFloat(1f, 2.4f);
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
-            negativeDir ^= true;
+            flip ^= true;
         }
         public override float Factor
         {

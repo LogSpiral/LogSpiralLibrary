@@ -176,6 +176,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public abstract class GroupBase
         {
             public abstract List<WraperBase> Wrapers { get; }
+            public abstract int Index { get; }
         }
         public abstract class WraperBase
         {
@@ -189,7 +190,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public abstract IReadOnlyList<GroupBase> GroupBases { get; }
         public abstract string SequenceNameBase { get; }
-
+        public abstract int Counter { get; }
 
     }
     public class SequenceBase<T> : SequenceBase where T : ISequenceElement
@@ -198,12 +199,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             public override List<WraperBase> Wrapers => (from w in wrapers select (WraperBase)w).ToList();
             public List<Wraper> wrapers = new List<Wraper>();
+            public override int Index => index;
+            public int index;
             public Wraper GetCurrentWraper()
             {
+                int counter = 0;
                 foreach (var wraper in wrapers)
                 {
                     if (wraper.condition.IsMet())
+                    {
+                        index = counter;
                         return wraper;
+                    }
+                    counter++;
                 }
                 return null;
             }
@@ -362,6 +370,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public string SequenceName = "My MeleeSequence";
         public int counter;
+        public override int Counter => counter;
         public Wraper currentWrapper;
         public T currentData;
         List<Group> groups = new List<Group>();

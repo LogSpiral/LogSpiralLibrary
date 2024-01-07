@@ -50,7 +50,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
 
             public override void OnEndAttack()
             {
-                var u = UltraStab.NewUltraStab(Color.Gray, 30, 120, Owner.Center, null, negativeDir, Rotation, KValue * 3);
+                var u = UltraStab.NewUltraStab(Color.Gray, 30, 120, Owner.Center, null, flip, Rotation, KValue * 3);
                 u.ResetAllRenderInfo();
                 //                var u = UltraStab.NewUltraStab(Color.Purple, 30, 120, Owner.Center,
                 //LogSpiralLibraryMod.HeatMap[1].Value, negativeDir, Rotation,
@@ -108,7 +108,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         public override string Texture => base.Texture.Replace("Proj", "");
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
-            meleeSequence.SequenceName = $"测试剑i:[{ModContent.ItemType<TestBlade>()}]";
+            meleeSequence.SequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
             SwooshInfo swooshInfo = new TestBladeSwooshInfo(4);
             swooshInfo.KValue = 3;
             swooshInfo.ModifyData = new ActionModifyData() with { actionOffsetTimeScaler = 4f };

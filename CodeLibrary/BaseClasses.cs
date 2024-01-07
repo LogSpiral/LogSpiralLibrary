@@ -1399,6 +1399,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             player.heldProj = Projectile.whoAmI;
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
+            if (Projectile.timeLeft == 10) return;
             bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;
             bool flag2 = false;
             if (currentData != null)
@@ -1445,7 +1446,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            if (!currentData.Attacktive) return false;
+            if (currentData == null || !currentData.Attacktive) return false;
             return meleeSequence.currentData.Collide(targetHitbox);
             //float point = 0f;
             //return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center,

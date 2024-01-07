@@ -2020,7 +2020,7 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
-        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
+        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation,float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
         {
             //对数据进行矩阵变换吧！
             Matrix matrix =
@@ -2028,6 +2028,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Matrix.CreateScale(texture.Width, texture.Height, 1) *
                 Matrix.CreateRotationZ(rotation) *
                 Matrix.CreateScale(1, 1 / KValue, 1) *
+                Matrix.CreateRotationZ(rotationDir) *
                 Matrix.CreateScale(size);
             Vector2[] vecs = new Vector2[4];
             for (int i = 0; i < 4; i++)

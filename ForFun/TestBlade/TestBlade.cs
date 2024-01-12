@@ -111,13 +111,13 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             meleeSequence.SequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
             SwooshInfo swooshInfo = new TestBladeSwooshInfo(4);
             swooshInfo.KValue = 3;
-            swooshInfo.ModifyData = new ActionModifyData() with { actionOffsetTimeScaler = 4f };
+            swooshInfo.ModifyData = new ActionModifyData(1) with { actionOffsetTimeScaler = 4f };
             meleeSequence.Add(swooshInfo);
-            RapidlyStabInfo stabInfo = new TestBladeStabInfo(5, (0, 1));
+            RapidlyStabInfo stabInfo = new TestBladeStabInfo(5, (0, 1),new ActionModifyData(1,1));
             stabInfo.KValue = 3;
             meleeSequence.Add(stabInfo);
             ConvoluteInfo convoluteInfo = new TestBladeConvoluteInfo(4);
-            convoluteInfo.ModifyData = new ActionModifyData() with { actionOffsetTimeScaler = 2f };
+            convoluteInfo.ModifyData = new ActionModifyData(1) with { actionOffsetTimeScaler = 2f };
             meleeSequence.Add(convoluteInfo);
             meleeSequence.Add(stabInfo);
         }

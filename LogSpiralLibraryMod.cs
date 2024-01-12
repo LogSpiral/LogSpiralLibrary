@@ -14,6 +14,8 @@ using Microsoft.Xna.Framework.Audio;
 using XPT.Core.Audio.MP3Sharp;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using Terraria.GameContent.UI.Chat;
+using Terraria.ModLoader.Config;
+using System.ComponentModel;
 
 namespace LogSpiralLibrary
 {
@@ -244,12 +246,12 @@ namespace LogSpiralLibrary
             //Main.NewText($"Mp3Length更新后:{mp3str.Position}");
             //Main.NewText($"Mp3Length差值:{mp3str.Position - position}");
             //float MyFunc(float t) => MathF.Cos(t * 55);//t取值范围0,1 函数值取值范围-1，1
-            float MyFunc(float t) 
+            float MyFunc(float t)
             {
                 float result = 0f;
                 float a = .5f * (Main.GlobalTimeWrappedHourly / 10f).CosFactor();
                 float b = 5f;//(Main.GlobalTimeWrappedHourly / 10f).CosFactor() *
-                for (int n = 0; n < 20; n++) 
+                for (int n = 0; n < 20; n++)
                 {
                     result += MathF.Pow(a, n) * MathF.Cos(MathF.Pow(b, n) * MathHelper.Pi * t);
                 }
@@ -320,7 +322,7 @@ namespace LogSpiralLibrary
             //Main.NewText(Filters.Scene["CoolerItemVisualEffect:InvertGlass"].GetShader().CombinedOpacity);
         }
         public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[100];
-        public override void PostUpdateEverything() 
+        public override void PostUpdateEverything()
         {
             UpdateVertexInfo();
         }
@@ -401,5 +403,33 @@ namespace LogSpiralLibrary
         }
 
     }
+    public class LogSpiralLibraryPlayer : ModPlayer
+    {
+        public float strengthOfShake;
+        public override void ModifyScreenPosition()
+        {
+            var set = LogSpiralLibraryMiscConfig.Instance.screenShakingSetting;
+            if (set.Available)
+            {
+                strengthOfShake *= 0.6f;
+                if (strengthOfShake < 0.025f) strengthOfShake = 0;
+                Main.screenPosition += Main.rand.NextVector2Unit() * strengthOfShake * 48 * set.strength;
+            }
+        }
+    }
+    public class LogSpiralLibraryMiscConfig : ModConfig
+    {
+        public override ConfigScope Mode => ConfigScope.ClientSide;
+        public static LogSpiralLibraryMiscConfig Instance => ModContent.GetInstance<LogSpiralLibraryMiscConfig>();
+        [CustomModConfigItem(typeof(AvailableConfigElement))]
+        public ShakingSetting screenShakingSetting = new ShakingSetting();
+        public class ShakingSetting : IAvailabilityChangableConfig
+        {
+            public bool Available { get; set; } = true;
+            [Range(0, 1)]
+            [DefaultValue(0.25f)]
+            public float strength = 0.25f;
 
+        }
+    }
 }

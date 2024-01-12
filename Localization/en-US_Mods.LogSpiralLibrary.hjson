@@ -48,6 +48,29 @@ Configs: {
 			Tooltip: ""
 		}
 	}
+
+	LogSpiralLibraryMiscConfig: {
+		DisplayName: Log Spiral Library Misc Config
+
+		screenShakingSetting: {
+			Label: screen Shaking Setting
+			Tooltip: ""
+		}
+	}
+
+	ShakingSetting: {
+		Tooltip: ""
+
+		strength: {
+			Label: strength
+			Tooltip: ""
+		}
+
+		Available: {
+			Label: Available
+			Tooltip: ""
+		}
+	}
 }
 
 Projectiles.TestBladeProj.DisplayName: Test Blade Proj

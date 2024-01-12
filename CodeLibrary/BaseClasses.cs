@@ -1367,7 +1367,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get => meleeSequence;
         }
-        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White);
+        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White,null);
         public abstract void SetUpSequence(MeleeSequence meleeSequence);
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
@@ -1394,6 +1394,18 @@ namespace LogSpiralLibrary.CodeLibrary
         public override bool ShouldUpdatePosition()
         {
             return false;
+        }
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            
+            player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f) * (damageDone / MathHelper.Clamp(player.HeldItem.damage, 1, int.MaxValue));//
+            base.OnHitNPC(target, hit, damageDone);
+        }
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
+        {
+            player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f);
+
+            base.OnHitPlayer(target, info);
         }
         public override void AI()
         {
@@ -1454,11 +1466,32 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
-            modifiers.Knockback *= meleeSequence.currentData.ModifyData.actionOffsetKnockBack;
+            if (currentData == null) return;
+            var data = currentData.ModifyData;
+            modifiers.SourceDamage *= data.actionOffsetDamage;
+            modifiers.Knockback *= data.actionOffsetKnockBack;
+            var _crit = player.GetWeaponCrit(player.HeldItem);
+            _crit += data.actionOffsetCritAdder;
+            _crit = (int)(_crit * data.actionOffsetCritMultiplyer);
+            if (Main.rand.Next(100) < _crit)
+            {
+                modifiers.SetCrit();
+            }
+            else
+            {
+                modifiers.DisableCrit();
+            }
             target.immune[player.whoAmI] = 0;
             base.ModifyHitNPC(target, ref modifiers);
         }
-
+        public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
+        {
+            if (currentData == null) return;
+            var data = currentData.ModifyData;
+            modifiers.SourceDamage *= data.actionOffsetDamage;
+            modifiers.Knockback *= data.actionOffsetKnockBack;
+            base.ModifyHitPlayer(target, ref modifiers);
+        }
     }
     /*public abstract class MeleeSequenceProj : ModProjectile, IHammerProj ,IChannelProj
     {

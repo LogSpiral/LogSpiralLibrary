@@ -14,24 +14,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Vector2 standardOrigin = new Vector2(.1f, .9f);
         public int standardTimer;
         public Color standardColor;
-
+        public Texture2D standardGlowTexture;
         public StandardInfo()
         {
         }
-        public StandardInfo(float rotation, Vector2 origin, int timer, Color color)
+        public StandardInfo(float rotation, Vector2 origin, int timer, Color color,Texture2D glow)
         {
             standardRotation = rotation;
             standardOrigin = origin;
             standardTimer = timer;
             standardColor = color;
+            standardGlowTexture = glow;
         }
     }
     public struct ActionModifyData
     {
         public float actionOffsetSize = 1;
-        /// <summary>
-        /// 必须得好好地吐槽下这个Speed越大越慢，因为是标准持续时间的倍数
-        /// </summary>
         public float actionOffsetTimeScaler = 1;
         public float actionOffsetKnockBack = 1;
         public float actionOffsetDamage = 1;

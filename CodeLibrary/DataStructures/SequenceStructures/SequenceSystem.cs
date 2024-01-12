@@ -21,12 +21,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public class SequenceConfig : ModConfig
     {
         public override ConfigScope Mode => ConfigScope.ClientSide;
-        [DefaultValue(true)]
-        public bool ShowWrapBox = true;
-        [DefaultValue(true)]
-        public bool ShowGroupBox = true;
-        [DefaultValue(true)]
-        public bool ShowSequenceBox = true;
+        [DefaultValue(false)]
+        public bool ShowWrapBox = false;
+        [DefaultValue(false)]
+        public bool ShowGroupBox = false;
+        [DefaultValue(false)]
+        public bool ShowSequenceBox = false;
         [DefaultValue(typeof(Vector2), "32, 16")]
         [Range(0f, 64f)]
         public Vector2 Step = new Vector2(32, 16);

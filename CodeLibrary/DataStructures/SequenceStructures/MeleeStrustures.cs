@@ -476,7 +476,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return;
             }
             Vector2 drawCen = offsetCenter + Owner.Center;
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize, drawCen, flip);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, flip);
             //bool flag = LogSpiralLibraryMod.ModTime / 60 % 2 < 1;
             //Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemEffectEX : LogSpiralLibraryMod.ItemEffect;
             //if (flag)
@@ -507,7 +507,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Main.graphics.GraphicsDevice.Textures[0] = texture;
             Main.graphics.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.Misc[0].Value;
             Main.graphics.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.BaseTex[15].Value;
-            Main.graphics.GraphicsDevice.Textures[3] = null;
+            Main.graphics.GraphicsDevice.Textures[3] = standardInfo.standardGlowTexture;
 
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
@@ -532,6 +532,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (Attacktive)
             {
                 float point = 0f;
+
                 return Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
                     Projectile.Center + targetedVector, 48f, ref point);
             }
@@ -621,8 +622,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
 
         }
-        public override Vector2 offsetCenter => new Vector2(16 * Factor, 0).RotatedBy(Rotation);
-        public override bool Attacktive => Factor >= .75f;
+        public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
+        public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
+        public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
 
         public override void OnStartSingle()
         {
@@ -635,6 +637,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             get
             {
+                float k = MathF.Sqrt(timerMax);
+                float max = timerMax;
+                float t = timer;
+                if (t >= k)
+                {
+                    return MathHelper.SmoothStep(1, 1.125f, Terraria.Utils.GetLerpValue(max, k, t, true));
+                }
+                else
+                {
+                    //return MathHelper.SmoothStep(0, 1.125f, t / k);
+                    return MathHelper.Hermite(0, -5, 1.125f, 0, t / k);
+
+                }
                 float fac = base.Factor;
                 fac = 1 - fac;
                 fac *= fac;

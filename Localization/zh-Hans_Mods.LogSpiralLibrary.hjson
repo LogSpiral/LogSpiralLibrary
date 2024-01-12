@@ -1,51 +1,74 @@
 Items: {
 	FractalSpawnItem: {
-		DisplayName: Fractal Spawn Item
-		Tooltip: ""
+		DisplayName: 分形生成测试物品
+		Tooltip: 丢出去来看看会发生什么，请保证你能捡回来
 	}
 
 	GeogebraShin: {
-		DisplayName: Բ��
-		Tooltip: ��֪����Ҫ˵ʲô�Ķ԰�
+		DisplayName: 圆神
+		Tooltip: 你知道我要说什么的对吧
 	}
 
 	TestBlade: {
-		// DisplayName: Test Blade
-		// Tooltip: ""
+		DisplayName: 测试剑
+		Tooltip: 序列类的测试剑，用的是守护者之剑的贴图，点击Y查看序列
 	}
 }
 
 Configs: {
 	SurroundStateConfig: {
-		// DisplayName: Surround State Config
+		DisplayName: 环境状态设置
 
 		CheckCycleLength: {
-			// Label: Check Cycle Length
-			// Tooltip: ""
+			Label: 检测周期
+			Tooltip: 单位为帧,默认是每帧刷新
 		}
 	}
 
 	SequenceConfig: {
-		// DisplayName: Sequence Config
+		DisplayName: 序列设置
 
 		ShowWrapBox: {
-			// Label: Show Wrap Box
-			// Tooltip: ""
+			Label: 是否显示打包器边框
+			Tooltip: ""
 		}
 
 		ShowGroupBox: {
-			// Label: Show Group Box
-			// Tooltip: ""
+			Label: 是否显示组边框
+			Tooltip: ""
 		}
 
 		ShowSequenceBox: {
-			// Label: Show Sequence Box
-			// Tooltip: ""
+			Label: 是否显示序列边框
+			Tooltip: ""
 		}
 
 		Step: {
-			// Label: Step
-			// Tooltip: ""
+			Label: 步长
+			Tooltip: ""
+		}
+	}
+
+	LogSpiralLibraryMiscConfig: {
+		DisplayName: 其它设置
+
+		screenShakingSetting: {
+			Label: 震屏设置
+			Tooltip: 参考挥刀
+		}
+	}
+
+	ShakingSetting: {
+		// Tooltip: ""
+
+		strength: {
+			Label: 震动强度
+			Tooltip: 早餐要吐出来了
+		}
+
+		Available: {
+			Label: 启用
+			Tooltip: 震屏，启动！！
 		}
 	}
 }

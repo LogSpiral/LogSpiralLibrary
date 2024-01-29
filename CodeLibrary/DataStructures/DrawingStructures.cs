@@ -1,15 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.ModLoader.Config.UI;
-using Terraria;
-using System.IO;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
-using Terraria.GameContent.NetModules;
 using LogSpiralLibrary.CodeLibrary;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures

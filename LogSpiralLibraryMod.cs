@@ -11,11 +11,15 @@ using LogSpiralLibrary.CodeLibrary;
 using System;
 using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
-using XPT.Core.Audio.MP3Sharp;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using Terraria.GameContent.UI.Chat;
 using Terraria.ModLoader.Config;
 using System.ComponentModel;
+using System.Reflection;
+using System.Linq;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using System.IO;
+using ReLogic.Graphics;
 
 namespace LogSpiralLibrary
 {
@@ -300,6 +304,11 @@ namespace LogSpiralLibrary
     }
     public class LogSpiralLibrarySystem : ModSystem
     {
+        public override void PostSetupContent()
+        {
+
+            base.PostSetupContent();
+        }
         public static List<RenderBasedDrawing> renderBasedDrawings = new List<RenderBasedDrawing>();
         public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
         public override void OnModLoad()
@@ -366,7 +375,15 @@ namespace LogSpiralLibrary
 
             }*/
             #endregion
-
+            //if (ModContent.TryFind<ILocalizedModType>("LogSpiralLibraryMod", "SwooshInfo", out var value))
+            //{
+            //    var str = value?.GetLocalization("DisplayName", () => "²Ý")?.ToString();
+            //    spriteBatch.DrawString(FontAssets.MouseText.Value, str ?? "»µ", new Vector2(200, 200), (Main.DiscoColor.ToVector3() * new Vector3(0.25f, 0.5f, 0.75f)).ToColor());
+            //}
+            //else 
+            //{
+            //    Main.NewText("ÕÒµ½¸ö´¸×Ó");
+            //}
             base.PostDrawInterface(spriteBatch);
         }
     }
@@ -405,6 +422,12 @@ namespace LogSpiralLibrary
     }
     public class LogSpiralLibraryPlayer : ModPlayer
     {
+        public override void OnEnterWorld()
+        {
+            var strs = from k in ModTypeLookup<NormalAttackAction>.dict.Values select k.Name;
+            File.WriteAllLines("H:/test.txt", strs);
+            base.OnEnterWorld();
+        }
         public float strengthOfShake;
         public override void ModifyScreenPosition()
         {

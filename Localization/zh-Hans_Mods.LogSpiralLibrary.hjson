@@ -11,8 +11,40 @@ Items: {
 
 	TestBlade: {
 		DisplayName: 测试剑
-		Tooltip: 序列类的测试剑，用的是守护者之剑的贴图，点击Y查看序列
+		Tooltip: 序列类的测试剑，测试模组动作执行序列，用的是守护者之剑的贴图，点击Y查看序列
 	}
+
+	TestBlade2: {
+		DisplayName: 测试剑2
+		Tooltip: 序列类的测试剑2，测试原版手持弹幕ai低仿，用的是魔改炎岚之怒的贴图，点击Y查看序列
+	}
+}
+
+AttackInfos: {
+	ArkhalisInfo.DisplayName: 真空剑
+	BoardSwordInfo.DisplayName: 宽剑
+	BoomerangInfo.DisplayName: 回旋镖
+	ConvoluteInfo.DisplayName: 回旋
+	EruptionInfo.DisplayName: 爆发
+	FistInfo.DisplayName: 拳击
+	FlailInfo.DisplayName: 链球
+	HammerInfo.DisplayName: 飞锤
+	KnivesInfo.DisplayName: 飞刀
+	LanceInfo.DisplayName: 骑枪
+	RapidlyStabInfo.DisplayName: 高频突刺
+	RotatingInfo.DisplayName: 旋转
+	ShockingDashInfo.DisplayName: 猛冲
+	ShortSwordInfo.DisplayName: 短剑
+	SpearInfo.DisplayName: 长枪
+	StabInfo.DisplayName: 突刺
+	StarlightInfo.DisplayName: 星光
+	SwooshInfo.DisplayName: 挥砍
+	TerraprismaInfo.DisplayName: 泰拉棱镜
+	YoyoInfo.DisplayName: 悠悠
+	ZenithInfo.DisplayName: 天顶
+	TestBladeSwooshInfo.DisplayName: 测试挥砍
+	TestBladeGrayStabInfo.DisplayName: 测试突刺
+	TestBladeConvoluteInfo.DisplayName: 测试回旋
 }
 
 Configs: {
@@ -73,5 +105,16 @@ Configs: {
 	}
 }
 
-// Projectiles.TestBladeProj.DisplayName: Test Blade Proj
+Projectiles: {
+	// TestBladeProj.DisplayName: Test Blade Proj
+	// TestBlade2Proj.DisplayName: Test Blade2 Proj
+}
+
 // Keybinds.展示序列列表.DisplayName: 展示序列列表
+
+Condition: {
+	MouseLeft: 左键
+	MouseRight: 右键
+	FrontThreat: 正面胁迫!!
+	SurroundThreat: 四面楚歌!!
+}

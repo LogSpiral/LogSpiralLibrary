@@ -13,6 +13,38 @@ Items: {
 		DisplayName: Test Blade
 		Tooltip: ""
 	}
+
+	TestBlade2: {
+		DisplayName: Test Blade2
+		Tooltip: ""
+	}
+}
+
+AttackInfos: {
+	ArkhalisInfo.DisplayName: Arkhalis
+	BoardSwordInfo.DisplayName: BoardSword
+	BoomerangInfo.DisplayName: Boomerang
+	ConvoluteInfo.DisplayName: Convolute
+	EruptionInfo.DisplayName: Eruption
+	FistInfo.DisplayName: Fist
+	FlailInfo.DisplayName: Flail
+	HammerInfo.DisplayName: Hammer
+	KnivesInfo.DisplayName: Knives
+	LanceInfo.DisplayName: Lance
+	RapidlyStabInfo.DisplayName: RapidlyStab
+	RotatingInfo.DisplayName: Rotating
+	ShockingDashInfo.DisplayName: ShockingDash
+	ShortSwordInfo.DisplayName: ShortSword
+	SpearInfo.DisplayName: Spear
+	StabInfo.DisplayName: Stab
+	StarlightInfo.DisplayName: Starlight
+	SwooshInfo.DisplayName: Swoosh
+	TerraprismaInfo.DisplayName: Terraprisma
+	YoyoInfo.DisplayName: Yoyo
+	ZenithInfo.DisplayName: Zenith
+	TestBladeSwooshInfo.DisplayName: TestSwoosh
+	TestBladeGrayStabInfo.DisplayName: TestStab
+	TestBladeConvoluteInfo.DisplayName: TestConvolute
 }
 
 Configs: {
@@ -73,5 +105,16 @@ Configs: {
 	}
 }
 
-Projectiles.TestBladeProj.DisplayName: Test Blade Proj
+Projectiles: {
+	TestBladeProj.DisplayName: Test Blade Proj
+	TestBlade2Proj.DisplayName: Test Blade2 Proj
+}
+
 Keybinds.展示序列列表.DisplayName: 展示序列列表
+
+Condition: {
+	MouseLeft: MouseLeft
+	MouseRight: MouseRight
+	FrontThreat: FrontThreat!!
+	SurroundThreat: SurroundThreat!!
+}

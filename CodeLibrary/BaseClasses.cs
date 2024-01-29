@@ -1,24 +1,14 @@
 ﻿//using CoolerItemVisualEffect;
-using log4net.Util;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using Microsoft.CodeAnalysis;
-using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using ReLogic.Content;
-using ReLogic.Graphics;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.UI;
@@ -1367,7 +1357,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get => meleeSequence;
         }
-        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White,null);
+        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null);
         public abstract void SetUpSequence(MeleeSequence meleeSequence);
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
@@ -1397,7 +1387,6 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            
             player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f) * (damageDone / MathHelper.Clamp(player.HeldItem.damage, 1, int.MaxValue));//
             base.OnHitNPC(target, hit, damageDone);
         }
@@ -1411,23 +1400,34 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             player.heldProj = Projectile.whoAmI;
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
+            Projectile.direction = player.direction;
+            Projectile.velocity = (Main.MouseWorld - player.Center).SafeNormalize(default);
             if (Projectile.timeLeft == 10) return;
-            bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;
-            bool flag2 = false;
+            bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
+            bool flag2 = false;//次要-持续条件
             if (currentData != null)
             {
-                flag2 = meleeSequence.currentData.counter < meleeSequence.currentData.Cycle;
-                flag2 |= meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer >= 0;
-                flag2 &= !meleeSequence.currentWrapper.finished;
+                flag2 = meleeSequence.currentData.counter < meleeSequence.currentData.Cycle;//我还没完事呢
+                flag2 |= meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer >= 0;//最后一次
+                //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
             }
             if (
                flag1 || flag2// 
                 )
             {
-                meleeSequence.Update(player, Projectile, StandardInfo);
+
+                meleeSequence.Update(player, Projectile, StandardInfo, flag1);
                 Projectile.timeLeft = 2;
-                Projectile.velocity = Projectile.position - Projectile.oldPosition;
+                //Projectile.velocity = Projectile.position - Projectile.oldPosition;
             }
+            //Main.NewText(currentData == null);
+            if (currentData == null) return;
+            //if (ModContent.Find<IMeleeAttackData>(currentData.FullName) is ILocalizedModType localized) 
+            //{
+            //    //var str = localized?.GetLocalization("DisplayName", () => "空空")?.Value;
+            //    //Main.NewText(str ?? "呜呜");
+            //    Main.NewText(localized.Mod is null);
+            //}
             Projectile.Center = player.Center + currentData.offsetCenter;
             //Main.NewText(currentData.offsetCenter);
             base.AI();
@@ -1467,6 +1467,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if (currentData == null) return;
+            //target.life = target.lifeMax;
             var data = currentData.ModifyData;
             modifiers.SourceDamage *= data.actionOffsetDamage;
             modifiers.Knockback *= data.actionOffsetKnockBack;

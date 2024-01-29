@@ -1,17 +1,7 @@
-﻿using AsmResolver.PE.DotNet.Cil;
-using LogSpiralLibrary.CodeLibrary;
-using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Graphics;
+﻿using LogSpiralLibrary.CodeLibrary;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.ModLoader;
-using Terraria.ModLoader.UI;
-using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.IMeleeAttackData;
+using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -326,8 +316,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         public IReadOnlyList<Group> MeleeGroups => Groups;
     }
-    public abstract class NormalAttackAction : IMeleeAttackData
+    public abstract class NormalAttackAction : ModType,IMeleeAttackData
     {
+        public NormalAttackAction()
+        {
+            foreach (var n in ModTypeLookup<NormalAttackAction>.dict.Values) 
+            {
+                if (n.GetType() == this.GetType())
+                {
+                    this.Mod = n.Mod;
+                }
+            }
+        }
         public Action<NormalAttackAction> _OnActive;
         public Action<NormalAttackAction> _OnAttack;
         public Action<NormalAttackAction> _OnCharge;
@@ -337,12 +337,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Action<NormalAttackAction> _OnStartAttack;
         public Action<NormalAttackAction> _OnStartSingle;
 
-        public NormalAttackAction(int cycle, ActionModifyData? data = null)
-        {
-            Cycle = cycle;
-            if (data != null)
-                ModifyData = data.Value;
-        }
+
         #region 属性
         #region 编排序列时调整
         //持续时间 角度 位移 修改数据
@@ -543,14 +538,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Entity Owner { get; set; }
         public Projectile Projectile { get; set; }
         public StandardInfo standardInfo { get; set; }
+
+        public string LocalizationCategory => "AttackInfos";
+        public sealed override void Register()
+        {
+            ModTypeLookup<NormalAttackAction>.Register(this);
+        }
+        public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
         #endregion
     }
     public class SwooshInfo : NormalAttackAction
     {
-        public SwooshInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
-        {
-
-        }
 
         public override float Factor => base.Factor;
 
@@ -618,10 +616,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class StabInfo : NormalAttackAction
     {
-        public StabInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
-        {
-
-        }
         public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
         public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
         public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
@@ -659,6 +653,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class RapidlyStabInfo : StabInfo
     {
+        public RapidlyStabInfo()
+        {
+                
+        }
         public (int min, int max) CycleOffsetRange
         {
             get => range;
@@ -668,19 +666,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 v.min = Math.Clamp(v.min, 1 - givenCycle, v.max);
                 v.max = Math.Clamp(v.max, v.min, int.MaxValue);
                 range = v;
+                ResetCycle();
             }
         }
         (int, int) range;
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
         public int givenCycle;
-
-        public RapidlyStabInfo(int cycle, (int, int) _range, ActionModifyData? data = null) : base(cycle, data)
-        {
-            CycleOffsetRange = _range;
-            ResetCycle();
-        }
-
         void ResetCycle()
         {
             realCycle = range.Item1 == range.Item2 ? givenCycle + range.Item1 : Math.Clamp(givenCycle + Main.rand.Next(range.Item1, range.Item2), 1, int.MaxValue);
@@ -693,10 +685,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class ConvoluteInfo : NormalAttackAction
     {
-        public ConvoluteInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
-        {
-
-        }
         public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
         public Vector2 unit;
         public override bool Attacktive => Factor >= .25f;
@@ -715,8 +703,5 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class ShockingDashInfo : NormalAttackAction
     {
-        public ShockingDashInfo(int cycle, ActionModifyData? data) : base(cycle, data)
-        {
-        }
     }
 }

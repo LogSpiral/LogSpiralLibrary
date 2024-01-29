@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Terraria.UI;
 using Terraria.Utilities;
@@ -8,16 +7,7 @@ using static Terraria.Utils;
 //using static CoolerItemVisualEffect.CoolerItemVisualEffect;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
-using Terraria;
-using System.Collections;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
-using Microsoft.Xna.Framework.Graphics;
-using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.IMeleeAttackData;
-using ReLogic.Graphics;
-using Microsoft.CodeAnalysis.Text;
-using Terraria.ModLoader.IO;
-using rail;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -1973,6 +1963,7 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 处理颜色的元辉扉(总算想起来在这里这货叫什么了是吧
+        public static Color ToColor(this Vector3 vector) => new Color(vector.X, vector.Y, vector.Z);
         /// <summary>
         /// 获取颜色的亮度
         /// </summary>

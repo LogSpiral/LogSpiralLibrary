@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.IMeleeAttackData;
-using static LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.MeleeSequence;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -18,7 +14,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public StandardInfo()
         {
         }
-        public StandardInfo(float rotation, Vector2 origin, int timer, Color color,Texture2D glow)
+        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow)
         {
             standardRotation = rotation;
             standardOrigin = origin;
@@ -56,7 +52,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public void SetActionSpeed(ref ActionModifyData target) => target.actionOffsetTimeScaler = actionOffsetTimeScaler;
     }
-    public interface ISequenceElement
+    public interface ISequenceElement : ILocalizedModType, ILoadable
     {
         #region 属性
         #region 编排序列时调整
@@ -195,6 +191,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         public class Group : GroupBase
         {
+            /// <summary>
+            /// 请不要对这个Add
+            /// TODO 改为ReadOnly
+            /// </summary>
             public override List<WraperBase> Wrapers => (from w in wrapers select (WraperBase)w).ToList();
             public List<Wraper> wrapers = new List<Wraper>();
             public override int Index => index;
@@ -229,7 +229,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public override SequenceBase SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
-            public override string Name => sequenceInfo?.SequenceName ?? elementInfo.GetType().Name;
+            public override string Name => sequenceInfo?.SequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
             public Wraper(T meleeAttackData)
             {
                 elementInfo = meleeAttackData;
@@ -260,11 +260,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public int timerMax { get => elementInfo.timerMax; set => elementInfo.timerMax = value; }
             public bool Attacktive;
 
-            public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, ref T meleeAttackData)
+            public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref T meleeAttackData)
             {
                 if (!Available) throw new Exception("序列不可用");
                 if (finished) throw new Exception("咱已经干完活了");
-                object obj = new object();
                 if (IsSequence)
                 {
                     if (sequenceInfo.counter >= sequenceInfo.groups.Count)
@@ -276,7 +275,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         return;
                     }
                     Active = true;
-                    sequenceInfo.Update(entity, projectile, standardInfo);
+                    sequenceInfo.Update(entity, projectile, standardInfo, triggered);
                     meleeAttackData = sequenceInfo.currentData;
                 }
                 else
@@ -318,7 +317,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         {
                             elementInfo.OnStartAttack();
                         }
-                        if (oldValue && !Attacktive) 
+                        if (oldValue && !Attacktive)
                         {
                             elementInfo.OnEndAttack();
                         }
@@ -375,11 +374,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public IReadOnlyList<Group> Groups => groups;
         public override string SequenceNameBase => SequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
-        public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo)
+        public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered)
         {
-            if ((currentWrapper == null || currentWrapper.finished))
+            if ((currentWrapper == null || currentWrapper.finished) && triggered)
             {
-
                 if (currentWrapper != null)
                 {
                     currentWrapper.finished = false;
@@ -400,7 +398,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 while (currentWrapper == null && offsetor < maxCount);
 
             }
-            currentWrapper.Update(entity, projectile, standardInfo, ref currentData);
+
+            if (currentWrapper == null) return;
+            if (!currentWrapper.finished)
+                currentWrapper.Update(entity, projectile, standardInfo, triggered, ref currentData);
         }
     }
 }

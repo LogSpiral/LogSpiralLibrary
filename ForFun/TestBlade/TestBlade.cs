@@ -1,15 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria.Audio;
-using Terraria.ID;
-using static Humanizer.In;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
 {
@@ -42,12 +33,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade
     }
     public class TestBladeProj : MeleeSequenceProj
     {
-        class TestBladeStabInfo : RapidlyStabInfo
+        class TestBladeGrayStabInfo : RapidlyStabInfo
         {
-            public TestBladeStabInfo(int cycle, (int, int) _range, ActionModifyData? data = null) : base(cycle, _range, data)
-            {
-            }
-
             public override void OnEndAttack()
             {
                 var u = UltraStab.NewUltraStab(Color.Gray, 30, 120, Owner.Center, null, flip, Rotation, KValue * 3);
@@ -72,9 +59,6 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         }
         class TestBladeSwooshInfo : SwooshInfo
         {
-            public TestBladeSwooshInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
-            {
-            }
             public override void Update()
             {
                 base.Update();
@@ -101,24 +85,33 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             {
                 base.OnAttack();
             }
-            public TestBladeConvoluteInfo(int cycle, ActionModifyData? data = null) : base(cycle, data)
-            {
-            }
         }
         public override string Texture => base.Texture.Replace("Proj", "");
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
             meleeSequence.SequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
-            SwooshInfo swooshInfo = new TestBladeSwooshInfo(4);
-            swooshInfo.KValue = 3;
-            swooshInfo.ModifyData = new ActionModifyData(1) with { actionOffsetTimeScaler = 4f };
+            SwooshInfo swooshInfo = new TestBladeSwooshInfo()
+            {
+                Cycle = 4,
+                KValue = 3,
+                ModifyData = new(1, 4f)
+            };
             meleeSequence.Add(swooshInfo);
-            RapidlyStabInfo stabInfo = new TestBladeStabInfo(5, (0, 1),new ActionModifyData(1,1));
+            RapidlyStabInfo stabInfo = new TestBladeGrayStabInfo()
+            {
+                Cycle = 5,
+                CycleOffsetRange = (0, 1),
+                ModifyData = new(1, 1)
+            };
             stabInfo.KValue = 3;
             meleeSequence.Add(stabInfo);
-            ConvoluteInfo convoluteInfo = new TestBladeConvoluteInfo(4);
-            convoluteInfo.ModifyData = new ActionModifyData(1) with { actionOffsetTimeScaler = 2f };
+            ConvoluteInfo convoluteInfo = new TestBladeConvoluteInfo() 
+            { 
+                Cycle = 4,
+                ModifyData = new (1,2f)
+            };
             meleeSequence.Add(convoluteInfo);
+
             meleeSequence.Add(stabInfo);
         }
     }

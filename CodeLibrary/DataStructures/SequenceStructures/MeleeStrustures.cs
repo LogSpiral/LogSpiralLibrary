@@ -316,11 +316,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         public IReadOnlyList<Group> MeleeGroups => Groups;
     }
-    public abstract class NormalAttackAction : ModType,IMeleeAttackData
+    public abstract class NormalAttackAction : ModType, IMeleeAttackData
     {
         public NormalAttackAction()
         {
-            foreach (var n in ModTypeLookup<NormalAttackAction>.dict.Values) 
+            foreach (var n in ModTypeLookup<NormalAttackAction>.dict.Values)
             {
                 if (n.GetType() == this.GetType())
                 {
@@ -358,7 +358,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 扁平程度？
         /// </summary>
-        public float KValue { get; set; }
+        public float KValue { get; set; } = 1f;
         public int counter { get; set; }
         public int timer { get; set; }
         public int timerMax { get; set; }
@@ -655,7 +655,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         public RapidlyStabInfo()
         {
-                
+
         }
         public (int min, int max) CycleOffsetRange
         {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReLogic.Graphics;
+using System;
 using System.IO;
 
 namespace LogSpiralLibrary.ForFun.FractalSpawn
@@ -108,9 +109,9 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             Vector2 t = CodeLibrary.VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
             Main.NewText($"屏幕插值{t}");
             t = CodeLibrary.VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
-            Main.NewText($"系数{t}");
-            effect.Parameters["uM"].SetValue(t);
-
+            Main.NewText($"系数{t}"); 
+            effect.Parameters["uM"].SetValue(t); 
+             
             effect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(renderShift, new Vector2(), Color.White);
             spriteBatch.End();
@@ -126,6 +127,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
         }
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
+            if (!LogSpiralLibraryMod.CanUseRender) 
+            {
+                spriteBatch.DrawString(FontAssets.MouseText.Value, "请使用颜色光照模式，开启水波", Item.position - Main.screenPosition, Color.White);
+                return true;
+            }
             var gd = Main.instance.GraphicsDevice;
             var effect = FractalSpawnSystem.FractalEffect;
             if (effect == null)

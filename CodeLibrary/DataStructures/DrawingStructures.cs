@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using LogSpiralLibrary.CodeLibrary;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures
 {
@@ -286,6 +287,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static Matrix uTransform => model * TransformationMatrix * projection;
     }
+
     public abstract class MeleeVertexInfo : VertexDrawInfo
     {
         public float rotation;
@@ -357,6 +359,106 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             base.OnModifyRenderInfo(infos);
         }
     }
+    public class FractalStabInfo : MeleeVertexInfo
+    {
+        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[6];
+        public override CustomVertexInfo[] VertexInfos => _vertexInfos;
+        public override void Uptate()
+        {
+            _vertexInfos = DrawingMethods.GetItemVertexes(new Vector2(.5f), 0, rotation, LogSpiralLibraryMod.BaseTex[baseTexIndex].Value, 0.5f, scaler / 1000f, center, negativeDir);
+            //var vertexs = new CustomVertexInfo[4];
+            //for (int n = 0; n < 4; n++) 
+            //{
+            //    vertexs[n] = new CustomVertexInfo(Main.screenPosition + new Vector2(200,200) * new Vector2(n%2,n/2) + new Vector2(900,600),new Vector3(n%2,n/2,1));
+            //}
+            //_vertexInfos[0] = vertexs[0];
+            //_vertexInfos[1] = vertexs[1];
+            //_vertexInfos[2] = vertexs[2];
+            //_vertexInfos[3] = vertexs[1];
+            //_vertexInfos[4] = vertexs[2];
+            //_vertexInfos[5] = vertexs[3];
+
+            timeLeft--;
+        }
+        public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
+        {
+            base.Draw(spriteBatch, renderDrawInfo, contextArgument);
+
+
+
+        }
+        #region 生成函数
+        public static T NewFractalStab<T>(
+    Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : FractalStabInfo, new()
+            => NewFractalStab<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+        public static T NewFractalStab<T>(
+    Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : FractalStabInfo, new()
+        {
+            T result = null;
+            for (int n = 0; n < vertexEffects.Length; n++)
+            {
+                var effect = vertexEffects[n];
+                if (effect == null || !effect.Active)
+                {
+                    effect = vertexEffects[n] = new T();
+                    if (effect is T stab)
+                    {
+                        stab.color = colorFunc;
+                        stab.timeLeftMax = stab.timeLeft = timeLeft;
+                        stab.scaler = _scaler;
+                        stab.center = center ?? Main.LocalPlayer.Center;
+                        stab.heatMap = heat;
+                        stab.negativeDir = _negativeDir;
+                        stab.rotation = _rotation;
+                        stab.xScaler = xscaler;
+                        result = stab;
+                        stab.aniTexIndex = _aniIndex;
+                        stab.baseTexIndex = _baseIndex;
+                        stab.ColorVector = colorVec == default ? new Vector3(0.33f) : colorVec;
+                        stab.normalize = normalize;
+                    }
+                    break;
+                }
+            }
+            return result;
+        }
+
+
+        /// <summary>
+        /// 生成新的穿刺于指定数组中
+        /// </summary>
+        public static FractalStabInfo NewFractalStab(
+            Color color, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewFractalStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+
+        /// <summary>
+        /// 生成新的穿刺于指定数组中
+        /// </summary>
+        public static FractalStabInfo NewFractalStab(
+            Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+            => NewFractalStab<FractalStabInfo>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+
+        /// <summary>
+        /// 生成新的穿刺于<see cref="LogSpiralLibrarySystem.vertexEffects"/>
+        /// </summary>
+        public static FractalStabInfo NewFractalStab(
+            Color color, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            NewFractalStab(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+
+        /// <summary>
+        /// 生成新的穿刺于<see cref="LogSpiralLibrarySystem.vertexEffects"/>
+        /// </summary>
+        public static FractalStabInfo NewFractalStab(
+            Func<float, Color> colorFunc, byte timeLeft = 30, float _scaler = 1f,
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            NewFractalStab(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+
+        #endregion
+    }
     public class UltraStab : MeleeVertexInfo
     {
         #region 参数和属性
@@ -380,21 +482,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 if (effect == null || !effect.Active)
                 {
                     effect = vertexEffects[n] = new T();
-                    if (effect is T swoosh)
+                    if (effect is T stab)
                     {
-                        swoosh.color = colorFunc;
-                        swoosh.timeLeftMax = swoosh.timeLeft = timeLeft;
-                        swoosh.scaler = _scaler;
-                        swoosh.center = center ?? Main.LocalPlayer.Center;
-                        swoosh.heatMap = heat;
-                        swoosh.negativeDir = _negativeDir;
-                        swoosh.rotation = _rotation;
-                        swoosh.xScaler = xscaler;
-                        result = swoosh;
-                        swoosh.aniTexIndex = _aniIndex;
-                        swoosh.baseTexIndex = _baseIndex;
-                        swoosh.ColorVector = colorVec == default ? new Vector3(0.33f) : colorVec;
-                        swoosh.normalize = normalize;
+                        stab.color = colorFunc;
+                        stab.timeLeftMax = stab.timeLeft = timeLeft;
+                        stab.scaler = _scaler;
+                        stab.center = center ?? Main.LocalPlayer.Center;
+                        stab.heatMap = heat;
+                        stab.negativeDir = _negativeDir;
+                        stab.rotation = _rotation;
+                        stab.xScaler = xscaler;
+                        result = stab;
+                        stab.aniTexIndex = _aniIndex;
+                        stab.baseTexIndex = _baseIndex;
+                        stab.ColorVector = colorVec == default ? new Vector3(0.33f) : colorVec;
+                        stab.normalize = normalize;
                     }
                     break;
                 }

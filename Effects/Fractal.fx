@@ -16,6 +16,20 @@ float2 ComplexMul(float2 z1, float2 z2)
 {
 	return float2(z1.x * z2.x - z1.y * z2.y, z1.x * z2.y + z1.y * z2.x);
 }
+float2 ComplexLn(float2 z)
+{
+	return float2(log(z.x), atan2(z.y, z.x));
+}
+
+float2 ComplexPow(float2 z1, float2 z2)
+{
+	return exp(ComplexMul(ComplexLn(z1),z2));
+}
+float2 ComplexEXP(float2 z)
+{
+	return exp(z.x) * float2(cos(z.y), sin(z.y));
+
+}
 
 float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
 {
@@ -48,7 +62,11 @@ float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
 		//	break;
 		
 		//二次分形2！  z^2 * uM  + z0
-		z = ComplexMul(ComplexMul(z, z) + z0, uM);
+		//z = ComplexMul(ComplexMul(z, z), uM) + z0;
+		//if (length(z) > 2 || color.z + 0.03 * n >= 1)
+		//	break;
+		
+		z = ComplexMul(z - uM, ComplexMul(z, z)) + z0;
 		if (length(z) > 2 || color.z + 0.03 * n >= 1)
 			break;
 	}

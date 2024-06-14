@@ -81,6 +81,8 @@ namespace LogSpiralLibrary
         /// <br>21:ÐÇ¿Õ2</br>
         /// </summary>
         public static List<Asset<Texture2D>> Misc;
+        public static List<Asset<Texture2D>> Fractal;
+
         //public static string BaseTex = nameof(BaseTex);
         //public static string AniTex = nameof(AniTex);
         //public static string HeatMap = nameof(HeatMap);
@@ -143,6 +145,8 @@ namespace LogSpiralLibrary
             LoadTextures(nameof(HeatMap), out HeatMap);
             LoadTextures(nameof(MagicZone), out MagicZone);
             LoadTextures(nameof(Misc), out Misc);
+            LoadTextures(nameof(Fractal), out Fractal);
+
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;

@@ -9,6 +9,7 @@ using System.Reflection;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
+using Terraria.ID;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.UI;
@@ -1076,7 +1077,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             base.PostAI();
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (Charged)
             {
@@ -1417,7 +1418,9 @@ namespace LogSpiralLibrary.CodeLibrary
             {
 
                 meleeSequence.Update(player, Projectile, StandardInfo, flag1);
-                Projectile.timeLeft = 2;
+                if (flag1 || meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0))
+                    Projectile.timeLeft = 2;
+                //Main.NewText((flag1, flag2));
                 //Projectile.velocity = Projectile.position - Projectile.oldPosition;
             }
             //Main.NewText(currentData == null);
@@ -1840,7 +1843,7 @@ namespace LogSpiralLibrary.CodeLibrary
             initializeButton.HAlign = 1f;
             initializeButton.OnLeftClick += (a, b) =>
             {
-                SoundEngine.PlaySound(21);
+                SoundEngine.PlaySound(SoundID.Tink);
 
                 object data = Activator.CreateInstance(MemberInfo.Type, true);
                 string json = JsonDefaultValueAttribute?.Json ?? "{}";

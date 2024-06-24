@@ -1,5 +1,6 @@
 ﻿using static Humanizer.In;
 using System;
+using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -9,46 +10,78 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// </summary>
     public class BoardSwordInfo : NormalAttackAction
     {
-        public override float offsetRotation => base.offsetRotation;
-        public override bool Attacktive => base.Attacktive;
-        public override void Update()
-        {
-            switch (Owner)
-            {
-                case Player player:
-                    {
-                        player.itemTime = 2;
-                        player.SetCompositeArmBack(true, Player.CompositeArmStretchAmount.Full, CompositeArmRotation);
-                        break;
-                    }
-            }
-            base.Update();
-        }
+        public override float offsetRotation => MathHelper.Lerp(0.15f, -0.75f, Factor) * MathHelper.Pi * Owner.direction;
+        public override bool Attacktive => timer % 3 == 0;
     }
     /// <summary>
     /// 经典短剑
     /// </summary>
     public class ShortSwordInfo : NormalAttackAction
     {
-        public override Vector2 offsetOrigin => base.offsetOrigin;
+        public override float Factor => (base.Factor * 4) % 1;
+        public override bool Attacktive => Factor <= 0.5f;
+        public override Vector2 offsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, Factor);
     }
     /// <summary>
     /// 转啊转
     /// </summary>
     public class BoomerangInfo : NormalAttackAction
     {
-        public override Vector2 offsetCenter => base.offsetCenter;
+        public override bool Attacktive => true;
+        public override Vector2 offsetCenter => realCenter - Owner.Center;
+        public Vector2 realCenter;
+        public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.25f;
+        public bool back;
         public override void OnStartSingle()
         {
+            Vector2 unit = Main.MouseWorld - Owner.Center;
+            unit.Normalize();
+            realCenter = Owner.Center + unit * 16;
+            Rotation = unit.ToRotation();
+            back = false;
             base.OnStartSingle();
         }
-        public override void Update()
+        public override void OnStartAttack()
         {
-            if (Factor <= .5f) 
-            {
 
+            base.OnStartAttack();
+        }
+        public override bool Collide(Rectangle rectangle)
+        {
+            bool flag = base.Collide(rectangle);
+            if (flag)
+            {
+                back = true;
             }
-            base.Update();
+            return flag;
+        }
+        public override void Update(bool triggered)
+        {
+            if (Factor <= .5f)
+            {
+                back = true;
+            }
+
+            if (back && offsetCenter.LengthSquared() >= 256f)
+            {
+                timer = 2;
+            }
+            if ((int)LogSpiralLibraryMod.ModTime2 % 15 == 0)
+                SoundEngine.PlaySound(SoundID.Item7);
+            //if (back) 
+            //{
+            //    //realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.05f);
+            //    realCenter += (Owner.Center - realCenter).SafeNormalize(default) * MathHelper.Max(16,(Owner.Center - realCenter).Length() * .25f);
+            //}
+            //else 
+            //{
+            //    realCenter = Vector2.Lerp(realCenter, Owner.Center, -0.35f * Factor);
+
+            //}
+
+            realCenter += (realCenter - Owner.Center).SafeNormalize(default) * (Factor - 0.5f) * 64f;
+            timer--;
+
         }
     }
     /// <summary>
@@ -56,47 +89,114 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// </summary>
     public class FlailInfo : NormalAttackAction
     {
+        public override bool Attacktive => true;
+        public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2;
+        public override Vector2 offsetCenter => (new Vector2(64, 16) * ((float)LogSpiralLibraryMod.ModTime2 / 4f).ToRotationVector2()).RotatedBy(Rotation);
+        public override void OnAttack()
+        {
+            Rotation = (Main.MouseWorld - Owner.Center).ToRotation();
+            if ((int)LogSpiralLibraryMod.ModTime2 % 10 == 0)
+                SoundEngine.PlaySound(SoundID.Item7);
+            base.OnAttack();
+        }
+        public override void Update(bool triggered)
+        {
+            timer--;
+
+        }
+        public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        {
+            base.Draw(spriteBatch, texture);
+        }
+
     }
     /// <summary>
     /// 长枪
     /// </summary>
     public class SpearInfo : NormalAttackAction
     {
+        public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi);
+        public override Vector2 offsetCenter 
+        {
+            get 
+            {
+                float v = MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2);
+                //KValue = 1 + v * 4f;
+                return Rotation.ToRotationVector2() * v * 64;
+            }
+        }
+        public override bool Attacktive => Factor < 0.85f;
     }
     /// <summary>
     /// 石巨人之拳！！
     /// </summary>
     public class FistInfo : NormalAttackAction
     {
+        public override bool Attacktive => true;
+        public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 3 % 1) - 1), 2) * 512;
     }
     /// <summary>
     /// 圣骑士会个🔨
     /// </summary>
     public class HammerInfo : NormalAttackAction
     {
+        public override float offsetRotation => Factor * MathHelper.TwoPi * 4;
+        public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
+        public override bool Attacktive => true;
+        public override void Update(bool triggered)
+        {
+            timer--;
+
+        }
     }
     /// <summary>
     /// ─━╋ ─━╋ ─━╋
     /// </summary>
     public class KnivesInfo : NormalAttackAction
     {
+        public override Vector2 offsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 2048 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 512);
+        public override bool Attacktive => true;
+        public override float offsetRotation => base.offsetRotation;
+        public override void Update(bool triggered)
+        {
+            timer--;
+        }
     }
     /// <summary>
     /// 白云一片去悠悠
     /// </summary>
     public class YoyoInfo : NormalAttackAction
     {
-        public override void Update()
-        {
-            Rotation += .45f;
-            base.Update();
-        }
+        public override Vector2 offsetCenter => realCenter - Owner.Center;
+        public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
         public override bool Attacktive => Factor > 0.05f;
+        public Vector2 realCenter;
+        public override void Update(bool triggered)
+        {
+            if (!triggered) timer = 1;
+            if (timer > 10)
+                realCenter = Vector2.Lerp(realCenter, Main.MouseWorld, 0.05f);
+            else
+            {
+                realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.15f);
+                if ((realCenter - Owner.Center).LengthSquared() < 256f)
+                    timer = 1;
+            }
+            Rotation += 0.05f;
+            timer--;
+        }
+        public override void OnStartSingle()
+        {
+            realCenter = Owner.Center;
+            KValue = Main.rand.NextFloat(1, 2);
+            Rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+            base.OnStartSingle();
+        }
         public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
             base.Draw(spriteBatch, texture);
             Projectile.aiStyle = 99;
-            Main.instance.DrawProj_DrawYoyoString(Projectile,Owner.Center);
+            Main.instance.DrawProj_DrawYoyoString(Projectile, Owner.Center);
             Projectile.aiStyle = -1;
         }
         //以下是原版Yoyo实现的ai的注释
@@ -405,50 +505,140 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// </summary>
     public class ArkhalisInfo : NormalAttackAction
     {
-
+        public override float Factor => base.Factor * 4 % 1;
+        public override void OnEndSingle()
+        {
+            flip ^= true;
+            base.OnEndSingle();
+        }
+        public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.PiOver2;
+        public override bool Attacktive => Factor < 0.75f;
     }
     /// <summary>
     /// 请不要再冕了...什么不是烈冕号啊
     /// </summary>
     public class EruptionInfo : NormalAttackAction
     {
-        public override float offsetSize => base.offsetSize;
-        public override float offsetRotation => base.offsetRotation;
-
+        public override float offsetSize => -MathF.Pow(0.5f - Factor, 2) * 28 + 8;
+        public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.PiOver2;//;
+        public override bool Attacktive => true;
+        public override void OnAttack()
+        {
+            KValue = -MathF.Pow(0.5f - Factor, 2) * 28 + 8;
+            base.OnAttack();
+        }
+        public override void OnStartSingle()
+        {
+            base.OnStartSingle();
+            Rotation += Main.rand.NextFloat(-1, 1) * MathHelper.PiOver2 / 3;
+        }
     }
     /// <summary>
     /// 其实是天龙之怒
     /// </summary>
     public class RotatingInfo : NormalAttackAction
     {
-        public override float offsetRotation => Factor * MathHelper.TwoPi * 2;
+        public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
         public override bool Attacktive => true;
+        public override void OnAttack()
+        {
+
+            base.OnAttack();
+        }
+        public override void Update(bool triggered)
+        {
+            base.Update(triggered);
+        }
     }
     /// <summary>
     /// Lancer!!♠
     /// </summary>
     public class LanceInfo : NormalAttackAction
     {
+        public override Vector2 offsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, 1 - MathHelper.Clamp((1 - Factor) * 4, 0, 1));
+        public override void OnStartAttack()
+        {
+            base.OnStartAttack();
+        }
+        public override void Update(bool triggered)
+        {
+            //if (triggered && timer < 3) timer = 2;
 
+            base.Update(triggered);
+        }
+        public override bool Attacktive => Factor < 0.75f;
     }
     /// <summary>
     /// 银色战车！！
     /// </summary>
     public class StarlightInfo : NormalAttackAction
     {
+        public override bool Attacktive => true;
+        public override Vector2 offsetCenter => Main.rand.NextVector2Unit() * 16 + Rotation.ToRotationVector2() * 16;
+        public override float offsetRotation => Main.rand.NextFloat(-0.1f, 0.1f);
+        public override void OnAttack()
+        {
+            Rotation = (Main.MouseWorld - Owner.Center).ToRotation();
+
+            base.OnAttack();
+        }
     }
     /// <summary>
     /// 天顶
     /// </summary>
     public class ZenithInfo : NormalAttackAction
     {
+        public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist, 32)).RotatedBy(Rotation);
+        public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi;
+        public override bool Attacktive => true;
+        public float dist;
+        public override void OnStartSingle()
+        {
+            dist = (Main.MouseWorld - Owner.Center).Length();
+            if (dist < 32) dist = 32;
+            base.OnStartSingle();
+        }
+        public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        {
+            base.Draw(spriteBatch, texture);
+        }
+        public override void Update(bool triggered)
+        {
+            timer--;
 
+        }
     }
     /// <summary>
     /// 泰拉棱镜???!!!
     /// </summary>
     public class TerraprismaInfo : NormalAttackAction
     {
+        public override Vector2 offsetCenter => realCenter - Owner.Center;
+        public override float offsetRotation => target != null ? (float)LogSpiralLibraryMod.ModTime2 * .45f : MathHelper.PiOver2;
+        public override bool Attacktive => target != null;
+        public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        {
+            base.Draw(spriteBatch, texture);
+        }
+        public NPC target;
+        public Vector2 realCenter;
+        public override void Update(bool triggered)
+        {
+            timer--;
+            if (realCenter == default) realCenter = Owner.Center;
+            if (target == null)
+                foreach (var npc in Main.npc)
+                {
+                    if (npc.CanBeChasedBy() && !npc.friendly && Vector2.Distance(npc.Center, Owner.Center) < 512f)
+                    {
+                        target = npc;
+                        break;
+                    }
+                }
+            if (target != null && !target.active)
+                target = null;
 
+            realCenter = Vector2.Lerp(realCenter, target?.Center ?? Owner.Center, 0.05f);
+        }
     }
 }

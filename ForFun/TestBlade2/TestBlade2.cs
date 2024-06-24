@@ -37,6 +37,9 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
             meleeSequence.SequenceName = $"测试剑2号[i:{ModContent.ItemType<TestBlade2>()}]";
+
+            //meleeSequence.Add(new StarlightInfo());
+            //return;
             MeleeSequence sub;
             MeleeSequence.Group group;
             #region 第一组
@@ -45,8 +48,12 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             sub = new MeleeSequence();
             sub.Add(new BoardSwordInfo());
             sub.Add(new ShortSwordInfo());
-            sub.Add(new BoomerangInfo());
-            sub.Add(new FlailInfo());
+            var bi = new BoomerangInfo();
+            bi.ModifyData = new ActionModifyData(1, 3);
+            sub.Add(bi);
+            var fi = new FlailInfo();
+            fi.ModifyData = new ActionModifyData(1f,4f);
+            sub.Add(fi);
             group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.TimeNight));
             #endregion
 
@@ -64,11 +71,18 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             group = new MeleeSequence.Group();
             #region 血月
             sub = new MeleeSequence();
-            sub.Add(new YoyoInfo());
-            sub.Add(new ArkhalisInfo());
-            sub.Add(new EruptionInfo());
+            var yyi = new YoyoInfo();
+            yyi.ModifyData = new ActionModifyData(1, 4);
+            sub.Add(yyi);
+            var ai = new ArkhalisInfo();
+            ai.Cycle = 4;
+            sub.Add(ai);
+            var ei = new EruptionInfo();
+            ei.ModifyData = new ActionModifyData(1, 1.5f);
+            ei.Cycle = 2;
+            sub.Add(ei);
             sub.Add(new RotatingInfo());
-            group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.BloodMoon));
+            group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.InJungle));
             #endregion
 
             #region 雨天
@@ -76,12 +90,16 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             sub.Add(new LanceInfo());
             sub.Add(new StarlightInfo());
             sub.Add(new ZenithInfo());
-            sub.Add(new TerraprismaInfo());
+            var tpi = new TerraprismaInfo();
+            tpi.ModifyData = new ActionModifyData(1,10);
+            sub.Add(tpi);
             group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.InRain));
             #endregion
             meleeSequence.Add(group);
             #endregion
-            meleeSequence.Add(new StabInfo());
+            var si = new StabInfo();
+            si.Cycle = 4;
+            meleeSequence.Add(si);
         }
     }
 }

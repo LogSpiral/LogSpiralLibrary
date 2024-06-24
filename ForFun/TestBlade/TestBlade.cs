@@ -59,9 +59,9 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         }
         class TestBladeSwooshInfo : SwooshInfo
         {
-            public override void Update()
+            public override void Update(bool triggered)
             {
-                base.Update();
+                base.Update(triggered);
             }
             public override void OnEndAttack()
             {

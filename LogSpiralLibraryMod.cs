@@ -428,8 +428,6 @@ namespace LogSpiralLibrary
     {
         public override void OnEnterWorld()
         {
-            var strs = from k in ModTypeLookup<NormalAttackAction>.dict.Values select k.Name;
-            File.WriteAllLines("H:/test.txt", strs);
             base.OnEnterWorld();
         }
         public float strengthOfShake;

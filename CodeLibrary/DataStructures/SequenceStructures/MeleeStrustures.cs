@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using System;
 using System.Collections.Generic;
+using Terraria.Audio;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
@@ -374,7 +375,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// </summary>
         public virtual Vector2 offsetCenter => default;
         /// <summary>
-        /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
+        /// 原点偏移量，默认为零向量,取值范围[0,1]
         /// </summary>
         public virtual Vector2 offsetOrigin => default;
         /// <summary>
@@ -434,6 +435,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 case Player player:
                     {
+                        //SoundEngine.PlaySound(SoundID.Item71);
                         player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
                         Rotation = (Main.MouseWorld - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
                         break;
@@ -442,7 +444,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
         }
 
-        public virtual void Update()
+        public virtual void Update(bool triggered)
         {
             timer--;
             switch (Owner)

@@ -4,12 +4,30 @@ using System.Linq;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
+    /// <summary>
+    /// 不同物品有自己独有的标准值
+    /// </summary>
     public struct StandardInfo
     {
+        /// <summary>
+        /// 物品贴图朝向
+        /// </summary>
         public float standardRotation = MathHelper.PiOver4;
+        /// <summary>
+        /// 物品手持中心
+        /// </summary>
         public Vector2 standardOrigin = new Vector2(.1f, .9f);
+        /// <summary>
+        /// 标准持续时长
+        /// </summary>
         public int standardTimer;
+        /// <summary>
+        /// 标准颜色
+        /// </summary>
         public Color standardColor;
+        /// <summary>
+        /// 高亮贴图
+        /// </summary>
         public Texture2D standardGlowTexture;
         public StandardInfo()
         {
@@ -22,6 +40,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             standardColor = color;
             standardGlowTexture = glow;
         }
+        //TODO 改成弹幕序列独有
     }
     public struct ActionModifyData
     {
@@ -153,7 +172,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         #endregion
 
         #region 具体传入
-        void Update();
+        void Update(bool triggered);
 
         void Draw(SpriteBatch spriteBatch, Texture2D texture);
 
@@ -165,6 +184,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         StandardInfo standardInfo { get; set; }
         #endregion
     }
+    /// <summary>
+    /// 去泛型化的序列基类
+    /// </summary>
     public abstract class SequenceBase
     {
         public abstract class GroupBase
@@ -183,7 +205,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public bool Active { get; set; }
         }
         public abstract IReadOnlyList<GroupBase> GroupBases { get; }
+        /// <summary>
+        /// 当前序列的名字
+        /// </summary>
         public abstract string SequenceNameBase { get; }
+        /// <summary>
+        /// 目前执行到第几个组
+        /// </summary>
         public abstract int Counter { get; }
 
     }
@@ -323,7 +351,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         }
                         if (Attacktive) elementInfo.OnAttack();
                         else elementInfo.OnCharge();
-                        elementInfo.Update();
+                        elementInfo.Update(triggered);
                         Active = true;
                         //Main.NewText(GetHashCode());
                     }

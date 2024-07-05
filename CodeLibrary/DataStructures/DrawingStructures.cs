@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using LogSpiralLibrary.CodeLibrary;
 using Microsoft.Xna.Framework.Graphics;
-
+using System.IO;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures
 {
     /// <summary>
@@ -125,13 +125,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
             bool Active { get; }
             /// <summary>
-            /// 是否重绘
-            /// <br>如果为false且不是第一个就不会执行</br>
+            /// 是否独立绘制
+            /// <br>请将独立绘制的特效都往前塞——</br>
             /// <br><see cref="VertexDrawInfo.PreDraw"/></br>
             /// <br><see cref="PreDraw"/></br>
             /// <br><see cref="Draw"/></br>
             /// </summary>
-            bool ReDraw { get; set; }
+            bool StandAlone { get; }
         }
         public sealed override void Register()
         {
@@ -142,7 +142,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 仅给<see  cref="LogSpiralLibrarySystem.vertexDrawInfoInstance"/>中的实例使用
         /// <br>代码的耦合度持续放飞自我</br>
         /// </summary>
-        public abstract IRenderDrawInfo[] RenderDrawInfos { get; }
+        public IRenderDrawInfo[] RenderDrawInfos = [new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo()];
         public void ModityRenderInfo(IRenderDrawInfo newInfo, int index)
         {
             var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
@@ -216,7 +216,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <see cref="BaseTex"/>的下标，取值范围为[0,11]
         /// </summary>
         public int baseTexIndex;
-        public BlendState blendState;
+
+        /// <summary>
+        /// 用于在特效与物体未解除绑定时，与物体的动画同步
+        /// </summary>
         public bool autoUpdate = true;
         /// <summary>
         /// 顶点数据，存起来不每帧更新降低运算负担
@@ -230,7 +233,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <param name="spriteBatch"></param>
         public virtual void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, blendState ?? BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
         }
         public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true), 0, VertexInfos.Length - 2);
         /// <summary>
@@ -243,21 +246,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //{
             //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, -Main.screenPosition);
             //}
-            //Main.NewText(("绘制中!!", Active, timeLeft, autoUpdate));
-            var scaler = 1f;
-            if (renderDrawInfo is AirDistortEffectInfo airDistort)
-            {
-                scaler = airDistort.distortScaler;
-            }
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
             Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
             Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
             ShaderSwooshUL.Parameters["lightShift"].SetValue(factor - 1f);
-            ShaderSwooshUL.Parameters["distortScaler"].SetValue(scaler);
+            //ShaderSwooshUL.Parameters["distortScaler"].SetValue(scaler);
             ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
-
-
             DrawPrimitives(scaler);
         }
         /// <summary>
@@ -302,9 +297,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public Vector3 ColorVector;
         public bool normalize;
-        public override IRenderDrawInfo[] RenderDrawInfos => _rendeDrawInfos;
-        IRenderDrawInfo[] _rendeDrawInfos = new IRenderDrawInfo[] { new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo() };
-        public Action<Effect> SetEffectValue;
+        //public override IRenderDrawInfo[] RenderDrawInfos => _rendeDrawInfos;
+        //IRenderDrawInfo[] _rendeDrawInfos = [new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo()];
 
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -329,7 +323,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.AnisotropicClamp;
-            SetEffectValue?.Invoke(effect);
         }
         public override void Draw(SpriteBatch spriteBatch, IRenderDrawInfo renderDrawInfo, params object[] contextArgument)
         {
@@ -737,14 +730,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 色差距离
         /// </summary>
         public float colorOffset;
-        public bool ReDraw
-        {
-            get => true;
-            set => Main.NewText("这货不需要设置，固定是true的");
-        }
+        public bool StandAlone => true;
 
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
+            ShaderSwooshUL.Parameters["distortScaler"].SetValue(1.5f);
             graphicsDevice.SetRenderTarget(renderAirDistort);
             graphicsDevice.Clear(Color.Transparent);
         }
@@ -806,9 +796,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 翻转亮度决定值
         /// </summary>
         public bool inverse;
-        public bool ReDraw { get; set; } = true;
+        public bool StandAlone => false;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
+            ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
+
             graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(Color.Transparent);
         }
@@ -887,34 +879,36 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 是否启动加法模式
         /// </summary>
         public bool additive;
-        public bool ReDraw { get; set; } = true;
+        public bool StandAlone => false;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
+            ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
+
             graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(Color.Transparent);
         }
 
-        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            RenderEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-
-            RenderEffect.Parameters["position"].SetValue(new Vector2(threshold, range));
-            RenderEffect.Parameters["tier2"].SetValue(intensity);
-            RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
+            RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
+            RenderEffect.Parameters["threshold"].SetValue(threshold);
+            RenderEffect.Parameters["range"].SetValue(range);
+            RenderEffect.Parameters["intensity"].SetValue(intensity);
+            RenderEffect.Parameters["maximum"].SetValue(1.0f);
             RenderEffect.Parameters["uBloomAdditive"].SetValue(additive);
 
             for (int n = 0; n < times - 1; n++)
             {
-                graphicsDevice.SetRenderTarget(renderAirDistort);
+                graphicsDevice.SetRenderTarget(renderSwap);
                 RenderEffect.Parameters["tex0"].SetValue(render);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[9].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
 
-                //if (n == 0) 
+                //if (n == 0)
                 //{
-                //    string path = "E:/图片测试/shader/图_";
+                //    string path = "D:/图片测试/shader/图_";
                 //    int count = 0;
                 //    while (File.Exists(path + count + ".png"))
                 //    {
@@ -923,27 +917,29 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 //    path += count + ".png";
                 //    using (var stream = new FileStream(path, FileMode.CreateNew))
                 //    {
-                //        renderAirDistort.SaveAsPng(stream, renderAirDistort.Width, renderAirDistort.Height);
+                //        renderSwap.SaveAsPng(stream, renderSwap.Width, renderSwap.Height);
                 //    }
                 //}
 
+
+
                 graphicsDevice.SetRenderTarget(render);
-                RenderEffect.Parameters["tex0"].SetValue(renderAirDistort);
+                RenderEffect.Parameters["tex0"].SetValue(renderSwap);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[8].Apply();
-                spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
+                spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
             }
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
 
             graphicsDevice.Clear(Color.Transparent);
             RenderEffect.Parameters["tex0"].SetValue(render);
+
             RenderEffect.CurrentTechnique.Passes[9].Apply();
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
 
-
-
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
+
             RenderEffect.CurrentTechnique.Passes[8].Apply();
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             spriteBatch.End();
@@ -962,26 +958,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             range = Range;
             times = Times;
             additive = Additive;
-        }
-    }
-    /// <summary>
-    /// 脑袋空空的效果
-    /// <br>我的意思是，什么效果也没有，单纯的占位符(x</br>
-    /// <br>你永远可以怀疑螺线的写码水平</br>
-    /// </summary>
-    public struct EmptyEffectInfo : VertexDrawInfo.IRenderDrawInfo
-    {
-        public void Reset() => this = new EmptyEffectInfo();
-
-        public bool Active => true;
-        public bool ReDraw { get; set; }
-
-        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-        {
-        }
-
-        public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-        {
         }
     }
     public class ComplexPanelInfo

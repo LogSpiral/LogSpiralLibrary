@@ -1,14 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using LogSpiralLibrary.CodeLibrary.DataStructures;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
+    /// <summary>
+    /// 物品相应顶点绘制特效的标准值
+    /// </summary>
+    public struct VertexDrawInfoStandardInfo 
+    {
+        public bool active;
+        public Texture2D heatMap;
+        public byte timeLeft;
+        public float scaler;
+        public VertexDrawInfo.IRenderDrawInfo[] renderInfos;
+        public Vector3 colorVec;
+    }
     /// <summary>
     /// 不同物品有自己独有的标准值
     /// </summary>
     public struct StandardInfo
     {
+        
         /// <summary>
         /// 物品贴图朝向
         /// </summary>
@@ -29,6 +42,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// 高亮贴图
         /// </summary>
         public Texture2D standardGlowTexture;
+        public VertexDrawInfoStandardInfo vertexStandard = default;
         public StandardInfo()
         {
         }

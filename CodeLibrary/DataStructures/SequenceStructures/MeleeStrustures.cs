@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Terraria.Audio;
 using Terraria.Localization;
+using Terraria.WorldBuilding;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -615,6 +616,27 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             flip = Main.rand.NextBool();
             base.OnActive();
         }
+        public virtual UltraSwoosh NewSwoosh() 
+        {
+            var verS = standardInfo.vertexStandard;
+            if (verS.active)
+            {
+                var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
+                if (verS.renderInfos == null)
+                    u.ResetAllRenderInfo();
+                else
+                {
+                    u.ModityAllRenderInfo(verS.renderInfos);
+                }
+                return u;
+            }
+            return null;
+        }
+        public override void OnEndAttack()
+        {
+            NewSwoosh();
+            base.OnEndAttack();
+        }
     }
     public class StabInfo : NormalAttackAction
     {
@@ -628,6 +650,28 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             KValue = Main.rand.NextFloat(1f, 2.4f);
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
             flip ^= true;
+        }
+        public virtual UltraStab NewStab() 
+        {
+            var verS = standardInfo.vertexStandard;
+            if (verS.active)
+            {
+                var u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler, Owner.Center, verS.heatMap, flip, Rotation, KValue, -3, 8, colorVec: verS.colorVec);
+                //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
+                if (verS.renderInfos == null)
+                    u.ResetAllRenderInfo();
+                else
+                {
+                    u.ModityAllRenderInfo(verS.renderInfos);
+                }
+                return u;
+            }
+            return null;
+        }
+        public override void OnEndAttack()
+        {
+            NewStab();
+            base.OnEndAttack();
         }
         public override float Factor
         {

@@ -97,10 +97,13 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 //	return color;
 //}
 float gauss[7] = { 0.05, 0.1, 0.24, 0.4, 0.24, 0.1, 0.05 };
+//float gauss[7] = { 0.142, 0.142, 0.142, 0.142, 0.142, 0.142, 0.142 };
+
 //此处几个全局变量都不是字面意义
 //position实际上是两个float，阈值和步长
 //offset 屏幕大小
 //tier2 亮度
+
 //x方向模糊
 float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 {
@@ -163,20 +166,36 @@ float4 PSFunction_BloomY_Weak(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
+
+
 bool uBloomAdditive;
+float threshold;
+float range;
+float intensity;
+float2 screenScale;
+float maximum;
+//c1是底色，c2是上色
+float4 ColorBlend(float4 c1, float4 c2)
+{
+	return c1 + c2;
+	float3 vec = uBloomAdditive ? c1.xyz * c1.a + c2.xyz * c2.a : lerp(c1.xyz, c2.xyz, c2.a);
+	return float4(vec, c1.a + c2.a - c1.a * c2.a);
+}
+
 float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
 	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
-	if (dot(color, 0.25) > invAlpha)
+	if (dot(color.xyz, 0.333) > maximum)
 		return color;
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(n, 0);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x)
+		float4 _color = tex2D(uImage1, coords + v / screenScale * range);
+		if (dot(_color.xyz, 0.333) > threshold)
 		{
-			color += _color * gauss[n + 3] * tier2;
+			_color *= gauss[n + 3] * intensity;
+			color = ColorBlend(color, _color);
 		}
 	}
 	return color;
@@ -185,19 +204,22 @@ float4 PSFunction_BloomY_New(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
 	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
-	if (dot(color, 0.25) > invAlpha)
+	if (dot(color.xyz, 0.333) > maximum)
 		return color;
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(0, n);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x)
+		float4 _color = tex2D(uImage1, coords + v / screenScale * range);
+		if (dot(_color.xyz, 0.333) > threshold)
 		{
-			color += _color * gauss[n + 3] * tier2;
+			_color *= gauss[n + 3] * intensity;
+			color = ColorBlend(color, _color);
 		}
 	}
 	return color;
 }
+
+
 float4 PSFunction_DistortX(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
@@ -233,42 +255,42 @@ technique Technique1
 {
 	pass DistortEffect
 	{
-		PixelShader = compile ps_2_0 PSFunction();
+		PixelShader = compile ps_3_0 PSFunction();
 	}
 	pass MaskEffect
 	{
-		PixelShader = compile ps_2_0 PSFunction_Mask();
+		PixelShader = compile ps_3_0 PSFunction_Mask();
 	}
 	pass BloomEffectX
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomX();
+		PixelShader = compile ps_3_0 PSFunction_BloomX();
 	}
 	pass BloomEffectY
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomY();
+		PixelShader = compile ps_3_0 PSFunction_BloomY();
 	}
 	pass DistortEffectX
 	{
-		PixelShader = compile ps_2_0 PSFunction_DistortX();
+		PixelShader = compile ps_3_0 PSFunction_DistortX();
 	}
 	pass DistortEffectY
 	{
-		PixelShader = compile ps_2_0 PSFunction_DistortY();
+		PixelShader = compile ps_3_0 PSFunction_DistortY();
 	}
 	pass BloomEffectX_Weak
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomX_Weak();
+		PixelShader = compile ps_3_0 PSFunction_BloomX_Weak();
 	}
 	pass BloomEffectY_Weak
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomY_Weak();
+		PixelShader = compile ps_3_0 PSFunction_BloomY_Weak();
 	}
 	pass BloomEffectX_New
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomX_New();
+		PixelShader = compile ps_3_0 PSFunction_BloomX_New();
 	}
 	pass BloomEffectY_New
 	{
-		PixelShader = compile ps_2_0 PSFunction_BloomY_New();
+		PixelShader = compile ps_3_0 PSFunction_BloomY_New();
 	}
 }

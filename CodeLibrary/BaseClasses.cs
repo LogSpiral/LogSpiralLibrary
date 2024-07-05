@@ -705,7 +705,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 if (useDistort.Active)
                 {
                     sb.End();
-                    gd.SetRenderTarget(Instance.Render_AirDistort);
+                    gd.SetRenderTarget(Instance.Render_Swap);
                     gd.Clear(Color.Transparent);
                     sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
@@ -784,7 +784,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
                     AirDistortEffect.Parameters["strength"].SetValue(5f);
                     AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);//MathHelper.Pi * Main.GlobalTimeWrappedHourly
-                    AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                    AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
                     AirDistortEffect.Parameters["colorOffset"].SetValue(0f);
                     AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass 
                     //0    1     2
@@ -860,7 +860,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.SetRenderTarget(Main.screenTargetSwap);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                    gd.SetRenderTarget(LogSpiralLibraryMod.Instance.Render_AirDistort);
+                    gd.SetRenderTarget(LogSpiralLibraryMod.Instance.Render_Swap);
                     gd.Clear(Color.Transparent);
                     Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
                     RenderEffect.Parameters["tex0"].SetValue(render);
@@ -879,12 +879,12 @@ namespace LogSpiralLibrary.CodeLibrary
                     sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                     gd.SetRenderTarget(render);
                     gd.Clear(Color.Transparent);
-                    sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                    sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
 
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                    sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
 
                     sb.End();
                     sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -911,7 +911,7 @@ namespace LogSpiralLibrary.CodeLibrary
                         //gd.Clear(Color.Transparent);
                         //DistortEffect.CurrentTechnique.Passes[8].Apply();
                         //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                        gd.SetRenderTarget(Instance.Render_AirDistort);
+                        gd.SetRenderTarget(Instance.Render_Swap);
                         RenderEffect.Parameters["tex0"].SetValue(render);
                         gd.Clear(Color.Transparent);
                         RenderEffect.CurrentTechnique.Passes[9].Apply();
@@ -920,10 +920,10 @@ namespace LogSpiralLibrary.CodeLibrary
 
 
                         gd.SetRenderTarget(render);
-                        RenderEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
+                        RenderEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
                         gd.Clear(Color.Transparent);
                         RenderEffect.CurrentTechnique.Passes[8].Apply();
-                        sb.Draw(Instance.Render_AirDistort, Vector2.Zero, Color.White);
+                        sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
                     }
                     gd.SetRenderTarget(Main.screenTargetSwap);
                     gd.Clear(Color.Transparent);
@@ -1096,9 +1096,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //    ultra.RenderDrawInfos[1] = useMask;
                 //    ultra.RenderDrawInfos[2] = useBloom;
                 //}
-                u.GetVertexDrawInfoInstance().blendState = null;
-                u.GetVertexDrawInfoInstance().SetEffectValue = null;
-                if (useMask.Active) useBloom.ReDraw = false;
+                if (useMask.Active) useBloom.StandAlone = false;
                 u.ModityAllRenderInfo(useDistort, useMask, useBloom);
                 //var stab = UltraStab.NewUltraStab(VertexColor, 15, length, Player.Center, HeatMap, false, (Main.MouseWorld - Player.Center).ToRotation(), 1, -3, 8, new Vector3(0, 0, 1));
                 //stab.ModityAllRenderInfo(useDistort, useMask, useBloom);
@@ -1350,7 +1348,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
     }
     /// <summary>
-    /// 来基剑吧
+    /// 来把基剑
     /// </summary>
     public abstract class MeleeSequenceProj : ModProjectile
     {
@@ -1416,23 +1414,12 @@ namespace LogSpiralLibrary.CodeLibrary
                flag1 || flag2// 
                 )
             {
-
                 meleeSequence.Update(player, Projectile, StandardInfo, flag1);
-                if (flag1 || meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0))
+                if (flag1 || meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0 && !meleeSequence.currentWrapper.finished))
                     Projectile.timeLeft = 2;
-                //Main.NewText((flag1, flag2));
-                //Projectile.velocity = Projectile.position - Projectile.oldPosition;
             }
-            //Main.NewText(currentData == null);
             if (currentData == null) return;
-            //if (ModContent.Find<IMeleeAttackData>(currentData.FullName) is ILocalizedModType localized) 
-            //{
-            //    //var str = localized?.GetLocalization("DisplayName", () => "空空")?.Value;
-            //    //Main.NewText(str ?? "呜呜");
-            //    Main.NewText(localized.Mod is null);
-            //}
             Projectile.Center = player.Center + currentData.offsetCenter;
-            //Main.NewText(currentData.offsetCenter);
             base.AI();
         }
         public override bool PreDraw(ref Color lightColor)

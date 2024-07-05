@@ -72,7 +72,7 @@ float4 PSFunction_Distort_AVG_Weak(float2 coords : TEXCOORD0) : COLOR0
 			float2 vec = float2(n, m);
 			if (any(vec))
 			{
-				offset += mul(vec / length(vec), trans) * dot(tex2D(uImage1, coords + vec / uScreenSize).rgb, 0.333) * tex2D(uImage2, (vec + float2(2, 2)) / 4).r;
+				offset += mul(vec / length(vec), trans) * dot(tex2D(uImage1, coords + vec / uScreenSize).rgb, 0.333) * tex2D(uImage2, float2(n + 2, m + 2) / 4).r;
 				
 			}
 		}

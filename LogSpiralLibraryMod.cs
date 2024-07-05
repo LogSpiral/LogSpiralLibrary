@@ -117,23 +117,23 @@ namespace LogSpiralLibrary
         }
 
         private RenderTarget2D render;
-        public RenderTarget2D Render_AirDistort
+        public RenderTarget2D Render_Swap
         {
-            get => render_AirDistort ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            get => render_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
             set
             {
-                render_AirDistort = value;
+                render_Swap = value;
             }
         }
 
-        private RenderTarget2D render_AirDistort;
+        private RenderTarget2D render_Swap;
         private void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
         public void CreateRender()
         {
             if (Render != null) Render.Dispose();
             Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
-            if (Render_AirDistort != null) Render_AirDistort.Dispose();
-            Render_AirDistort = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            if (Render_Swap != null) Render_Swap.Dispose();
+            Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
         }
         #endregion
         //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
@@ -150,7 +150,7 @@ namespace LogSpiralLibrary
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
-            //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
+            On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
             base.Load();
         }
 
@@ -161,7 +161,7 @@ namespace LogSpiralLibrary
             {
                 try
                 {
-                    renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, Render, Render_AirDistort);
+                    renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, Render, Render_Swap);
                 }
                 catch
                 {
@@ -207,6 +207,7 @@ namespace LogSpiralLibrary
         }
         #region TestCode
         public static byte[] musicBuffer;
+        public static ulong globalCounter;
         private void MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer(Terraria.Audio.On_MP3AudioTrack.orig_ReadAheadPutAChunkIntoTheBuffer orig, MP3AudioTrack self)
         {
             //if (NPC.AnyNPCs(ModContent.NPCType<AsraNox>()) && Main.gamePaused && Main.audioSystem is LegacyAudioSystem audioSystem)
@@ -267,18 +268,32 @@ namespace LogSpiralLibrary
             }
 
             byte[] bufferToSubmit = self._bufferToSubmit;
+            //Main.NewText(DateTime.Now + "." + DateTime.Now.Millisecond);
             if (self._mp3Stream.Read(bufferToSubmit, 0, bufferToSubmit.Length) < 1)
                 self.Stop(AudioStopOptions.Immediate);
             else
             {
                 byte[] newbuffer = new byte[bufferToSubmit.Length];
                 float scale = 64;
+                double second = 1;
                 for (int n = 0; n < bufferToSubmit.Length; n++)
                 {
+                    //newbuffer[n] = (byte)(n/1024%2 == 1 ? 127 : 0);
                     //newbuffer[n] = bufferToSubmit[n];
                     //newbuffer[n] = (byte)((n / 4096f * 220).CosFactor() * 255);
-                    newbuffer[n] = (byte)(MyFunc(n / 4096f * 4) * scale);
+                    //newbuffer[n] = (byte)(MyFunc(n / 4096f * 4) * scale);
+
+                    second = globalCounter / 4096.0 / 43;
+
+                    newbuffer[n] = (byte)(Math.Cos(second * 294 * MathHelper.TwoPi) * 128);
+                    globalCounter++;//4096×Ö½Ú¶ÔÓ¦1/120Ãë?? 
+
+
+                    newbuffer[n] = bufferToSubmit[n];
+
                 }
+                if (DateTime.Now.Millisecond < 100)
+                //Main.NewText((DateTime.Now.Second, second.ToString("0.00")));
                 musicBuffer = newbuffer;
                 self._soundEffectInstance.SubmitBuffer(newbuffer);
             }

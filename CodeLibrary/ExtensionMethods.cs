@@ -1962,7 +1962,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         #endregion
 
-        #region 处理颜色的元辉扉(总算想起来在这里这货叫什么了是吧
+        #region 处理颜色的奇怪函数
         public static Color ToColor(this Vector3 vector) => new Color(vector.X, vector.Y, vector.Z);
         /// <summary>
         /// 获取颜色的亮度
@@ -2011,7 +2011,7 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
-        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation,float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
+        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
         {
             //对数据进行矩阵变换吧！
             Matrix matrix =
@@ -2042,20 +2042,23 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
             var newInfos = from info in infos where info != null && info.Active select info;
-            if (newInfos.Count() == 0) return;
+            if (!newInfos.Any()) return;
             var newRenderInfos = from info in instance.RenderDrawInfos where info.Active select info;
-            if (newRenderInfos.Count() == 0 || !CanUseRender)
+            if (!newRenderInfos.Any() || !CanUseRender)
             {
                 instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                foreach (var info in newInfos) info.Draw(spriteBatch, new EmptyEffectInfo(), contextArgument);
+                foreach (var info in newInfos) info.Draw(spriteBatch, null, contextArgument);
                 instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
             }
             else
             {
+                bool first = true;
                 foreach (var renderInfo in newRenderInfos)
                 {
-                    if (renderInfo.ReDraw)
+                    //Main.NewText((renderInfo.GetType().Name,renderInfo.ReDraw));
+                    if (renderInfo.StandAlone || first)
                     {
+
                         instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
                         if (graphicsDevice != null)
                             renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
@@ -2065,6 +2068,9 @@ namespace LogSpiralLibrary.CodeLibrary
 
                     if (graphicsDevice != null)
                         renderInfo.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+
+                    if (!renderInfo.StandAlone)
+                        first = false;
                 }
             }
         }

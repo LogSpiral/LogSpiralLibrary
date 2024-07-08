@@ -117,7 +117,7 @@ float4 PSFunction_Distort_Normal(float2 coords : TEXCOORD0) : COLOR0
 	offset -= float2(1, 1);
 	float2x2 trans = rotation;
 	offset = mul(offset, trans) / uScreenSize;
-	return ColorOffset(coords, offset);
+	return ColorOffset(coords, offset * strength);
 }
 technique Technique1
 {

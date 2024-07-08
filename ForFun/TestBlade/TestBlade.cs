@@ -37,9 +37,11 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => base.StandardInfo with 
         {
+            standardColor = Color.Gray,
             vertexStandard = new VertexDrawInfoStandardInfo() with 
             {
                 active = true,
+                
                 scaler = 120,
                 timeLeft = 15
             }

@@ -627,6 +627,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             timer--;
             if (realCenter == default) realCenter = Owner.Center;
             if (target == null)
+            {
                 foreach (var npc in Main.npc)
                 {
                     if (npc.CanBeChasedBy() && !npc.friendly && Vector2.Distance(npc.Center, Owner.Center) < 512f)
@@ -635,6 +636,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         break;
                     }
                 }
+                timer -= 4;
+            }
             if (target != null && !target.active)
                 target = null;
 

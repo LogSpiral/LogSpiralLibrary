@@ -2038,7 +2038,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public static T GetVertexDrawInfoInstance<T>() where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[typeof(T)] as T;
         public static T GetVertexDrawInfoInstance<T>(this T instance) where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[instance.GetType()] as T;
 
-        public static void DrawVertexInfo(this IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort, params object[] contextArgument)
+        public static void DrawVertexInfo(this IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
             var newInfos = from info in infos where info != null && info.Active select info;
@@ -2047,7 +2047,7 @@ namespace LogSpiralLibrary.CodeLibrary
             if (!newRenderInfos.Any() || !CanUseRender)
             {
                 instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                foreach (var info in newInfos) info.Draw(spriteBatch, null, contextArgument);
+                foreach (var info in newInfos) info.Draw(spriteBatch);
                 instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
             }
             else
@@ -2062,7 +2062,7 @@ namespace LogSpiralLibrary.CodeLibrary
                         instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
                         if (graphicsDevice != null)
                             renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                        foreach (var info in newInfos) info.Draw(spriteBatch, renderInfo, contextArgument);
+                        foreach (var info in newInfos) info.Draw(spriteBatch);
                         instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
                     }
 
@@ -2084,7 +2084,22 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
             }
         }
-        public static CustomVertexInfo[] CreateTriList(CustomVertexInfo[] source, Vector2 center, float scaler, bool addedCenter = false)
+
+        public static Color Vec2NormalColor(Vector2 vector)
+        {
+            vector = vector.SafeNormalize(default);
+            return new Color(0, vector.X / 2 + .5f, vector.Y / 2 + .5f);
+        }
+        /// <summary>
+        /// 生成三角形列
+        /// </summary>
+        /// <param name="source">至少四个，要求元素个数为偶数，带状的两侧顶点</param>
+        /// <param name="center">缩放中心</param>
+        /// <param name="scaler">缩放倍率</param>
+        /// <param name="addedCenter">有没有加过中心</param>
+        /// <param name="createNormalGraph">是否构建法线贴图</param>
+        /// <returns></returns>
+        public static CustomVertexInfo[] CreateTriList(CustomVertexInfo[] source, Vector2 center, float scaler, bool addedCenter = false, bool createNormalGraph = false)
         {
             var length = source.Length;
             CustomVertexInfo[] triangleList = new CustomVertexInfo[3 * length - 6];
@@ -2093,9 +2108,18 @@ namespace LogSpiralLibrary.CodeLibrary
                 triangleList[3 * i] = source[i];
                 triangleList[3 * i + 1] = source[i + 2];
                 triangleList[3 * i + 2] = source[i + 1];
+
+
                 triangleList[3 * i + 3] = source[i + 1];
                 triangleList[3 * i + 4] = source[i + 2];
                 triangleList[3 * i + 5] = source[i + 3];
+
+                if (createNormalGraph)
+                {
+                    for (int j = 0; j < 2; j++)
+                        for (int k = 0; k < 3; k++)
+                            triangleList[3 * i + k + 3 * j].Color = Vec2NormalColor(source[i + 2 + j].Position - source[i + j].Position);
+                }
             }
             for (int n = 0; n < triangleList.Length; n++)
             {

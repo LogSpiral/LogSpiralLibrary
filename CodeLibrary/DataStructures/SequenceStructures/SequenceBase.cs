@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
     /// <summary>
     /// 物品相应顶点绘制特效的标准值
     /// </summary>
-    public struct VertexDrawInfoStandardInfo 
+    public struct VertexDrawInfoStandardInfo
     {
         public bool active;
         public Texture2D heatMap;
-        public byte timeLeft;
+        public int timeLeft;
         public float scaler;
         public VertexDrawInfo.IRenderDrawInfo[] renderInfos;
         public Vector3 colorVec;
@@ -21,7 +22,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// </summary>
     public struct StandardInfo
     {
-        
+
         /// <summary>
         /// 物品贴图朝向
         /// </summary>
@@ -298,31 +299,50 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 condition = _condition;
                 return this;
             }
-            public int timer { get => elementInfo.timer; set => elementInfo.timer = value; }
-            public int timerMax { get => elementInfo.timerMax; set => elementInfo.timerMax = value; }
+            /// <summary>
+            /// 内层元素的计时器，从最大值逐渐更新至0
+            /// </summary>
+            public int Timer { get => elementInfo.timer; set => elementInfo.timer = value; }
+            /// <summary>
+            /// 内层元素的计时器上限
+            /// </summary>
+            public int TimerMax { get => elementInfo.timerMax; set => elementInfo.timerMax = value; }
             public bool Attacktive;
 
-            public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref T meleeAttackData)
+            /// <summary>
+            /// 打包器的更新函数
+            /// </summary>
+            /// <param name="entity">主体</param>
+            /// <param name="projectile">序列类型控制的弹幕</param>
+            /// <param name="standardInfo">标准值</param>
+            /// <param name="triggered">是否处于触发状态</param>
+            /// <param name="meleeAttackData">传回的具体元素</param>
+            /// <returns>当前序列是否执行完毕</returns>
+            /// <exception cref="Exception"></exception>
+            public bool Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref T meleeAttackData)
             {
                 if (!Available) throw new Exception("序列不可用");
                 if (finished) throw new Exception("咱已经干完活了");
                 if (IsSequence)
                 {
-                    if (sequenceInfo.counter >= sequenceInfo.groups.Count)
+                    if (sequenceInfo.counter >= sequenceInfo.groups.Count - 1 && sequenceInfo.currentWrapper.finished)
+                    //if (sequenceInfo.counter >= sequenceInfo.groups.Count)
                     {
+                        Attacktive = false;
+                        sequenceInfo.currentWrapper.finished = false;
                         sequenceInfo.currentWrapper = null;
                         sequenceInfo.counter = 0;
                         finished = true;
                         Active = false;
-                        return;
+                        return true;
                     }
                     Active = true;
                     sequenceInfo.Update(entity, projectile, standardInfo, triggered);
-                    meleeAttackData = sequenceInfo.currentData;
+                    meleeAttackData = sequenceInfo.currentData;//一路传出给到最外层，应该有更合理得多的写法，但是目前能跑就行((((
                 }
                 else
                 {
-                    if (timer <= 0)//计时器小于等于0时
+                    if (Timer <= 0)//计时器小于等于0时
                     {
                         if (elementInfo.counter < elementInfo.Cycle || elementInfo.Cycle == 0)//如果没执行完所有次数
                         {
@@ -334,7 +354,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             elementInfo.Projectile = projectile;
                             elementInfo.standardInfo = standardInfo;
                             var result = (int)(standardInfo.standardTimer * elementInfo.ModifyData.actionOffsetTimeScaler / elementInfo.Cycle);
-                            timerMax = timer = result;
+                            TimerMax = Timer = result;
                             elementInfo.counter++;
                         }
                         //迁移至下方
@@ -344,11 +364,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             elementInfo.OnEndSingle();
                             elementInfo.OnDeactive();//要被换掉了
                             elementInfo.OnEndAttack();
-                            timer = 0;
-                            timerMax = 0;
+                            Timer = 0;
+                            TimerMax = 0;
                             elementInfo.counter = 0;
                             finished = true;
-                            return;
+
+                            //TODO 执行完毕即刻通知外层结构
+                            //当前执行模式:到时候了标记为执行完毕，外层Sequence检测到执行完毕了切下一个，没下一个了再把所属Wrapper标记为完毕
+                            //但是如果这帧执行完毕了，松开按键取消trigger，下一帧Sequence检测到执行完毕也不会切下一个，然后其所在Wrapper就不会标记完毕，然后卡动作
+                            return false;
                         }
                     }
                     if (elementInfo != null)
@@ -357,7 +381,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         Attacktive = elementInfo.Attacktive;
                         if (!oldValue && Attacktive)
                         {
-                            elementInfo.OnStartAttack();
+                            elementInfo.OnStartAttack();//TODO Attack相关钩子合理化挂载位置
                         }
                         if (oldValue && !Attacktive)
                         {
@@ -371,6 +395,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     }
                     meleeAttackData = elementInfo;
                 }
+                return false;
             }
         }
         public void Add(T meleeAttackData)
@@ -416,34 +441,38 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public IReadOnlyList<Group> Groups => groups;
         public override string SequenceNameBase => SequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
-        public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered)
+        void ChooseNewWrapper()
         {
-            if ((currentWrapper == null || currentWrapper.finished) && triggered)
+            if (currentWrapper != null)
             {
-                if (currentWrapper != null)
-                {
-                    currentWrapper.finished = false;
-                    counter++;
-                }
-                int offsetor = 0;
-                int maxCount = Groups.Count;
-                do
-                {
-                    currentWrapper = Groups[(counter + offsetor) % maxCount].GetCurrentWraper();
-                    if (currentWrapper != null)
-                    {
-                        counter += offsetor;
-                        break;
-                    }
-                    offsetor++;
-                }
-                while (currentWrapper == null && offsetor < maxCount);
+                currentWrapper.finished = false;//重置先前打包器的完成状态
+                currentWrapper.Attacktive = false;
+                counter++;//计数器自增
 
             }
+            int offsetor = 0;//偏移量
+            int maxCount = Groups.Count;
+            do
+            {
+                currentWrapper = Groups[(counter + offsetor) % maxCount].GetCurrentWraper();
+                if (currentWrapper != null)
+                {
+                    counter += offsetor;
+                    break;
+                }
+                offsetor++;
+            }
+            while (currentWrapper == null && offsetor < maxCount);//抽到一个能用的或者超过上限为止，一般来讲是前者截断
+        }
+        public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered)
+        {
+            Label:
+            if ((currentWrapper == null || currentWrapper.finished) && triggered)//需要抽取新的打包器，并且处于触发状态
+                ChooseNewWrapper();
 
             if (currentWrapper == null) return;
-            if (!currentWrapper.finished)
-                currentWrapper.Update(entity, projectile, standardInfo, triggered, ref currentData);
+            if (!currentWrapper.finished && currentWrapper.Update(entity, projectile, standardInfo, triggered, ref currentData))//只要没结束就继续执行更新
+                goto Label;
         }
     }
 }

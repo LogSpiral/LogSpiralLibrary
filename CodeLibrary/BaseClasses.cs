@@ -869,8 +869,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
                     RenderEffect.Parameters["position"].SetValue(useMask.offset);
                     RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
+                    RenderEffect.Parameters["ImageSize"].SetValue(useMask.TexSize);
                     RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
                     RenderEffect.CurrentTechnique.Passes[1].Apply();
                     sb.Draw(render, Vector2.Zero, Color.White);
@@ -892,11 +891,10 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
                 if (useBloom.Active)
                 {
-                    RenderEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-
-                    RenderEffect.Parameters["position"].SetValue(new Vector2(useBloom.threshold, useBloom.range));
-                    RenderEffect.Parameters["tier2"].SetValue(useBloom.intensity);
-                    RenderEffect.Parameters["invAlpha"].SetValue(0.9f);
+                    RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
+                    RenderEffect.Parameters["threshold"].SetValue(useBloom.threshold);
+                    RenderEffect.Parameters["range"].SetValue(useBloom.range);
+                    RenderEffect.Parameters["intensity"].SetValue(useBloom.intensity);
                     RenderEffect.Parameters["uBloomAdditive"].SetValue(useBloom.additive);
                     for (int n = 0; n < useBloom.times - 1; n++)
                     {
@@ -914,7 +912,7 @@ namespace LogSpiralLibrary.CodeLibrary
                         gd.SetRenderTarget(Instance.Render_Swap);
                         RenderEffect.Parameters["tex0"].SetValue(render);
                         gd.Clear(Color.Transparent);
-                        RenderEffect.CurrentTechnique.Passes[9].Apply();
+                        RenderEffect.CurrentTechnique.Passes[3].Apply();
                         sb.Draw(render, Vector2.Zero, Color.White);
 
 
@@ -922,20 +920,20 @@ namespace LogSpiralLibrary.CodeLibrary
                         gd.SetRenderTarget(render);
                         RenderEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
                         gd.Clear(Color.Transparent);
-                        RenderEffect.CurrentTechnique.Passes[8].Apply();
+                        RenderEffect.CurrentTechnique.Passes[2].Apply();
                         sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
                     }
                     gd.SetRenderTarget(Main.screenTargetSwap);
                     gd.Clear(Color.Transparent);
                     RenderEffect.Parameters["tex0"].SetValue(render);
-                    RenderEffect.CurrentTechnique.Passes[9].Apply();
+                    RenderEffect.CurrentTechnique.Passes[3].Apply();
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
 
 
 
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[8].Apply();
+                    RenderEffect.CurrentTechnique.Passes[2].Apply();
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                     sb.End();
                     Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -1081,35 +1079,9 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             if (Charged)
             {
-                //TODO 生成ultra剑气
-                //var modplr = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                //modplr.NewUltraSwoosh(Color.DarkRed, Player.HeldItem.type, 1, 1
-                //    , null, ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length()) * .5f, _negativeDir: false
-                //    , heat: HeatMap, _rotation: 0, xscaler: 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8
-                //modplr.UpdateVertex();
                 var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
                 var u = UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, 0, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
-                //if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraSwoosh), out var instance) && instance is UltraSwoosh ultra)
-                //{
-                //    ultra.RenderDrawInfos[0] = useDistort;
-                //    if (useMask.Active) useBloom.ReDraw = false;
-                //    ultra.RenderDrawInfos[1] = useMask;
-                //    ultra.RenderDrawInfos[2] = useBloom;
-                //}
-                if (useMask.Active) useBloom.StandAlone = false;
                 u.ModityAllRenderInfo(useDistort, useMask, useBloom);
-                //var stab = UltraStab.NewUltraStab(VertexColor, 15, length, Player.Center, HeatMap, false, (Main.MouseWorld - Player.Center).ToRotation(), 1, -3, 8, new Vector3(0, 0, 1));
-                //stab.ModityAllRenderInfo(useDistort, useMask, useBloom);
-
-                //if (LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(typeof(UltraStab), out var _instance) && _instance is UltraStab stab1)
-                //{
-                //    stab1.RenderDrawInfos[0] = useDistort;
-                //    if (useMask.Active) useBloom.ReDraw = false;
-                //    stab1.RenderDrawInfos[1] = useMask;
-                //    stab1.RenderDrawInfos[2] = useBloom;
-                //}
-
-                //Main.NewText(stab == null);
             }
         }
     }
@@ -1401,6 +1373,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
             Projectile.direction = player.direction;
             Projectile.velocity = (Main.MouseWorld - player.Center).SafeNormalize(default);
+            if (player.DeadOrGhost) Projectile.Kill();
             if (Projectile.timeLeft == 10) return;
             bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
             bool flag2 = false;//次要-持续条件
@@ -1414,11 +1387,13 @@ namespace LogSpiralLibrary.CodeLibrary
                flag1 || flag2// 
                 )
             {
-                meleeSequence.Update(player, Projectile, StandardInfo, flag1);
-                if (flag1 || meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0 && !meleeSequence.currentWrapper.finished))
+                if (flag1 || ((meleeSequence.currentData.counter < meleeSequence.currentData.Cycle || (meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer > 0)) && !meleeSequence.currentWrapper.finished))
                     Projectile.timeLeft = 2;
+                meleeSequence.Update(player, Projectile, StandardInfo, flag1);
+
             }
             if (currentData == null) return;
+
             Projectile.Center = player.Center + currentData.offsetCenter;
             base.AI();
         }

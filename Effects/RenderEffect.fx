@@ -42,37 +42,52 @@ float4 PSFunction(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
+//float4 maskBoundColor;
 float4 maskGlowColor;
-float4 maskBoundColor = float4(1, 1, 1, 1);
+float tier1;
 float tier2;
 float2 position;
 float2 ImageSize;
 bool lightAsAlpha;
 bool inverse;
+float2 screenScale;
+
+float GetLerpValue(float t, float from, float to)
+{
+	return saturate((t - from) / (to - from));
+}
 //超过阈值替换纹理
 float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 {
+	/*
 	float4 c = tex2D(uImage1, coords);
 	if (any(c))
 	{
 		float v = getValue(c) * c.a;
 		if (inverse)
 			v = 1 - v;
-		if (v < invAlpha) 
-		//此处invAlpha只是作为一个参数使用，不是字面意思
-		//小于invAlpha的会被替换成颜色插值
-		{
-			if (lightAsAlpha)
-				return tex2D(uImage0, coords) + maskGlowColor * maskGlowColor.a * v / invAlpha * float4(1, 1, 1, v);
-			return tex2D(uImage0, coords) + maskGlowColor * maskGlowColor.a * v / invAlpha;
-		}
+		if (v < tier1) 
+			return tex2D(uImage0, coords) + maskGlowColor * maskGlowColor.a * v / invAlpha * float4(1, 1, 1, lightAsAlpha ? v : 1);
 		if (v < tier2)
-		{
 			return maskBoundColor;
-		}
-		float2 vec = (coords + position / float2(3840, 2240)) / ImageSize * float2(1920, 1120);
-		
-		return tex2D(uImage2, float2(vec.x % 1, vec.y % 1));
+		float2 vec = (coords * screenScale + offset / 2) / ImageSize;
+		return tex2D(uImage2, vec);
+	}
+	return tex2D(uImage0, coords);
+	*/
+	//↑旧版代码
+	
+	float4 c = tex2D(uImage1, coords);
+	if (any(c))
+	{
+		float v = getValue(c);
+		if (inverse)
+			v = 1 - v;
+		float dist = tier2 - tier1;
+		if (v < tier1 + dist)
+			return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(tier1 - dist), tier1 + dist)));
+		float4 colorMask = tex2D(uImage2, (coords * screenScale + offset / 2) / ImageSize);
+		return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, tier1 + dist, saturate(tier2 + dist))));
 	}
 	return tex2D(uImage0, coords);
 }
@@ -96,84 +111,22 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 //	}
 //	return color;
 //}
-float gauss[7] = { 0.05, 0.1, 0.24, 0.4, 0.24, 0.1, 0.05 };
+//float gauss[7] = { 0.05, 0.1, 0.24, 0.4, 0.24, 0.1, 0.05 };
+
+//float gauss[3] = { 0.12, 0.76, 0.12 };
+//float gauss[5] = { 0.02, 0.22, 0.52,0.22,0.02 };
+float gauss[7] = { 0.01, 0.06, 0.24, 0.38, 0.24, 0.06, 0.01 };
+//float gauss[9] = {0.003, 0.0227, 0.0958, 0.227, 0.3026, 0.227, 0.0958, 0.0227, 0.003};
+//float gauss[11] = {0.0019, 0.0109, 0.0429, 0.1141, 0.2053, 0.2497, 0.2053, 0.1141, 0.0429, 0.0109, 0.0019};
+
 //float gauss[7] = { 0.142, 0.142, 0.142, 0.142, 0.142, 0.142, 0.142 };
 
-//此处几个全局变量都不是字面意义
-//position实际上是两个float，阈值和步长
-//offset 屏幕大小
-//tier2 亮度
-
-//x方向模糊
-float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(n, 0);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x)
-		{
-			color += _color * gauss[n + 3] * tier2;
-		}
-	}
-	return color;
-}
-//y方向模糊
-float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(0, n);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x)
-		{
-			color += _color * gauss[n + 3] * tier2;
-		}
-	}
-	return color;
-}
-float4 PSFunction_BloomX_Weak(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(n, 0);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x && dot(_color, 0.25) < 0.9)
-		{
-			color += _color * gauss[n + 3] * tier2;
-		}
-	}
-	return color;
-}
-float4 PSFunction_BloomY_Weak(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	float4 color = tex2D(uImage0, vec);
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(0, n);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		if (dot(_color, 0.25) > position.x && dot(_color, 0.25) < 0.9)
-		{
-			color += _color * gauss[n + 3] * tier2;
-		}
-	}
-	return color;
-}
 
 
 bool uBloomAdditive;
 float threshold;
 float range;
 float intensity;
-float2 screenScale;
-float maximum;
 //c1是底色，c2是上色
 float4 ColorBlend(float4 c1, float4 c2)
 {
@@ -182,12 +135,10 @@ float4 ColorBlend(float4 c1, float4 c2)
 	return float4(vec, c1.a + c2.a - c1.a * c2.a);
 }
 
-float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
+float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
 	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
-	if (dot(color.xyz, 0.333) > maximum)
-		return color;
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(n, 0);
@@ -200,12 +151,10 @@ float4 PSFunction_BloomX_New(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
-float4 PSFunction_BloomY_New(float2 coords : TEXCOORD0) : COLOR0
+float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 {
 	float2 vec = coords;
 	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
-	if (dot(color.xyz, 0.333) > maximum)
-		return color;
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(0, n);
@@ -217,39 +166,6 @@ float4 PSFunction_BloomY_New(float2 coords : TEXCOORD0) : COLOR0
 		}
 	}
 	return color;
-}
-
-
-float4 PSFunction_DistortX(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(n, 0);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		float i = dot(_color, 0.25);
-		
-		if (i > position.x)
-		{
-			vec += i * gauss[n + 3] * ImageSize;
-		}
-	}
-	return tex2D(uImage0, vec);
-}
-float4 PSFunction_DistortY(float2 coords : TEXCOORD0) : COLOR0
-{
-	float2 vec = coords;
-	for (int n = -3; n <= 3; n++)
-	{
-		float2 v = float2(0, n);
-		float4 _color = tex2D(uImage1, coords + v / offset * position.y);
-		float i = dot(_color, 0.25);
-		if (i > position.x)
-		{
-			vec += i * gauss[n + 3] * ImageSize;
-		}
-	}
-	return tex2D(uImage0, vec);
 }
 technique Technique1
 {
@@ -268,29 +184,5 @@ technique Technique1
 	pass BloomEffectY
 	{
 		PixelShader = compile ps_3_0 PSFunction_BloomY();
-	}
-	pass DistortEffectX
-	{
-		PixelShader = compile ps_3_0 PSFunction_DistortX();
-	}
-	pass DistortEffectY
-	{
-		PixelShader = compile ps_3_0 PSFunction_DistortY();
-	}
-	pass BloomEffectX_Weak
-	{
-		PixelShader = compile ps_3_0 PSFunction_BloomX_Weak();
-	}
-	pass BloomEffectY_Weak
-	{
-		PixelShader = compile ps_3_0 PSFunction_BloomY_Weak();
-	}
-	pass BloomEffectX_New
-	{
-		PixelShader = compile ps_3_0 PSFunction_BloomX_New();
-	}
-	pass BloomEffectY_New
-	{
-		PixelShader = compile ps_3_0 PSFunction_BloomY_New();
 	}
 }

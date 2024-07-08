@@ -457,6 +457,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         break;
                     }
             }
+
         }
         public virtual float CompositeArmRotation => targetedVector.ToRotation() - MathHelper.PiOver2;
         /// <summary>
@@ -656,7 +657,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var verS = standardInfo.vertexStandard;
             if (verS.active)
             {
-                var u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler, Owner.Center, verS.heatMap, flip, Rotation, KValue, -3, 8, colorVec: verS.colorVec);
+                var u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize,
+                    Owner.Center, verS.heatMap, flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                //Main.NewText(Owner.Center);
                 //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
                 if (verS.renderInfos == null)
                     u.ResetAllRenderInfo();

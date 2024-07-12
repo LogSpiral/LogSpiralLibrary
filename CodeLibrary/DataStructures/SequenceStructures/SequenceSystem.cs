@@ -179,12 +179,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
             if (box != null)
-                DrawSequence(box, this.GetDimensions().Position(), 0, true);
+                DrawSequence(box, this.GetDimensions().Position(), true, true);
             base.DrawSelf(spriteBatch);
         }
         public void DrawWraper(WraperBox wraperBox, Vector2 position, float offset, bool active)
         {
-            position += SequenceConfig.Instance.Step * new Vector2(0, .5f);
+            var pos = position;
+            //position += SequenceConfig.Instance.Step * new Vector2(0, .5f);
             var spriteBatch = Main.spriteBatch;
             var desc = wraperBox.wraper.condition.Description.ToString();
             bool flag = desc != "Always";
@@ -196,7 +197,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(0, 16), boxSize + new Vector2(32, 64));
                 //else
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f, boxSize + new Vector2(32, 32));
-                panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(offset * .5f, flag ? 16 : 0), boxSize + new Vector2(offset * .5f + 32 * Math.Sign(offset), 0));
+                panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X * .5f, flag ? 16 : 0), boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 panel.glowEffectColor = Color.MediumPurple with { A = 0 };
                 panel.glowShakingStrength = .1f;
@@ -206,10 +207,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.backgroundUnitSize = new Vector2(28, 28) * 2f;
                 panel.backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f;
                 panel.DrawComplexPanel(spriteBatch);
-                DrawSequence(wraperBox.sequenceBox, position + wraperBox.GetSize() * Vector2.UnitY * .5f, offset, active);
+                DrawSequence(wraperBox.sequenceBox, position, active, false);
                 if (flag)
                 {
-                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + boxSize * Vector2.UnitY + new Vector2(16 + offset * .25f, -32), wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
+                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + boxSize * Vector2.UnitY * .5f + new Vector2(16 + offset * .25f, -32), wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
                 }
             }
             else
@@ -228,7 +229,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 boxSize += Vector2.One * 32;
                 #region 框框
                 ComplexPanelInfo panel = new ComplexPanelInfo();
-                panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + offset * .5f * Vector2.UnitX, boxSize);
+                panel.destination = Utils.CenteredRectangle(position + new Vector2(offset + boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 panel.glowEffectColor = Color.Cyan with { A = 0 };
                 panel.glowShakingStrength = .05f;
@@ -239,10 +240,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f;
                 panel.DrawComplexPanel(spriteBatch);
                 #endregion
-                spriteBatch.DrawString(FontAssets.MouseText.Value, name, position + new Vector2(16) + offset * .5f * Vector2.UnitX, active  ? Color.Cyan : Color.Gray, 0, default, 1f, 0, 0);//|| wraperBox.wraper.Active
+                spriteBatch.DrawString(FontAssets.MouseText.Value, name, position + new Vector2(16) + offset * .5f * Vector2.UnitX - boxSize * Vector2.UnitY * .5f, active ? Color.Cyan : Color.Gray, 0, default, 1f, 0, 0);//|| wraperBox.wraper.Active
                 if (flag)
                 {
-                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + new Vector2(16) + textSize.Y * Vector2.UnitY + offset * .5f * Vector2.UnitX, wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
+                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + new Vector2(16) + textSize.Y * Vector2.UnitY + offset * .5f * Vector2.UnitX - boxSize * Vector2.UnitY * .5f, wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
                 }
                 //spriteBatch.DrawRectangle(panel.destination, Color.MediumPurple);
 
@@ -250,26 +251,38 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (SequenceConfig.Instance.ShowWrapBox)
                 Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(position + wraperBox.GetSize() * .5f, wraperBox.GetSize()), Color.Purple, 8);
 
+            //锚点
+            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.MediumPurple * .5f, 0, new Vector2(.5f), 16, 0, 0);
+
+
         }
         public void DrawGroup(GroupBox groupBox, Vector2 position, bool active)
         {
             var pos = position;
             var size = groupBox.GetSize();
             position.Y -= size.Y * .5f;
-            //position.Y += groupBox.wraperBoxes[0].GetSize().Y * .5f;
             var tarCen1 = pos + new Vector2(-16, 0);
             var tarCen2 = pos + new Vector2(16 + size.X, 0);
             int c = 0;
             foreach (var w in groupBox.wraperBoxes)
             {
                 Vector2 wsize = w.GetSize();
+                if (c == 0)
+                {
+                    position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y) * .5f;
+
+                }
                 var offset = size.X - wsize.X;
                 var scale = 1 + ((float)LogSpiralLibraryMod.ModTime / 180).CosFactor();
                 //scale = 1;
-                var tarCen3 = w.wraper.IsSequence ? position + new Vector2(offset * .5f, wsize.Y + SequenceConfig.Instance.Step.Y) * .5f : position + (wsize + SequenceConfig.Instance.Step) * new Vector2(0, .5f) + new Vector2(offset * .5f, 0);
-                var tarCen4 = w.wraper.IsSequence ? position + wsize * new Vector2(1, .5f) + new Vector2(offset * 1.5f, SequenceConfig.Instance.Step.Y) * .5f : position + (wsize + SequenceConfig.Instance.Step) * new Vector2(0, .5f) + new Vector2(offset * .5f + wsize.X, 0);
+                position.X = pos.X + offset * .5f;
+
+                var tarCen3 = position;
+                //var tarCen4 = w.wraper.IsSequence ? position + wsize * new Vector2(1, 0) + new Vector2(offset * 1.5f, 0) * .5f : position + new Vector2(offset * .5f + wsize.X, 0);
+                var tarCen4 = tarCen3 + wsize.X * Vector2.UnitX;
                 Main.spriteBatch.DrawHorizonBLine(tarCen3, tarCen1, Color.White, scale);
                 Main.spriteBatch.DrawHorizonBLine(tarCen4, tarCen2, Color.White, scale);
+
                 DrawWraper(w, position, offset, active && groupBox.group.Index == c);
                 c++;
 
@@ -280,34 +293,48 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (SequenceConfig.Instance.ShowGroupBox)
                 Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + groupBox.GetSize() * Vector2.UnitX * .5f, groupBox.GetSize()), Color.Cyan, 6);
 
+            //锚点
+            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Cyan * .5f, 0, new Vector2(.5f), 12, 0, 0);
+
+
         }
-        public void DrawSequence(SequenceBox sequenceBox, Vector2 position, float offset, bool active)
+        public void DrawSequence(SequenceBox sequenceBox, Vector2 position, bool active, bool start)
         {
-            offset /= sequenceBox.sequenceBase.GroupBases.Count;
-            position.X += offset * .5f;
-            position.X += SequenceConfig.Instance.Step.X * .5f;
-            position.X += 16;
             var pos = position;
+            position.X += SequenceConfig.Instance.Step.X * .5f;
             int counter = 0;
+            Main.spriteBatch.DrawLine(pos, position, Color.White);
+            position.X += 16;
             foreach (var g in sequenceBox.groupBoxes)
             {
                 //绘制组之间的连接线
                 if (counter < sequenceBox.groupBoxes.Count - 1)
                 {
-                    var p = position + (g.GetSize().X + SequenceConfig.Instance.Step.X * .5f) * Vector2.UnitX;
-                    Main.spriteBatch.DrawLine(p, p + offset * Vector2.UnitX, Color.White);
+                    var p = position + (g.GetSize().X + 16) * Vector2.UnitX;
+                    //if(LogSpiralLibraryMod.ModTime % 60 < 30)
+                    Main.spriteBatch.DrawLine(p, p + (SequenceConfig.Instance.Step.X - 32) * Vector2.UnitX, Color.White);
                 }
                 //绘制组，添加位置偏移
                 DrawGroup(g, position, active && counter == sequenceBox.sequenceBase.Counter % sequenceBox.sequenceBase.GroupBases.Count);
-                position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
+                if (counter < sequenceBox.groupBoxes.Count - 1)
+                    position.X += g.GetSize().X + SequenceConfig.Instance.Step.X;
+                else
+                    position.X += g.GetSize().X + 16;
+
+                //position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
+
 
                 //计数器自增
                 counter++;
 
             }
+            Main.spriteBatch.DrawLine(pos + new Vector2(sequenceBox.GetSize().X + (start ? 32 : 0), 0), position, Color.White);
 
-            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.DarkRed, 0, new Vector2(.5f), 8, 0, 0);
-            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4, 0, 0);
+
+            //锚点
+            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Red * .5f, 0, new Vector2(.5f), 8, 0, 0);
+            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos + new Vector2(sequenceBox.GetSize().X + (start ? 32 : 0), 0), new Rectangle(0, 0, 1, 1), Color.Red * .5f, 0, new Vector2(.5f), 8, 0, 0);
+
             if (SequenceConfig.Instance.ShowSequenceBox)
                 Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f, sequenceBox.GetSize()), Color.Red);//以pos为左侧中心绘制矩形框框
         }
@@ -473,10 +500,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
                 sequencebox.SetSize(result);
                 sequencebox.Recalculate();
-                if (Main.chatMonitor is RemadeChatMonitor remade)
-                {
-                    remade._showCount = 40;
-                }
+                //if (Main.chatMonitor is RemadeChatMonitor remade)
+                //{
+                //    remade._showCount = 40;
+                //}
                 return result;
             }
             return curr;

@@ -291,14 +291,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             int counter = 0;
             foreach (var g in sequenceBox.groupBoxes)
             {
+                //绘制组之间的连接线
                 if (counter < sequenceBox.groupBoxes.Count - 1)
                 {
                     var p = position + (g.GetSize().X + SequenceConfig.Instance.Step.X * .5f) * Vector2.UnitX;
                     Main.spriteBatch.DrawLine(p, p + offset * Vector2.UnitX, Color.White);
                 }
+                //绘制组，添加位置偏移
                 DrawGroup(g, position, active && counter == sequenceBox.sequenceBase.Counter % sequenceBox.sequenceBase.GroupBases.Count);
                 position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
 
+                //计数器自增
                 counter++;
 
             }
@@ -306,7 +309,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.DarkRed, 0, new Vector2(.5f), 8, 0, 0);
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4, 0, 0);
             if (SequenceConfig.Instance.ShowSequenceBox)
-                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f, sequenceBox.GetSize()), Color.Red);
+                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f, sequenceBox.GetSize()), Color.Red);//以pos为左侧中心绘制矩形框框
         }
     }
     public class WraperBox : UIElement

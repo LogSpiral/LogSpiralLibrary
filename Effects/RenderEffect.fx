@@ -81,14 +81,21 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 	if (any(c))
 	{
 		float v = getValue(c);
+		float t1 = tier1;
+		float t2 = tier2;
+		float dist = t2 - t1;
+			float4 colorMask = tex2D(uImage2, (coords * screenScale + offset / 2) / ImageSize);
 		if (inverse)
-			v = 1 - v;
-		float dist = tier2 - tier1;
-		if (v < tier1 + dist)
-			return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(tier1 - dist), tier1 + dist)));
-		float4 colorMask = tex2D(uImage2, (coords * screenScale + offset / 2) / ImageSize);
-		return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, tier1 + dist, saturate(tier2 + dist))));
-	}
+		{
+			float4 cache = c;
+			c = colorMask;
+			colorMask = cache;
+		}
+			if (v < t1 + dist)
+				return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(t1 - dist), t1 + dist)));
+		
+			return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, t1 + dist, saturate(t2 + dist))));
+		}
 	return tex2D(uImage0, coords);
 }
 //float4 PSFunction_Bloom(float2 coords : TEXCOORD0) : COLOR0

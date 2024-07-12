@@ -248,7 +248,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             float dS = ShaderSwooshUL.Parameters["distortScaler"].GetValueSingle();
             //ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
             ShaderSwooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();
-            //DrawPrimitives(dS);
+            DrawPrimitives(dS);
         }
         /// <summary>
         /// 合批绘制完毕记得<see cref="SpriteBatch.End"/>
@@ -666,8 +666,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 var lerp = f.Lerp(num, 1);
                 float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
-                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;
+                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler * MathHelper.Lerp(2f, 1, f);
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
+                adder = default;
                 var realColor = color.Invoke(f);
                 realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
                 VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec + adder, realColor, new Vector3(1 - f, 1, 1));

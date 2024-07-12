@@ -368,10 +368,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             TimerMax = 0;
                             elementInfo.counter = 0;
                             finished = true;
-
-                            //TODO 执行完毕即刻通知外层结构
-                            //当前执行模式:到时候了标记为执行完毕，外层Sequence检测到执行完毕了切下一个，没下一个了再把所属Wrapper标记为完毕
-                            //但是如果这帧执行完毕了，松开按键取消trigger，下一帧Sequence检测到执行完毕也不会切下一个，然后其所在Wrapper就不会标记完毕，然后卡动作
+                            Attacktive = false;
                             return false;
                         }
                     }
@@ -463,6 +460,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 offsetor++;
             }
             while (currentWrapper == null && offsetor < maxCount);//抽到一个能用的或者超过上限为止，一般来讲是前者截断
+            if (currentWrapper != null)
+            {
+                currentWrapper.finished = false;//重置先前打包器的完成状态
+            }
         }
         public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered)
         {

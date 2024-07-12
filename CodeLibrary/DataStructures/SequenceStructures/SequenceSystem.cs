@@ -1,4 +1,5 @@
-﻿using ReLogic.Graphics;
+﻿using Newtonsoft.Json;
+using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,6 +25,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         [Range(0f, 64f)]
         public Vector2 Step = new Vector2(32, 16);
         public static SequenceConfig Instance => ModContent.GetInstance<SequenceConfig>();
+        public override void OnChanged()
+        {
+            SequenceSystem.instance?.sequenceUI?.SetupConfigList();
+            base.OnChanged();
+        }
     }
     public class SequencePlayer : ModPlayer
     {
@@ -261,8 +267,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var pos = position;
             var size = groupBox.GetSize();
             position.Y -= size.Y * .5f;
-            var tarCen1 = pos + new Vector2(-16, 0);
-            var tarCen2 = pos + new Vector2(16 + size.X, 0);
+            var tarCen1 = pos + new Vector2(-SequenceConfig.Instance.Step.X * .25f, 0);
+            var tarCen2 = pos + new Vector2(SequenceConfig.Instance.Step.X * .25f + size.X, 0);
             int c = 0;
             foreach (var w in groupBox.wraperBoxes)
             {
@@ -301,25 +307,25 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public void DrawSequence(SequenceBox sequenceBox, Vector2 position, bool active, bool start)
         {
             var pos = position;
-            position.X += SequenceConfig.Instance.Step.X * .5f;
+            position.X += 16;
             int counter = 0;
             Main.spriteBatch.DrawLine(pos, position, Color.White);
-            position.X += 16;
+            position.X += SequenceConfig.Instance.Step.X * .25f;//16
             foreach (var g in sequenceBox.groupBoxes)
             {
                 //绘制组之间的连接线
                 if (counter < sequenceBox.groupBoxes.Count - 1)
                 {
-                    var p = position + (g.GetSize().X + 16) * Vector2.UnitX;
+                    var p = position + (g.GetSize().X + SequenceConfig.Instance.Step.X * .25f) * Vector2.UnitX;// + 16
                     //if(LogSpiralLibraryMod.ModTime % 60 < 30)
-                    Main.spriteBatch.DrawLine(p, p + (SequenceConfig.Instance.Step.X - 32) * Vector2.UnitX, Color.White);
+                    Main.spriteBatch.DrawLine(p, p + (SequenceConfig.Instance.Step.X *.5f) * Vector2.UnitX, Color.White);//* 1f - 32
                 }
                 //绘制组，添加位置偏移
                 DrawGroup(g, position, active && counter == sequenceBox.sequenceBase.Counter % sequenceBox.sequenceBase.GroupBases.Count);
                 if (counter < sequenceBox.groupBoxes.Count - 1)
                     position.X += g.GetSize().X + SequenceConfig.Instance.Step.X;
                 else
-                    position.X += g.GetSize().X + 16;
+                    position.X += g.GetSize().X + SequenceConfig.Instance.Step.X * .25f;
 
                 //position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
 
@@ -328,7 +334,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 counter++;
 
             }
-            Main.spriteBatch.DrawLine(pos + new Vector2(sequenceBox.GetSize().X + (start ? 32 : 0), 0), position, Color.White);
+            Main.spriteBatch.DrawLine(pos + new Vector2(sequenceBox.GetSize().X + (start ? SequenceConfig.Instance.Step.X * .5f : 0), 0), position, Color.White);//32
 
 
             //锚点
@@ -426,7 +432,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static Vector2 WrapperSize(this WraperBox wrapBox)
         {
             Vector2 curr = wrapBox.GetSize();
-            if (curr == default || wrapBox.CacheRefresh || true)
+            if (curr == default || wrapBox.CacheRefresh)
             {
                 Vector2 delta;
                 var wraper = wrapBox.wraper;
@@ -469,7 +475,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static Vector2 GroupSize(this GroupBox groupBox)
         {
             Vector2 curr = groupBox.GetSize();
-            if (curr == default || groupBox.CacheRefresh || true)
+            if (curr == default || groupBox.CacheRefresh)
             {
                 Vector2 result = default;
                 foreach (var wrapper in groupBox.wraperBoxes)
@@ -488,7 +494,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static Vector2 SequenceSize(this SequenceBox sequencebox)
         {
             Vector2 curr = sequencebox.GetSize();
-            if (curr == default || sequencebox.CacheRefresh || true)
+            if (curr == default || sequencebox.CacheRefresh)
             {
                 Vector2 result = default;
                 foreach (var group in sequencebox.groupBoxes)

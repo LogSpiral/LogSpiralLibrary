@@ -18,6 +18,11 @@ Items: {
 		DisplayName: Test Blade2
 		Tooltip: ""
 	}
+
+	TestBlade3: {
+		DisplayName: Test Blade3
+		Tooltip: ""
+	}
 }
 
 AttackInfos: {
@@ -108,6 +113,7 @@ Configs: {
 Projectiles: {
 	TestBladeProj.DisplayName: Test Blade Proj
 	TestBlade2Proj.DisplayName: Test Blade2 Proj
+	TestBlade3Proj.DisplayName: Test Blade3 Proj
 }
 
 Keybinds.展示序列列表.DisplayName: 展示序列列表

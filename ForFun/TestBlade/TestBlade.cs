@@ -41,14 +41,15 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             vertexStandard = new VertexDrawInfoStandardInfo() with 
             {
                 active = true,
-                
+                renderInfos = [new AirDistortEffectInfo(3),default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)],
+
                 scaler = 120,
                 timeLeft = 15
             }
         };
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
-            meleeSequence.SequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
+            //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
             SwooshInfo swooshInfo = new SwooshInfo()
             {
                 Cycle = 4,

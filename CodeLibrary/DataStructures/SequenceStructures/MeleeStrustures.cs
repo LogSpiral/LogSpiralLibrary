@@ -1,8 +1,10 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Xml;
 using Terraria.Audio;
 using Terraria.Localization;
 using Terraria.WorldBuilding;
@@ -316,15 +318,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         bool Collide(Rectangle rectangle);
 
     }
-    public class MeleeSequence : SequenceBase<IMeleeAttackData>
+    public class MeleeSequence : SequenceBase<MeleeAction, MeleeSequence>
     {
         public IReadOnlyList<Group> MeleeGroups => Groups;
     }
-    public abstract class NormalAttackAction : ModType, IMeleeAttackData
+    public abstract class MeleeAction : ModType, IMeleeAttackData
     {
-        public NormalAttackAction()
+        public MeleeAction()
         {
-            foreach (var n in ModTypeLookup<NormalAttackAction>.dict.Values)
+            foreach (var n in ModTypeLookup<MeleeAction>.dict.Values)
             {
                 if (n.GetType() == this.GetType())
                 {
@@ -332,16 +334,24 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
             }
         }
-        public Action<NormalAttackAction> _OnActive;
-        public Action<NormalAttackAction> _OnAttack;
-        public Action<NormalAttackAction> _OnCharge;
-        public Action<NormalAttackAction> _OnDeactive;
-        public Action<NormalAttackAction> _OnEndAttack;
-        public Action<NormalAttackAction> _OnEndSingle;
-        public Action<NormalAttackAction> _OnStartAttack;
-        public Action<NormalAttackAction> _OnStartSingle;
-
-
+        public Action<MeleeAction> _OnActive;
+        public Action<MeleeAction> _OnAttack;
+        public Action<MeleeAction> _OnCharge;
+        public Action<MeleeAction> _OnDeactive;
+        public Action<MeleeAction> _OnEndAttack;
+        public Action<MeleeAction> _OnEndSingle;
+        public Action<MeleeAction> _OnStartAttack;
+        public Action<MeleeAction> _OnStartSingle;
+        public virtual void SaveAttribute(XmlWriter xmlWriter) 
+        {
+            xmlWriter.WriteAttributeString("Cycle", Cycle.ToString());
+            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
+        }
+        public virtual void LoadAttribute(XmlReader xmlReader) 
+        {
+            Cycle = int.Parse(xmlReader["Cycle"]);
+            ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
+        }
         #region 属性
         #region 编排序列时调整
         //持续时间 角度 位移 修改数据
@@ -398,6 +408,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         #region 函数
         public virtual void OnActive()
         {
+            
             _OnActive?.Invoke(this);
         }
 
@@ -548,12 +559,28 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public string LocalizationCategory => "AttackInfos";
         public sealed override void Register()
         {
-            ModTypeLookup<NormalAttackAction>.Register(this);
+            int hash = typeof(MeleeAction).GetHashCode();
+            ModTypeLookup<MeleeAction>.Register(this);
+
+
+            List<string> content = new List<string>();
+            foreach (var pair in ModTypeLookup<MeleeAction>.dict) 
+            {
+                content.Add((pair.Key, pair.Value).ToString());
+            }
+            string path = "D:/图片测试/log_";
+            int count = 0;
+            while (File.Exists(path + count + ".txt"))
+            {
+                count++;
+            }
+            path += count + ".txt";
+            File.WriteAllLines(path, content);
         }
         public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
         #endregion
     }
-    public class SwooshInfo : NormalAttackAction
+    public class SwooshInfo : MeleeAction
     {
 
         public override float Factor => base.Factor;
@@ -619,7 +646,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             flip = Main.rand.NextBool();
             base.OnActive();
         }
-        public virtual UltraSwoosh NewSwoosh() 
+        public virtual UltraSwoosh NewSwoosh()
         {
             var verS = standardInfo.vertexStandard;
             if (verS.active)
@@ -641,7 +668,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnEndAttack();
         }
     }
-    public class StabInfo : NormalAttackAction
+    public class StabInfo : MeleeAction
     {
         public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
         public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
@@ -654,7 +681,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
             flip ^= true;
         }
-        public virtual UltraStab NewStab() 
+        public virtual UltraStab NewStab()
         {
             var verS = standardInfo.vertexStandard;
             if (verS.active)
@@ -721,6 +748,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
         }
         (int, int) range;
+        public override void LoadAttribute(XmlReader xmlReader)
+        {
+            base.LoadAttribute(xmlReader);
+            range = (int.Parse(xmlReader["rangeOffsetMin"]), int.Parse(xmlReader["rangeOffsetMax"]));
+        }
+        public override void SaveAttribute(XmlWriter xmlWriter)
+        {
+            base.SaveAttribute(xmlWriter);
+            xmlWriter.WriteAttributeString("rangeOffsetMin", range.Item1.ToString());
+            xmlWriter.WriteAttributeString("rangeOffsetMax", range.Item2.ToString());
+
+        }
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
         public int givenCycle;
@@ -734,7 +773,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnActive();
         }
     }
-    public class ConvoluteInfo : NormalAttackAction
+    public class ConvoluteInfo : MeleeAction
     {
         public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
         public Vector2 unit;
@@ -752,7 +791,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnStartAttack();
         }
     }
-    public class ShockingDashInfo : NormalAttackAction
+    public class ShockingDashInfo : MeleeAction
     {
     }
 }

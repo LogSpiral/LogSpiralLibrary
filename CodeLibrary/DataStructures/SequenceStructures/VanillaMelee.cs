@@ -8,7 +8,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 经典宽剑
     /// </summary>
-    public class BoardSwordInfo : NormalAttackAction
+    public class BoardSwordInfo : MeleeAction
     {
         public override float offsetRotation => MathHelper.Lerp(0.15f, -0.75f, Factor) * MathHelper.Pi * Owner.direction;
         public override bool Attacktive => timer % 3 == 0;
@@ -16,7 +16,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 经典短剑
     /// </summary>
-    public class ShortSwordInfo : NormalAttackAction
+    public class ShortSwordInfo : MeleeAction
     {
         public override float Factor => (base.Factor * 4) % 1;
         public override bool Attacktive => Factor <= 0.5f;
@@ -25,7 +25,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 转啊转
     /// </summary>
-    public class BoomerangInfo : NormalAttackAction
+    public class BoomerangInfo : MeleeAction
     {
         public override bool Attacktive => true;
         public override Vector2 offsetCenter => realCenter - Owner.Center;
@@ -87,7 +87,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 链球
     /// </summary>
-    public class FlailInfo : NormalAttackAction
+    public class FlailInfo : MeleeAction
     {
         public override bool Attacktive => true;
         public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2;
@@ -113,7 +113,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 长枪
     /// </summary>
-    public class SpearInfo : NormalAttackAction
+    public class SpearInfo : MeleeAction
     {
         public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi);
         public override Vector2 offsetCenter 
@@ -130,7 +130,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 石巨人之拳！！
     /// </summary>
-    public class FistInfo : NormalAttackAction
+    public class FistInfo : MeleeAction
     {
         public override bool Attacktive => true;
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 3 % 1) - 1), 2) * 512;
@@ -138,7 +138,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 圣骑士会个🔨
     /// </summary>
-    public class HammerInfo : NormalAttackAction
+    public class HammerInfo : MeleeAction
     {
         public override float offsetRotation => Factor * MathHelper.TwoPi * 4;
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
@@ -152,7 +152,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// ─━╋ ─━╋ ─━╋
     /// </summary>
-    public class KnivesInfo : NormalAttackAction
+    public class KnivesInfo : MeleeAction
     {
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 2048 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 512);
         public override bool Attacktive => true;
@@ -165,7 +165,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 白云一片去悠悠
     /// </summary>
-    public class YoyoInfo : NormalAttackAction
+    public class YoyoInfo : MeleeAction
     {
         public override Vector2 offsetCenter => realCenter - Owner.Center;
         public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
@@ -503,7 +503,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 我没拿到真空刀
     /// </summary>
-    public class ArkhalisInfo : NormalAttackAction
+    public class ArkhalisInfo : MeleeAction
     {
         public override float Factor => base.Factor * 4 % 1;
         public override void OnEndSingle()
@@ -517,7 +517,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 请不要再冕了...什么不是烈冕号啊
     /// </summary>
-    public class EruptionInfo : NormalAttackAction
+    public class EruptionInfo : MeleeAction
     {
         public override float offsetSize => -MathF.Pow(0.5f - Factor, 2) * 28 + 8;
         public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.PiOver2;//;
@@ -536,7 +536,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 其实是天龙之怒
     /// </summary>
-    public class RotatingInfo : NormalAttackAction
+    public class RotatingInfo : MeleeAction
     {
         public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
         public override bool Attacktive => true;
@@ -553,7 +553,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// Lancer!!♠
     /// </summary>
-    public class LanceInfo : NormalAttackAction
+    public class LanceInfo : MeleeAction
     {
         public override Vector2 offsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, 1 - MathHelper.Clamp((1 - Factor) * 4, 0, 1));
         public override void OnStartAttack()
@@ -571,7 +571,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 银色战车！！
     /// </summary>
-    public class StarlightInfo : NormalAttackAction
+    public class StarlightInfo : MeleeAction
     {
         public override bool Attacktive => true;
         public override Vector2 offsetCenter => Main.rand.NextVector2Unit() * 16 + Rotation.ToRotationVector2() * 16;
@@ -586,7 +586,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 天顶
     /// </summary>
-    public class ZenithInfo : NormalAttackAction
+    public class ZenithInfo : MeleeAction
     {
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist, 32)).RotatedBy(Rotation);
         public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi;
@@ -611,7 +611,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 泰拉棱镜???!!!
     /// </summary>
-    public class TerraprismaInfo : NormalAttackAction
+    public class TerraprismaInfo : MeleeAction
     {
         public override Vector2 offsetCenter => realCenter - Owner.Center;
         public override float offsetRotation => target != null ? (float)LogSpiralLibraryMod.ModTime2 * .45f : MathHelper.PiOver2;

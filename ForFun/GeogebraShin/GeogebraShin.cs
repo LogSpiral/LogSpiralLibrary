@@ -1,4 +1,5 @@
-﻿using ReLogic.Content;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using ReLogic.Content;
 using System;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
@@ -29,6 +30,11 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
                 if (active)
                 {
                     //Main.NewText("圆神，启动！");
+                    foreach (var sequence in SequenceSystem.sequenceBases.Values)
+                    {
+                        //Main.NewText(sequence == null);
+                        sequence.Save();
+                    }
                     SoundEngine.PlaySound(SoundID.Zombie104, player.Center);
                     //SetDefaults();
                 }

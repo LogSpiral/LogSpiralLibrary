@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -85,6 +89,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             target = this with { actionOffsetTimeScaler = speed };
         }
         public void SetActionSpeed(ref ActionModifyData target) => target.actionOffsetTimeScaler = actionOffsetTimeScaler;
+        public override string ToString()
+        {
+            //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
+            return $"({actionOffsetSize:0.00},{actionOffsetTimeScaler:0.00},{actionOffsetKnockBack:0.00},{actionOffsetDamage:0.00},{actionOffsetCritAdder},{actionOffsetCritMultiplyer:0.00})";
+        }
+        public static ActionModifyData LoadFromString(string str)
+        {
+            var content = str.Remove(0, 1).Remove(str.Length - 2).Split(',');
+            return new ActionModifyData(float.Parse(content[0]), float.Parse(content[1]), float.Parse(content[2]), float.Parse(content[3]), int.Parse(content[4]), float.Parse(content[5]));
+        }
     }
     public interface ISequenceElement : ILocalizedModType, ILoadable
     {
@@ -192,6 +206,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         void Draw(SpriteBatch spriteBatch, Texture2D texture);
 
         #endregion
+
+        #region SL
+        void SaveAttribute(XmlWriter xmlWriter);
+        void LoadAttribute(XmlReader xmlReader);
+        #endregion
         #endregion
         #region 吃闲饭的
         Entity Owner { get; set; }
@@ -202,13 +221,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// <summary>
     /// 去泛型化的序列基类
     /// </summary>
+    [XmlRoot("Sequence")]
     public abstract class SequenceBase
     {
+
+        public abstract void Save();
+        [XmlRoot("Group")]
         public abstract class GroupBase
         {
             public abstract List<WraperBase> Wrapers { get; }
             public abstract int Index { get; }
         }
+        [XmlRoot("Sequence")]
         public abstract class WraperBase
         {
             public abstract bool IsElement { get; }
@@ -223,17 +247,132 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 当前序列的名字
         /// </summary>
+        [XmlAttribute("name")]
         public abstract string SequenceNameBase { get; }
         /// <summary>
         /// 目前执行到第几个组
         /// </summary>
+        [XmlIgnore]
         public abstract int Counter { get; }
+        public abstract Mod Mod { get; }
+        public abstract string ElementTypeName { get; }
 
     }
-    public class SequenceBase<T> : SequenceBase where T : ISequenceElement
+    public class SequenceBase<TElem, TSelf> : SequenceBase where TElem : ISequenceElement where TSelf : SequenceBase<TElem, TSelf>, new()
     {
+        public const string SequenceDefaultName = "My Sequence";
+        public void WriteContent(XmlWriter xmlWriter)
+        {
+            xmlWriter.WriteStartElement("Sequence");
+            if (SequenceNameBase != SequenceDefaultName)
+                xmlWriter.WriteAttributeString("name", SequenceNameBase);
+            for (int i = 0; i < Groups.Count; i++)
+            {
+                xmlWriter.WriteStartElement("Group");
+                Group group = Groups[i];
+                for (int j = 0; j < group.wrapers.Count; j++)
+                {
+                    Wraper wraper = group.wrapers[j];
+                    xmlWriter.WriteStartElement("Wraper");
+                    if (wraper.condition.Description.Value != "Always")
+                        xmlWriter.WriteAttributeString("condition", wraper.condition.Description.Key.Split('.')[^1]);
+                    //xmlWriter.WriteValue(wraper.Name);
+                    if (wraper.IsSequence)
+                    {
+                        xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
+                        if (wraper.Name == SequenceDefaultName)
+                            ((TSelf)wraper.SequenceInfo).WriteContent(xmlWriter);
+                        else 
+                        {
+                            xmlWriter.WriteAttributeString("Mod", wraper.SequenceInfo.Mod.Name);
+                            xmlWriter.WriteValue(wraper.sequenceInfo.sequenceName);
+                        }
+                    }
+                    else
+                    {
+                        xmlWriter.WriteStartElement("Action");
+                        wraper.elementInfo.SaveAttribute(xmlWriter);
+                        xmlWriter.WriteAttributeString("name", wraper.elementInfo.FullName);
+                        xmlWriter.WriteEndElement();
+
+                    }
+                    xmlWriter.WriteEndElement();
+                }
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
+        }
+        public override void Save() => Save($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}/{SequenceNameBase}.xml");
+        public void Save(string path)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            //要求缩进
+            settings.Indent = true;
+            //注意如果不设置encoding默认将输出utf-16
+            //注意这儿不能直接用Encoding.UTF8如果用Encoding.UTF8将在输出文本的最前面添加4个字节的非xml内容
+            settings.Encoding = new UTF8Encoding(false);
+
+            //设置换行符
+            settings.NewLineChars = Environment.NewLine;
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            using XmlWriter xmlWriter = XmlWriter.Create(path, settings);
+            WriteContent(xmlWriter);
+
+        }
+
+
+        public static TSelf Load(string path)
+        {
+            using XmlReader xmlReader = XmlReader.Create(path);
+            xmlReader.Read();//读取声明
+            xmlReader.Read();//读取空格
+            ReadSequence(xmlReader, out var result);
+            return result;
+        }
+        public static bool ReadSequence(XmlReader xmlReader, out TSelf result)
+        {
+            xmlReader.Read();//读取序列节点开始部分
+            if (xmlReader.Name != "Sequence")
+            {
+                xmlReader.Read();
+                result = null;
+                return false;
+            }
+            else
+            {
+                result = new TSelf();
+                result.sequenceName = xmlReader["name"] ?? SequenceDefaultName;
+                xmlReader.Read();//读取空格
+                while (Group.ReadGroup(xmlReader, out var groupResult))
+                {
+                    result.Add(groupResult);
+                }
+                return true;
+            }
+        }
         public class Group : GroupBase
         {
+            public static bool ReadGroup(XmlReader xmlReader, out Group result)
+            {
+                xmlReader.Read();//读取下一个位置
+                if (xmlReader.Name != "Group")//此时实际上是</Sequence>
+                {
+                    xmlReader.Read();//顺手把它的下一个空格读取了
+                    result = null;
+                    return false;
+                }
+                else
+                {
+                    xmlReader.Read();//读取空格
+                    result = new Group();
+                    while (Wraper.ReadWraper(xmlReader, out Wraper wraperResult))
+                    {
+                        result.wrapers.Add(wraperResult);
+                    }
+                    return true;
+                }
+            }
             /// <summary>
             /// 请不要对这个Add
             /// TODO 改为ReadOnly
@@ -256,7 +395,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
                 return null;
             }
-            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public bool ContainsSequence(SequenceBase<TElem, TSelf> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 foreach (var wraper in wrapers)
@@ -267,22 +406,77 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public class Wraper : WraperBase
         {
-            public readonly T elementInfo;
-            public readonly SequenceBase<T> sequenceInfo;
+            public static bool ReadWraper(XmlReader xmlReader, out Wraper result)
+            {
+                xmlReader.Read();
+                if (xmlReader.Name != "Wraper")
+                {
+                    xmlReader.Read();
+                    result = null;
+                    return false;
+                }
+                else
+                {
+                    result = null;
+                    var conditionKey = xmlReader["condition"];
+                    if (xmlReader["IsSequence"] == "True")
+                    {
+                        xmlReader.Read();
+                        if (xmlReader.Value.Contains("\n"))
+                        {
+                            ReadSequence(xmlReader, out TSelf resultSequence);
+                            result = new Wraper(resultSequence);
+                        }
+                        else
+                        {
+                            if (SequenceSystem.sequenceBases.TryGetValue(xmlReader.Value, out var sequence))
+                            {
+                                result = new Wraper((TSelf)sequence);
+                            }
+                            else
+                            {
+
+                                var resultSequence = Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(TElem).Name}/{xmlReader["Mod"]}/{xmlReader.Value}.xml");
+                                SequenceSystem.sequenceBases[xmlReader.Value] = sequence;
+                                result = new Wraper(resultSequence);
+                            }
+                        }
+                        xmlReader.Read();//节点结束
+                        xmlReader.Read();//空白
+                    }
+                    else
+                    {
+                        xmlReader.Read();//空白
+                        xmlReader.Read();//Action
+                        var elem = (TElem)Activator.CreateInstance(ModContent.Find<TElem>(xmlReader["name"]).GetType());//获取元素实例
+                        result = new Wraper(elem);
+                        elem.LoadAttribute(xmlReader);
+                        xmlReader.Read();//空白
+                        xmlReader.Read();//节点结束
+                        xmlReader.Read();//空白
+                        int k = 0;
+                    }
+                    if (conditionKey != null)
+                        result.SetCondition(SequenceSystem.conditions[conditionKey]);
+                    return true;
+                }
+            }
+            public readonly TElem elementInfo;
+            public readonly TSelf sequenceInfo;
             public override SequenceBase SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
-            public override string Name => sequenceInfo?.SequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
-            public Wraper(T meleeAttackData)
+            public override string Name => sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
+            public Wraper(TElem sequenceELement)
             {
-                elementInfo = meleeAttackData;
+                elementInfo = sequenceELement;
             }
-            public Wraper(SequenceBase<T> sequence)
+            public Wraper(TSelf sequence)
             {
                 sequenceInfo = sequence;
             }
-            public static implicit operator Wraper(SequenceBase<T> sequence) => new Wraper(sequence);
-            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public static implicit operator Wraper(TSelf sequence) => new Wraper(sequence);
+            public bool ContainsSequence(SequenceBase<TElem, TSelf> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 if (!IsSequence) return false;
@@ -319,7 +513,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             /// <param name="meleeAttackData">传回的具体元素</param>
             /// <returns>当前序列是否执行完毕</returns>
             /// <exception cref="Exception"></exception>
-            public bool Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref T meleeAttackData)
+            public bool Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref TElem meleeAttackData)
             {
                 if (!Available) throw new Exception("序列不可用");
                 if (finished) throw new Exception("咱已经干完活了");
@@ -395,7 +589,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return false;
             }
         }
-        public void Add(T meleeAttackData)
+        public void Add(TElem meleeAttackData)
         {
             Wraper wraper = new(meleeAttackData);
             Add(wraper);
@@ -429,15 +623,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             groups.Insert(index, group);
         }
-        public string SequenceName = "My MeleeSequence";
+        public string sequenceName = SequenceDefaultName;
         public int counter;
         public override int Counter => counter;
         public Wraper currentWrapper;
-        public T currentData;
+        public TElem currentData;
         List<Group> groups = new List<Group>();
         public IReadOnlyList<Group> Groups => groups;
-        public override string SequenceNameBase => SequenceName;
+        public override string SequenceNameBase => sequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
+        public Mod mod;
+        public override Mod Mod => mod;
+        public override string ElementTypeName => typeof(TElem).Name;
         void ChooseNewWrapper()
         {
             if (currentWrapper != null)
@@ -467,7 +664,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public void Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered)
         {
-            Label:
+        Label:
             if ((currentWrapper == null || currentWrapper.finished) && triggered)//需要抽取新的打包器，并且处于触发状态
                 ChooseNewWrapper();
 

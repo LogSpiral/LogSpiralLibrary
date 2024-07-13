@@ -3,10 +3,12 @@ using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Chat;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
+using Terraria.Localization;
 using Terraria.ModLoader.Config;
 using Terraria.UI;
 
@@ -54,6 +56,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         UserInterface userInterfaceSequence;
         public static ModKeybind ShowSequenceKeybind { get; private set; }
         public static SequenceSystem instance;
+        public static Dictionary<string, Condition> conditions = new Dictionary<string, Condition>();
         public override void Load()
         {
             instance = this;
@@ -62,6 +65,33 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             sequenceUI.Activate();
             userInterfaceSequence.SetState(sequenceUI);
             ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "展示序列列表", "Y");
+            #region conditions的赋值
+            var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var fieldInfo in fieldInfos)
+            {
+                Condition condition = (Condition)fieldInfo.GetValue(null);
+                string key = condition.Description.Key.Split('.')[^1];
+                if (!conditions.ContainsKey(key))
+                    conditions.Add(key, condition);
+            }//录入原版条件
+            var mouseLeftCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseLeft"), () => Main.LocalPlayer.controlUseItem);
+            conditions.Add("MouseLeft", mouseLeftCondition);
+            var mouseRightCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseRight"), () => Main.LocalPlayer.controlUseTile);
+            conditions.Add("MouseRight", mouseRightCondition);
+            var surroundThreatCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.SurroundThreat"), () =>
+            {
+                SurroundStatePlayer ssp = Main.LocalPlayer.GetModPlayer<SurroundStatePlayer>();
+                return ssp.state == SurroundState.SurroundThreat;
+            });
+            conditions.Add("SurroundThreat", surroundThreatCondition);
+            var frontThreatCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.FrontThreat"), () =>
+            {
+                SurroundStatePlayer ssp = Main.LocalPlayer.GetModPlayer<SurroundStatePlayer>();
+                return ssp.state == SurroundState.FrontThreat;
+            });
+            conditions.Add("FrontThreat", frontThreatCondition);
+            #endregion
+
         }
         public override void Unload()
         {
@@ -185,7 +215,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
             if (box != null)
-                DrawSequence(box, this.GetDimensions().Position(), true, true);
+                DrawSequence(box, this.GetDimensions().Position(), default, true, true);
             base.DrawSelf(spriteBatch);
         }
         public void DrawWraper(WraperBox wraperBox, Vector2 position, float offset, bool active)
@@ -203,7 +233,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(0, 16), boxSize + new Vector2(32, 64));
                 //else
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f, boxSize + new Vector2(32, 32));
-                panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X * .5f, flag ? 16 : 0), boxSize);
+                float offY = flag ? FontAssets.MouseText.Value.MeasureString(desc).Y : 0;
+                panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X * .5f, 0), boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 panel.glowEffectColor = Color.MediumPurple with { A = 0 };
                 panel.glowShakingStrength = .1f;
@@ -213,10 +244,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.backgroundUnitSize = new Vector2(28, 28) * 2f;
                 panel.backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f;
                 panel.DrawComplexPanel(spriteBatch);
-                DrawSequence(wraperBox.sequenceBox, position, active, false);
+                DrawSequence(wraperBox.sequenceBox, position - offY * .5f * Vector2.UnitY, offY * .5f * Vector2.UnitY, active, false);
                 if (flag)
                 {
-                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + boxSize * Vector2.UnitY * .5f + new Vector2(16 + offset * .25f, -32), wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
+                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + boxSize * Vector2.UnitY * .5f - offY * 1.5f * Vector2.UnitY + new Vector2(16, 0), wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
                 }
             }
             else
@@ -225,17 +256,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var font = FontAssets.MouseText.Value;
                 var name = wraperBox.wraper.Name;
                 Vector2 textSize = font.MeasureString(name);
-                Vector2 boxSize = textSize;
-                if (flag)
-                {
-                    Vector2 descSize = font.MeasureString(desc);
-                    boxSize.Y += descSize.Y;
-                    boxSize.X = Math.Max(textSize.X, descSize.X);
-                }
-                boxSize += Vector2.One * 32;
+                Vector2 boxSize = wraperBox.GetSize();
                 #region 框框
                 ComplexPanelInfo panel = new ComplexPanelInfo();
-                panel.destination = Utils.CenteredRectangle(position + new Vector2(offset + boxSize.X, 0) * .5f, boxSize);
+                panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 panel.glowEffectColor = Color.Cyan with { A = 0 };
                 panel.glowShakingStrength = .05f;
@@ -246,19 +270,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f;
                 panel.DrawComplexPanel(spriteBatch);
                 #endregion
-                spriteBatch.DrawString(FontAssets.MouseText.Value, name, position + new Vector2(16) + offset * .5f * Vector2.UnitX - boxSize * Vector2.UnitY * .5f, active ? Color.Cyan : Color.Gray, 0, default, 1f, 0, 0);//|| wraperBox.wraper.Active
+                spriteBatch.DrawString(FontAssets.MouseText.Value, name, position + new Vector2(16) - boxSize * Vector2.UnitY * .5f, active ? Color.Cyan : Color.Gray, 0, default, 1f, 0, 0);//|| wraperBox.wraper.Active
                 if (flag)
                 {
-                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + new Vector2(16) + textSize.Y * Vector2.UnitY + offset * .5f * Vector2.UnitX - boxSize * Vector2.UnitY * .5f, wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
+                    spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, position + new Vector2(16) + textSize.Y * Vector2.UnitY - boxSize * Vector2.UnitY * .5f, wraperBox.wraper.condition.IsMet() ? Color.MediumPurple : Color.Gray);
                 }
                 //spriteBatch.DrawRectangle(panel.destination, Color.MediumPurple);
 
             }
             if (SequenceConfig.Instance.ShowWrapBox)
-                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(position + wraperBox.GetSize() * .5f, wraperBox.GetSize()), Color.Purple, 8);
+                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + wraperBox.GetSize() * Vector2.UnitX * .5f, wraperBox.GetSize()), Color.Purple, 8);
 
             //锚点
-            //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.MediumPurple * .5f, 0, new Vector2(.5f), 16, 0, 0);
+            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.MediumPurple * .5f, 0, new Vector2(.5f), 16, 0, 0);
 
 
         }
@@ -270,14 +294,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var tarCen1 = pos + new Vector2(-SequenceConfig.Instance.Step.X * .25f, 0);
             var tarCen2 = pos + new Vector2(SequenceConfig.Instance.Step.X * .25f + size.X, 0);
             int c = 0;
+            var font = FontAssets.MouseText.Value;
             foreach (var w in groupBox.wraperBoxes)
             {
+                string desc = w.wraper.condition.Description.ToString();
+                float offY = desc != "Always" ? font.MeasureString("→" + desc).Y : 0;
                 Vector2 wsize = w.GetSize();
-                if (c == 0)
-                {
-                    position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y) * .5f;
-
-                }
+                position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y - offY) * .5f;
                 var offset = size.X - wsize.X;
                 var scale = 1 + ((float)LogSpiralLibraryMod.ModTime / 180).CosFactor();
                 //scale = 1;
@@ -288,11 +311,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var tarCen4 = tarCen3 + wsize.X * Vector2.UnitX;
                 Main.spriteBatch.DrawHorizonBLine(tarCen3, tarCen1, Color.White, scale);
                 Main.spriteBatch.DrawHorizonBLine(tarCen4, tarCen2, Color.White, scale);
-
-                DrawWraper(w, position, offset, active && groupBox.group.Index == c);
+                DrawWraper(w, position + new Vector2(0, offY * .5f), offset, active && groupBox.group.Index == c);//
                 c++;
+                position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y + offY) * .5f;
 
-                position.Y += wsize.Y + SequenceConfig.Instance.Step.Y;
+
             }
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.DarkCyan, 0, new Vector2(.5f), 16, 0, 0);
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Cyan, 0, new Vector2(.5f), 12, 0, 0);
@@ -304,7 +327,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
 
         }
-        public void DrawSequence(SequenceBox sequenceBox, Vector2 position, bool active, bool start)
+        public void DrawSequence(SequenceBox sequenceBox, Vector2 position, Vector2 offsetFrame, bool active, bool start)
         {
             var pos = position;
             position.X += 16;
@@ -318,14 +341,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     var p = position + (g.GetSize().X + SequenceConfig.Instance.Step.X * .25f) * Vector2.UnitX;// + 16
                     //if(LogSpiralLibraryMod.ModTime % 60 < 30)
-                    Main.spriteBatch.DrawLine(p, p + (SequenceConfig.Instance.Step.X *.5f) * Vector2.UnitX, Color.White);//* 1f - 32
+                    Main.spriteBatch.DrawLine(p, p + (SequenceConfig.Instance.Step.X * .5f) * Vector2.UnitX, Color.White);//* 1f - 32
                 }
                 //绘制组，添加位置偏移
                 DrawGroup(g, position, active && counter == sequenceBox.sequenceBase.Counter % sequenceBox.sequenceBase.GroupBases.Count);
                 if (counter < sequenceBox.groupBoxes.Count - 1)
                     position.X += g.GetSize().X + SequenceConfig.Instance.Step.X;
                 else
-                    position.X += g.GetSize().X + SequenceConfig.Instance.Step.X * .25f;
+                    position.X += g.GetSize().X + SequenceConfig.Instance.Step.X;
 
                 //position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
 
@@ -342,7 +365,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos + new Vector2(sequenceBox.GetSize().X + (start ? 32 : 0), 0), new Rectangle(0, 0, 1, 1), Color.Red * .5f, 0, new Vector2(.5f), 8, 0, 0);
 
             if (SequenceConfig.Instance.ShowSequenceBox)
-                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f, sequenceBox.GetSize()), Color.Red);//以pos为左侧中心绘制矩形框框
+                Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f + offsetFrame + (start ? new Vector2(12,0):default), sequenceBox.GetSize()), Color.Red);//以pos为左侧中心绘制矩形框框
         }
     }
     public class WraperBox : UIElement
@@ -440,9 +463,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 if (wraper.IsSequence)
                 {
                     delta = SequenceSize(wrapBox.sequenceBox);
-                    var textSize = FontAssets.MouseText.Value.MeasureString(desc);
                     if (desc != "Always")
                     {
+                        var textSize = FontAssets.MouseText.Value.MeasureString("→" + desc);
                         delta.Y += textSize.Y;
                         delta.X = Math.Max(textSize.X, delta.X);
                     }
@@ -454,11 +477,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     var font = FontAssets.MouseText.Value;
                     var name = wraper.Name;
+                    //if (name == "挥砍" && desc != "Always") 
+                    //{
+                    //    Main.NewText((font.MeasureString(name), font.MeasureString(desc)));
+                    //}
                     Vector2 textSize = font.MeasureString(name);
                     Vector2 boxSize = textSize;
                     if (desc != "Always")
                     {
-                        Vector2 descSize = font.MeasureString(desc);
+                        Vector2 descSize = font.MeasureString("→" + desc);
                         boxSize.Y += descSize.Y;
                         boxSize.X = Math.Max(textSize.X, descSize.X);
                     }

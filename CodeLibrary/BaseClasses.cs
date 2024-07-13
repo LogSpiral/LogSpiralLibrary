@@ -1344,7 +1344,8 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            meleeSequence.SequenceName = Name;
+            meleeSequence.sequenceName = Name;
+            meleeSequence.mod = Mod;
             SetUpSequence(meleeSequence);
             SequenceSystem.sequenceBases[FullName] = meleeSequence;
             if (SequenceUI.Visible)
@@ -1382,6 +1383,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 flag2 = meleeSequence.currentData.counter < meleeSequence.currentData.Cycle;//我还没完事呢
                 flag2 |= meleeSequence.currentData.counter == meleeSequence.currentData.Cycle && meleeSequence.currentData.timer >= 0;//最后一次
                 //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
+                //Main.NewText(currentData.Cycle);
             }
             if (
                flag1 || flag2// 

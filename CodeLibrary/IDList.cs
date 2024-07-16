@@ -1,4 +1,6 @@
-﻿namespace LogSpiralLibrary.CodeLibrary
+﻿using Terraria.Audio;
+
+namespace LogSpiralLibrary.CodeLibrary
 {
     //↓↓赞美裙↓↓
     /// <summary>
@@ -8,6 +10,8 @@
     /// <para>说明：以下字段带有（！）标识符的说明此粒子效果会在黑暗中自发光</para>
     /// <para>带有（.）标识符说明此粒子效果会高亮显示但是不会发光</para>
     /// <para>其余Dust全部都不会发光！</para>
+    /// 
+    /// 
     /// <para>赞美裙裙！！！</para>
     /// <para>\裙子/\裙子/\裙子/\裙子/\裙子/</para>
     /// </summary>
@@ -937,5 +941,158 @@
         public const int TouhouProject = -12;
         #endregion
 
+    }
+
+    public static class MySoundID 
+    {
+        /// <summary>
+        /// 最普通最常见的挥砍效果1
+        /// </summary>
+        public static SoundStyle SwooshNormal_1 => SoundID.Item1;
+
+        /// <summary>
+        /// 吃饼干般的嘎嘣声
+        /// </summary>
+        public static SoundStyle Eat => SoundID.Item2;
+
+        /// <summary>
+        /// 喝药水
+        /// </summary>
+        public static SoundStyle Drink => SoundID.Item3;
+
+        /// <summary>
+        /// 使用魔法水晶之类的声音
+        /// </summary>
+        public static SoundStyle MagicShiny => SoundID.Item4;
+
+        /// <summary>
+        /// 发射箭矢声
+        /// </summary>
+        public static SoundStyle ShootArrow => SoundID.Item5;
+
+        /// <summary>
+        /// 魔镜传送等
+        /// </summary>
+        public static SoundStyle Teleport => SoundID.Item6;
+
+        /// <summary>
+        /// 回旋镖旋转 吹叶机使用
+        /// </summary>
+        public static SoundStyle BoomerangRotating => SoundID.Item7;
+
+        /// <summary>
+        /// 法杖使用音效
+        /// </summary>
+        public static SoundStyle MagicStaff=> SoundID.Item8;
+
+        /// <summary>
+        /// 落星等
+        /// </summary>
+        public static SoundStyle FallingStar => SoundID.Item9;
+
+        /// <summary>
+        /// 弹幕撞击物块声
+        /// </summary>
+        public static SoundStyle ProjectileHit => SoundID.Item10;
+
+        /// <summary>
+        /// 火枪等
+        /// </summary>
+        public static SoundStyle Gun => SoundID.Item11;
+
+        /// <summary>
+        /// 单独激光
+        /// </summary>
+        public static SoundStyle LaserBeam => SoundID.Item12;
+
+        /// <summary>
+        /// 火箭靴喷气 棱镜等
+        /// </summary>
+        public static SoundStyle RocketBoots1 => SoundID.Item13;
+
+        /// <summary>
+        /// 爆炸
+        /// </summary>
+        public static SoundStyle Explosion => SoundID.Item14;
+
+        /// <summary>
+        /// 光剑等
+        /// </summary>
+        public static SoundStyle Phasesaber => SoundID.Item15;
+
+        /// <summary>
+        /// 整蛊坐垫等...
+        /// </summary>
+        public static SoundStyle Suck => SoundID.Item16;
+
+        /// <summary>
+        /// 蜜蜂发射针刺等
+        /// </summary>
+        public static SoundStyle ShootStinger => SoundID.Item17;
+
+        /// <summary>
+        /// 最普通最常见的挥砍效果2
+        /// </summary>
+        public static SoundStyle SwooshNormal_2 => SoundID.Item18;
+
+        /// <summary>
+        /// 最普通最常见的挥砍效果3
+        /// </summary>
+        public static SoundStyle SwooshNormal_3 => SoundID.Item19;
+
+        /// <summary>
+        /// 火焰花 火鞭之类小型火魔法法杖
+        /// </summary>
+        public static SoundStyle FireStaff => SoundID.Item20;
+
+        /// <summary>
+        /// 水箭
+        /// </summary>
+        public static SoundStyle WaterBolt => SoundID.Item21;
+
+        /// <summary>
+        /// 链锯和电钻1
+        /// </summary>
+        public static SoundStyle SawAndDrill_1 => SoundID.Item22;
+
+        /// <summary>
+        /// 链锯和电钻2
+        /// </summary>
+        public static SoundStyle SawAndDrill_2 => SoundID.Item23;
+
+        /// <summary>
+        /// 闪电靴之类
+        /// </summary>
+        public static SoundStyle RocketBoots2 => SoundID.Item24;
+
+        /// <summary>
+        /// 召唤坐骑 冰精灵等
+        /// </summary>
+        public static SoundStyle MagicSummon => SoundID.Item25;
+
+        /// <summary>
+        /// 竖琴
+        /// </summary>
+        public static SoundStyle Harb=>SoundID.Item26;
+
+        /// <summary>
+        /// 破碎冰块
+        /// </summary>
+        public static SoundStyle IceBroken => SoundID.Item27;
+
+        /// <summary>
+        /// 彩虹法杖 冰杖等
+        /// </summary>
+        public static SoundStyle MagicStaff2 => SoundID.Item28;
+
+        /// <summary>
+        /// 魔法球等
+        /// </summary>
+        public static SoundStyle MagicSphere => SoundID.Item29;
+
+        /// <summary>
+        /// 镰刀
+        /// </summary>
+        public static SoundStyle Scythe => SoundID.Item71;
     }
 }

@@ -629,6 +629,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override float offsetSize => base.offsetSize;
 
         public override bool Attacktive => timer < 8;
+        public override void OnStartAttack()
+        {
+            SoundEngine.PlaySound(MySoundID.Scythe);
+            base.OnStartAttack();
+        }
         public override void OnStartSingle()
         {
             base.OnStartSingle();
@@ -673,7 +678,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
         public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
         public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
-
+        public override void OnStartAttack()
+        {
+            SoundEngine.PlaySound(MySoundID.SwooshNormal_1);
+            base.OnStartAttack();
+        }
         public override void OnStartSingle()
         {
             base.OnStartSingle();
@@ -785,6 +794,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnStartSingle();
             KValue = 1.5f;
             unit = Rotation.ToRotationVector2();
+        }
+        public override void OnAttack()
+        {
+            if ((int)LogSpiralLibraryMod.ModTime2 % 6 == 0)
+                SoundEngine.PlaySound(MySoundID.BoomerangRotating);
+
+            base.OnAttack();
         }
         public override void OnStartAttack()
         {

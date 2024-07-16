@@ -1393,6 +1393,8 @@ namespace LogSpiralLibrary.CodeLibrary
                     Projectile.timeLeft = 2;
                 meleeSequence.Update(player, Projectile, StandardInfo, flag1);
 
+
+                Main.NewText((MathF.Log10(Main.player[Projectile.owner].velocity.Length() + 1) + 1) * Projectile.damage * currentData.ModifyData.actionOffsetDamage);
             }
             if (currentData == null) return;
 
@@ -1408,6 +1410,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //    currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
             if (currentData != null)
             {
+                meleeSequence.active = true;
                 meleeSequence.currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
             }
             var spb = Main.spriteBatch;

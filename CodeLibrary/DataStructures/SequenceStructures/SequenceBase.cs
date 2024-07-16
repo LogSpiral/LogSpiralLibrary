@@ -256,6 +256,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public abstract int Counter { get; }
         public abstract Mod Mod { get; }
         public abstract string ElementTypeName { get; }
+        public abstract bool Active { get; set; }
 
     }
     public class SequenceBase<TElem, TSelf> : SequenceBase where TElem : ISequenceElement where TSelf : SequenceBase<TElem, TSelf>, new()
@@ -282,8 +283,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
                         if (wraper.Name == SequenceDefaultName)
                             ((TSelf)wraper.SequenceInfo).WriteContent(xmlWriter);
-                        else 
+                        else
                         {
+                            if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
                             xmlWriter.WriteAttributeString("Mod", wraper.SequenceInfo.Mod.Name);
                             xmlWriter.WriteValue(wraper.sequenceInfo.sequenceName);
                         }
@@ -320,14 +322,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             WriteContent(xmlWriter);
 
         }
-
-
+        public bool active;
+        public override bool Active { get => active; set => active = value; }
         public static TSelf Load(string path)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
             xmlReader.Read();//读取声明
             xmlReader.Read();//读取空格
             ReadSequence(xmlReader, out var result);
+            result.mod = ModLoader.GetMod(path.Split('\\')[^2]);
             return result;
         }
         public static bool ReadSequence(XmlReader xmlReader, out TSelf result)

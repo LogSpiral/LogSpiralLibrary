@@ -16,12 +16,12 @@ Items: {
 
 	TestBlade2: {
 		DisplayName: 测试剑2
-		Tooltip: 序列类的测试剑2，测试原版手持弹幕ai低仿，用的是魔改炎岚之怒的贴图，点击Y查看序列
+		Tooltip: 序列类的测试剑2，测试原版手持弹幕ai低仿，用的是魔改日炎刀的贴图，点击Y查看序列
 	}
 
 	TestBlade3: {
-		// DisplayName: Test Blade3
-		// Tooltip: ""
+		DisplayName: 测试剑3
+		Tooltip: 序列类的测试剑(??)3，调用了测试剑及测试剑2的序列，标志着序列类型导出与加载的成功实现
 	}
 }
 

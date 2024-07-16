@@ -63,11 +63,12 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
         };
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
+            meleeSequence.sequenceName = "TestBlade3Proj";
             var subSequence1 = MeleeSequence.Load("C:\\Users\\32536\\Documents\\My Games\\Terraria\\tModLoader\\Mods\\LogSpiralLibrary_Sequence\\MeleeAction\\LogSpiralLibrary\\TestBladeProj.xml");
             var subSequence2 = MeleeSequence.Load("C:\\Users\\32536\\Documents\\My Games\\Terraria\\tModLoader\\Mods\\LogSpiralLibrary_Sequence\\MeleeAction\\LogSpiralLibrary\\TestBlade2Proj.xml");
             var group1 = new MeleeSequence.Group();
             group1.wrapers.Add(new MeleeSequence.Wraper(subSequence1).SetCondition(Condition.EclipseOrBloodMoon));
-            group1.wrapers.Add(new MeleeSequence.Wraper(new SwooshInfo() { Cycle = 4 }).SetCondition(Condition.TimeDay));
+            group1.wrapers.Add(new MeleeSequence.Wraper(new SwooshInfo() { Cycle = 4,ModifyData = new(1,2f) }).SetCondition(Condition.TimeDay));
             group1.wrapers.Add(new MeleeSequence.Wraper(subSequence2).SetCondition(Condition.TimeNight));
             meleeSequence.Add(group1);
             meleeSequence.Add(subSequence1);

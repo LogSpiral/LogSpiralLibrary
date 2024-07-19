@@ -7,8 +7,17 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using Terraria.GameContent.UI.Elements;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class ElementCustomDataAttribute : Attribute
+    {
+    }
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class ElementCustomDataAbabdonedAttribute : Attribute
+    {
+    }
     /// <summary>
     /// 物品相应顶点绘制特效的标准值
     /// </summary>
@@ -108,10 +117,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 使用数据修改
         /// </summary>
+        [ElementCustomData]
         ActionModifyData ModifyData => new ActionModifyData();
         /// <summary>
         /// 执行次数
         /// </summary>
+        [ElementCustomData]
         int Cycle => 1;
         #endregion
         #region 动态调整，每次执行时重设
@@ -211,6 +222,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         void SaveAttribute(XmlWriter xmlWriter);
         void LoadAttribute(XmlReader xmlReader);
         #endregion
+
+        #region UIConfig
+        //void SetConfigPanel(UIList parent);
+        #endregion
         #endregion
         #region 吃闲饭的
         Entity Owner { get; set; }
@@ -235,9 +250,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         [XmlRoot("Sequence")]
         public abstract class WraperBase
         {
+            public abstract ISequenceElement Element { get; }
             public abstract bool IsElement { get; }
             public abstract string Name { get; }
             public abstract SequenceBase SequenceInfo { get; }
+            //public abstract void SetConfigPanel(UIList uIList);
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
             public Condition condition = new Condition("Always", () => true);
@@ -409,6 +426,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public class Wraper : WraperBase
         {
+            //public override void SetConfigPanel(UIList uIList)
+            //{
+            //    elementInfo?.SetConfigPanel(uIList);
+            //}
             public static bool ReadWraper(XmlReader xmlReader, out Wraper result)
             {
                 xmlReader.Read();
@@ -464,6 +485,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     return true;
                 }
             }
+            public override ISequenceElement Element => elementInfo;
             public readonly TElem elementInfo;
             public readonly TSelf sequenceInfo;
             public override SequenceBase SequenceInfo => sequenceInfo;

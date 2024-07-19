@@ -4001,6 +4001,18 @@ namespace LogSpiralLibrary.CodeLibrary
     }
     public static class UIMethods
     {
+        public static bool BelongToMe(this UIElement element, UIElement target)
+        {
+            if (element.Elements.Count == 0) return false;
+            if (element.Elements.Contains(target))
+                return true;
+            foreach (var e in element.Elements)
+            {
+                if (e.BelongToMe(target))
+                    return true;
+            }
+            return false;
+        }
         /// <summary>
         /// 绘制鼠标在某矩形下的悬浮字
         /// </summary>

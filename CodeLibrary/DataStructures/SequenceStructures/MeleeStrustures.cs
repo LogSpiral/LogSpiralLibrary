@@ -4,9 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using Terraria.Audio;
+using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
+using Terraria.ModLoader.Config;
+using Terraria.ModLoader.Config.UI;
 using Terraria.WorldBuilding;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
@@ -342,26 +346,39 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Action<MeleeAction> _OnEndSingle;
         public Action<MeleeAction> _OnStartAttack;
         public Action<MeleeAction> _OnStartSingle;
-        public virtual void SaveAttribute(XmlWriter xmlWriter) 
-        {
-            xmlWriter.WriteAttributeString("Cycle", Cycle.ToString());
-            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
-        }
-        public virtual void LoadAttribute(XmlReader xmlReader) 
+        #region 加载 设置 写入
+        public virtual void LoadAttribute(XmlReader xmlReader)
         {
             Cycle = int.Parse(xmlReader["Cycle"]);
             ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
         }
+        //public virtual void SetConfigPanel(UIList parent)
+        //{
+        //    IntRangeElement cycleElement = new IntRangeElement();
+        //    cycleElement.Bind(new PropertyFieldWrapper(this.GetType().GetProperty("Cycle")), this, null, -1);
+        //    parent.Add(cycleElement);
+        //    Main.NewText(cycleElement.GetType().Name);
+        //}
+        public virtual void SaveAttribute(XmlWriter xmlWriter)
+        {
+            xmlWriter.WriteAttributeString("Cycle", Cycle.ToString());
+            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
+        }
+        #endregion
+
         #region 属性
         #region 编排序列时调整
         //持续时间 角度 位移 修改数据
         /// <summary>
         /// 近战数据修改
         /// </summary>
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(ActionModifyDataElement))]
         public ActionModifyData ModifyData { get; set; } = new ActionModifyData(1);
         /// <summary>
         /// 执行次数
         /// </summary>
+        [ElementCustomData]
         public virtual int Cycle { get; set; } = 1;
         #endregion
         #region 动态调整，每次执行时重设
@@ -408,7 +425,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         #region 函数
         public virtual void OnActive()
         {
-            
+
             _OnActive?.Invoke(this);
         }
 
@@ -564,7 +581,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
 
             List<string> content = new List<string>();
-            foreach (var pair in ModTypeLookup<MeleeAction>.dict) 
+            foreach (var pair in ModTypeLookup<MeleeAction>.dict)
             {
                 content.Add((pair.Key, pair.Value).ToString());
             }
@@ -746,35 +763,41 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public (int min, int max) CycleOffsetRange
         {
-            get => range;
+            get => (rangeOffsetMin,rangeOffsetMax);
             set
             {
                 var v = value;
                 v.min = Math.Clamp(v.min, 1 - givenCycle, v.max);
                 v.max = Math.Clamp(v.max, v.min, int.MaxValue);
-                range = v;
+                (rangeOffsetMin,rangeOffsetMax) = v;
                 ResetCycle();
             }
         }
-        (int, int) range;
+        [ElementCustomData]
+        public int rangeOffsetMin;
+        [ElementCustomData]
+        public int rangeOffsetMax;
         public override void LoadAttribute(XmlReader xmlReader)
         {
             base.LoadAttribute(xmlReader);
-            range = (int.Parse(xmlReader["rangeOffsetMin"]), int.Parse(xmlReader["rangeOffsetMax"]));
+            rangeOffsetMin = int.Parse(xmlReader["rangeOffsetMin"]);
+            rangeOffsetMax = int.Parse(xmlReader["rangeOffsetMax"]);
         }
         public override void SaveAttribute(XmlWriter xmlWriter)
         {
             base.SaveAttribute(xmlWriter);
-            xmlWriter.WriteAttributeString("rangeOffsetMin", range.Item1.ToString());
-            xmlWriter.WriteAttributeString("rangeOffsetMax", range.Item2.ToString());
+            xmlWriter.WriteAttributeString("rangeOffsetMin", rangeOffsetMin.ToString());
+            xmlWriter.WriteAttributeString("rangeOffsetMax", rangeOffsetMax.ToString());
 
         }
+        [ElementCustomDataAbabdoned]
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
+        [ElementCustomData]
         public int givenCycle;
         void ResetCycle()
         {
-            realCycle = range.Item1 == range.Item2 ? givenCycle + range.Item1 : Math.Clamp(givenCycle + Main.rand.Next(range.Item1, range.Item2), 1, int.MaxValue);
+            realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
         }
         public override void OnActive()
         {

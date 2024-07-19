@@ -1344,12 +1344,20 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            meleeSequence.sequenceName = Name;
-            meleeSequence.mod = Mod;
-            SetUpSequence(meleeSequence);
-            SequenceSystem.sequenceBases[FullName] = meleeSequence;
-            if (SequenceUI.Visible)
-                SequenceSystem.instance.sequenceUI.SetupConfigList();
+            if (SequenceSystem.sequenceBases.TryGetValue(FullName, out var value))
+            {
+                meleeSequence = value as MeleeSequence;
+            }
+            else 
+            {
+                meleeSequence.sequenceName = Name;
+                meleeSequence.mod = Mod;
+                SetUpSequence(meleeSequence);
+                SequenceSystem.sequenceBases[FullName] = meleeSequence;
+                if (SequenceUI.Visible)
+                    SequenceSystem.instance.sequenceUI.SetupConfigList();
+            }
+
             base.SetDefaults();
         }
         public Player player => Main.player[Projectile.owner];
@@ -1394,7 +1402,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 meleeSequence.Update(player, Projectile, StandardInfo, flag1);
 
 
-                Main.NewText((MathF.Log10(Main.player[Projectile.owner].velocity.Length() + 1) + 1) * Projectile.damage * currentData.ModifyData.actionOffsetDamage);
+                //Main.NewText((MathF.Log10(Main.player[Projectile.owner].velocity.Length() + 1) + 1) * Projectile.damage * currentData.ModifyData.actionOffsetDamage);
             }
             if (currentData == null) return;
 
@@ -1462,6 +1470,13 @@ namespace LogSpiralLibrary.CodeLibrary
             modifiers.SourceDamage *= data.actionOffsetDamage;
             modifiers.Knockback *= data.actionOffsetKnockBack;
             base.ModifyHitPlayer(target, ref modifiers);
+        }
+        public override void OnKill(int timeLeft)
+        {
+            meleeSequence.counter = 0;
+            meleeSequence.currentWrapper = null;
+            meleeSequence.currentData = null;
+            base.OnKill(timeLeft);
         }
     }
     /*public abstract class MeleeSequenceProj : ModProjectile, IHammerProj ,IChannelProj

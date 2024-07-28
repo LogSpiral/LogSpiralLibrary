@@ -231,6 +231,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         Entity Owner { get; set; }
         Projectile Projectile { get; set; }
         StandardInfo standardInfo { get; set; }
+
+
         #endregion
     }
     /// <summary>
@@ -239,13 +241,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     [XmlRoot("Sequence")]
     public abstract class SequenceBase
     {
+        //public abstract GroupBase CreateSimpleGroup(WraperBase wraperBase);
+        public const string SequenceDefaultName = "My Sequence";
+        public abstract void Remove(WraperBase target, GroupBase owner);
+        public abstract void Add(WraperBase wraperBase, out GroupBase newGroup);
+        public abstract void Add(GroupBase groupBase);
+        public abstract void Insert(int index, WraperBase wraperBase, out GroupBase newGroup);
+        public abstract void Insert(int index, GroupBase groupBase);
 
         public abstract void Save();
         [XmlRoot("Group")]
         public abstract class GroupBase
         {
-            public abstract List<WraperBase> Wrapers { get; }
+            public abstract IReadOnlyList<WraperBase> Wrapers { get; }
             public abstract int Index { get; }
+            public abstract void Insert(int index, WraperBase wraperBase);
+            //public abstract GroupBase CreateFromWraper(WraperBase wraper);
         }
         [XmlRoot("Sequence")]
         public abstract class WraperBase
@@ -259,6 +270,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public bool Available => IsSequence || IsElement;
             public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
+            public abstract WraperBase Clone();
         }
         public abstract IReadOnlyList<GroupBase> GroupBases { get; }
         /// <summary>
@@ -276,9 +288,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public abstract bool Active { get; set; }
 
     }
-    public class SequenceBase<TElem, TSelf> : SequenceBase where TElem : ISequenceElement where TSelf : SequenceBase<TElem, TSelf>, new()
+    public class SequenceBase<T> : SequenceBase where T : ISequenceElement
     {
-        public const string SequenceDefaultName = "My Sequence";
+        //public override GroupBase CreateSimpleGroup(WraperBase wraperBase)
+        //{
+        //    var result = new Group();
+        //    result.wrapers.Add((Wraper)wraperBase);
+        //    return result;
+        //}
         public void WriteContent(XmlWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Sequence");
@@ -299,7 +316,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     {
                         xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
                         if (wraper.Name == SequenceDefaultName)
-                            ((TSelf)wraper.SequenceInfo).WriteContent(xmlWriter);
+                            ((SequenceBase<T>)wraper.SequenceInfo).WriteContent(xmlWriter);
                         else
                         {
                             if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
@@ -341,7 +358,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public bool active;
         public override bool Active { get => active; set => active = value; }
-        public static TSelf Load(string path)
+        public static SequenceBase<T> Load(string path)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
             xmlReader.Read();//读取声明
@@ -350,7 +367,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             result.mod = ModLoader.GetMod(path.Split('\\')[^2]);
             return result;
         }
-        public static bool ReadSequence(XmlReader xmlReader, out TSelf result)
+        public static bool ReadSequence(XmlReader xmlReader, out SequenceBase<T> result)
         {
             xmlReader.Read();//读取序列节点开始部分
             if (xmlReader.Name != "Sequence")
@@ -361,7 +378,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             else
             {
-                result = new TSelf();
+                result = new SequenceBase<T>();
                 result.sequenceName = xmlReader["name"] ?? SequenceDefaultName;
                 xmlReader.Read();//读取空格
                 while (Group.ReadGroup(xmlReader, out var groupResult))
@@ -373,6 +390,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public class Group : GroupBase
         {
+            //public override GroupBase CreateFromWraper(WraperBase wraper)
+            //{
+            //    return new Group();
+            //}
+            public override void Insert(int index, WraperBase wraperBase)
+            {
+                wrapers.Insert(index, (Wraper)wraperBase);
+            }
             public static bool ReadGroup(XmlReader xmlReader, out Group result)
             {
                 xmlReader.Read();//读取下一个位置
@@ -397,7 +422,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             /// 请不要对这个Add
             /// TODO 改为ReadOnly
             /// </summary>
-            public override List<WraperBase> Wrapers => (from w in wrapers select (WraperBase)w).ToList();
+            public override IReadOnlyList<WraperBase> Wrapers => (from w in wrapers select (WraperBase)w).ToList();
             public List<Wraper> wrapers = new List<Wraper>();
             public override int Index => index;
             public int index;
@@ -415,7 +440,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
                 return null;
             }
-            public bool ContainsSequence(SequenceBase<TElem, TSelf> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 foreach (var wraper in wrapers)
@@ -430,6 +455,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //{
             //    elementInfo?.SetConfigPanel(uIList);
             //}
+            public override WraperBase Clone()
+            {
+                if (IsSequence)
+                {
+                    return this;
+                }
+                else
+                {
+                    Type type = elementInfo.GetType();
+                    return new Wraper((T)Activator.CreateInstance(type));
+                }
+            }
             public static bool ReadWraper(XmlReader xmlReader, out Wraper result)
             {
                 xmlReader.Read();
@@ -448,19 +485,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         xmlReader.Read();
                         if (xmlReader.Value.Contains("\n"))
                         {
-                            ReadSequence(xmlReader, out TSelf resultSequence);
+                            ReadSequence(xmlReader, out SequenceBase<T> resultSequence);
                             result = new Wraper(resultSequence);
                         }
                         else
                         {
                             if (SequenceSystem.sequenceBases.TryGetValue(xmlReader.Value, out var sequence))
                             {
-                                result = new Wraper((TSelf)sequence);
+                                result = new Wraper((SequenceBase<T>)sequence);
                             }
                             else
                             {
 
-                                var resultSequence = Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(TElem).Name}/{xmlReader["Mod"]}/{xmlReader.Value}.xml");
+                                var resultSequence = Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}/{xmlReader["Mod"]}/{xmlReader.Value}.xml");
                                 SequenceSystem.sequenceBases[xmlReader.Value] = sequence;
                                 result = new Wraper(resultSequence);
                             }
@@ -472,7 +509,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     {
                         xmlReader.Read();//空白
                         xmlReader.Read();//Action
-                        var elem = (TElem)Activator.CreateInstance(ModContent.Find<TElem>(xmlReader["name"]).GetType());//获取元素实例
+                        var elem = (T)Activator.CreateInstance(ModContent.Find<T>(xmlReader["name"]).GetType());//获取元素实例
                         result = new Wraper(elem);
                         elem.LoadAttribute(xmlReader);
                         xmlReader.Read();//空白
@@ -486,22 +523,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
             }
             public override ISequenceElement Element => elementInfo;
-            public readonly TElem elementInfo;
-            public readonly TSelf sequenceInfo;
+            public readonly T elementInfo;
+            public readonly SequenceBase<T> sequenceInfo;
             public override SequenceBase SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
             public override string Name => sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
-            public Wraper(TElem sequenceELement)
+            public Wraper(T sequenceELement)
             {
                 elementInfo = sequenceELement;
             }
-            public Wraper(TSelf sequence)
+            public Wraper(SequenceBase<T> sequence)
             {
                 sequenceInfo = sequence;
             }
-            public static implicit operator Wraper(TSelf sequence) => new Wraper(sequence);
-            public bool ContainsSequence(SequenceBase<TElem, TSelf> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public static implicit operator Wraper(SequenceBase<T> sequence) => new Wraper(sequence);
+            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 if (!IsSequence) return false;
@@ -538,7 +575,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             /// <param name="meleeAttackData">传回的具体元素</param>
             /// <returns>当前序列是否执行完毕</returns>
             /// <exception cref="Exception"></exception>
-            public bool Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref TElem meleeAttackData)
+            public bool Update(Entity entity, Projectile projectile, StandardInfo standardInfo, bool triggered, ref T meleeAttackData)
             {
                 if (!Available) throw new Exception("序列不可用");
                 if (finished) throw new Exception("咱已经干完活了");
@@ -614,7 +651,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return false;
             }
         }
-        public void Add(TElem meleeAttackData)
+        public override void Remove(WraperBase target, GroupBase owner)
+        {
+            Group instanceOwner = owner as Group;
+            instanceOwner.wrapers.Remove(target as Wraper);
+            if (owner.Wrapers.Count == 0)
+                groups.Remove(instanceOwner);
+        }
+        public void Add(T meleeAttackData)
         {
             Wraper wraper = new(meleeAttackData);
             Add(wraper);
@@ -630,6 +674,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             group.wrapers.Add(wraper);
             Add(group);
         }
+        public override void Add(WraperBase wraperBase,out GroupBase newGroup)
+        {
+            Wraper wraper = (Wraper)wraperBase;
+            if (wraper.ContainsSequence(this))
+            {
+                Main.NewText("不可调用自己");
+                newGroup = null;
+                return;
+            }
+            Group group = new Group();
+            group.wrapers.Add(wraper);
+            newGroup = group;
+            Add(group);
+        }
         public void Add(Group group)
         {
             if (group.ContainsSequence(this))
@@ -638,6 +696,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return;
             }
             groups.Add(group);
+        }
+        public override void Add(GroupBase groupBase) => Add((Group)groupBase);
+        public void Insert(int index, Wraper wraper)
+        {
+            if (wraper.ContainsSequence(this))
+            {
+                Main.NewText("不可调用自己");
+                return;
+            }
+            Group group = new Group();
+            group.wrapers.Add(wraper);
+            groups.Insert(index, group);
         }
         public void Insert(int index, Group group)
         {
@@ -648,18 +718,33 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             groups.Insert(index, group);
         }
+        public override void Insert(int index, GroupBase groupBase) => Insert(index, (Group)groupBase);
+        public override void Insert(int index, WraperBase wraperBase,out GroupBase newGroup)
+        {
+            Wraper wraper = (Wraper)wraperBase;
+            if (wraper.ContainsSequence(this))
+            {
+                Main.NewText("不可调用自己");
+                newGroup = null;
+                return;
+            }
+            Group group = new Group();
+            group.wrapers.Add(wraper);
+            newGroup = group;
+            Insert(index, group);
+        }
         public string sequenceName = SequenceDefaultName;
         public int counter;
         public override int Counter => counter;
         public Wraper currentWrapper;
-        public TElem currentData;
+        public T currentData;
         List<Group> groups = new List<Group>();
         public IReadOnlyList<Group> Groups => groups;
         public override string SequenceNameBase => sequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
         public Mod mod;
         public override Mod Mod => mod;
-        public override string ElementTypeName => typeof(TElem).Name;
+        public override string ElementTypeName => typeof(T).Name;
         void ChooseNewWrapper()
         {
             if (currentWrapper != null)

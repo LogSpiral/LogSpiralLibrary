@@ -4003,6 +4003,7 @@ namespace LogSpiralLibrary.CodeLibrary
     {
         public static bool BelongToMe(this UIElement element, UIElement target)
         {
+            if (element.GetHashCode() == target.GetHashCode()) return true;
             if (element.Elements.Count == 0) return false;
             if (element.Elements.Contains(target))
                 return true;

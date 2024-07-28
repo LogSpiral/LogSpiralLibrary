@@ -20,6 +20,8 @@ using Terraria.UI;
 using System.Collections;
 using Terraria.ModLoader.UI;
 using static Terraria.ModLoader.Config.UI.Vector2Element;
+using LogSpiralLibrary.CodeLibrary.UIElements;
+using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -38,7 +40,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static SequenceConfig Instance => ModContent.GetInstance<SequenceConfig>();
         public override void OnChanged()
         {
-            SequenceSystem.instance?.sequenceUI?.SetupConfigList();
+            //SequenceSystem.instance?.sequenceUI?.SetupConfigList();
             base.OnChanged();
         }
     }
@@ -62,10 +64,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static Dictionary<string, SequenceBase> sequenceBases => instance._sequenceBases;
         Dictionary<string, SequenceBase> _sequenceBases = new Dictionary<string, SequenceBase>();
         public SequenceUI sequenceUI;
-        UserInterface userInterfaceSequence;
+        public UserInterface userInterfaceSequence;
         public static ModKeybind ShowSequenceKeybind { get; private set; }
         public static SequenceSystem instance;
         public static Dictionary<string, Condition> conditions = new Dictionary<string, Condition>();
+        public static List<Type> AvailableElementBaseTypes = new List<Type>();
         public override void Load()
         {
             instance = this;
@@ -74,6 +77,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             sequenceUI.Activate();
             userInterfaceSequence.SetState(sequenceUI);
             ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "展示序列列表", "Y");
+            AvailableElementBaseTypes.Add(typeof(MeleeAction));
+            //On_UIElement.DrawSelf += On_UIElement_DrawSelf;
             #region conditions的赋值
             var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fieldInfos)
@@ -102,15 +107,25 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             #endregion
 
         }
+
+        private void On_UIElement_DrawSelf(On_UIElement.orig_DrawSelf orig, UIElement self, SpriteBatch spriteBatch)
+        {
+            orig(self, spriteBatch);
+            spriteBatch.DrawString(FontAssets.MouseText.Value, self.GetHashCode().ToString(), self.GetDimensions().Position(), Color.White);
+        }
+
         public override void Unload()
         {
+            AvailableElementBaseTypes?.Clear();
             instance = null;
             base.Unload();
         }
         public override void UpdateUI(GameTime gameTime)
         {
             if (SequenceUI.Visible)
+            {
                 userInterfaceSequence?.Update(gameTime);
+            }
             base.UpdateUI(gameTime);
         }
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
@@ -143,9 +158,314 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public class SequenceUI : UIState
     {
         public static bool Visible = false;
+        public UIList actionLib;
+        public UIList sequenceLib;
+        public UIListByRow pageList;
+        public UIPanel WorkingPlacePanel;
+        public UIPanel OuterWorkingPanel;
+        public WraperBox currentWraper;
+        public UIList propList;
+        public UIList infoList;
+        public bool Draggable;
+        public bool Dragging;
+        public Vector2 Offset;
+        public void ReloadLib()
+        {
+            actionLib.Clear();
+            sequenceLib.Clear();
+            Type elemBaseType = SequenceSystem.AvailableElementBaseTypes[0];
+            Type type = typeof(ModTypeLookup<>);
+            type = type.MakeGenericType(elemBaseType);
+            //Main.NewText(type.GetField("dict",BindingFlags.Static|BindingFlags.NonPublic) == null);
+            IDictionary dict = (IDictionary)type.GetField("dict", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            type = typeof(SequenceBase<>.Wraper);
+            type = type.MakeGenericType(elemBaseType);
+            foreach (var v in dict.Values)
+            {
+                var e = (ISequenceElement)Activator.CreateInstance(v.GetType());
+                WraperBox wraperBox = new WraperBox((SequenceBase.WraperBase)Activator.CreateInstance(type, [e]));
+                wraperBox.WrapperSize();
+                //wraperBox.HAlign = 0.5f;
+                wraperBox.IsClone = true;
+                actionLib.Add(wraperBox);
 
+            }
+            foreach (var s in SequenceSystem.sequenceBases.Values)
+            {
+                WraperBox wraperBox = new WraperBox((SequenceBase.WraperBase)Activator.CreateInstance(type, [s]));
+                wraperBox.sequenceBox.Expand = false;
+                wraperBox.WrapperSize();
+                wraperBox.IsClone = true;
+                sequenceLib.Add(wraperBox);
+            }
+        }
+        public void ResetPage()
+        {
+            pageList.Clear();
+            UIPanel defPage = new UIPanel();
+            defPage.SetSize(new Vector2(128, 0), 0, 1);
+            pageList.Add(defPage);
+            defPage.OnLeftClick += (e, evt) => { SwitchToDefaultPage(); };
+            UIText defText = new UIText("默认页面");
+            defText.IgnoresMouseInteraction = true;
+            defText.SetSize(default, 1, 1);
+            defPage.Append(defText);
+            UIPanel newPage = new UIPanel();
+            newPage.SetSize(new Vector2(32, 0), 0, 1);
+            newPage.OnLeftClick += (e, evt) => { Main.NewText("你新建了一个序列!!"); };
+            pageList.Add(newPage);
+            UIText newText = new UIText("+");
+            newText.IgnoresMouseInteraction = true;
+            newText.SetSize(default, 1, 1);
+            newPage.Append(newText);
+            SwitchToDefaultPage();
+        }
+        public void SwitchToDefaultPage()
+        {
+            SoundEngine.PlaySound(SoundID.MenuOpen);
+            Draggable = false;
+            Offset = default;
+            WorkingPlacePanel.Elements.Clear();
+            if (currentWraper != null)
+                currentWraper.chosen = false;
+            currentWraper = null;
+            propList.Clear();
+            infoList.Clear();
+            UIText info = new UIText(
+                "你正处于默认页面，可以在这里选择一个序列以开始编辑。\n" +
+                "成品序列指适于直接给武器使用的完成序列\n" +
+                "库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
+                "二者没有硬性区别，根据自己感觉进行标记即可。");
+            info.IsWrapped = true;
+            info.SetSize(default, 1, 1);
+            infoList.Add(info);
+            UIPanel finishedSequencePanel = new UIPanel();
+            finishedSequencePanel.SetSize(default, 0.5f, 1f);
+            UIPanel libSequencePanel = new UIPanel();
+            libSequencePanel.SetSize(default, 0.5f, 1f);
+            libSequencePanel.Left.Set(0, 0.5f);
+            WorkingPlacePanel.Append(libSequencePanel);
+            WorkingPlacePanel.Append(finishedSequencePanel);
+            UIText fTitle = new UIText("成品序列");
+            fTitle.SetSize(new Vector2(0, 20), 1, 0);
+            UIText lTitle = new UIText("库存序列");
+            lTitle.SetSize(new Vector2(0, 20), 1, 0);
+            finishedSequencePanel.Append(fTitle);
+            libSequencePanel.Append(lTitle);
+            UIList fList = new UIList();
+            fList.SetSize(0, -20, 1, 1);
+            fList.Top.Set(20, 0);
+            UIScrollbar fScrollbar = new UIScrollbar();
+            fScrollbar.Height.Set(0f, 1f);
+            fScrollbar.HAlign = 1f;
+            fScrollbar.SetView(100, 1000);
+            fList.SetScrollbar(fScrollbar);
+            finishedSequencePanel.Append(fScrollbar);
+            UIList lList = new UIList();
+            lList.SetSize(0, -20, 1, 1);
+            lList.Top.Set(20, 0);
+            UIScrollbar lScrollbar = new UIScrollbar();
+            lScrollbar.Height.Set(0f, 1f);
+            lScrollbar.HAlign = 1f;
+            lScrollbar.SetView(100, 1000);
+            lList.SetScrollbar(lScrollbar);
+            libSequencePanel.Append(lScrollbar);
+            finishedSequencePanel.Append(fList);
+            libSequencePanel.Append(lList);
+            foreach (var s in SequenceSystem.sequenceBases.Values)
+            {
+                fList.Add(SequenceToPanel(s));
+            }
+        }
+        public void SwitchToSequencePage(SequenceBox box)
+        {
+            SoundEngine.PlaySound(SoundID.MenuOpen);
+            Draggable = true;
+            Offset = default;
+            WorkingPlacePanel.Elements.Clear();
+            if (currentWraper != null)
+                currentWraper.chosen = false;
+            currentWraper = null;
+            propList.Clear();
+            infoList.Clear();
+            WorkingPlacePanel.OverflowHidden = true;
+            box.SequenceSize();
+            box.OnInitialize();
+            WorkingPlacePanel.Append(box);
+        }
+        public void SequenceToPage(SequenceBox box)
+        {
+            SoundEngine.PlaySound(SoundID.Unlock);
+            UIPanel seqPage = new UIPanel();
+            seqPage.SetSize(new Vector2(128, 0), 0, 1);
+            pageList.Insert(pageList.Count - 1, seqPage);
+            seqPage.OnLeftClick += (_evt, _elem) => { SwitchToSequencePage(box); };
+            seqPage.OnRightClick += (_evt, _elem) =>
+            {
+                SwitchToDefaultPage();
+                pageList.Remove(_elem);
+            };
+            UIText seqText = new UIText(box.sequenceBase.SequenceNameBase);
+            seqText.IgnoresMouseInteraction = true;
+            seqText.SetSize(default, 1, 1);
+            seqPage.Append(seqText);
+        }
+        public UIPanel SequenceToPanel(SequenceBase sequence)
+        {
+            UIPanel panel = new UIPanel();
+            panel.SetSize(-20, 40, 1, 0);
+            UIText uIText = new UIText(sequence.SequenceNameBase);
+            SequenceBox box = new SequenceBox(sequence);
+            box.SequenceSize();
+            panel.Append(uIText);
+            //panel.Append(box);
+            //if (SequenceDrawer.box != null && SequenceDrawer.box.sequenceBase.SequenceNameBase == sequence.SequenceNameBase) SequenceDrawer.box = box;
+
+            panel.OnLeftClick += (evt, elem) =>
+            {
+                SequenceToPage(box);
+            };
+            panel.OnRightClick += (evt, elem) =>
+            {
+                SequenceToPage(box);
+                SwitchToSequencePage(box);
+            };
+            panel.OnMouseOut += (evt, elem) =>
+            {
+                (elem as UIPanel).BackgroundColor = UICommon.DefaultUIBlueMouseOver;
+            };
+            panel.OnMouseOver += (evt, elem) =>
+            {
+                (elem as UIPanel).BackgroundColor = UICommon.DefaultUIBlue;
+                SoundEngine.PlaySound(SoundID.MenuTick);
+            };
+            return panel;
+        }
         public override void OnInitialize()
         {
+            UIPanel BasePanel = new UIPanel();
+            BasePanel.SetSize(default, 0.8f, 0.75f);
+            BasePanel.Top.Set(0, 0.2f);
+            BasePanel.Left.Set(0, 0.05f);
+            Append(BasePanel);
+            UIPanel BottonPanel = new UIPanel();
+            BottonPanel.SetSize(default, 1.0f, 0.05f);
+            BasePanel.Append(BottonPanel);
+            UIPanel PagePanel = new UIPanel();
+            PagePanel.SetSize(default, 0.85f, 0.05f);
+            PagePanel.Top.Set(0, 0.05f);
+            PagePanel.Left.Set(0, 0.15f);
+            pageList = new UIListByRow();
+            pageList.SetSize(default, 1, 1);
+            PagePanel.Append(pageList);
+            //UIScrollbarByRow pageScrollbar = new UIScrollbarByRow();
+            //pageScrollbar.SetView(100f, 1000f);
+            //pageScrollbar.Width.Set(0f, 1f);
+            //pageScrollbar.VAlign = 1f;
+            //PagePanel.Append(pageScrollbar);
+            //pageList.SetScrollbar(pageScrollbar);
+            BasePanel.Append(PagePanel);
+            UIPanel InfoPanel = new UIPanel();
+            InfoPanel.SetSize(default, 0.15f, 0.35f);
+            InfoPanel.Top.Set(0, 0.05f);
+            infoList = new UIList();
+            infoList.SetSize(0, -20, 1f, 1f);
+            infoList.Top.Set(20, 0);
+            InfoPanel.Append(infoList);
+            BasePanel.Append(InfoPanel);
+            UIText infoTitle = new UIText("当前页面序列信息");
+            infoTitle.SetSize(0, 20, 1, 0);
+            InfoPanel.Append(infoTitle);
+            UIPanel PropertyPanel = new UIPanel();
+            PropertyPanel.SetSize(default, 0.15f, 0.6f);
+            PropertyPanel.Top.Set(0, 0.4f);
+            BasePanel.Append(PropertyPanel);
+            UIText propTitle = new UIText("选中组件信息");
+            propTitle.SetSize(0, 20, 1, 0);
+            PropertyPanel.Append(propTitle);
+            propList = new UIList();
+            propList.SetSize(-40, -20, 1, 1);
+            propList.Top.Set(20, 0);
+            PropertyPanel.Append(propList);
+            var propScrollbar = new UIScrollbar();
+            propScrollbar.SetView(100f, 1000f);
+            propScrollbar.Height.Set(0f, 1f);
+            propScrollbar.HAlign = 1f;
+            PropertyPanel.Append(propScrollbar);
+            propList.SetScrollbar(propScrollbar);
+            OuterWorkingPanel = new UIPanel();
+            OuterWorkingPanel.SetSize(default, 0.85f, 0.9f);
+            OuterWorkingPanel.Top.Set(0, 0.1f);
+            OuterWorkingPanel.Left.Set(0, 0.15f);
+            OuterWorkingPanel.OverflowHidden = true;
+            BasePanel.Append(OuterWorkingPanel);
+            WorkingPlacePanel = new UIPanel();
+            WorkingPlacePanel.SetSize(default, 0.65f / 0.85f, 1f);
+            WorkingPlacePanel.OverflowHidden = true;
+            WorkingPlacePanel.OnLeftMouseDown +=
+                (evt, elem) =>
+                {
+                    if (Draggable && evt.Target == elem)
+                    {
+                        var e = elem.Elements.FirstOrDefault();
+                        Offset = new Vector2(evt.MousePosition.X - e.Left.Pixels, evt.MousePosition.Y - e.Top.Pixels);
+                        Dragging = true;
+                    }
+                };
+            WorkingPlacePanel.OnLeftMouseUp += (evt, elem) => { Dragging = false; };
+            WorkingPlacePanel.OnUpdate +=
+                (elem) =>
+                {
+                    if (Dragging)
+                    {
+                        var e = elem.Elements.FirstOrDefault();
+                        e.Left.Set(Main.mouseX - Offset.X, 0f);
+                        e.Top.Set(Main.mouseY - Offset.Y, 0f);
+                        e.Recalculate();
+                    }
+                };
+            OuterWorkingPanel.Append(WorkingPlacePanel);
+            UIPanel ActionLibraryPanel = new UIPanel();
+            ActionLibraryPanel.SetSize(default, 0.2f / 0.85f, 0.4f);
+            ActionLibraryPanel.Left.Set(0, 0.65f / 0.85f);
+            OuterWorkingPanel.Append(ActionLibraryPanel);
+            actionLib = new UIList();
+            actionLib.SetSize(new Vector2(0, -20), 1, 1);
+            actionLib.Top.Set(20, 0);
+            actionLib.ListPadding = 16;
+            ActionLibraryPanel.Append(actionLib);
+            var actionScrollbar = new UIScrollbar();
+            actionScrollbar.SetView(100f, 1000f);
+            actionScrollbar.Height.Set(0f, 1f);
+            actionScrollbar.HAlign = 1f;
+            ActionLibraryPanel.Append(actionScrollbar);
+            UIText actionTitle = new UIText("元素库");
+            actionTitle.SetSize(0, 20, 1, 0);
+            ActionLibraryPanel.Append(actionTitle);
+            actionLib.SetScrollbar(actionScrollbar);
+            UIPanel SequenceLibraryPanel = new UIPanel();
+            SequenceLibraryPanel.SetSize(default, 0.2f / 0.85f, 0.6f);
+            SequenceLibraryPanel.Left.Set(0, 0.65f / 0.85f);
+            SequenceLibraryPanel.Top.Set(0, 0.4f);
+            sequenceLib = new UIList();
+            sequenceLib.SetSize(new Vector2(0, -20), 1, 1);
+            sequenceLib.ListPadding = 16;
+            SequenceLibraryPanel.Append(sequenceLib);
+            var sequenceScrollbar = new UIScrollbar();
+            sequenceScrollbar.SetView(100f, 1000f);
+            sequenceScrollbar.Height.Set(0f, 1f);
+            sequenceScrollbar.HAlign = 1f;
+            SequenceLibraryPanel.Append(sequenceScrollbar);
+            sequenceLib.SetScrollbar(sequenceScrollbar);
+            sequenceLib.Top.Set(20, 0);
+            UIText sequenceTitle = new UIText("序列库");
+            sequenceTitle.SetSize(0, 20, 1, 0);
+            SequenceLibraryPanel.Append(sequenceTitle);
+            OuterWorkingPanel.Append(SequenceLibraryPanel);
+
+            //ResetPage();
+
+            /*
             UIPanel panel = UIPanel = new UIPanel();
             panel.SetSize(new Vector2(240, 300));
             panel.Top.Set(80, 0);
@@ -169,42 +489,47 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             SequenceDrawer = new SequenceDrawer();
             SequenceDrawer.Top.Set(0, 0.25f);
             SequenceDrawer.Left.Set(0, 0.25f);
-            Append(SequenceDrawer);
+            Append(SequenceDrawer);*/
             base.OnInitialize();
         }
         public void Open()
         {
             Visible = true;
             SoundEngine.PlaySound(SoundID.MenuOpen);
+            //UIPanel BasePanel = Elements[0] as UIPanel;
+            //BasePanel.SetSize(default, 0.8f, 0.75f);
+            //BasePanel.Top.Set(0, 0.2f);
+            //BasePanel.Left.Set(0, 0.05f);
+            ////Elements[0].SetSize(2560, 1600 * 0.8f);
+            ///
+
+            Elements.Clear();
+            OnInitialize();
+
+
+            ResetPage();
+            ReloadLib();
+            Recalculate();
             //SequenceDrawer.Top.Set(240, 0);
             //SequenceDrawer.Left.Set(0, 1.25f);
 
-            if (SequenceDrawer.box != null)
-            {
-                SequenceDrawer.box.SequenceSize();
-            }
-            UIConfigSetterContainer.Top.Set(400, 0);
-            SetupConfigList();
+            //if (SequenceDrawer.box != null)
+            //{
+            //    SequenceDrawer.box.SequenceSize();
+            //}
+            //UIConfigSetterContainer.Top.Set(400, 0);
+            //SetupConfigList();
         }
         public void Close()
         {
             Visible = false;
             Main.blockInput = false;
-            SequenceDrawer.box = null;
-            currentWraper = null;
-            RemoveChild(UIConfigSetterContainer);
-            RemoveChild(currentBox);
+            //SequenceDrawer.box = null;
+            //currentWraper = null;
+            //RemoveChild(UIConfigSetterContainer);
+            //RemoveChild(currentBox);
             SoundEngine.PlaySound(SoundID.MenuClose);
         }
-        public UIPanel UIPanel;
-        public UIList UIList;
-        public UIPanel UIConfigSetterContainer;
-        public UIList ConfigElemList;
-        public SequenceDrawer SequenceDrawer;
-        public SequenceBox currentBox;
-        public WraperBox currentWraper;
-
-
         public override void Update(GameTime gameTime)
         {
             //if (ConfigElemList != null)
@@ -212,49 +537,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //        foreach(var v in u)
             //        Main.NewText(v.GetType());
             base.Update(gameTime);
-        }
-        public void SetupConfigList()
-        {
-            UIList.Clear();//清空
-            foreach (SequenceBase sequence in SequenceSystem.sequenceBases.Values)
-            {
-
-                UIList.Add(SequenceToPanel(sequence));
-            }
-            Recalculate();
-        }
-        public UIPanel SequenceToPanel(SequenceBase sequence)
-        {
-            UIPanel panel = new UIPanel();
-            panel.SetSize(200, 40);
-            UIText uIText = new UIText(sequence.SequenceNameBase);
-            SequenceBox box = new SequenceBox(sequence);
-            box.SequenceSize();
-            panel.Append(uIText);
-            //panel.Append(box);
-            if (SequenceDrawer.box != null && SequenceDrawer.box.sequenceBase.SequenceNameBase == sequence.SequenceNameBase) SequenceDrawer.box = box;
-
-            panel.OnLeftClick += (evt, elem) =>
-            {
-                SequenceDrawer.box = box;
-                SoundEngine.PlaySound(SoundID.Unlock);
-            };
-            panel.OnRightClick += (evt, elem) =>
-            {
-                if (currentBox != null)
-                    this.RemoveChild(currentBox);
-                currentBox = box;
-                this.Append(box);
-                box.startSequence = true;
-                box.OnInitialize();
-                box.Top.Set(0, 0.5f);
-                box.Left.Set(0, 0.25f);
-                box.Recalculate();
-
-                SoundEngine.PlaySound(SoundID.Unlock);
-
-            };
-            return panel;
         }
     }
     public class SequencePanel : UIElement
@@ -462,29 +744,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Main.spriteBatch.DrawRectangle(Utils.CenteredRectangle(pos + sequenceBox.GetSize() * Vector2.UnitX * .5f + offsetFrame, sequenceBox.GetSize()), SequenceColor * .5f);//以pos为左侧中心绘制矩形框框
         }
     }
-    public abstract class DragableBox : UIElement
-    {
-        public bool IsClone;
-        public override void LeftMouseDown(UIMouseEvent evt)
-        {
-            Main.NewText("按下左键");
-            base.LeftMouseDown(evt);
-        }
-        public override void LeftMouseUp(UIMouseEvent evt)
-        {
-            Main.NewText("松开左键");
-            base.LeftMouseUp(evt);
-        }
-
-    }
-    public class ActionElementDragableBox : UIElement
-    {
-
-    }
-    public class SequenceElementDragableBox : UIElement
-    {
-
-    }
     public class WraperBox : UIElement
     {
         public UIPanel panel;
@@ -492,6 +751,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public SequenceBox sequenceBox;
         public bool CacheRefresh;
         public bool chosen;
+        public bool Dragging;
+        public bool IsClone;
+        public WraperBox Clone()
+        {
+            return new WraperBox(wraper.Clone());
+        }
         public WraperBox(SequenceBase.WraperBase wraperBase)
         {
             wraper = wraperBase;
@@ -711,26 +976,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             return null;
         }
-        public override void LeftClick(UIMouseEvent evt)
+
+        public override void RightClick(UIMouseEvent evt)
         {
+            if (IsClone)
+            {
+                Main.NewText("此处无法编辑参数，请将其拖入序列中再编辑");
+                return;
+            }
             if (evt.Target != this && !(this.BelongToMe(evt.Target) && evt.Target is not WraperBox)) return;
             //Main.NewText((GetHashCode(), evt.Target.GetHashCode()));
+            var ui = SequenceSystem.instance.sequenceUI;
             if (wraper.IsSequence)
             {
-                //sequenceBox.Expand = !sequenceBox.Expand;
-                Main.NewText("芝士序列");
+                ui.SequenceToPage(sequenceBox);
+                ui.SwitchToSequencePage(sequenceBox);
             }
             else
             {
-                Main.NewText("芝士元素");
-
-                var ui = SequenceSystem.instance.sequenceUI;
-                ui.Append(ui.UIConfigSetterContainer);
                 if (ui.currentWraper != null)
                     ui.currentWraper.chosen = false;
                 ui.currentWraper = this;
                 chosen = true;
-                var list = ui.ConfigElemList;
+
+
+                var list = ui.propList;
                 list.Clear();
                 //wraper.SetConfigPanel(list);
                 SoundEngine.PlaySound(SoundID.MenuOpen);
@@ -747,21 +1017,111 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     //elem.OnLeftClick += (_evt, uielem) => { };
                 }
             }
-            base.LeftClick(evt);
+            base.RightClick(evt);
         }
-        public override void LeftDoubleClick(UIMouseEvent evt)
+        public override void MouseOver(UIMouseEvent evt)
         {
-            if (evt.Target == this || (this.BelongToMe(evt.Target) && evt.Target is not WraperBox))
-                Main.NewText(wraper.Name);
-            base.LeftDoubleClick(evt);
+            //if (Dragging)
+            //{
+            //    Main.NewText((evt.Target.GetHashCode(),this.GetHashCode(),this.BelongToMe(evt.Target)));
+            //}
+            base.MouseOver(evt);
         }
+        public override void LeftMouseDown(UIMouseEvent evt)
+        {
+            if (SequenceSystem.instance.sequenceUI.WorkingPlacePanel.Elements[0] is not SequenceBox box)
+                return;
+            SoundEngine.PlaySound(SoundID.CoinPickup);
+            if (IsClone)
+            {
+                WraperBox copy = Clone();
+                if (wraper.IsSequence)
+                    copy.sequenceBox.Expand = false;
+                copy.Dragging = true;
+                copy.OnInitialize();
+                SequenceSystem.instance.sequenceUI.OuterWorkingPanel.Append(copy);
+                var vec = Main.MouseScreen - copy.Parent.GetDimensions().Position() - copy.GetSize() * .5f;
+                copy.Top.Set(vec.X, 0);
+                copy.Left.Set(vec.X, 0);
+                copy.Recalculate();
+                SequenceSystem.instance.userInterfaceSequence.LeftMouse.LastDown = copy;
+            }
+            else
+            {
+                if (this.Parent.Parent.GetHashCode() == box.GetHashCode() && box.groupBoxes.Count == 1 && box.groupBoxes.First().wraperBoxes.Count == 1)
+                {
+                    Main.NewText("只剩这个元素了，无法移动或者移除");
+                    return;
 
+                }
+                Dragging = true;
+
+                if (Parent is GroupBox group)
+                {
+                    group.wraperBoxes.Remove(this);
+                    this.Remove();
+                    group.CacheRefresh = true;
+
+                    SequenceBox sBox = (group.Parent as SequenceBox);
+                    sBox.sequenceBase.Remove(wraper, group.group);
+                    if (group.wraperBoxes.Count == 0)
+                    {
+                        sBox.groupBoxes.Remove(group);
+                        group.Remove();
+
+
+                    }
+
+                    SequenceBox mainBox = SequenceSystem.instance.sequenceUI.WorkingPlacePanel.Elements[0] as SequenceBox;
+                    mainBox.Elements.Clear();
+                    mainBox.CacheRefresh = true;
+                    mainBox.OnInitialize();
+                    mainBox.Recalculate();
+                }
+                Remove();
+                SequenceSystem.instance.sequenceUI.OuterWorkingPanel.Append(this);
+            }
+            base.LeftMouseDown(evt);
+        }
+        public override void LeftMouseUp(UIMouseEvent evt)
+        {
+            if (!Dragging) return;
+            if (!this.BelongToMe(evt.Target))
+                return;
+            SequenceUI sequenceUI = SequenceSystem.instance.sequenceUI;
+            if (sequenceUI.WorkingPlacePanel.Elements[0] is not SequenceBox box)
+            {
+                return;
+            }
+            sequenceUI.OuterWorkingPanel.RemoveChild(this);
+            box.InsertWraper(this, evt.MousePosition);
+            box.Elements.Clear();
+            box.CacheRefresh = true;
+            box.OnInitialize();
+            box.Recalculate();
+            //box = new SequenceBox(box.sequenceBase);
+            //box.SequenceSize();
+            //box.OnInitialize();
+            Dragging = false;
+            base.LeftMouseUp(evt);
+        }
+        public override void Update(GameTime gameTime)
+        {
+            if (Dragging)
+            {
+                var vec = Main.MouseScreen - Parent.GetDimensions().Position() - this.GetSize() * .5f;
+                Left.Set(vec.X, 0f);
+                Top.Set(vec.Y, 0f);
+                Recalculate();
+            }
+            base.Update(gameTime);
+        }
         public override void OnInitialize()
         {
             Vector2 size = this.GetSize();
             panel = new UIPanel();
             panel.SetSize(size);
-            if (wraper.IsSequence)
+            if (wraper.IsSequence && (sequenceBox.Expand && wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName))
             {
                 var desc = wraper.condition.Description.ToString();
                 if (desc != "Always")
@@ -776,15 +1136,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
-            //spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.MediumPurple, 12);
+            spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.MediumPurple, 12);
             var desc = wraper.condition.Description.ToString();
             bool flag = desc != "Always";
             var wraperBox = this;
             var position = this.GetDimensions().Position() + new Vector2(0, this.GetDimensions().Height * .5f);
-            if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand)
+            if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand && wraperBox.wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName)
             {
                 ComplexPanelInfo panel = new ComplexPanelInfo();
-                var boxSize = wraperBox.GetSize();
+                var boxSize = wraperBox.WrapperSize();
                 //if (flag)
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(0, 16), boxSize + new Vector2(32, 64));
                 //else
@@ -813,12 +1173,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var font = FontAssets.MouseText.Value;
                 var name = wraperBox.wraper.Name;
                 Vector2 textSize = font.MeasureString(name);
-                Vector2 boxSize = wraperBox.GetSize();
+                Vector2 boxSize = wraperBox.WrapperSize();
                 #region 框框
                 ComplexPanelInfo panel = new ComplexPanelInfo();
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
-                panel.glowEffectColor = (chosen ? Color.Red : Color.Cyan) with { A = 0 };
+                if (wraper.IsSequence)
+                    panel.glowEffectColor = Color.MediumPurple with { A = 0 };
+                else
+                    panel.glowEffectColor = (chosen ? Color.Red : Color.Cyan) with { A = 0 };
                 panel.glowShakingStrength = .05f;
                 panel.glowHueOffsetRange = 0.05f;
                 panel.backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value;
@@ -837,9 +1200,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //spriteBatch.DrawRectangle(panel.destination, Color.MediumPurple);
                 if (chosen)
                 {
-                    var tarVec = SequenceSystem.instance.sequenceUI.UIConfigSetterContainer.GetDimensions().ToRectangle().BottomRight();
-                    spriteBatch.DrawHorizonBLine(tarVec, position, Color.White);
-                    spriteBatch.DrawHorizonBLine(tarVec + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4), position + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4), Main.DiscoColor with { A = 0 }, 1, 6);
+                    var tarVec = SequenceSystem.instance.sequenceUI.propList.GetDimensions().ToRectangle().TopRight();
+                    spriteBatch.DrawHorizonBLine(tarVec, position, Color.White with { A = 0 } * .125f);
+                    spriteBatch.DrawHorizonBLine(tarVec + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4), position + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4), Main.DiscoColor with { A = 0 } * .125f, 1, 6);
 
                 }
             }
@@ -863,13 +1226,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public SequenceBase.GroupBase group;
         public List<WraperBox> wraperBoxes = new List<WraperBox>();
         public bool CacheRefresh;
-
+        //public void Add(WraperBox wraperBox)
+        //{
+        //    wraperBoxes.Add(wraperBox);
+        //    Elements.Clear();
+        //    group.Wrapers.Add(wraperBox.wraper);
+        //    OnInitialize();
+        //}
         public override void OnInitialize()
         {
             //this.IgnoresMouseInteraction = true;
             Vector2 size = this.GetSize();
             panel = new UIPanel();
             panel.SetSize(size);
+            Elements.Clear();
             float offset = SequenceConfig.Instance.Step.Y * .5f;
             foreach (var w in wraperBoxes)
             {
@@ -884,7 +1254,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
-            //spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.Cyan * .75f, 8);
+            spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.Cyan * .75f, 8);
             var dimension = GetDimensions();
             var scale = 1 + ((float)LogSpiralLibraryMod.ModTime / 180).CosFactor();
 
@@ -902,7 +1272,28 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class SequenceBox : UIElement
     {
-        public bool Expand = true;
+        bool expand = true;
+        public bool Expand
+        {
+            get => expand;
+            set
+            {
+                bool flag = expand ^ value;
+                if (!flag) return;
+                expand = value;
+                if (expand)
+                {
+                    CacheRefresh = true;
+                    OnInitialize();
+                }
+                else
+                {
+                    Elements.Clear();
+                    this.CacheRefresh = true;
+                    this.SequenceSize();
+                }
+            }
+        }
         public UIPanel panel;
         public SequenceBase sequenceBase;
         public List<GroupBox> groupBoxes = new List<GroupBox>();
@@ -919,6 +1310,70 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 groupBoxes.Add(gbox);
 
             }
+        }
+        public void InsertWraper(WraperBox wraper, Vector2 center)
+        {
+            if (!ContainsPoint(center))
+                return;
+            int gIndex = 0;
+            bool inGroup = false;
+            foreach (var g in groupBoxes)
+            {
+                if (center.X > g.GetDimensions().ToRectangle().Right)
+                    gIndex++;
+                else if (center.X > g.GetDimensions().ToRectangle().Left)
+                    inGroup = true;
+            }
+            if (inGroup)
+            {
+                int wIndex = 0;
+                bool inWraper = false;
+                GroupBox groupBox = groupBoxes[gIndex];
+                foreach (var w in groupBox.wraperBoxes)
+                {
+                    if (center.Y > w.GetDimensions().ToRectangle().Bottom)
+                        wIndex++;
+                    else if (center.X > w.GetDimensions().ToRectangle().Top)
+                        inWraper = true;
+                }
+                if (inWraper)
+                {
+                    WraperBox wraperBox = groupBox.wraperBoxes[wIndex];
+                    if (wraperBox.wraper.IsSequence)
+                    {
+                        wraperBox.sequenceBox.InsertWraper(wraper, center);//递归入口
+                        Main.NewText("递归");
+                    }
+                    else
+                    {
+                        //出口三，和先前的元素组成新的序列
+                        Main.NewText("这里本来有个出口三，但是我还没做完((");
+                    }
+                }
+                else
+                {
+                    //出口二，作为独立单元并联
+                    this.sequenceBase.GroupBases[gIndex].Insert(wIndex, wraper.wraper);
+                    this.groupBoxes[gIndex].wraperBoxes.Insert(wIndex, wraper);
+                    Main.NewText("出口二");
+                }
+            }
+            else
+            {
+                //出口一，作为独立单元串联
+                this.sequenceBase.Insert(gIndex, wraper.wraper, out var nG);
+                groupBoxes.Insert(gIndex, new GroupBox(nG));
+                if (wraper.wraper.IsSequence)
+                    groupBoxes[gIndex].wraperBoxes[0].sequenceBox.expand = wraper.sequenceBox.expand;
+                Main.NewText("出口一");
+
+            }
+        }
+        public override void Update(GameTime gameTime)
+        {
+            if (CacheRefresh)
+                Recalculate();
+            base.Update(gameTime);
         }
         public override void OnInitialize()
         {
@@ -958,7 +1413,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 spriteBatch.DrawLine(startP, endP, Color.White);
                 startP = endP;
             }
-            //spriteBatch.DrawRectangle(dimension.ToRectangle(), Color.Red * .5f);
+            spriteBatch.DrawRectangle(dimension.ToRectangle(), Color.Red * .5f);
             base.DrawSelf(spriteBatch);
         }
     }
@@ -1166,7 +1621,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Vector2 delta;
                 var wraper = wrapBox.wraper;
                 var desc = wraper.condition.Description.Value;
-                if (wraper.IsSequence)
+                if (wraper.IsSequence && wrapBox.sequenceBox.Expand && wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName)
                 {
                     delta = SequenceSize(wrapBox.sequenceBox);
                     if (desc != "Always")
@@ -1229,6 +1684,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Vector2 curr = sequencebox.GetSize();
             if (curr == default || sequencebox.CacheRefresh)
             {
+                sequencebox.CacheRefresh = false;
                 Vector2 result = default;
                 foreach (var group in sequencebox.groupBoxes)
                 {

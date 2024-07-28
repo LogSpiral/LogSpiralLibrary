@@ -322,7 +322,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         bool Collide(Rectangle rectangle);
 
     }
-    public class MeleeSequence : SequenceBase<MeleeAction, MeleeSequence>
+    public class MeleeSequence : SequenceBase<MeleeAction>
     {
         public IReadOnlyList<Group> MeleeGroups => Groups;
     }
@@ -576,23 +576,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public string LocalizationCategory => "AttackInfos";
         public sealed override void Register()
         {
-            int hash = typeof(MeleeAction).GetHashCode();
             ModTypeLookup<MeleeAction>.Register(this);
-
-
-            List<string> content = new List<string>();
-            foreach (var pair in ModTypeLookup<MeleeAction>.dict)
-            {
-                content.Add((pair.Key, pair.Value).ToString());
-            }
-            string path = "D:/图片测试/log_";
-            int count = 0;
-            while (File.Exists(path + count + ".txt"))
-            {
-                count++;
-            }
-            path += count + ".txt";
-            File.WriteAllLines(path, content);
         }
         public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
         #endregion
@@ -729,6 +713,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void OnEndAttack()
         {
             NewStab();
+            //Projectile.NewProjectile(Owner.GetSource_FromThis(), Owner.Center, Rotation.ToRotationVector2() * 16, ProjectileID.TerraBeam, 100, 1, Owner.whoAmI);
             base.OnEndAttack();
         }
         public override float Factor

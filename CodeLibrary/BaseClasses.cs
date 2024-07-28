@@ -1354,8 +1354,6 @@ namespace LogSpiralLibrary.CodeLibrary
                 meleeSequence.mod = Mod;
                 SetUpSequence(meleeSequence);
                 SequenceSystem.sequenceBases[FullName] = meleeSequence;
-                if (SequenceUI.Visible)
-                    SequenceSystem.instance.sequenceUI.SetupConfigList();
             }
 
             base.SetDefaults();

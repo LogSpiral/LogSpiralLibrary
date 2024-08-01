@@ -25,7 +25,7 @@ Items: {
 	}
 }
 
-AttackInfos: {
+MeleeAction: {
 	ArkhalisInfo.DisplayName: Arkhalis
 	BoardSwordInfo.DisplayName: BoardSword
 	BoomerangInfo.DisplayName: Boomerang
@@ -53,6 +53,116 @@ AttackInfos: {
 }
 
 Configs: {
+	StringInputHint: Type Here
+
+	RapidlyStabInfo: {
+		rangeOffsetMax: {
+			Label: 执行次数偏移上界
+			Tooltip: _
+		}
+
+		rangeOffsetMin: {
+			Label: 执行次数偏移下界
+			Tooltip: _
+		}
+
+		givenCycle: {
+			Label: 执行次数基值
+			Tooltip: _
+		}
+	}
+
+	MeleeAction: {
+		ModifyData: {
+			Label: 调整数据
+			Tooltip: _
+		}
+
+		Cycle: {
+			Label: 执行次数
+			Tooltip: _
+		}
+	}
+
+	ActionModifyData: {
+		sizeScaler: {
+			Label: 大小系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		timeScaler: {
+			Label: 时长系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		knockBack: {
+			Label: 击退系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		damage: {
+			Label: 伤害系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		critAdd: {
+			Label: 暴击率增加值
+			Tooltip: 加在面板值上
+		}
+
+		critMul: {
+			Label: 暴击率系数
+			Tooltip: 加完增加值再乘上这个
+		}
+	}
+
+	SequenceBasicInfo: {
+		AuthorName: {
+			Label: Author
+			Tooltip: The one who creates this Sequence
+		}
+
+		Description: {
+			Label: Description
+			Tooltip: Write sth. here to introduce your Sequence
+		}
+
+		FileName: {
+			Label: File Name
+			Tooltip: The Name in Directory\n you'd better make this without special characters
+		}
+
+		DisplayName: {
+			Label: Display Name
+			Tooltip: The Name shown in the UI Panel.
+		}
+
+		ModName: {
+			Label: Belonged Mod
+			Tooltip: __
+		}
+
+		createDate: {
+			Label: Create Date
+			Tooltip: The Birthday of the Sequence!!(
+		}
+
+		lastModifyDate: {
+			Label: Modify Date
+			Tooltip: The Date the sequence last modified
+		}
+
+		passWord: {
+			Label: PassWord
+			Tooltip: The Password is 'Password'(JK
+		}
+
+		Finished: {
+			Label: Labeled as finished
+			Tooltip: __
+		}
+	}
+
 	SurroundStateConfig: {
 		DisplayName: Surround State Config
 
@@ -124,3 +234,5 @@ Condition: {
 	FrontThreat: FrontThreat!!
 	SurroundThreat: SurroundThreat!!
 }
+
+NPCs.AVictim.DisplayName: A Victim

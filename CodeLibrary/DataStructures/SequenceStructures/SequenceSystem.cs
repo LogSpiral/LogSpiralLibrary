@@ -19,9 +19,13 @@ using Terraria.ModLoader.Config.UI;
 using Terraria.UI;
 using System.Collections;
 using Terraria.ModLoader.UI;
-using static Terraria.ModLoader.Config.UI.Vector2Element;
 using LogSpiralLibrary.CodeLibrary.UIElements;
-using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
+using System.Xml;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Xna.Framework.Input;
+using Terraria.UI.Chat;
+using Terraria;
+using rail;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -37,6 +41,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         [DefaultValue(typeof(Vector2), "32, 16")]
         [Range(0f, 64f)]
         public Vector2 Step = new Vector2(32, 16);
+
+
         public static SequenceConfig Instance => ModContent.GetInstance<SequenceConfig>();
         public override void OnChanged()
         {
@@ -58,11 +64,46 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.ProcessTriggers(triggersSet);
         }
     }
+    public static class SequenceCollectionManager<T> where T : ISequenceElement
+    {
+        public static Dictionary<string, SequenceBase<T>> sequences = new Dictionary<string, SequenceBase<T>>();
+        public static void Load()
+        {
+            //foreach (var type in AvailableElementBaseTypes)
+            //{
+            //    var list = GetAllFilesByDir($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{type.Name}");
+            //    foreach (FileInfo file in list)
+            //    {
+            //        var seqType = typeof(SequenceBase<>);
+            //        seqType = seqType.MakeGenericType(type);
+            //        var loadMethod = seqType.GetMethod("Load", BindingFlags.Public | BindingFlags.Static, [typeof(string)]);
+            //        sequenceBases.Add(file.Name, (SequenceBase)loadMethod.Invoke(null, [file.FullName]));
+            //    }
+            //}
+            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}";
+            var list = SequenceSystem.GetAllFilesByDir(path);
+            foreach (FileInfo file in list)
+            {
+                var modName = file.FullName.Split('\\', '/')[^2];
+                bool flag = ModLoader.TryGetMod(modName, out _);
+                if (flag)
+                {
+                    string key = $"{modName}/{Path.GetFileNameWithoutExtension(file.Name)}";
+                    SequenceBase<T> instance = SequenceBase<T>.Load(file.FullName);
+                    sequences[key] = instance;
+                }
+            }
+        }
+    }
     public class SequenceSystem : ModSystem
     {
+        public static void SetSequenceUIPending(bool flag = true)
+        {
+            instance.sequenceUI.PendingModify = flag;
+        }
         //TODO 可以给其它类型的序列用
-        public static Dictionary<string, SequenceBase> sequenceBases => instance._sequenceBases;
-        Dictionary<string, SequenceBase> _sequenceBases = new Dictionary<string, SequenceBase>();
+        public static Dictionary<Type, Dictionary<string, SequenceBase>> sequenceBases = new();
+        public static Dictionary<string, SequenceBasicInfo> sequenceInfos = new Dictionary<string, SequenceBasicInfo>();
         public SequenceUI sequenceUI;
         public UserInterface userInterfaceSequence;
         public static ModKeybind ShowSequenceKeybind { get; private set; }
@@ -77,7 +118,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             sequenceUI.Activate();
             userInterfaceSequence.SetState(sequenceUI);
             ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "展示序列列表", "Y");
-            AvailableElementBaseTypes.Add(typeof(MeleeAction));
             //On_UIElement.DrawSelf += On_UIElement_DrawSelf;
             #region conditions的赋值
             var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
@@ -106,13 +146,71 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             conditions.Add("FrontThreat", frontThreatCondition);
             #endregion
 
-        }
 
+
+        }
+        public override void PostSetupContent()
+        {
+            AvailableElementBaseTypes.Add(typeof(MeleeAction));
+            foreach (var type in AvailableElementBaseTypes)
+                LoadSequenceWithType(type);
+            base.PostSetupContent();
+        }
         private void On_UIElement_DrawSelf(On_UIElement.orig_DrawSelf orig, UIElement self, SpriteBatch spriteBatch)
         {
             orig(self, spriteBatch);
             spriteBatch.DrawString(FontAssets.MouseText.Value, self.GetHashCode().ToString(), self.GetDimensions().Position(), Color.White);
         }
+        /// <summary>
+        /// 获得指定目录下的所有文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<FileInfo> GetFilesByDir(string path)
+        {
+            DirectoryInfo di = new DirectoryInfo(path);
+
+            //找到该目录下的文件
+            FileInfo[] fi = di.GetFiles();
+
+            //把FileInfo[]数组转换为List
+            List<FileInfo> list = fi.ToList<FileInfo>();
+            return list;
+        }
+        /// <summary>
+        /// 获得指定目录及其子目录的所有文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<FileInfo> GetAllFilesByDir(string path)
+        {
+            DirectoryInfo dir = new DirectoryInfo(path);
+
+            //找到该目录下的文件
+            FileInfo[] fi = dir.GetFiles();
+
+            //把FileInfo[]数组转换为List
+            List<FileInfo> list = fi.ToList();
+
+            //找到该目录下的所有目录里的文件
+            DirectoryInfo[] subDir = dir.GetDirectories();
+            foreach (DirectoryInfo d in subDir)
+            {
+                List<FileInfo> subList = GetFilesByDir(d.FullName);
+                foreach (FileInfo subFile in subList)
+                {
+                    list.Add(subFile);
+                }
+            }
+            return list;
+        }
+        public static void LoadSequences<T>() where T : ISequenceElement
+        {
+            SequenceCollectionManager<MeleeAction>.Load();
+            var seq = SequenceCollectionManager<MeleeAction>.sequences;
+            sequenceBases[typeof(T)] = (from s in seq select new KeyValuePair<string, SequenceBase>(s.Key, s.Value)).ToDictionary();
+        }
+        public static void LoadSequenceWithType(Type type) => typeof(SequenceSystem).GetMethod("LoadSequences", BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(type).Invoke(null, []);
 
         public override void Unload()
         {
@@ -166,14 +264,32 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public WraperBox currentWraper;
         public UIList propList;
         public UIList infoList;
+        public UIButton<string> saveButton;
+        public UIButton<string> saveAsButton;
+        public UIButton<string> revertButton;
+        public UIPanel BasicInfoPanel;
+        public Type CurrentSelectedType;
+        public Dictionary<string, SequenceBase> currentSequences => SequenceSystem.sequenceBases[CurrentSelectedType];
         public bool Draggable;
         public bool Dragging;
+        bool pendingModify;
+        public bool PendingModify
+        {
+            get => pendingModify;
+            set
+            {
+                pendingModifyChange = value | pendingModify;
+                pendingModify = value;
+            }
+        }
+        bool pendingModifyChange;
+
         public Vector2 Offset;
         public void ReloadLib()
         {
             actionLib.Clear();
             sequenceLib.Clear();
-            Type elemBaseType = SequenceSystem.AvailableElementBaseTypes[0];
+            Type elemBaseType = CurrentSelectedType;
             Type type = typeof(ModTypeLookup<>);
             type = type.MakeGenericType(elemBaseType);
             //Main.NewText(type.GetField("dict",BindingFlags.Static|BindingFlags.NonPublic) == null);
@@ -190,7 +306,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 actionLib.Add(wraperBox);
 
             }
-            foreach (var s in SequenceSystem.sequenceBases.Values)
+            foreach (var s in currentSequences.Values)
             {
                 WraperBox wraperBox = new WraperBox((SequenceBase.WraperBase)Activator.CreateInstance(type, [s]));
                 wraperBox.sequenceBox.Expand = false;
@@ -202,22 +318,24 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public void ResetPage()
         {
             pageList.Clear();
-            UIPanel defPage = new UIPanel();
+            UIButton<string> defPage = new UIButton<string>("默认页面");
             defPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Add(defPage);
             defPage.OnLeftClick += (e, evt) => { SwitchToDefaultPage(); };
-            UIText defText = new UIText("默认页面");
-            defText.IgnoresMouseInteraction = true;
-            defText.SetSize(default, 1, 1);
-            defPage.Append(defText);
-            UIPanel newPage = new UIPanel();
+            //UIText defText = new UIText();
+            //defText.IgnoresMouseInteraction = true;
+            //defText.SetSize(default, 1, 1);
+            //defPage.Append(defText);
+            UIButton<string> newPage = new UIButton<string>("+");
             newPage.SetSize(new Vector2(32, 0), 0, 1);
-            newPage.OnLeftClick += (e, evt) => { Main.NewText("你新建了一个序列!!"); };
+            var seq = new MeleeSequence();
+            seq.Add(new SwooshInfo());
+            newPage.OnLeftClick += (e, evt) => { OpenBasicSetter(new SequenceBasicInfo() { createDate = DateTime.Now, lastModifyDate = DateTime.Now }, seq); };
             pageList.Add(newPage);
-            UIText newText = new UIText("+");
-            newText.IgnoresMouseInteraction = true;
-            newText.SetSize(default, 1, 1);
-            newPage.Append(newText);
+            //UIText newText = new UIText("+");
+            //newText.IgnoresMouseInteraction = true;
+            //newText.SetSize(default, 1, 1);
+            //newPage.Append(newText);
             SwitchToDefaultPage();
         }
         public void SwitchToDefaultPage()
@@ -237,7 +355,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 "库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
                 "二者没有硬性区别，根据自己感觉进行标记即可。");
             info.IsWrapped = true;
-            info.SetSize(default, 1, 1);
+            info.SetSize(new Vector2(-40, 1), 1, 1);
             infoList.Add(info);
             UIPanel finishedSequencePanel = new UIPanel();
             finishedSequencePanel.SetSize(default, 0.5f, 1f);
@@ -272,9 +390,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             libSequencePanel.Append(lScrollbar);
             finishedSequencePanel.Append(fList);
             libSequencePanel.Append(lList);
-            foreach (var s in SequenceSystem.sequenceBases.Values)
+            foreach (var s in currentSequences.Values)
             {
-                fList.Add(SequenceToPanel(s));
+                (SequenceSystem.sequenceInfos[s.KeyName].Finished ? fList : lList).Add(SequenceToButton(s.Clone()));
+
             }
         }
         public void SwitchToSequencePage(SequenceBox box)
@@ -283,41 +402,126 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Draggable = true;
             Offset = default;
             WorkingPlacePanel.Elements.Clear();
+            //WorkingPlacePanel.BackgroundColor = Color.White with { A = 0} * .25f;
             if (currentWraper != null)
                 currentWraper.chosen = false;
             currentWraper = null;
             propList.Clear();
             infoList.Clear();
+            int top = 0;
+            int order = 0;
+            SequenceBasicInfo info = SequenceSystem.sequenceInfos[box.sequenceBase.KeyName].Clone();
+            foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(info))
+            {
+                if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
+                    continue;
+                var (container, elem) = UIModConfig.WrapIt(infoList, ref top, variable, info, order++);
+            }
             WorkingPlacePanel.OverflowHidden = true;
             box.SequenceSize();
             box.OnInitialize();
             WorkingPlacePanel.Append(box);
+
+            saveButton = new UIButton<string>("保存");
+            saveButton.SetSize(64, 32);
+            saveButton.Left.Set(32, 0);
+            saveButton.Top.Set(-48, 1);
+            saveButton.OnLeftClick += (evt, elem) =>
+            {
+                var sequence = box.sequenceBase;
+                sequence.Save();
+                Type type = sequence.GetType();
+                var method = type.GetMethod("Load", BindingFlags.Static | BindingFlags.Public, [typeof(string), type]);
+
+                Type mgrType = typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType);
+
+
+                method.Invoke(null, [sequence.LocalPath, (mgrType.GetField("sequences", BindingFlags.Public | BindingFlags.Static).GetValue(null) as IDictionary)[sequence.KeyName]]);
+                info.lastModifyDate = DateTime.Now;
+                SequenceSystem.sequenceInfos[box.sequenceBase.KeyName] = info;
+                PendingModify = false;
+                SoundEngine.PlaySound(SoundID.MenuOpen);
+            };
+
+
+            saveAsButton = new UIButton<string>("另存为...");
+            saveAsButton.SetSize(128, 32);
+            saveAsButton.Left.Set(112, 0);
+            saveAsButton.Top.Set(-48, 1);
+            saveAsButton.OnLeftClick += (evt, elem) =>
+            {
+                var sequence = box.sequenceBase.Clone();
+                var info = SequenceSystem.sequenceInfos[sequence.KeyName].Clone();
+                info.lastModifyDate = DateTime.Now;
+                OpenBasicSetter(info, sequence);
+
+            };
+
+            revertButton = new UIButton<string>("撤销修改");
+            revertButton.SetSize(128, 32);
+            revertButton.Left.Set(256, 0);
+            revertButton.Top.Set(-48, 1);
+            revertButton.OnLeftClick += (evt, elem) =>
+            {
+                propList.Clear();
+                box.Elements.Clear();
+                box.groupBoxes.Clear();
+                var sequence = box.sequenceBase;
+                box.sequenceBase = SequenceSystem.instance.sequenceUI.currentSequences[sequence.KeyName].Clone();
+                sequence = box.sequenceBase;
+                foreach (var g in sequence.GroupBases)
+                {
+                    var gbox = new GroupBox(g);
+
+                    box.groupBoxes.Add(gbox);
+
+                }
+                box.CacheRefresh = true;
+                box.OnInitialize();
+                box.Recalculate();
+                PendingModify = false;
+                SoundEngine.PlaySound(SoundID.MenuClose);
+
+                infoList.Clear();
+                info = SequenceSystem.sequenceInfos[box.sequenceBase.KeyName].Clone();
+                foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(info))
+                {
+                    if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
+                        continue;
+                    var (container, _elem) = UIModConfig.WrapIt(infoList, ref top, variable, info, order++);
+                }
+            };
+            pendingModify = pendingModifyChange = false;
         }
         public void SequenceToPage(SequenceBox box)
         {
             SoundEngine.PlaySound(SoundID.Unlock);
-            UIPanel seqPage = new UIPanel();
+            UIButton<string> seqPage = new UIButton<string>(box.sequenceBase.DisplayName);
             seqPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Insert(pageList.Count - 1, seqPage);
-            seqPage.OnLeftClick += (_evt, _elem) => { SwitchToSequencePage(box); };
+            seqPage.OnLeftClick += (_evt, _elem) => { if (!pendingModify) SwitchToSequencePage(box); else Main.NewText("请先保存或撤销修改"); };
             seqPage.OnRightClick += (_evt, _elem) =>
             {
-                SwitchToDefaultPage();
-                pageList.Remove(_elem);
+                if (!pendingModify)
+                {
+                    SwitchToDefaultPage();
+                    pageList.Remove(_elem);
+                }
+                else Main.NewText("请先保存或撤销修改");
             };
-            UIText seqText = new UIText(box.sequenceBase.SequenceNameBase);
-            seqText.IgnoresMouseInteraction = true;
-            seqText.SetSize(default, 1, 1);
-            seqPage.Append(seqText);
+            //UIText seqText = new UIText(box.sequenceBase.SequenceNameBase);
+            //seqText.IgnoresMouseInteraction = true;
+            //seqText.SetSize(default, 1, 1);
+            //seqPage.Append(seqText);
         }
-        public UIPanel SequenceToPanel(SequenceBase sequence)
+        public UIButton<string> SequenceToButton(SequenceBase sequence)
         {
-            UIPanel panel = new UIPanel();
+            UIButton<string> panel = new UIButton<string>(sequence.DisplayName);
             panel.SetSize(-20, 40, 1, 0);
-            UIText uIText = new UIText(sequence.SequenceNameBase);
+            //UIText uIText = new UIText(sequence.SequenceNameBase);
             SequenceBox box = new SequenceBox(sequence);
             box.SequenceSize();
-            panel.Append(uIText);
+            //panel.Append(uIText);
             //panel.Append(box);
             //if (SequenceDrawer.box != null && SequenceDrawer.box.sequenceBase.SequenceNameBase == sequence.SequenceNameBase) SequenceDrawer.box = box;
 
@@ -343,6 +547,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void OnInitialize()
         {
+            //CurrentSelectedType = SequenceSystem.AvailableElementBaseTypes[0];
             UIPanel BasePanel = new UIPanel();
             BasePanel.SetSize(default, 0.8f, 0.75f);
             BasePanel.Top.Set(0, 0.2f);
@@ -369,9 +574,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             InfoPanel.SetSize(default, 0.15f, 0.35f);
             InfoPanel.Top.Set(0, 0.05f);
             infoList = new UIList();
-            infoList.SetSize(0, -20, 1f, 1f);
+            infoList.SetSize(-20, -20, 1f, 1f);
             infoList.Top.Set(20, 0);
+            UIScrollbar infoScrollBar = new UIScrollbar();
+            infoScrollBar.SetView(100f, 1000f);
+            infoScrollBar.Height.Set(0f, 1f);
+            infoScrollBar.HAlign = 1f;
             InfoPanel.Append(infoList);
+            InfoPanel.Append(infoScrollBar);
+            infoList.SetScrollbar(infoScrollBar);
             BasePanel.Append(InfoPanel);
             UIText infoTitle = new UIText("当前页面序列信息");
             infoTitle.SetSize(0, 20, 1, 0);
@@ -384,7 +595,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             propTitle.SetSize(0, 20, 1, 0);
             PropertyPanel.Append(propTitle);
             propList = new UIList();
-            propList.SetSize(-40, -20, 1, 1);
+            propList.SetSize(-20, -20, 1, 1);
             propList.Top.Set(20, 0);
             PropertyPanel.Append(propList);
             var propScrollbar = new UIScrollbar();
@@ -424,6 +635,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         e.Recalculate();
                     }
                 };
+
             OuterWorkingPanel.Append(WorkingPlacePanel);
             UIPanel ActionLibraryPanel = new UIPanel();
             ActionLibraryPanel.SetSize(default, 0.2f / 0.85f, 0.4f);
@@ -463,6 +675,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             SequenceLibraryPanel.Append(sequenceTitle);
             OuterWorkingPanel.Append(SequenceLibraryPanel);
 
+
+            SetUpBasicInfoPanel();
             //ResetPage();
 
             /*
@@ -492,10 +706,108 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Append(SequenceDrawer);*/
             base.OnInitialize();
         }
+        public void SetUpBasicInfoPanel()
+        {
+            BasicInfoPanel = new UIPanel();
+            BasicInfoPanel.SetSize(default, 0.5f, 0.5f);
+            BasicInfoPanel.HAlign = BasicInfoPanel.VAlign = 0.5f;
+            UIList infoList = new UIList();
+            infoList.Top.Set(32, 0);
+            infoList.SetSize(new Vector2(-40, -64), 1, 1);
+
+            BasicInfoPanel.Append(infoList);
+
+            //UIButton<string> yesButton = new UIButton<string>("确定");
+            UIButton<string> noButton = new UIButton<string>("取消");
+            noButton.BackgroundColor = Color.Red * .7f;
+            //yesButton.SetSize(64, 32, 0, 0);
+            noButton.SetSize(64, 32, 0, 0);
+            //yesButton.Top.Set(-32, 1);
+            noButton.Top.Set(-32, 1);
+            //yesButton.HAlign = 0.125f;
+            noButton.HAlign = 0.785f;
+            //BasicInfoPanel.Append(yesButton);
+            BasicInfoPanel.Append(noButton);
+            noButton.OnLeftClick += (evt, elem) =>
+            {
+                BasicInfoPanel.Remove();
+            };
+
+        }
+        public void OpenBasicSetter(SequenceBasicInfo info, SequenceBase sequence)//string modName,
+        {
+            var list = (BasicInfoPanel.Elements[0] as UIList);
+            list.Clear();
+            //wraper.SetConfigPanel(list);
+            SoundEngine.PlaySound(SoundID.MenuOpen);
+            int top = 0;
+            int order = 0;
+            WorkingPlacePanel.Append(BasicInfoPanel);
+            foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(info))
+            {
+                if (variable.Type == typeof(DateTime) || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
+                    continue;
+                var (container, elem) = UIModConfig.WrapIt(list, ref top, variable, info, order++);
+                //elem.OnLeftClick += (_evt, uielem) => { };
+            }
+            UIScrollbar uIScrollbar = new UIScrollbar();
+            uIScrollbar.SetView(100f, 1000f);
+            uIScrollbar.Height.Set(0f, 1f);
+            uIScrollbar.HAlign = 1f;
+            list.SetScrollbar(uIScrollbar);
+            BasicInfoPanel.Append(uIScrollbar);
+            UIButton<string> yesButton = new UIButton<string>("确定");
+            yesButton.SetSize(64, 32, 0, 0);
+            yesButton.Top.Set(-32, 1);
+            yesButton.HAlign = 0.125f;
+            BasicInfoPanel.Append(yesButton);
+            yesButton.OnLeftClick += (evt, elem) =>
+            {
+                if (info.FileName == "")
+                {
+                    Main.NewText("文件名不可为空", Color.Red);
+                    return;
+                }
+                if (info.DisplayName == "")
+                {
+                    Main.NewText("显示名不可为空", Color.Red);
+                    return;
+                }
+                if (info.FileName == SequenceBase.SequenceDefaultName || currentSequences.ContainsKey(info.KeyName))
+                {
+                    Main.NewText("文件名不可用", Color.Red);
+                    return;
+                }
+                if (info.ModName == null || !ModLoader.TryGetMod(info.ModName, out _))
+                {
+                    Main.NewText("不存在的模组", Color.Red);
+                    return;
+                }
+                pendingModify = false;
+                BasicInfoPanel.Remove();
+                Main.NewText("保存成功", Color.LimeGreen);
+                var dnames = from i in SequenceSystem.sequenceInfos.Values select i.DisplayName;
+                if (dnames.Contains(info.DisplayName))
+                {
+                    Main.NewText("但是建议避免显示名的重复", Color.Orange);
+                }
+                //SequenceSystem.instance.sequenceUI.currentSequences[info.KeyName] = sequence;
+                (typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary)[info.KeyName] = sequence;
+                SequenceSystem.sequenceInfos[info.KeyName] = info;
+                var box = new SequenceBox(sequence);
+                sequence.SyncInfo(info);
+                sequence.Save();
+                SequenceToPage(box);
+                SwitchToSequencePage(box);
+            };
+        }
+
+
         public void Open()
         {
             Visible = true;
             SoundEngine.PlaySound(SoundID.MenuOpen);
+            CurrentSelectedType = SequenceSystem.AvailableElementBaseTypes[0];
             //UIPanel BasePanel = Elements[0] as UIPanel;
             //BasePanel.SetSize(default, 0.8f, 0.75f);
             //BasePanel.Top.Set(0, 0.2f);
@@ -528,6 +840,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //currentWraper = null;
             //RemoveChild(UIConfigSetterContainer);
             //RemoveChild(currentBox);
+            saveButton?.Remove();
+            PendingModify = false;
+            pendingModifyChange = false;
             SoundEngine.PlaySound(SoundID.MenuClose);
         }
         public override void Update(GameTime gameTime)
@@ -536,13 +851,86 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //    foreach (var u in from uiS in ConfigElemList._innerList.Children select uiS.Children)
             //        foreach(var v in u)
             //        Main.NewText(v.GetType());
+            if (Elements[0].ContainsPoint(Main.MouseScreen))
+            {
+                Main.LocalPlayer.mouseInterface = true;
+                PlayerInput.LockVanillaMouseScroll("LogSpiralLibrary:SequenceUI");
+            }
+            if (pendingModifyChange)
+            {
+                if (pendingModify)
+                {
+                    WorkingPlacePanel.Append(saveButton);
+                    WorkingPlacePanel.Append(saveAsButton);
+                    WorkingPlacePanel.Append(revertButton);
+
+                }
+                else
+                {
+                    saveButton.Remove();
+                    saveAsButton.Remove();
+                    revertButton.Remove();
+                }
+                pendingModifyChange = false;
+            }
             base.Update(gameTime);
         }
     }
-    public class SequencePanel : UIElement
+    public class SequenceBasicInfo
     {
-        public SequenceBase sequenceBase;
-        public UIPanel panel;
+        [JsonIgnore]
+        public string KeyName => $"{ModName}/{FileName}";
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string AuthorName;
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string Description;
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string FileName;
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string DisplayName;
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string ModName;
+        [CustomModConfigItem(typeof(DateTimeElement))]
+        public DateTime createDate;
+        [CustomModConfigItem(typeof(DateTimeElement))]
+        public DateTime lastModifyDate;
+        //TODO RSA加密
+        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        public string passWord;
+        public bool Finished;
+        //public enum SequenceMode
+        //{
+        //    balanced = 0,
+        //    expansion = 1,
+        //    developer = 2,
+        //    lunatic = 3
+        //}
+        public void Save(XmlWriter writer)
+        {
+            writer.WriteAttributeString("AuthorName", AuthorName);
+            writer.WriteAttributeString("Description", Description);
+            writer.WriteAttributeString("FileName", FileName);
+            writer.WriteAttributeString("DisplayName", DisplayName);
+            writer.WriteAttributeString("ModName", ModName);
+            writer.WriteAttributeString("createTime", createDate.Ticks.ToString());
+            writer.WriteAttributeString("lastModifyDate", lastModifyDate.Ticks.ToString());
+            writer.WriteAttributeString("passWord", passWord);
+            writer.WriteAttributeString("Finished", Finished.ToString());
+        }
+        public SequenceBasicInfo Load(XmlReader reader)
+        {
+            AuthorName = reader["AuthorName"] ?? "不认识的孩子呢";
+            Description = reader["Description"] ?? "绝赞的描述";
+            FileName = reader["FileName"] ?? "Error";
+            DisplayName = reader["DisplayName"] ?? "出错的序列";
+            ModName = reader["ModName"] ?? "Unknown";//"LogSpiralLibrary";
+            createDate = new DateTime(long.Parse(reader["createTime"] ?? "0"));
+            lastModifyDate = new DateTime(long.Parse(reader["lastModifyDate"] ?? "0"));
+            passWord = reader["passWord"] ?? "";
+            Finished = bool.Parse(reader["Finished"] ?? "false");
+            return this;
+        }
+        public SequenceBasicInfo Clone() => MemberwiseClone() as SequenceBasicInfo;
     }
     public class SequenceDrawer : UIElement
     {
@@ -764,219 +1152,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 sequenceBox = new SequenceBox(wraper.SequenceInfo);
 
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="parent">外层</param>
-        /// <param name="top">距离顶部的高度？</param>
-        /// <param name="memberInfo">成员信息</param>
-        /// <param name="item"></param>
-        /// <param name="order">下标？</param>
-        /// <param name="list">元素所属的链表？</param>
-        /// <param name="arrayType">链表中值类型</param>
-        /// <param name="index">链表元素的下标？</param>
-        /// <returns></returns>
-        public static Tuple<UIElement, UIElement> WrapIt(UIElement parent, ref int top, PropertyFieldWrapper memberInfo, object item, int order, object list = null, Type arrayType = null, int index = -1)
-        {
-            int elementHeight;
-            Type type = memberInfo.Type;
-
-            if (arrayType != null)
-            {
-                type = arrayType;
-            }
-
-            UIElement e;
-
-            // TODO: Other common structs? -- Rectangle, Point
-            var customUI = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomModConfigItemAttribute>(memberInfo, null, null);//是否对该成员有另外实现的UI支持
-
-            if (customUI != null)
-            {
-                Type customUIType = customUI.Type;
-
-                if (typeof(ConfigElement).IsAssignableFrom(customUIType))
-                {
-                    ConstructorInfo ctor = customUIType.GetConstructor(Array.Empty<Type>());
-
-                    if (ctor != null)
-                    {
-                        object instance = ctor.Invoke(new object[0]);//执行相应UI的构造函数
-                        e = instance as UIElement;
-                    }
-                    else
-                    {
-                        e = new UIText($"{customUIType.Name} specified via CustomModConfigItem for {memberInfo.Name} does not have an empty constructor.");
-                    }
-                }
-                else
-                {
-                    e = new UIText($"{customUIType.Name} specified via CustomModConfigItem for {memberInfo.Name} does not inherit from ConfigElement.");
-                }
-            }
-            else if (item.GetType() == typeof(HeaderAttribute))
-            {
-                e = new HeaderElement((string)memberInfo.GetValue(item));
-            }
-            //基于成员类型添加上默认的编辑UI
-            else if (type == typeof(ItemDefinition))
-            {
-                e = new ItemDefinitionElement();
-            }
-            else if (type == typeof(ProjectileDefinition))
-            {
-                e = new ProjectileDefinitionElement();
-            }
-            else if (type == typeof(NPCDefinition))
-            {
-                e = new NPCDefinitionElement();
-            }
-            else if (type == typeof(PrefixDefinition))
-            {
-                e = new PrefixDefinitionElement();
-            }
-            else if (type == typeof(BuffDefinition))
-            {
-                e = new BuffDefinitionElement();
-            }
-            else if (type == typeof(TileDefinition))
-            {
-                e = new TileDefinitionElement();
-            }
-            else if (type == typeof(Color))
-            {
-                e = new ColorElement();
-            }
-            else if (type == typeof(Vector2))
-            {
-                e = new Vector2Element();
-            }
-            else if (type == typeof(bool)) // isassignedfrom?
-            {
-                e = new BooleanElement();
-            }
-            else if (type == typeof(float))
-            {
-                e = new FloatElement();
-            }
-            else if (type == typeof(byte))
-            {
-                e = new ByteElement();
-            }
-            else if (type == typeof(uint))
-            {
-                e = new UIntElement();
-            }
-            else if (type == typeof(int))
-            {
-                SliderAttribute sliderAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<SliderAttribute>(memberInfo, item, list);
-
-                if (sliderAttribute != null)
-                    e = new IntRangeElement();
-                else
-                    e = new IntInputElement();
-
-                Main.NewText("我是整型!!");
-            }
-            else if (type == typeof(string))
-            {
-                OptionStringsAttribute ost = ConfigManager.GetCustomAttributeFromMemberThenMemberType<OptionStringsAttribute>(memberInfo, item, list);
-                if (ost != null)
-                    e = new StringOptionElement();
-                else
-                    e = new StringInputElement();
-            }
-            else if (type.IsEnum)
-            {
-                if (list != null)
-                    e = new UIText($"{memberInfo.Name} not handled yet ({type.Name}).");
-                else
-                    e = new EnumElement();
-            }
-            else if (type.IsArray)
-            {
-                e = new ArrayElement();
-            }
-            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-            {
-                e = new ListElement();
-            }
-            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HashSet<>))
-            {
-                e = new SetElement();
-            }
-            else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-            {
-                e = new DictionaryElement();
-            }
-            else if (type.IsClass)
-            {
-                e = new ObjectElement(/*, ignoreSeparatePage: ignoreSeparatePage*/);
-            }
-            else if (type.IsValueType && !type.IsPrimitive)
-            {
-                e = new UIText($"{memberInfo.Name} not handled yet ({type.Name}) Structs need special UI.");
-                //e.Top.Pixels += 6;
-                e.Height.Pixels += 6;
-                e.Left.Pixels += 4;
-
-                //object subitem = memberInfo.GetValue(item);
-            }
-            else
-            {
-                e = new UIText($"{memberInfo.Name} not handled yet ({type.Name})");
-                e.Top.Pixels += 6;
-                e.Left.Pixels += 4;
-            }
-
-            if (e != null)
-            {
-                if (e is ConfigElement configElement)
-                {
-                    configElement.Bind(memberInfo, item, (IList)list, index);//将UI控件与成员信息及实例绑定
-                    configElement.OnBind();
-                }
-
-                e.Recalculate();
-
-                elementHeight = (int)e.GetOuterDimensions().Height;
-
-                var container = UIModConfig.GetContainer(e, index == -1 ? order : index);
-                container.Height.Pixels = elementHeight;
-
-                if (parent is UIList uiList)
-                {
-                    uiList.Add(container);
-                    uiList.GetTotalHeight();
-                }
-                else
-                {
-                    // Only Vector2 and Color use this I think, but modders can use the non-UIList approach for custom UI and layout.
-                    container.Top.Pixels = top;
-                    container.Width.Pixels = -20;
-                    container.Left.Pixels = 20;
-                    top += elementHeight + 4;
-                    parent.Append(container);
-                    parent.Height.Set(top, 0);
-                }
-
-                var tuple = new Tuple<UIElement, UIElement>(container, e);
-
-                if (parent == Interface.modConfig.mainConfigList)
-                {
-                    Interface.modConfig.mainConfigItems.Add(tuple);
-                }
-
-                return tuple;
-            }
-            else
-            {
-                Main.NewText("怎么null乐");
-            }
-            return null;
-        }
-
         public override void RightClick(UIMouseEvent evt)
         {
             if (IsClone)
@@ -1014,7 +1189,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     if (!Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAttribute)) || Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAbabdonedAttribute)))
                         continue;
                     var (container, elem) = UIModConfig.WrapIt(list, ref top, variable, wraper.Element, order++);
-                    //elem.OnLeftClick += (_evt, uielem) => { };
                 }
             }
             base.RightClick(evt);
@@ -1095,6 +1269,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             sequenceUI.OuterWorkingPanel.RemoveChild(this);
             box.InsertWraper(this, evt.MousePosition);
+            sequenceUI.PendingModify = true;
             box.Elements.Clear();
             box.CacheRefresh = true;
             box.OnInitialize();
@@ -1121,7 +1296,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Vector2 size = this.GetSize();
             panel = new UIPanel();
             panel.SetSize(size);
-            if (wraper.IsSequence && (sequenceBox.Expand && wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName))
+            if (wraper.IsSequence && (sequenceBox.Expand && wraper.SequenceInfo.FileName == SequenceBase.SequenceDefaultName))
             {
                 var desc = wraper.condition.Description.ToString();
                 if (desc != "Always")
@@ -1136,12 +1311,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.MediumPurple, 12);
+            if (SequenceConfig.Instance.ShowWrapBox)
+                spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.MediumPurple, 12);
             var desc = wraper.condition.Description.ToString();
             bool flag = desc != "Always";
             var wraperBox = this;
             var position = this.GetDimensions().Position() + new Vector2(0, this.GetDimensions().Height * .5f);
-            if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand && wraperBox.wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName)
+            if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand && wraperBox.wraper.SequenceInfo.FileName == SequenceBase.SequenceDefaultName)
             {
                 ComplexPanelInfo panel = new ComplexPanelInfo();
                 var boxSize = wraperBox.WrapperSize();
@@ -1152,7 +1328,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 float offY = flag ? FontAssets.MouseText.Value.MeasureString(desc).Y : 0;
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X * .5f, 0), boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
-                panel.glowEffectColor = Color.MediumPurple with { A = 0 };
+                panel.glowEffectColor = Color.MediumPurple with { A = 102 };
                 panel.glowShakingStrength = .1f;
                 panel.glowHueOffsetRange = 0.1f;
                 panel.backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value;
@@ -1172,6 +1348,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //position.Y += wraperBox.GetSize().Y * .5f;
                 var font = FontAssets.MouseText.Value;
                 var name = wraperBox.wraper.Name;
+                if (wraper.IsSequence && SequenceSystem.sequenceInfos.TryGetValue(wraper.SequenceInfo.KeyName, out var value))
+                    name = value.DisplayName;
                 Vector2 textSize = font.MeasureString(name);
                 Vector2 boxSize = wraperBox.WrapperSize();
                 #region 框框
@@ -1179,7 +1357,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 if (wraper.IsSequence)
-                    panel.glowEffectColor = Color.MediumPurple with { A = 0 };
+                    panel.glowEffectColor = Color.MediumPurple with { A = 102 };
                 else
                     panel.glowEffectColor = (chosen ? Color.Red : Color.Cyan) with { A = 0 };
                 panel.glowShakingStrength = .05f;
@@ -1254,7 +1432,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.Cyan * .75f, 8);
+            if (SequenceConfig.Instance.ShowGroupBox)
+                spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.Cyan * .75f, 8);
             var dimension = GetDimensions();
             var scale = 1 + ((float)LogSpiralLibraryMod.ModTime / 180).CosFactor();
 
@@ -1413,202 +1592,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 spriteBatch.DrawLine(startP, endP, Color.White);
                 startP = endP;
             }
-            spriteBatch.DrawRectangle(dimension.ToRectangle(), Color.Red * .5f);
+            if (SequenceConfig.Instance.ShowSequenceBox)
+                spriteBatch.DrawRectangle(dimension.ToRectangle(), Color.Red * .5f);
             base.DrawSelf(spriteBatch);
-        }
-    }
-    public class ActionModifyDataElement : ConfigElement
-    {
-        class DataObject
-        {
-            private readonly PropertyFieldWrapper memberInfo;
-            private readonly object item;
-            private readonly IList<ActionModifyData> array;
-            private readonly int index;
-
-            private ActionModifyData current;
-
-            //[LabelKey("缩放系数")]
-            public float actionOffsetSize
-            {
-                get => current.actionOffsetSize;
-                set
-                {
-                    current.actionOffsetSize = value;
-                    Update();
-                }
-            }
-
-            //[LabelKey("时长系数")]
-            public float actionOffsetTimeScaler
-            {
-                get => current.actionOffsetTimeScaler;
-                set
-                {
-                    current.actionOffsetTimeScaler = value;
-                    Update();
-                }
-            }
-
-            //[LabelKey("击退系数")]
-            public float actionOffsetKnockBack
-            {
-                get => current.actionOffsetKnockBack;
-                set
-                {
-                    current.actionOffsetKnockBack = value;
-                    Update();
-                }
-            }
-            //[LabelKey("伤害系数")]
-            public float actionOffsetDamage
-            {
-                get => current.actionOffsetDamage;
-                set
-                {
-                    current.actionOffsetDamage = value;
-                    Update();
-                }
-            }
-            //[LabelKey("暴击率增益")]
-            public int actionOffsetCritAdder
-            {
-                get => current.actionOffsetCritAdder;
-                set
-                {
-                    current.actionOffsetCritAdder = value;
-                    Update();
-                }
-            }
-            //[LabelKey("暴击率系数")]
-            public float actionOffsetCritMultiplyer
-            {
-                get => current.actionOffsetCritMultiplyer;
-                set
-                {
-                    current.actionOffsetCritMultiplyer = value;
-                    Update();
-                }
-            }
-
-            private void Update()
-            {
-                if (array == null)
-                    memberInfo.SetValue(item, current);
-                else
-                    array[index] = current;
-
-                Interface.modConfig.SetPendingChanges();
-            }
-            public DataObject(PropertyFieldWrapper memberInfo, object item)
-            {
-                this.item = item;
-                this.memberInfo = memberInfo;
-                current = (ActionModifyData)memberInfo.GetValue(item);
-            }
-
-            public DataObject(IList<ActionModifyData> array, int index)
-            {
-                current = array[index];
-                this.array = array;
-                this.index = index;
-            }
-        }
-        private int height;
-        private DataObject c;
-        private float min = 0;
-        private float max = 10;
-        private float increment = 0.01f;
-
-        public IList<ActionModifyData> DataList { get; set; }
-
-        public override void OnBind()
-        {
-            base.OnBind();
-
-            DataList = (IList<ActionModifyData>)List;
-
-            if (DataList != null)
-            {
-                DrawLabel = false;
-                height = 30;
-                c = new DataObject(DataList, Index);
-            }
-            else
-            {
-                height = 30;
-                c = new DataObject(MemberInfo, Item);
-            }
-
-            if (RangeAttribute != null && RangeAttribute.Min is float && RangeAttribute.Max is float)
-            {
-                max = (float)RangeAttribute.Max;
-                min = (float)RangeAttribute.Min;
-            }
-
-            if (IncrementAttribute != null && IncrementAttribute.Increment is float)
-            {
-                increment = (float)IncrementAttribute.Increment;
-            }
-
-            int order = 0;
-            foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(c))
-            {
-                var wrapped = UIModConfig.WrapIt(this, ref height, variable, c, order++);
-
-                // Can X and Y inherit range and increment automatically? Pass in "fake PropertyFieldWrapper" to achieve? Real one desired for label.
-                if (wrapped.Item2 is FloatElement floatElement)
-                {
-                    floatElement.Min = min;
-                    floatElement.Max = max;
-                    floatElement.Increment = increment;
-                    floatElement.DrawTicks = Attribute.IsDefined(MemberInfo.MemberInfo, typeof(DrawTicksAttribute));
-                }
-
-                if (DataList != null)
-                {
-                    wrapped.Item1.Left.Pixels -= 20;
-                    wrapped.Item1.Width.Pixels += 20;
-                }
-            }
-        }
-
-        // Draw axis? ticks?
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-
-            //CalculatedStyle dimensions = base.GetInnerDimensions();
-            //Rectangle rectangle = dimensions.ToRectangle();
-            //rectangle = new Rectangle(rectangle.Right - 30, rectangle.Y, 30, 30);
-            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, rectangle, Color.AliceBlue);
-
-            //float x = (c.X - min) / (max - min);
-            //float y = (c.Y - min) / (max - min);
-
-            //var position = rectangle.TopLeft();
-            //position.X += x * rectangle.Width;
-            //position.Y += y * rectangle.Height;
-            //var blipRectangle = new Rectangle((int)position.X - 2, (int)position.Y - 2, 4, 4);
-
-            //if (x >= 0 && x <= 1 && y >= 0 && y <= 1)
-            //    spriteBatch.Draw(TextureAssets.MagicPixel.Value, blipRectangle, Color.Black);
-
-            //if (IsMouseHovering && rectangle.Contains((Main.MouseScreen).ToPoint()) && Main.mouseLeft)
-            //{
-            //    float newPerc = (Main.mouseX - rectangle.X) / (float)rectangle.Width;
-            //    newPerc = Utils.Clamp<float>(newPerc, 0f, 1f);
-            //    c.X = (float)Math.Round((newPerc * (max - min) + min) * (1 / increment)) * increment;
-
-            //    newPerc = (Main.mouseY - rectangle.Y) / (float)rectangle.Height;
-            //    newPerc = Utils.Clamp<float>(newPerc, 0f, 1f);
-            //    c.Y = (float)Math.Round((newPerc * (max - min) + min) * (1 / increment)) * increment;
-            //}
-        }
-
-        internal float GetHeight()
-        {
-            return height;
         }
     }
     public static class SequenceDrawHelper
@@ -1621,7 +1607,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Vector2 delta;
                 var wraper = wrapBox.wraper;
                 var desc = wraper.condition.Description.Value;
-                if (wraper.IsSequence && wrapBox.sequenceBox.Expand && wraper.SequenceInfo.SequenceNameBase == SequenceBase.SequenceDefaultName)
+                if (wraper.IsSequence && wrapBox.sequenceBox.Expand && wraper.SequenceInfo.FileName == SequenceBase.SequenceDefaultName)
                 {
                     delta = SequenceSize(wrapBox.sequenceBox);
                     if (desc != "Always")
@@ -1638,6 +1624,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     var font = FontAssets.MouseText.Value;
                     var name = wraper.Name;
+                    if (wraper.IsSequence && SequenceSystem.sequenceInfos.TryGetValue(wraper.SequenceInfo.KeyName, out var value))
+                        name = value.DisplayName;
                     //if (name == "挥砍" && desc != "Always") 
                     //{
                     //    Main.NewText((font.MeasureString(name), font.MeasureString(desc)));

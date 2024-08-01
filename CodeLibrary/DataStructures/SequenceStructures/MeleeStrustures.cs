@@ -379,6 +379,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// 执行次数
         /// </summary>
         [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqIntInputElement))]
         public virtual int Cycle { get; set; } = 1;
         #endregion
         #region 动态调整，每次执行时重设
@@ -573,7 +574,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Projectile Projectile { get; set; }
         public StandardInfo standardInfo { get; set; }
 
-        public string LocalizationCategory => "AttackInfos";
+        public string LocalizationCategory => nameof(MeleeAction);
         public sealed override void Register()
         {
             ModTypeLookup<MeleeAction>.Register(this);
@@ -748,19 +749,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public (int min, int max) CycleOffsetRange
         {
-            get => (rangeOffsetMin,rangeOffsetMax);
+            get => (rangeOffsetMin, rangeOffsetMax);
             set
             {
                 var v = value;
                 v.min = Math.Clamp(v.min, 1 - givenCycle, v.max);
                 v.max = Math.Clamp(v.max, v.min, int.MaxValue);
-                (rangeOffsetMin,rangeOffsetMax) = v;
+                (rangeOffsetMin, rangeOffsetMax) = v;
                 ResetCycle();
             }
         }
         [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqIntInputElement))]
         public int rangeOffsetMin;
         [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqIntInputElement))]
         public int rangeOffsetMax;
         public override void LoadAttribute(XmlReader xmlReader)
         {
@@ -779,6 +782,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
         [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqIntInputElement))]
         public int givenCycle;
         void ResetCycle()
         {

@@ -48,10 +48,10 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => base.StandardInfo with 
         {
-            standardColor = Color.Red,
-            standardGlowTexture = DrawingMethods.GetTexture("LogSpiralLibrary/ForFun/TestBlade3/KluexStaffPH_Glow", false),
-            standardRotation = -MathHelper.PiOver2,
-            standardOrigin = new Vector2(0.5f,0.8f),
+            standardColor = Color.Purple,
+            //standardGlowTexture = DrawingMethods.GetTexture("LogSpiralLibrary/ForFun/TestBlade3/KluexStaffPH_Glow", false),
+            standardRotation = -MathHelper.PiOver4,
+            //standardOrigin = new Vector2(0.5f,0.8f),
             vertexStandard = new VertexDrawInfoStandardInfo() with 
             {
                 active = true,
@@ -63,6 +63,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
         };
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
+            base.SetUpSequence(meleeSequence);
+            return;
             meleeSequence.sequenceName = "TestBlade3Proj";
             var subSequence1 = MeleeSequence.Load("C:\\Users\\32536\\Documents\\My Games\\Terraria\\tModLoader\\Mods\\LogSpiralLibrary_Sequence\\MeleeAction\\LogSpiralLibrary\\TestBladeProj.xml");
             var subSequence2 = MeleeSequence.Load("C:\\Users\\32536\\Documents\\My Games\\Terraria\\tModLoader\\Mods\\LogSpiralLibrary_Sequence\\MeleeAction\\LogSpiralLibrary\\TestBlade2Proj.xml");

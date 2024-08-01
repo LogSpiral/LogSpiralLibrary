@@ -11,21 +11,33 @@ Items: {
 
 	TestBlade: {
 		DisplayName: 测试剑
-		Tooltip: 序列类的测试剑，测试模组动作执行序列，用的是守护者之剑的贴图，点击Y查看序列
+		Tooltip:
+			'''
+			序列类的测试剑，测试模组动作执行序列，点击Y查看序列
+			由杜格Doggo提供贴图(诡异妖刀)！
+			'''
 	}
 
 	TestBlade2: {
 		DisplayName: 测试剑2
-		Tooltip: 序列类的测试剑2，测试原版手持弹幕ai低仿，用的是魔改日炎刀的贴图，点击Y查看序列
+		Tooltip:
+			'''
+			序列类的测试剑2，测试原版手持弹幕ai低仿，点击Y查看序列
+			由杜格Doggo提供贴图(无名青空)！
+			'''
 	}
 
 	TestBlade3: {
 		DisplayName: 测试剑3
-		Tooltip: 序列类的测试剑(??)3，调用了测试剑及测试剑2的序列，标志着序列类型导出与加载的成功实现
+		Tooltip:
+			'''
+			序列类的测试剑3，调用了测试剑及测试剑2的序列，标志着序列类型导出与加载的成功实现
+			由杜格Doggo提供贴图(瞬移的咒法刺刀)！
+			'''
 	}
 }
 
-AttackInfos: {
+MeleeAction: {
 	ArkhalisInfo.DisplayName: 真空剑
 	BoardSwordInfo.DisplayName: 宽剑
 	BoomerangInfo.DisplayName: 回旋镖
@@ -53,6 +65,116 @@ AttackInfos: {
 }
 
 Configs: {
+	StringInputHint: 点击以输入
+
+	RapidlyStabInfo: {
+		rangeOffsetMax: {
+			Label: 执行次数偏移上界
+			Tooltip: _
+		}
+
+		rangeOffsetMin: {
+			Label: 执行次数偏移下界
+			Tooltip: _
+		}
+
+		givenCycle: {
+			Label: 执行次数基值
+			Tooltip: _
+		}
+	}
+
+	MeleeAction: {
+		ModifyData: {
+			Label: 调整数据
+			Tooltip: _
+		}
+
+		Cycle: {
+			Label: 执行次数
+			Tooltip: _
+		}
+	}
+
+	ActionModifyData: {
+		sizeScaler: {
+			Label: 大小系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		timeScaler: {
+			Label: 时长系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		knockBack: {
+			Label: 击退系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		damage: {
+			Label: 伤害系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		critAdd: {
+			Label: 暴击率增加值
+			Tooltip: 加在面板值上
+		}
+
+		critMul: {
+			Label: 暴击率系数
+			Tooltip: 加完增加值再乘上这个
+		}
+	}
+
+	SequenceBasicInfo: {
+		AuthorName: {
+			Label: 作者
+			Tooltip: 制作这个序列的人
+		}
+
+		Description: {
+			Label: 描述
+			Tooltip: 介绍一下你的作品吧
+		}
+
+		FileName: {
+			Label: 文件名
+			Tooltip: 实际存储路径用到的名字\n最好不要有特殊字符
+		}
+
+		DisplayName: {
+			Label: 显示名
+			Tooltip: 显示在UI界面中的名字
+		}
+
+		ModName: {
+			Label: 所属模组
+			Tooltip: 下次我会把填空题改成选择题的
+		}
+
+		createDate: {
+			Label: 创建日期
+			Tooltip: 序列诞生之日！
+		}
+
+		lastModifyDate: {
+			Label: 修改日期
+			Tooltip: 序列上次被修改的日期
+		}
+
+		passWord: {
+			Label: 密码
+			Tooltip: 密码就是密码
+		}
+
+		Finished: {
+			Label: 是否标记为成品
+			Tooltip: 没有本质区别，仅供方便分类
+		}
+	}
+
 	SurroundStateConfig: {
 		DisplayName: 环境状态设置
 
@@ -124,3 +246,5 @@ Condition: {
 	FrontThreat: 正面胁迫!!
 	SurroundThreat: 四面楚歌!!
 }
+
+// NPCs.AVictim.DisplayName: A Victim

@@ -37,7 +37,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => base.StandardInfo with 
         {
-            standardColor = Color.Gray,
+            standardColor = Color.Red,
             vertexStandard = new VertexDrawInfoStandardInfo() with 
             {
                 active = true,
@@ -50,6 +50,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
             //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
+            base.SetUpSequence(meleeSequence);
+            return;
             SwooshInfo swooshInfo = new SwooshInfo()
             {
                 Cycle = 4,

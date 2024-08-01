@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Terraria.Audio;
+using Terraria.GameContent.NetModules;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.ID;
@@ -1329,7 +1330,18 @@ namespace LogSpiralLibrary.CodeLibrary
             get => meleeSequence;
         }
         public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null);
-        public abstract void SetUpSequence(MeleeSequence meleeSequence);
+        //public abstract void SetUpSequence(MeleeSequence meleeSequence);
+        public virtual void SetUpSequence(MeleeSequence meleeSequence) 
+        {
+            try
+            {
+                MeleeSequence.Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{Mod.Name}/{Name}.xml", meleeSequence);
+            }
+            catch 
+            {
+                meleeSequence.Add(new SwooshInfo());
+            }
+        }
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
         public override void SetDefaults()
@@ -1344,16 +1356,16 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            if (SequenceSystem.sequenceBases.TryGetValue(FullName, out var value))
+            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue(Name, out var value))
             {
                 meleeSequence = value as MeleeSequence;
             }
             else 
             {
-                meleeSequence.sequenceName = Name;
-                meleeSequence.mod = Mod;
+                //meleeSequence.sequenceName = Name;
+                //meleeSequence.mod = Mod;
                 SetUpSequence(meleeSequence);
-                SequenceSystem.sequenceBases[FullName] = meleeSequence;
+                SequenceCollectionManager<MeleeAction>.sequences[meleeSequence.KeyName] = meleeSequence;
             }
 
             base.SetDefaults();

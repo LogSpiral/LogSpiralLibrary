@@ -274,7 +274,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //public abstract void SetConfigPanel(UIList uIList);
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
-            public Condition condition = new Condition("Always", () => true);
+            [CustomModConfigItem(typeof(ConditionDefinitionElement))]
+            public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary","Always");
+            public Condition Condition => SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
+            //public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
             public abstract WraperBase Clone();
         }
@@ -349,8 +352,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     Wraper wraper = group.wrapers[j];
                     xmlWriter.WriteStartElement("Wraper");
-                    if (wraper.condition.Description.Value != "Always")
-                        xmlWriter.WriteAttributeString("condition", wraper.condition.Description.Key.Split('.')[^1]);
+                    if (wraper.Condition.Description.Value != "Always")
+                        xmlWriter.WriteAttributeString("condition", wraper.Condition.Description.Key.Split('.')[^1]);
                     //xmlWriter.WriteValue(wraper.Name);
                     if (wraper.IsSequence)
                     {
@@ -505,7 +508,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 int counter = 0;
                 foreach (var wraper in wrapers)
                 {
-                    if (wraper.condition.IsMet())
+                    if (wraper.Condition.IsMet())
                     {
                         index = counter;
                         return wraper;
@@ -626,7 +629,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             public Wraper SetCondition(Condition _condition)
             {
-                condition = _condition;
+                string key = _condition.Description.Key.Split('.')[^1];
+                if (!SequenceSystem.conditions.Keys.Contains(key))
+                    SequenceSystem.conditions[key] = _condition;
+                conditionDefinition = new ConditionDefinition(key);
+                //Condition = _condition;
                 return this;
             }
             /// <summary>

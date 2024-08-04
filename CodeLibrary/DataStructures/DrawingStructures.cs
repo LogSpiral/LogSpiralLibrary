@@ -871,24 +871,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[3].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
-
-                //if (n == 0)
-                //{
-                //    string path = "D:/图片测试/shader/图_";
-                //    int count = 0;
-                //    while (File.Exists(path + count + ".png"))
-                //    {
-                //        count++;
-                //    }
-                //    path += count + ".png";
-                //    using (var stream = new FileStream(path, FileMode.CreateNew))
-                //    {
-                //        renderSwap.SaveAsPng(stream, renderSwap.Width, renderSwap.Height);
-                //    }
-                //}
-
-
-
                 graphicsDevice.SetRenderTarget(render);
                 RenderEffect.Parameters["tex0"].SetValue(renderSwap);
                 graphicsDevice.Clear(Color.Transparent);

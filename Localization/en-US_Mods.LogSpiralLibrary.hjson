@@ -23,6 +23,11 @@ Items: {
 		DisplayName: Test Blade3
 		Tooltip: ""
 	}
+
+	TestBlade3V2: {
+		DisplayName: Test Blade3 V2
+		Tooltip: ""
+	}
 }
 
 MeleeAction: {
@@ -84,6 +89,13 @@ Configs: {
 		}
 	}
 
+	WraperBase: {
+		conditionDefinition: {
+			Label: 执行条件
+			Tooltip: _
+		}
+	}
+
 	ActionModifyData: {
 		sizeScaler: {
 			Label: 大小系数
@@ -140,6 +152,11 @@ Configs: {
 		ModName: {
 			Label: Belonged Mod
 			Tooltip: __
+		}
+
+		ModDefinition: {
+			Label: Belonged Mod
+			Tooltip: 下次我会要求必须依赖于LSL的(
 		}
 
 		createDate: {
@@ -224,15 +241,18 @@ Projectiles: {
 	TestBladeProj.DisplayName: Test Blade Proj
 	TestBlade2Proj.DisplayName: Test Blade2 Proj
 	TestBlade3Proj.DisplayName: Test Blade3 Proj
+	TestBlade3ProjV2.DisplayName: Test Blade3 Proj V2
 }
 
-Keybinds.展示序列列表.DisplayName: 展示序列列表
+Keybinds.ShowSequenceModifier.DisplayName: Show Sequence Modifier
 
 Condition: {
 	MouseLeft: MouseLeft
 	MouseRight: MouseRight
 	FrontThreat: FrontThreat!!
 	SurroundThreat: SurroundThreat!!
+	Always: Always
+	None: Mods.LogSpiralLibrary.Condition.None
 }
 
 NPCs.AVictim.DisplayName: A Victim

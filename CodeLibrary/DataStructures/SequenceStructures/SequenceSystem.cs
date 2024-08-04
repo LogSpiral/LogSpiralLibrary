@@ -117,17 +117,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             userInterfaceSequence = new UserInterface();
             sequenceUI.Activate();
             userInterfaceSequence.SetState(sequenceUI);
-            ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "展示序列列表", "Y");
+            ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "ShowSequenceModifier", "Y");
             //On_UIElement.DrawSelf += On_UIElement_DrawSelf;
             #region conditions的赋值
-            var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
-            foreach (var fieldInfo in fieldInfos)
-            {
-                Condition condition = (Condition)fieldInfo.GetValue(null);
-                string key = condition.Description.Key.Split('.')[^1];
-                if (!conditions.ContainsKey(key))
-                    conditions.Add(key, condition);
-            }//录入原版条件
+            var noneCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.None"), () => true);
+            conditions.Add("None", noneCondition);
+            var alwaysCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.Always"), () => true);
+            conditions.Add("Always", alwaysCondition);
             var mouseLeftCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseLeft"), () => Main.LocalPlayer.controlUseItem);
             conditions.Add("MouseLeft", mouseLeftCondition);
             var mouseRightCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseRight"), () => Main.LocalPlayer.controlUseTile);
@@ -144,6 +140,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return ssp.state == SurroundState.FrontThreat;
             });
             conditions.Add("FrontThreat", frontThreatCondition);
+            var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var fieldInfo in fieldInfos)
+            {
+                Condition condition = (Condition)fieldInfo.GetValue(null);
+                string key = condition.Description.Key.Split('.')[^1];
+                if (!conditions.ContainsKey(key))
+                    conditions.Add(key, condition);
+            }//录入原版条件
+
             #endregion
 
 
@@ -418,7 +423,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var (container, elem) = UIModConfig.WrapIt(infoList, ref top, variable, info, order++);
             }
             WorkingPlacePanel.OverflowHidden = true;
-            box.SequenceSize();
+            box.SequenceSize(true);
             box.OnInitialize();
             WorkingPlacePanel.Append(box);
 
@@ -437,6 +442,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
 
                 method.Invoke(null, [sequence.LocalPath, (mgrType.GetField("sequences", BindingFlags.Public | BindingFlags.Static).GetValue(null) as IDictionary)[sequence.KeyName]]);
+                currentSequences[sequence.KeyName] = sequence;
                 info.lastModifyDate = DateTime.Now;
                 SequenceSystem.sequenceInfos[box.sequenceBase.KeyName] = info;
                 PendingModify = false;
@@ -520,7 +526,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             panel.SetSize(-20, 40, 1, 0);
             //UIText uIText = new UIText(sequence.SequenceNameBase);
             SequenceBox box = new SequenceBox(sequence);
-            box.SequenceSize();
+            box.SequenceSize(true);
             //panel.Append(uIText);
             //panel.Append(box);
             //if (SequenceDrawer.box != null && SequenceDrawer.box.sequenceBase.SequenceNameBase == sequence.SequenceNameBase) SequenceDrawer.box = box;
@@ -867,9 +873,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
                 else
                 {
-                    saveButton.Remove();
-                    saveAsButton.Remove();
-                    revertButton.Remove();
+                    saveButton?.Remove();
+                    saveAsButton?.Remove();
+                    revertButton?.Remove();
                 }
                 pendingModifyChange = false;
             }
@@ -888,8 +894,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public string FileName;
         [CustomModConfigItem(typeof(SeqStringInputElement))]
         public string DisplayName;
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
-        public string ModName;
+        //[CustomModConfigItem(typeof(SeqStringInputElement))]
+        //public string ModName;
+        [CustomModConfigItem(typeof(ModDefinitionElement))]
+        public ModDefinition ModDefinition = new ModDefinition("LogSpiralLibrary");
+        [JsonIgnore]
+        public string ModName => ModDefinition?.Name ?? "UnknownMod";
         [CustomModConfigItem(typeof(DateTimeElement))]
         public DateTime createDate;
         [CustomModConfigItem(typeof(DateTimeElement))]
@@ -923,7 +933,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Description = reader["Description"] ?? "绝赞的描述";
             FileName = reader["FileName"] ?? "Error";
             DisplayName = reader["DisplayName"] ?? "出错的序列";
-            ModName = reader["ModName"] ?? "Unknown";//"LogSpiralLibrary";
+            ModDefinition = new ModDefinition(reader["ModName"]);
+            //ModName = reader["ModName"] ?? "Unknown";//"LogSpiralLibrary";
             createDate = new DateTime(long.Parse(reader["createTime"] ?? "0"));
             lastModifyDate = new DateTime(long.Parse(reader["lastModifyDate"] ?? "0"));
             passWord = reader["passWord"] ?? "";
@@ -954,7 +965,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var pos = position;
             //position += SequenceConfig.Instance.Step * new Vector2(0, .5f);
             var spriteBatch = Main.spriteBatch;
-            var desc = wraperBox.wraper.condition.Description.ToString();
+            var desc = wraperBox.wraper.Condition.Description.ToString();
             bool flag = desc != "Always";
             if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand)
             {
@@ -979,7 +990,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 if (flag)
                 {
                     var cen = position + boxSize * Vector2.UnitY * .5f - offY * 1.5f * Vector2.UnitY + new Vector2(16, 0);
-                    if (wraperBox.wraper.condition.IsMet())
+                    if (wraperBox.wraper.Condition.IsMet())
                     {
                         for (int n = 0; n < 3; n++)
                             spriteBatch.DrawString(FontAssets.MouseText.Value, "→" + desc, cen + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4f), new Color(0.8f, 0.2f, 1f, 0f), 0, default, 1f, 0, 0);
@@ -1025,7 +1036,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 cen += textSize * Vector2.UnitY;
                 if (flag)
                 {
-                    if (wraperBox.wraper.condition.IsMet())
+                    if (wraperBox.wraper.Condition.IsMet())
                     {
 
                         for (int n = 0; n < 3; n++)
@@ -1059,7 +1070,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var font = FontAssets.MouseText.Value;
             foreach (var w in groupBox.wraperBoxes)
             {
-                string desc = w.wraper.condition.Description.ToString();
+                string desc = w.wraper.Condition.Description.ToString();
                 float offY = desc != "Always" ? font.MeasureString("→" + desc).Y : 0;
                 Vector2 wsize = w.GetSize();
                 position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y - offY) * .5f;
@@ -1162,28 +1173,38 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (evt.Target != this && !(this.BelongToMe(evt.Target) && evt.Target is not WraperBox)) return;
             //Main.NewText((GetHashCode(), evt.Target.GetHashCode()));
             var ui = SequenceSystem.instance.sequenceUI;
+            var list = ui.propList;
+            list.Clear();
+            if (ui.currentWraper != null)
+                ui.currentWraper.chosen = false;
+            ui.currentWraper = this;
+            chosen = true;
+            SoundEngine.PlaySound(SoundID.MenuOpen);
+            int top = 0;
+            int order = 0;
+            {
+                var fieldInfo = wraper.GetType().GetField("conditionDefinition", BindingFlags.Instance | BindingFlags.Public);
+                if (fieldInfo != null)
+                    UIModConfig.WrapIt(list, ref top, new PropertyFieldWrapper(fieldInfo), wraper, order);
+            }
             if (wraper.IsSequence)
             {
-                ui.SequenceToPage(sequenceBox);
-                ui.SwitchToSequencePage(sequenceBox);
+                if (!sequenceBox.Expand || sequenceBox.sequenceBase.FileName != SequenceBase.SequenceDefaultName)
+                {
+                    UIButton<string> TurnToButton = new UIButton<string>("SwtichToSequencePage");
+                    TurnToButton.SetSize(new Vector2(0, 32), 0.8f, 0f);
+                    TurnToButton.HAlign = 0.5f;
+                    list.Add(TurnToButton);
+                    TurnToButton.OnLeftClick += (evt, elem) =>
+                    {
+                        ui.SequenceToPage(sequenceBox);
+                        ui.SwitchToSequencePage(sequenceBox);
+                    };
+                }
             }
             else
             {
-                if (ui.currentWraper != null)
-                    ui.currentWraper.chosen = false;
-                ui.currentWraper = this;
-                chosen = true;
-
-
-                var list = ui.propList;
-                list.Clear();
                 //wraper.SetConfigPanel(list);
-                SoundEngine.PlaySound(SoundID.MenuOpen);
-
-
-                int top = 0;
-                int order = 0;
-
                 foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(wraper.Element))
                 {
                     if (!Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAttribute)) || Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAbabdonedAttribute)))
@@ -1289,6 +1310,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Top.Set(vec.Y, 0f);
                 Recalculate();
             }
+            MaxWidth = MaxHeight = new StyleDimension(223214514, 0);
             base.Update(gameTime);
         }
         public override void OnInitialize()
@@ -1298,7 +1320,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             panel.SetSize(size);
             if (wraper.IsSequence && (sequenceBox.Expand && wraper.SequenceInfo.FileName == SequenceBase.SequenceDefaultName))
             {
-                var desc = wraper.condition.Description.ToString();
+                var desc = wraper.Condition.Description.ToString();
                 if (desc != "Always")
                 {
                     sequenceBox.offY = FontAssets.MouseText.Value.MeasureString("→" + desc).Y * -.5f;
@@ -1311,9 +1333,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void DrawSelf(SpriteBatch spriteBatch)
         {
+            //Vector4 vec = new Vector4(0,0, 0, 1.5f + MathF.Cos((float)LogSpiralLibrarySystem.ModTime / 60) * .5f);// MathF.Cos((float)LogSpiralLibrarySystem.ModTime / 60) * 60
+            //object m = spriteBatch.GetType().GetField("transformMatrix", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(spriteBatch);
+            //spriteBatch.GetType().GetField("transformMatrix", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(spriteBatch, Main.UIScaleMatrix with { /*M14 = vec.X,*/ M24 = vec.Y, M34 = vec.Z, M44 = vec.W });
             if (SequenceConfig.Instance.ShowWrapBox)
                 spriteBatch.DrawRectangle(this.GetDimensions().ToRectangle(), Color.MediumPurple, 12);
-            var desc = wraper.condition.Description.ToString();
+            var desc = wraper.Condition.Description.ToString();
             bool flag = desc != "Always";
             var wraperBox = this;
             var position = this.GetDimensions().Position() + new Vector2(0, this.GetDimensions().Height * .5f);
@@ -1328,7 +1353,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 float offY = flag ? FontAssets.MouseText.Value.MeasureString(desc).Y : 0;
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X * .5f, 0), boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
-                panel.glowEffectColor = Color.MediumPurple with { A = 102 };
+                panel.glowEffectColor = chosen ? Main.DiscoColor with { A = 0 } : Color.MediumPurple with { A = 102 };
                 panel.glowShakingStrength = .1f;
                 panel.glowHueOffsetRange = 0.1f;
                 panel.backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value;
@@ -1357,7 +1382,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 if (wraper.IsSequence)
-                    panel.glowEffectColor = Color.MediumPurple with { A = 102 };
+                    panel.glowEffectColor = chosen ? Color.Lerp(Color.Blue, Color.Purple, 0.5f) with { A = 0 } : Color.MediumPurple with { A = 102 };
                 else
                     panel.glowEffectColor = (chosen ? Color.Red : Color.Cyan) with { A = 0 };
                 panel.glowShakingStrength = .05f;
@@ -1440,13 +1465,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             foreach (var w in wraperBoxes)
             {
                 var wD = w.GetDimensions();
-                var offY = w.wraper.condition.Description.Value != "Always" ? -FontAssets.MouseText.Value.MeasureString("→" + w.wraper.condition.Description).Y * .5f : 0;
-                spriteBatch.DrawHorizonBLine(dimension.Position() + new Vector2(-SequenceConfig.Instance.Step.X * .25f, dimension.Height * .5f), wD.Position() + new Vector2(0, wD.Height * .5f + offY), Color.White, scale);
-                spriteBatch.DrawHorizonBLine(dimension.Position() + new Vector2(SequenceConfig.Instance.Step.X * .25f + dimension.Width, dimension.Height * .5f), wD.Position() + new Vector2(wD.Width, wD.Height * .5f + offY), Color.White, scale);
+                var offY = w.wraper.Condition.Description.Value != "Always" ? -FontAssets.MouseText.Value.MeasureString("→" + w.wraper.Condition.Description).Y * .5f : 0;
+                //谜题之我也不知道这一个像素的偏移是哪里来的
+                spriteBatch.DrawHorizonBLine(dimension.Position() + new Vector2(-SequenceConfig.Instance.Step.X * .25f, dimension.Height * .5f) + new Vector2(-1, 0), wD.Position() + new Vector2(0, wD.Height * .5f + offY), Color.White, scale);
+                spriteBatch.DrawHorizonBLine(dimension.Position() + new Vector2(SequenceConfig.Instance.Step.X * .25f + dimension.Width, dimension.Height * .5f) + new Vector2(-1, 0), wD.Position() + new Vector2(wD.Width, wD.Height * .5f + offY), Color.White, scale);
 
                 //spriteBatch.Draw(TextureAssets.MagicPixel.Value, wD.Position() + new Vector2(0, wD.Height * .5f), new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(0.5f), 16f, 0, 0);
             }
             base.DrawSelf(spriteBatch);
+        }
+        public override void Update(GameTime gameTime)
+        {
+            MaxWidth = MaxHeight = new StyleDimension(223214514, 0);
+
+            base.Update(gameTime);
         }
     }
     public class SequenceBox : UIElement
@@ -1469,7 +1501,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     Elements.Clear();
                     this.CacheRefresh = true;
-                    this.SequenceSize();
+                    this.SequenceSize(true);
                 }
             }
         }
@@ -1478,7 +1510,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public List<GroupBox> groupBoxes = new List<GroupBox>();
         public bool CacheRefresh;
         public float offY;
-        public bool startSequence;
+        //public bool startSequence;
         public SequenceBox(SequenceBase sequence)
         {
             sequenceBase = sequence;
@@ -1552,19 +1584,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             if (CacheRefresh)
                 Recalculate();
+            MaxWidth = MaxHeight = new StyleDimension(223214514, 0);
+
             base.Update(gameTime);
         }
         public override void OnInitialize()
         {
             //this.IgnoresMouseInteraction = true;
-            Vector2 size = this.SequenceSize();
+            Vector2 size = this.SequenceSize(true);
             panel = new UIPanel();
             panel.SetSize(size);
-            float offset = SequenceConfig.Instance.Step.X * .5f;
-            if (!startSequence)
-            {
-                offset += 16;
-            }
+            float offset = SequenceConfig.Instance.Step.X * .5f + 16;
+            //if (!startSequence)
+            //{
+            //    offset += 16;
+            //}
             //startSequence = false;
             foreach (var g in groupBoxes)
             {
@@ -1581,14 +1615,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             var dimension = GetDimensions();
             Vector2 pos = dimension.Position() + new Vector2(0, dimension.Height * .5f + offY);
-            Vector2 startP = pos + new Vector2(SequenceConfig.Instance.Step.X * .25f + (startSequence ? 0 : 16), 0);
-            spriteBatch.DrawLine(pos, startP, Color.White);
+            Vector2 startP = pos + new Vector2(SequenceConfig.Instance.Step.X * .25f + 16 - 1, 0);//(startSequence ? 0 : 16)
+            spriteBatch.DrawLine(pos - Vector2.UnitX, startP, Color.White);
             int counter = 0;
             foreach (var g in groupBoxes)
             {
                 counter++;
                 startP += new Vector2(SequenceConfig.Instance.Step.X * .5f + g.GetDimensions().Width, 0);
-                Vector2 endP = startP + new Vector2(SequenceConfig.Instance.Step.X * (counter == groupBoxes.Count ? 0.25f : 0.5f), 0);
+                Vector2 endP = startP + new Vector2(SequenceConfig.Instance.Step.X * 0.5f, 0);
+                if (counter == groupBoxes.Count)
+                    endP = pos + new Vector2(dimension.Width - 1, 0);
                 spriteBatch.DrawLine(startP, endP, Color.White);
                 startP = endP;
             }
@@ -1606,7 +1642,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 Vector2 delta;
                 var wraper = wrapBox.wraper;
-                var desc = wraper.condition.Description.Value;
+                var desc = wraper.Condition.Description.Value;
                 if (wraper.IsSequence && wrapBox.sequenceBox.Expand && wraper.SequenceInfo.FileName == SequenceBase.SequenceDefaultName)
                 {
                     delta = SequenceSize(wrapBox.sequenceBox);
@@ -1667,13 +1703,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             return curr;
         }
-        public static Vector2 SequenceSize(this SequenceBox sequencebox)
+        public static Vector2 SequenceSize(this SequenceBox sequencebox, bool start = false)
         {
+
             Vector2 curr = sequencebox.GetSize();
             if (curr == default || sequencebox.CacheRefresh)
             {
                 sequencebox.CacheRefresh = false;
-                Vector2 result = default;
+                Vector2 result = new Vector2(start ? 32 : 0, 0);//sequencebox.startSequence // SequenceConfig.Instance.Step.X * .5f
                 foreach (var group in sequencebox.groupBoxes)
                 {
                     Vector2 delta = GroupSize(group);

@@ -58,13 +58,13 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
         }
         public override bool? UseItem(Player player)
         {
-            if (player.itemAnimation == 1)
-            {
-                FileStream fileStream = new FileStream("C:/图片测试_LogSpiralLibrary/存下图图.png", FileMode.OpenOrCreate);
-                FractalSpawnSystem.render.SaveAsPng(fileStream, 1000, 1000);
-                fileStream.Dispose();
-                Main.NewText("存图");
-            }
+            //if (player.itemAnimation == 1)
+            //{
+            //    FileStream fileStream = new FileStream("C:/图片测试_LogSpiralLibrary/存下图图.png", FileMode.OpenOrCreate);
+            //    FractalSpawnSystem.render.SaveAsPng(fileStream, 1000, 1000);
+            //    fileStream.Dispose();
+            //    Main.NewText("存图");
+            //}
             //Main.NewText(player.itemAnimation);
             return base.UseItem(player);
         }

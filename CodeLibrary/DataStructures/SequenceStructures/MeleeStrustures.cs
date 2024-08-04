@@ -767,13 +767,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public int rangeOffsetMax;
         public override void LoadAttribute(XmlReader xmlReader)
         {
-            base.LoadAttribute(xmlReader);
+            givenCycle = int.Parse(xmlReader["givenCycle"]);
+            ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
             rangeOffsetMin = int.Parse(xmlReader["rangeOffsetMin"]);
             rangeOffsetMax = int.Parse(xmlReader["rangeOffsetMax"]);
         }
         public override void SaveAttribute(XmlWriter xmlWriter)
         {
-            base.SaveAttribute(xmlWriter);
+            xmlWriter.WriteAttributeString("givenCycle", givenCycle.ToString());
+            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
             xmlWriter.WriteAttributeString("rangeOffsetMin", rangeOffsetMin.ToString());
             xmlWriter.WriteAttributeString("rangeOffsetMax", rangeOffsetMax.ToString());
 

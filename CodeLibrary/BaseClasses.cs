@@ -1,9 +1,11 @@
 ﻿//using CoolerItemVisualEffect;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.ForFun.TestBlade3;
 using Newtonsoft.Json;
 using ReLogic.Content;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Terraria.Audio;
@@ -1086,6 +1088,13 @@ namespace LogSpiralLibrary.CodeLibrary
             }
         }
     }
+    /// <summary>
+    /// 武器手持弹幕对应的基类
+    /// 以下是需要经常重写的属性
+    /// Charged
+    /// FrameMax
+    /// Factor
+    /// </summary>
     public abstract class HandMeleeProj : ModProjectile, IHammerProj
     {
         public virtual Vector2 scale => new Vector2(1);
@@ -1331,16 +1340,31 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null);
         //public abstract void SetUpSequence(MeleeSequence meleeSequence);
-        public virtual void SetUpSequence(MeleeSequence meleeSequence) 
+        public virtual void SetUpSequence(MeleeSequence meleeSequence)
         {
-            try
-            {
-                MeleeSequence.Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{Mod.Name}/{Name}.xml", meleeSequence);
-            }
-            catch 
+            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{Mod.Name}/{Name}.xml";
+            if (File.Exists(path))
+                MeleeSequence.Load(path, meleeSequence);
+            else
             {
                 meleeSequence.Add(new SwooshInfo());
+                meleeSequence.mod = Mod;
+                meleeSequence.sequenceName = Name;
+                SequenceSystem.sequenceInfos[meleeSequence.KeyName] =
+                    new SequenceBasicInfo()
+                    {
+                        AuthorName = "LSL",
+                        Description = "Auto Spawn By LogSpiralLibrary.",
+                        FileName = Name,
+                        DisplayName = Name,
+                        ModDefinition = new ModDefinition(Mod.Name),
+                        createDate = DateTime.Now,
+                        lastModifyDate = DateTime.Now,
+                        Finished = true
+                    };
+                meleeSequence.Save();
             }
+            SequenceCollectionManager<MeleeAction>.sequences[meleeSequence.KeyName] = meleeSequence;
         }
         MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
@@ -1356,16 +1380,15 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue(Name, out var value))
+            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue(FullName, out var value) && value is MeleeSequence sequence)
             {
-                meleeSequence = value as MeleeSequence;
+                meleeSequence = sequence;
             }
-            else 
+            else
             {
                 //meleeSequence.sequenceName = Name;
                 //meleeSequence.mod = Mod;
                 SetUpSequence(meleeSequence);
-                SequenceCollectionManager<MeleeAction>.sequences[meleeSequence.KeyName] = meleeSequence;
             }
 
             base.SetDefaults();
@@ -1612,13 +1635,6 @@ namespace LogSpiralLibrary.CodeLibrary
             throw new NotImplementedException();
         }
     }*/
-    /// <summary>
-    /// 武器手持弹幕对应的基类
-    /// 以下是需要经常重写的属性
-    /// Charged
-    /// FrameMax
-    /// Factor
-    /// </summary>
 
     public abstract class GlowItem : ModItem
     {

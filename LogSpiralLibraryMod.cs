@@ -20,6 +20,7 @@ using System.Linq;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using System.IO;
 using ReLogic.Graphics;
+using Terraria.ModLoader.Core;
 
 namespace LogSpiralLibrary
 {
@@ -115,7 +116,6 @@ namespace LogSpiralLibrary
                 render = value;
             }
         }
-
         private RenderTarget2D render;
         public RenderTarget2D Render_Swap
         {
@@ -125,8 +125,20 @@ namespace LogSpiralLibrary
                 render_Swap = value;
             }
         }
-
         private RenderTarget2D render_Swap;
+
+        /// <summary>
+        /// 处理Bloom效果专用的小RenderTarget2D
+        /// </summary>
+        private RenderTarget2D Render_Bloom
+        {
+            get => render_Bloom ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            set
+            {
+                render_Bloom = value;
+            }
+        }
+        private RenderTarget2D render_Bloom;
         private void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
         public void CreateRender()
         {
@@ -134,6 +146,8 @@ namespace LogSpiralLibrary
             Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
             if (Render_Swap != null) Render_Swap.Dispose();
             Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            if (render_Bloom != null) Render_Bloom.Dispose();
+            Render_Bloom = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
         }
         #endregion
         //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
@@ -293,8 +307,8 @@ namespace LogSpiralLibrary
 
                 }
                 if (DateTime.Now.Millisecond < 100)
-                //Main.NewText((DateTime.Now.Second, second.ToString("0.00")));
-                musicBuffer = newbuffer;
+                    //Main.NewText((DateTime.Now.Second, second.ToString("0.00")));
+                    musicBuffer = newbuffer;
                 self._soundEffectInstance.SubmitBuffer(newbuffer);
             }
         }
@@ -443,6 +457,7 @@ namespace LogSpiralLibrary
     {
         public override void OnEnterWorld()
         {
+            ModDefinitionElement.locals = ModOrganizer.FindAllMods();
             base.OnEnterWorld();
         }
         public float strengthOfShake;

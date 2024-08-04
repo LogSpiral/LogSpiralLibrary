@@ -35,6 +35,11 @@ Items: {
 			由杜格Doggo提供贴图(瞬移的咒法刺刀)！
 			'''
 	}
+
+	TestBlade3V2: {
+		// DisplayName: Test Blade3 V2
+		// Tooltip: ""
+	}
 }
 
 MeleeAction: {
@@ -96,6 +101,13 @@ Configs: {
 		}
 	}
 
+	WraperBase: {
+		conditionDefinition: {
+			Label: 执行条件
+			Tooltip: _
+		}
+	}
+
 	ActionModifyData: {
 		sizeScaler: {
 			Label: 大小系数
@@ -152,6 +164,11 @@ Configs: {
 		ModName: {
 			Label: 所属模组
 			Tooltip: 下次我会把填空题改成选择题的
+		}
+
+		ModDefinition: {
+			Label: 所属模组
+			Tooltip: 下次我会要求必须依赖于LSL的(
 		}
 
 		createDate: {
@@ -236,15 +253,18 @@ Projectiles: {
 	// TestBladeProj.DisplayName: Test Blade Proj
 	// TestBlade2Proj.DisplayName: Test Blade2 Proj
 	// TestBlade3Proj.DisplayName: Test Blade3 Proj
+	// TestBlade3ProjV2.DisplayName: Test Blade3 Proj V2
 }
 
-// Keybinds.展示序列列表.DisplayName: 展示序列列表
+Keybinds.ShowSequenceModifier.DisplayName: 打开序列编辑器
 
 Condition: {
 	MouseLeft: 左键
 	MouseRight: 右键
 	FrontThreat: 正面胁迫!!
 	SurroundThreat: 四面楚歌!!
+	Always: Always
+	// None: Mods.LogSpiralLibrary.Condition.None
 }
 
 // NPCs.AVictim.DisplayName: A Victim

@@ -226,7 +226,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
         }
-        public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true,!distortScaler.Equals(1.0f)), 0, VertexInfos.Length - 2);
+        public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true, !distortScaler.Equals(1.0f)), 0, VertexInfos.Length - 2);
         /// <summary>
         /// 单个绘制
         /// </summary>
@@ -237,9 +237,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //{
             //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, -Main.screenPosition);
             //}
-            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
-            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(800), new Rectangle(0, 0, 1, 1), Color.White, 0, new Vector2(.5f), 1f, 0, 0);
 
+            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
+            //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(800), new Rectangle(0, 0, 1, 1), Color.White, 0, new Vector2(.5f), 4f, 0, 0);
+            //return;
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
             Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
             Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
@@ -306,7 +307,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
             effect.Parameters["heatRotation"].SetValue(Matrix.Identity);
             effect.Parameters["lightShift"].SetValue(0f);
-            effect.Parameters["distortScaler"].SetValue(1f); 
+            effect.Parameters["distortScaler"].SetValue(1f);
             effect.Parameters["alphaFactor"].SetValue(2f);
             effect.Parameters["heatMapAlpha"].SetValue(true);
             effect.Parameters["stab"].SetValue(false);
@@ -712,7 +713,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         {
             ShaderSwooshUL.Parameters["distortScaler"].SetValue(1.5f);
             graphicsDevice.SetRenderTarget(renderAirDistort);
-            graphicsDevice.Clear(new Color(.5f,.5f,.5f));
+            graphicsDevice.Clear(new Color(.5f, .5f, .5f));
         }
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -773,13 +774,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.Clear(Color.Transparent);
         }
 
-        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-            graphicsDevice.SetRenderTarget(renderAirDistort);
+            graphicsDevice.SetRenderTarget(renderSwap);
             graphicsDevice.Clear(Color.Transparent);
             Main.graphics.GraphicsDevice.Textures[1] = fillTex;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
@@ -800,12 +801,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
+            spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
 
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-            spriteBatch.Draw(renderAirDistort, Vector2.Zero, Color.White);
+            spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
 
             spriteBatch.End();
 
@@ -857,49 +858,71 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
 
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
+            //SamplerState samplerState = ((int)LogSpiralLibraryMod.ModTime / 60 % 3) switch { 0 => SamplerState.PointClamp, 1 => SamplerState.LinearClamp, 2 or _ => SamplerState.AnisotropicClamp };
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+            RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2() / 4f);
             RenderEffect.Parameters["threshold"].SetValue(threshold);
             RenderEffect.Parameters["range"].SetValue(range);
             RenderEffect.Parameters["intensity"].SetValue(intensity);
-            RenderEffect.Parameters["uBloomAdditive"].SetValue(additive);
+            RenderEffect.Parameters["uBloomAdditive"].SetValue(true);
+            RenderTarget2D renderTiny = LogSpiralLibraryMod.Instance.Render_Tiny;
+            RenderTarget2D renderTinySwap = LogSpiralLibraryMod.Instance.Render_Tiny_Swap;
 
             for (int n = 0; n < times - 1; n++)
             {
-                graphicsDevice.SetRenderTarget(renderSwap);
+                //int k = 0;
+                //while (File.Exists($"D:/图片测试/图_Orig_{k}.png")) k++;
+                //using FileStream fileStream = new FileStream($"D:/图片测试/图_Orig_{k}.png", FileMode.Create);
+                //using FileStream fileStreamTiny = new FileStream($"D:/图片测试/图_Tiny_{k}.png", FileMode.Create);
+                //render.SaveAsPng(fileStream, render.Width, render.Height);
+                graphicsDevice.SetRenderTarget(renderTinySwap);
                 RenderEffect.Parameters["tex0"].SetValue(render);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[3].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
-                graphicsDevice.SetRenderTarget(render);
-                RenderEffect.Parameters["tex0"].SetValue(renderSwap);
+                //spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                //renderTinySwap.SaveAsPng(fileStreamTiny, renderTinySwap.Width, renderTinySwap.Height);
+                graphicsDevice.SetRenderTarget(renderTiny);
+                RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[2].Apply();
-                spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
+                spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, 4f, 0, 0);
             }
-            graphicsDevice.SetRenderTarget(renderSwap);
+            graphicsDevice.SetRenderTarget(renderTinySwap);
 
             graphicsDevice.Clear(Color.Transparent);
-            RenderEffect.Parameters["tex0"].SetValue(render);
+
+            RenderEffect.Parameters["tex0"].SetValue(times > 1 ? renderTiny : render);
 
             RenderEffect.CurrentTechnique.Passes[3].Apply();
-            spriteBatch.Draw(render, Vector2.Zero, Color.White);
+            if (times > 1)
+                spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, 4f, 0, 0);
+            else
+                spriteBatch.Draw(render, Vector2.Zero, Color.White);
 
-            graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+            graphicsDevice.SetRenderTarget(renderTiny);
             graphicsDevice.Clear(Color.Transparent);
-            RenderEffect.Parameters["tex0"].SetValue(renderSwap);
+            RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
 
             RenderEffect.CurrentTechnique.Passes[2].Apply();
-            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, 4f, 0, 0);
+
+
             spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, 0.25f, 0, 0);
+            spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White with { A = 0 });  //(byte)(additive ? 0 : 255)
+
+
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 0.25f, 0, 0);
 
-            Main.instance.GraphicsDevice.BlendState = AllOne;
-            spriteBatch.Draw(render, Vector2.Zero, Color.White);
-            Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            //Main.instance.GraphicsDevice.BlendState = AllOne;
+            //spriteBatch.Draw(render, default, null, Color.White with { A = 0}, 0, default, 0.25f, 0, 0);
+            //Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             spriteBatch.End();
 
         }
@@ -1033,7 +1056,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 for (int j = 0; j < countY; j++)
                 {
                     if (j == countY - 1) height = (destination.Height - j * sizeY) / sizeY * height;
-                    drawDatas.Add(new (texture, destination.TopLeft() + new Vector2(i * sizeX, j * sizeY), new Rectangle(frame.X, frame.Y, (int)width, (int)height), color, 0, default, new Vector2(sizeX, sizeY) / frame.Size() * 1.025f, 0, 0));
+                    drawDatas.Add(new(texture, destination.TopLeft() + new Vector2(i * sizeX, j * sizeY), new Rectangle(frame.X, frame.Y, (int)width, (int)height), color, 0, default, new Vector2(sizeX, sizeY) / frame.Size() * 1.025f, 0, 0));
                 }
             }
         }
@@ -1074,7 +1097,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 for (int j = 0; j < countY; j++)
                 {
                     if (j == countY - 1) height = (rectangle.Height - j * size.Y) / size.Y * 40;
-                    drawDatas.Add(new (texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0, 0));
+                    drawDatas.Add(new(texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0, 0));
                 }
             }
         }

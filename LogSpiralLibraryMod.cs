@@ -130,15 +130,28 @@ namespace LogSpiralLibrary
         /// <summary>
         /// 处理Bloom效果专用的小RenderTarget2D
         /// </summary>
-        private RenderTarget2D Render_Bloom
+        public RenderTarget2D Render_Tiny
         {
-            get => render_Bloom ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            get => render_Tiny ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
             set
             {
-                render_Bloom = value;
+                render_Tiny = value;
             }
         }
-        private RenderTarget2D render_Bloom;
+        private RenderTarget2D render_Tiny;
+
+        /// <summary>
+        /// 处理Bloom效果专用的小RenderTarget2D 2号
+        /// </summary>
+        public RenderTarget2D Render_Tiny_Swap
+        {
+            get => render_Tiny_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            set
+            {
+                render_Tiny_Swap = value;
+            }
+        }
+        private RenderTarget2D render_Tiny_Swap;
         private void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
         public void CreateRender()
         {
@@ -146,8 +159,10 @@ namespace LogSpiralLibrary
             Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
             if (Render_Swap != null) Render_Swap.Dispose();
             Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
-            if (render_Bloom != null) Render_Bloom.Dispose();
-            Render_Bloom = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            if (Render_Tiny != null) Render_Tiny.Dispose();
+            Render_Tiny = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            if (Render_Tiny_Swap != null) Render_Tiny_Swap.Dispose();
+            Render_Tiny_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
         }
         #endregion
         //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");

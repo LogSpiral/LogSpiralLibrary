@@ -601,6 +601,89 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Increment = 0.01f;
         }
     }
+    public class SeqEnumElement : SeqRangeElement
+    {
+        private Func<object> _getValue;
+        private Func<object> _getValueString;
+        private Func<int> _getIndex;
+        private Action<int> _setValue;
+        private int max;
+        private string[] valueStrings;
+
+        public override int NumberTicks => valueStrings.Length;
+        public override float TickIncrement => 1f / (valueStrings.Length - 1);
+
+        protected override float Proportion
+        {
+            get => _getIndex() / (float)(max - 1);
+            set => _setValue((int)(Math.Round(value * (max - 1))));
+        }
+
+        public override void OnBind()
+        {
+            base.OnBind();
+            valueStrings = Enum.GetNames(MemberInfo.Type);
+
+            // Retrieve individual Enum member labels
+            for (int i = 0; i < valueStrings.Length; i++)
+            {
+                var enumFieldFieldInfo = MemberInfo.Type.GetField(valueStrings[i]);
+                if (enumFieldFieldInfo != null)
+                {
+                    string name = ConfigManager.GetLocalizedLabel(new PropertyFieldWrapper(enumFieldFieldInfo));
+                    valueStrings[i] = name;
+                }
+            }
+
+            max = valueStrings.Length;
+
+            //valueEnums = Enum.GetValues(variable.Type);
+
+            TextDisplayFunction = () => MemberInfo.Name + ": " + _getValueString();
+            _getValue = () => DefaultGetValue();
+            _getValueString = () => DefaultGetStringValue();
+            _getIndex = () => DefaultGetIndex();
+            _setValue = (int value) => DefaultSetValue(value);
+
+            /*
+            if (array != null) {
+                _GetValue = () => array[index];
+                _SetValue = (int valueIndex) => { array[index] = (Enum)Enum.GetValues(memberInfo.Type).GetValue(valueIndex); Interface.modConfig.SetPendingChanges(); };
+                _TextDisplayFunction = () => index + 1 + ": " + _GetValueString();
+            }
+            */
+
+            if (Label != null)
+            {
+                TextDisplayFunction = () => Label + ": " + _getValueString();
+            }
+        }
+
+        private void DefaultSetValue(int index)
+        {
+            if (!MemberInfo.CanWrite)
+                return;
+
+            MemberInfo.SetValue(Item, Enum.GetValues(MemberInfo.Type).GetValue(index));
+            SequenceSystem.SetSequenceUIPending();
+            //Interface.modConfig.SetPendingChanges();
+        }
+
+        private object DefaultGetValue()
+        {
+            return MemberInfo.GetValue(Item);
+        }
+
+        private int DefaultGetIndex()
+        {
+            return Array.IndexOf(Enum.GetValues(MemberInfo.Type), _getValue());
+        }
+
+        private string DefaultGetStringValue()
+        {
+            return valueStrings[_getIndex()];
+        }
+    }
     public class ActionModifyDataElement : SeqConfigElement
     {
         class DataObject
@@ -616,6 +699,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             const string key = "$Mods.LogSpiralLibrary.Configs.ActionModifyData.";
             [LabelKey($"{key}sizeScaler.Label")]
             [CustomModConfigItem(typeof(SeqFloatElement))]
+            [Range(0.01f,3f)]
+            [Increment(0.1f)]
             public float actionOffsetSize
             {
                 get => current.actionOffsetSize;
@@ -629,6 +714,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("时长系数")]
             [LabelKey($"{key}timeScaler.Label")]
             [CustomModConfigItem(typeof(SeqFloatElement))]
+            [Range(0.01f, 4f)]
+            [Increment(0.05f)]
             public float actionOffsetTimeScaler
             {
                 get => current.actionOffsetTimeScaler;
@@ -642,6 +729,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("击退系数")]
             [LabelKey($"{key}knockBack.Label")]
             [CustomModConfigItem(typeof(SeqFloatElement))]
+            [Range(0.01f, 10f)]
+            [Increment(0.05f)]
             public float actionOffsetKnockBack
             {
                 get => current.actionOffsetKnockBack;
@@ -654,6 +743,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("伤害系数")]
             [LabelKey($"{key}damage.Label")]
             [CustomModConfigItem(typeof(SeqFloatElement))]
+            [Range(0.01f, 10f)]
+            [Increment(0.05f)]
             public float actionOffsetDamage
             {
                 get => current.actionOffsetDamage;
@@ -666,6 +757,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("暴击率增益")]
             [LabelKey($"{key}critAdd.Label")]
             [CustomModConfigItem(typeof(SeqIntInputElement))]
+            [Range(1, 100)]
+            [Increment(1)]
             public int actionOffsetCritAdder
             {
                 get => current.actionOffsetCritAdder;
@@ -678,6 +771,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("暴击率系数")]
             [LabelKey($"{key}critMul.Label")]
             [CustomModConfigItem(typeof(SeqFloatElement))]
+            [Range(0.01f, 10f)]
+            [Increment(0.05f)]
             public float actionOffsetCritMultiplyer
             {
                 get => current.actionOffsetCritMultiplyer;

@@ -41,11 +41,12 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             vertexStandard = new VertexDrawInfoStandardInfo() with 
             {
                 active = true,
-                renderInfos = [new AirDistortEffectInfo(3),default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)],
+                renderInfos = [[new AirDistortEffectInfo(3)],[default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)]],
 
                 scaler = 120,
                 timeLeft = 15
-            }
+            },
+            itemType = ModContent.ItemType<TestBlade>()
         };
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {

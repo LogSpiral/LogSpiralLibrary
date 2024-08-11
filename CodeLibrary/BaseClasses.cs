@@ -1084,7 +1084,7 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
                 var u = UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, 0, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
-                u.ModityAllRenderInfo(useDistort, useMask, useBloom);
+                u.ModityAllRenderInfo([useDistort], [useMask, useBloom]);
             }
         }
     }
@@ -1338,19 +1338,34 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get => meleeSequence;
         }
-        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null);
+        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+        /// <summary>
+        /// 标记为完工，设置为true后将读取与文件同目录下同类名的xml文件(参考Texture默认读取
+        /// </summary>
+        public virtual bool LabeledAsCompleted => false;
+        public static MeleeSequence LocalMeleeSequence;
         //public abstract void SetUpSequence(MeleeSequence meleeSequence);
-        public virtual void SetUpSequence(MeleeSequence meleeSequence)
+        public virtual void SetUpSequence(MeleeSequence sequence)
         {
+            if (LabeledAsCompleted)
+            {
+                if (LocalMeleeSequence == null)
+                {
+                    LocalMeleeSequence = new MeleeSequence();
+                    MeleeSequence.Load((GetType().Namespace.Replace(Mod.Name + ".", "") + "." + Name).Replace('.', '/') + ".xml", Mod, LocalMeleeSequence);
+                }
+                meleeSequence = LocalMeleeSequence;
+                return;
+            }
             var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{Mod.Name}/{Name}.xml";
             if (File.Exists(path))
-                MeleeSequence.Load(path, meleeSequence);
+                MeleeSequence.Load(path, sequence);
             else
             {
-                meleeSequence.Add(new SwooshInfo());
-                meleeSequence.mod = Mod;
-                meleeSequence.sequenceName = Name;
-                SequenceSystem.sequenceInfos[meleeSequence.KeyName] =
+                sequence.Add(new SwooshInfo());
+                sequence.mod = Mod;
+                sequence.sequenceName = Name;
+                SequenceSystem.sequenceInfos[sequence.KeyName] =
                     new SequenceBasicInfo()
                     {
                         AuthorName = "LSL",
@@ -1362,11 +1377,11 @@ namespace LogSpiralLibrary.CodeLibrary
                         lastModifyDate = DateTime.Now,
                         Finished = true
                     };
-                meleeSequence.Save();
+                sequence.Save();
             }
-            SequenceCollectionManager<MeleeAction>.sequences[meleeSequence.KeyName] = meleeSequence;
+            SequenceCollectionManager<MeleeAction>.sequences[sequence.KeyName] = sequence;
         }
-        MeleeSequence meleeSequence = new MeleeSequence();
+        protected MeleeSequence meleeSequence = new MeleeSequence();
         public IMeleeAttackData currentData => meleeSequence.currentData;
         public override void SetDefaults()
         {
@@ -1411,6 +1426,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void AI()
         {
+            player.maxFallSpeed = 114514;
             player.heldProj = Projectile.whoAmI;
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
             Projectile.direction = player.direction;
@@ -1444,36 +1460,18 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            //SpriteBatch spriteBatch = Main.spriteBatch;
-            //spriteBatch.Draw(TextureAssets.Projectile[Projectile.type].Value,
-            //    player.Center - Main.screenPosition + currentData.offsetCenter,
-            //    null, Color.White, currentData.offsetRotation + MathHelper.PiOver4,
-            //    currentData.offsetOrigin * TextureAssets.Projectile[Type].Size(), currentData.ModifyData.actionOffsetSize, 0, 0);
             if (currentData != null)
             {
                 meleeSequence.active = true;
                 meleeSequence.currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
             }
             var spb = Main.spriteBatch;
-            //spb.End();
-            //spb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone);
-
-            //spb.DrawMeleeSequence(meleeSequence, new Vector2(400, 400)/*, 0, out _*/);
-
-            //spb.End();
-            //spb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.Transform);
-
-
-            //Main.spriteBatch.DrawString(FontAssets.MouseText.Value, currentData.GetType().Name, player.Center - Main.screenPosition + new Vector2(0, -64), Color.Cyan);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
             if (currentData == null || !currentData.Attacktive) return false;
             return meleeSequence.currentData.Collide(targetHitbox);
-            //float point = 0f;
-            //return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), Projectile.Center,
-            //    Projectile.Center + currentData.offsetRotation.ToRotationVector2() * currentData.ModifyData.actionOffsetSize * TextureAssets.Projectile[Projectile.type].Size().Length(), 48f, ref point);
         }
         public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
@@ -1506,9 +1504,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void OnKill(int timeLeft)
         {
-            meleeSequence.counter = 0;
-            meleeSequence.currentWrapper = null;
-            meleeSequence.currentData = null;
+            meleeSequence.ResetCounter();
             base.OnKill(timeLeft);
         }
     }

@@ -2038,42 +2038,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public static T GetVertexDrawInfoInstance<T>() where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[typeof(T)] as T;
         public static T GetVertexDrawInfoInstance<T>(this T instance) where T : VertexDrawInfo => LogSpiralLibrarySystem.vertexDrawInfoInstance[instance.GetType()] as T;
 
-        public static void DrawVertexInfo(this IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-        {
-            if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
-            var newInfos = from info in infos where info != null && info.Active select info;
-            if (!newInfos.Any()) return;
-            var newRenderInfos = from info in instance.RenderDrawInfos where info.Active select info;
-            if (!newRenderInfos.Any() || !CanUseRender)
-            {
-                instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                foreach (var info in newInfos) info.Draw(spriteBatch);
-                instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-            }
-            else
-            {
-                bool first = true;
-                foreach (var renderInfo in newRenderInfos)
-                {
-                    //Main.NewText((renderInfo.GetType().Name,renderInfo.ReDraw));
-                    if (renderInfo.StandAlone || first)
-                    {
 
-                        instance.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                        if (graphicsDevice != null)
-                            renderInfo.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                        foreach (var info in newInfos) info.Draw(spriteBatch);
-                        instance.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-                    }
-
-                    if (graphicsDevice != null)
-                        renderInfo.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-
-                    if (!renderInfo.StandAlone)
-                        first = false;
-                }
-            }
-        }
         public static void UpdateVertexInfo(this VertexDrawInfo[] infos)
         {
             foreach (var info in infos)

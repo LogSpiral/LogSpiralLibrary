@@ -12,6 +12,7 @@ using Terraria.Localization;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.WorldBuilding;
+using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -506,7 +507,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return;
             }
             Vector2 drawCen = offsetCenter + Owner.Center;
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, flip);
+            if (Owner is Player plr)
+            {
+                Vector2 adder = new Vector2(-2 * plr.direction, 0);
+                drawCen += adder;
+                spriteBatch.Draw(TextureAssets.MagicPixel.Value, Owner.Center + adder - Main.screenPosition, new Rectangle(0, 0, 1, 1), Main.DiscoColor, 0, new Vector2(.5f), 4f, 0, 0);
+            }
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, !flip);
             //bool flag = LogSpiralLibraryMod.ModTime / 60 % 2 < 1;
             //Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemEffectEX : LogSpiralLibraryMod.ItemEffect;
             //if (flag)
@@ -551,6 +558,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
             #endregion
             targetedVector = c[4].Position - drawCen;
+            if (standardInfo.vertexStandard.scaler > 0) 
+            {
+                targetedVector.Normalize();
+                targetedVector *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
+            }
+
             #region 显示弹幕碰撞区域
             //spriteBatch.DrawLine(Projectile.Center, targetedVector, Color.Red, 4, true, -Main.screenPosition);
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, Projectile.Center - Main.screenPosition, new Rectangle(0, 0, 1, 1), Color.Cyan, 0, new Vector2(.5f), 8, 0, 0);
@@ -585,52 +598,72 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public class SwooshInfo : MeleeAction
     {
 
+        public enum SwooshMode
+        {
+            Chop,
+            Slash,
+            Storm
+        }
+
+        public override void LoadAttribute(XmlReader xmlReader)
+        {
+            mode = (SwooshMode)int.Parse(xmlReader["mode"] ?? "0");
+            base.LoadAttribute(xmlReader);
+        }
+        public override void SaveAttribute(XmlWriter xmlWriter)
+        {
+            xmlWriter.WriteAttributeString("mode", ((int)mode).ToString());
+            base.SaveAttribute(xmlWriter);
+        }
+
         public override float Factor => base.Factor;
 
+        //public virtual bool useTransition => false;
+
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqEnumElement))]
+        public SwooshMode mode;
+        int cutTime => 8;
+        float k => 0.2f;
         public override float offsetRotation
         {
             get
             {
                 var fac = Factor;
-                int TimeToCutThem = 8;
-                if (timerMax > TimeToCutThem)
+                if (timerMax > cutTime)
                 {
-                    float k = TimeToCutThem;
                     float max = timerMax;
                     float t = timer;
-                    float v = 0.1f;
-                    float tier2 = (max - k) * v;
-                    float tier1 = MathHelper.Lerp(max, k, 1 - v);
-                    if (false)//(negativeDir == oldNegativeDir && swingCount > 0) && player.itemAnimation > tier1
-                    {
-                        fac = MathHelper.SmoothStep(160 / 99f, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
-                    }
+                    float tier2 = (max - cutTime) * k;
+                    float tier1 = tier2 + cutTime;
+                    if (t > tier1)
+                        fac = MathHelper.SmoothStep(mode == SwooshMode.Chop ? 160 / 99f : 1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
+                    else if (t < tier2)
+                        fac = 0;
                     else
-                    {
-                        if (t > tier1)
-                            fac = MathHelper.SmoothStep(1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
-                        else if (t < tier2)
-                            fac = 0;
-                        else
-                            fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
-                    }
+                        fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
                 }
                 else
                 {
                     fac = MathHelper.SmoothStep(0, 1.125f, fac);
-
                 }
                 fac = flip ? 1 - fac : fac;
                 float start = -.75f;
-                if (Main.gamePaused) start += Main.rand.NextFloat(-.05f, .05f);
                 float end = .625f;
                 return MathHelper.Lerp(end, start, fac) * MathHelper.Pi;
             }
         }
-
         public override float offsetSize => base.offsetSize;
 
-        public override bool Attacktive => timer < 8;
+        public override bool Attacktive 
+        {
+            get 
+            {
+                float t = (timerMax - cutTime) * k;
+                return timer > t && timer < t + cutTime;
+            }
+        }
         public override void OnStartAttack()
         {
             SoundEngine.PlaySound(MySoundID.Scythe);
@@ -640,17 +673,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             base.OnStartSingle();
             Rotation += Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6);
-            flip ^= true;
+            if (mode == SwooshMode.Slash)
+                flip ^= true;
             KValue = Main.rand.NextFloat(1, 2);
         }
         public override void OnDeactive()
         {
-            flip ^= true;
+            if (mode == SwooshMode.Slash)
+                flip ^= true;
             base.OnDeactive();
         }
         public override void OnActive()
         {
-            flip = Main.rand.NextBool();
+            //flip = Main.rand.NextBool();
+            flip = Owner.direction == -1;
             base.OnActive();
         }
         public virtual UltraSwoosh NewSwoosh()
@@ -658,7 +694,29 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var verS = standardInfo.vertexStandard;
             if (verS.active)
             {
-                var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
+                UltraSwoosh u = null;
+                var range = mode switch
+                {
+                    SwooshMode.Chop => (.875f, -1f),
+                    SwooshMode.Slash => (.625f, -.75f),
+                    SwooshMode.Storm or _ => (.625f, -.75f)
+                };
+                bool f = mode switch
+                {
+                    SwooshMode.Chop => !flip,
+                    _ => flip
+                };
+                float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
+                if (standardInfo.itemType == ItemID.TrueExcalibur)
+                {
+                    u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), colorVec: verS.colorVec);
+                    UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
+
+                }
+                else
+                {
+                    u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
+                }
                 if (verS.renderInfos == null)
                     u.ResetAllRenderInfo();
                 else
@@ -697,8 +755,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var verS = standardInfo.vertexStandard;
             if (verS.active)
             {
-                var u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize,
+                UltraStab u = null;
+                if (standardInfo.itemType == ItemID.TrueExcalibur)
+                {
+                    float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
+                    u = UltraStab.NewUltraStab(standardInfo.standardColor, (int)(verS.timeLeft * 1.2f), size,
+                    Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                    UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
+                    Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                }
+                else
+                {
+                    u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f,
                     Owner.Center, verS.heatMap, flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                }
                 //Main.NewText(Owner.Center);
                 //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
                 if (verS.renderInfos == null)
@@ -785,6 +855,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public int realCycle;
         [ElementCustomData]
         [CustomModConfigItem(typeof(SeqIntInputElement))]
+        [Range(1, 10)]
         public int givenCycle;
         void ResetCycle()
         {

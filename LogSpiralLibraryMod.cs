@@ -454,7 +454,7 @@ namespace LogSpiralLibrary
             foreach (var pair in dict)
             {
                 if (pair.Value.Count > 0)
-                    pair.Value.DrawVertexInfo(pair.Key, spriteBatch, graphicsDevice, render, renderAirDistort);
+                    VertexDrawInfo.DrawVertexInfo(pair.Value, pair.Key, spriteBatch, graphicsDevice, render, renderAirDistort);
             }
         }
         public override void CommonDrawingMethods(SpriteBatch spriteBatch)
@@ -476,6 +476,22 @@ namespace LogSpiralLibrary
             base.OnEnterWorld();
         }
         public float strengthOfShake;
+        public bool ultraFallEnable;
+        public override void ResetEffects()
+        {
+            ultraFallEnable = false;
+            base.ResetEffects();
+        }
+        public override void PreUpdate()
+        {
+            if (ultraFallEnable)
+                Player.maxFallSpeed = 214514;
+            base.PreUpdate();
+        }
+        public override void PreUpdateMovement()
+        {
+            base.PreUpdateMovement();
+        }
         public override void ModifyScreenPosition()
         {
             var set = LogSpiralLibraryMiscConfig.Instance.screenShakingSetting;

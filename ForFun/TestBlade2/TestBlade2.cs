@@ -44,7 +44,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
     public class TestBlade2Proj : MeleeSequenceProj
     {
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null);
+        public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>());
 
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
@@ -67,7 +67,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             bi.ModifyData = new ActionModifyData(1, 3);
             sub.Add(bi);
             var fi = new FlailInfo();
-            fi.ModifyData = new ActionModifyData(1f,4f);
+            fi.ModifyData = new ActionModifyData(1f, 4f);
             sub.Add(fi);
             group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.TimeNight));
             #endregion
@@ -106,7 +106,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             sub.Add(new StarlightInfo());
             sub.Add(new ZenithInfo());
             var tpi = new TerraprismaInfo();
-            tpi.ModifyData = new ActionModifyData(1,10);
+            tpi.ModifyData = new ActionModifyData(1, 10);
             sub.Add(tpi);
             group.wrapers.Add(new MeleeSequence.Wraper(sub).SetCondition(Condition.InRain));
             #endregion

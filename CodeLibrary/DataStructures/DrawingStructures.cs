@@ -4,6 +4,7 @@ using static LogSpiralLibrary.LogSpiralLibraryMod;
 using LogSpiralLibrary.CodeLibrary;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
+using System.Linq;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures
 {
     /// <summary>
@@ -123,6 +124,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             /// rendertarget上现在有图了，整活开始
             /// </summary>
             void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
+
+            /// <summary>
+            /// 最后将处理结果画到屏幕上的实现程序
+            /// </summary>
+            /// <param name="spriteBatch"></param>
+            /// <param name="graphicsDevice"></param>
+            /// <param name="render"></param>
+            /// <param name="renderSwap"></param>
+            void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap);
             bool Active { get; }
             /// <summary>
             /// 是否独立绘制
@@ -131,7 +141,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             /// <br><see cref="PreDraw"/></br>
             /// <br><see cref="Draw"/></br>
             /// </summary>
-            bool StandAlone { get; }
+            //bool StandAlone { get; }
         }
         public sealed override void Register()
         {
@@ -142,16 +152,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 仅给<see  cref="LogSpiralLibrarySystem.vertexDrawInfoInstance"/>中的实例使用
         /// <br>代码的耦合度持续放飞自我</br>
         /// </summary>
-        public IRenderDrawInfo[] RenderDrawInfos = [new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo()];
-        public void ModityRenderInfo(IRenderDrawInfo newInfo, int index)
+        public IRenderDrawInfo[][] RenderDrawInfos = [[new AirDistortEffectInfo()], [new MaskEffectInfo(), new BloomEffectInfo()]];
+
+        /// <summary>
+        /// 代表元
+        /// </summary>
+        public VertexDrawInfo Representative => LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()];
+        //public void ModityRenderInfo(IRenderDrawInfo newInfo, int index)
+        //{
+        //    var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+        //    array[index] = newInfo;
+        //    OnModifyRenderInfo(array);
+        //}
+        public void ModityAllRenderInfo(params IRenderDrawInfo[][] newInfos)
         {
-            var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
-            array[index] = newInfo;
-            OnModifyRenderInfo(array);
-        }
-        public void ModityAllRenderInfo(params IRenderDrawInfo[] newInfos)
-        {
-            var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
+            var array = Representative.RenderDrawInfos;
             for (int n = 0; n < newInfos.Length; n++)
                 array[n] = newInfos[n];
             OnModifyRenderInfo(array);
@@ -161,13 +176,52 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             var array = LogSpiralLibrarySystem.vertexDrawInfoInstance[GetType()].RenderDrawInfos;
             for (int i = 0; i < array.Length; i++)
             {
-                array[i].Reset();
+                for (int j = 0; j < array[i].Length; j++)
+                    array[i][j].Reset();
             }
             OnModifyRenderInfo(array);
         }
-        public virtual void OnModifyRenderInfo(IRenderDrawInfo[] infos)
+        public virtual void OnModifyRenderInfo(IRenderDrawInfo[][] infos)
         {
 
+        }
+        public static void DrawVertexInfo(IEnumerable<VertexDrawInfo> infos, Type type, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+            if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
+            var newInfos = from info in infos where info != null && info.Active select info;
+            if (!newInfos.Any()) return;
+            var renderPipeLines = from pipeLine in instance.RenderDrawInfos select pipeLine;//where info.Active 
+            if (!renderPipeLines.Any() || !CanUseRender || graphicsDevice == null)
+            {
+                instance.PreDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                foreach (var info in newInfos) info.Draw(spriteBatch);
+                instance.PostDraw(spriteBatch, graphicsDevice, render, renderSwap);
+            }
+            else
+            {
+                foreach (var pipeLine in renderPipeLines)
+                {
+                    var realLine = from info in pipeLine where info.Active select info;
+                    if (!realLine.Any()) continue;
+                    int counter = 0;
+                    foreach (var renderEffect in realLine)
+                    {
+                        if (counter == 0)
+                        {
+                            instance.PreDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                            renderEffect.PreDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                            foreach (var info in newInfos) info.Draw(spriteBatch);
+                            instance.PostDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                        }
+                        renderEffect.PostDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                        counter++;
+                        if (counter == realLine.Count())
+                        {
+                            renderEffect.DrawToScreen(spriteBatch, graphicsDevice, render, renderSwap);
+                        }
+                    }
+                }
+            }
         }
         /// <summary>
         /// 存在时长
@@ -278,7 +332,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static Matrix uTransform => model * TransformationMatrix * projection;
     }
-
     public abstract class MeleeVertexInfo : VertexDrawInfo
     {
         public float rotation;
@@ -303,7 +356,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             effect.Parameters["uTransform"].SetValue(uTransform);
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrarySystem.ModTime * 0.03f);
             effect.Parameters["checkAir"].SetValue(false);
-            effect.Parameters["airFactor"].SetValue(1);
+            effect.Parameters["airFactor"].SetValue(2);
             //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
             effect.Parameters["heatRotation"].SetValue(Matrix.Identity);
             effect.Parameters["lightShift"].SetValue(0f);
@@ -340,13 +393,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
 
             base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
         }
-        public override void OnModifyRenderInfo(IRenderDrawInfo[] infos)
-        {
-            //dynamic mask = infos[1];
-            //dynamic bloom = infos[2];
-            //if (mask.Active) bloom.ReDraw = false;
-            base.OnModifyRenderInfo(infos);
-        }
+        //public override void OnModifyRenderInfo(IRenderDrawInfo[] infos)
+        //{
+        //    //dynamic mask = infos[1];
+        //    //dynamic bloom = infos[2];
+        //    //if (mask.Active) bloom.ReDraw = false;
+        //    base.OnModifyRenderInfo(infos);
+        //}
     }
     public class FractalStabInfo : MeleeVertexInfo
     {
@@ -542,6 +595,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //    VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
             //    VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 0.5f));
             //}
+            center += rotation.ToRotationVector2();
             for (int i = 0; i < 45; i++)
             {
                 var f = i / 44f;
@@ -664,12 +718,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 var f = i / 44f;
                 var num = 1 - factor;
                 //float theta2 = (1.8375f * MathHelper.Lerp(num, 1f, f) - 1.125f) * MathHelper.Pi;
-                var lerp = f.Lerp(num, 1);
+                var lerp = f.Lerp(num * .5f, 1);//num
                 float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
                 Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler * MathHelper.Lerp(2f, 1, f);
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
-                adder = default;
+                //adder = default;
                 var realColor = color.Invoke(f);
                 realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
                 VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec + adder, realColor, new Vector3(1 - f, 1, 1));
@@ -712,11 +766,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             ShaderSwooshUL.Parameters["distortScaler"].SetValue(1.5f);
-            graphicsDevice.SetRenderTarget(renderAirDistort);
+            graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(new Color(.5f, .5f, .5f));
         }
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
+            //因为是空气扭曲，不需要对原画布上内容进行另外调整，原有内容现搬空至DrawToScreen
+        }
+        public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个
             graphicsDevice.Clear(Color.Transparent);
@@ -724,7 +783,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
             AirDistortEffect.Parameters["strength"].SetValue(distortScaler);
             AirDistortEffect.Parameters["rotation"].SetValue(Matrix.CreateRotationZ(director));
-            AirDistortEffect.Parameters["tex0"].SetValue(renderAirDistort);
+            AirDistortEffect.Parameters["tex0"].SetValue(render);
             AirDistortEffect.Parameters["colorOffset"].SetValue(colorOffset);
             AirDistortEffect.CurrentTechnique.Passes[3].Apply();//ApplyPass
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
@@ -802,6 +861,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+
+
+
+        }
+        public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
@@ -809,8 +877,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
 
             spriteBatch.End();
-
         }
+
         public bool Active => fillTex != null;
         public MaskEffectInfo(Texture2D FillTex, Color GlowColor, float Tier1, float Tier2, Vector2 Offset, bool LightAsAlpha, bool Inverse)
         {
@@ -909,10 +977,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
 
 
             spriteBatch.End();
+
+        }
+        public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+            var renderTiny = Instance.Render_Tiny;
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, 0.25f, 0, 0);
+            //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
             spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White with { A = 0 });  //(byte)(additive ? 0 : 255)
 
 
@@ -920,12 +994,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 0.25f, 0, 0);
 
-            //Main.instance.GraphicsDevice.BlendState = AllOne;
-            //spriteBatch.Draw(render, default, null, Color.White with { A = 0}, 0, default, 0.25f, 0, 0);
-            //Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            Main.instance.GraphicsDevice.BlendState = AllOne;
+            //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
+            spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);// with { A = 0 }
+            Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             spriteBatch.End();
-
         }
+
         public bool Active => range > 0 && intensity > 0 && times > 0;
         public BloomEffectInfo(float Threshold, float Intensity, float Range, int Times, bool Additive)
         {

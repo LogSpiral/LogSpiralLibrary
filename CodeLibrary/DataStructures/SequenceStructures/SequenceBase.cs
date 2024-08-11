@@ -28,7 +28,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Texture2D heatMap;
         public int timeLeft;
         public float scaler;
-        public VertexDrawInfo.IRenderDrawInfo[] renderInfos;
+        public VertexDrawInfo.IRenderDrawInfo[][] renderInfos;
+        /// <summary>
+        /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
+        /// </summary>
         public Vector3 colorVec;
     }
     /// <summary>
@@ -58,16 +61,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// </summary>
         public Texture2D standardGlowTexture;
         public VertexDrawInfoStandardInfo vertexStandard = default;
+        public int itemType;
         public StandardInfo()
         {
         }
-        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow)
+        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow,int type)
         {
             standardRotation = rotation;
             standardOrigin = origin;
             standardTimer = timer;
             standardColor = color;
             standardGlowTexture = glow;
+            itemType = type;
         }
         //TODO 改成弹幕序列独有
     }
@@ -275,7 +280,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
             [CustomModConfigItem(typeof(ConditionDefinitionElement))]
-            public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary","Always");
+            public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
             public Condition Condition => SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
             //public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
@@ -302,7 +307,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class SequenceBase<T> : SequenceBase where T : ISequenceElement
     {
-        
+
         //public override GroupBase CreateSimpleGroup(WraperBase wraperBase)
         //{
         //    var result = new Group();
@@ -401,6 +406,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public bool active;
         public override bool Active { get => active; set => active = value; }
+        public static void Load(string pathInMod, Mod mod, SequenceBase<T> target)
+        {
+            using Stream stream = mod.GetFileStream(pathInMod);
+            using XmlReader xmlReader = XmlReader.Create(stream);
+            //stream.Close();
+            xmlReader.Read();//读取声明
+            xmlReader.Read();//读取空格
+            target.groups.Clear();
+            //var modName = path.Split('\\', '/')[^2];
+            ReadSequence(xmlReader, mod.Name, target);
+            target.mod = mod;
+        }
         public static void Load(string path, SequenceBase<T> target)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
@@ -408,7 +425,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             xmlReader.Read();//读取空格
             target.groups.Clear();
             var modName = path.Split('\\', '/')[^2];
-            ReadSequence(xmlReader,modName, target);
+            ReadSequence(xmlReader, modName, target);
             target.mod = ModLoader.GetMod(modName);
         }
         public static SequenceBase<T> Load(string path)
@@ -563,7 +580,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         xmlReader.Read();
                         if (xmlReader.Value.Contains("\n"))
                         {
-                            ReadSequence(xmlReader,ModName, out SequenceBase<T> resultSequence);
+                            ReadSequence(xmlReader, ModName, out SequenceBase<T> resultSequence);
                             result = new Wraper(resultSequence);
                         }
                         else
@@ -863,7 +880,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (!currentWrapper.finished && currentWrapper.Update(entity, projectile, standardInfo, triggered, ref currentData))//只要没结束就继续执行更新
                 goto Label;
         }
-
+        public void ResetCounter() 
+        {
+            counter = 0;
+            currentWrapper = null;
+            currentData = default;
+            foreach (var g in groups) 
+            {
+                foreach (var w in g.wrapers)
+                {
+                    if(w.IsSequence)
+                        w.sequenceInfo.ResetCounter();
+                    else
+                        w.Timer = w.TimerMax = 0;
+                }
+            }
+        }
         public override void SyncInfo(SequenceBasicInfo info)
         {
             sequenceName = info.FileName;

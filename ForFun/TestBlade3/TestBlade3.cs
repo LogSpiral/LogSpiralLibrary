@@ -44,9 +44,11 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
                 
                 scaler = 120,
                 timeLeft = 15,
-                renderInfos = [new AirDistortEffectInfo(3),default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)]
-            }
+                renderInfos = [[new AirDistortEffectInfo(3)],[default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.25f,1f,2,true)]]
+            },
+            itemType = ModContent.ItemType<TestBlade3>()
         };
+        public override bool LabeledAsCompleted => false;
         public override void SetUpSequence(MeleeSequence meleeSequence)
         {
             base.SetUpSequence(meleeSequence);
@@ -100,8 +102,11 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
                 active = true,
                 scaler = 120,
                 timeLeft = 15,
-                renderInfos = [new AirDistortEffectInfo(3), default(MaskEffectInfo), new BloomEffectInfo(0.05f, 0.5f, 1f, 2, true)]
-            }
+                heatMap = LogSpiralLibraryMod.HeatMap[5].Value,
+                colorVec = new Vector3(0,0.5f,0.5f),
+                renderInfos = [[new AirDistortEffectInfo(3)], [new MaskEffectInfo(LogSpiralLibraryMod.Misc[25].Value,Color.Purple,0.15f,0.25f,default,true,false), new BloomEffectInfo(0.75f, 0.85f, 1f, 2, true)]]
+            },
+            itemType = ModContent.ItemType<TestBlade3V2>()
         };
     }
 }   

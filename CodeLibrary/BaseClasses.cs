@@ -1329,6 +1329,13 @@ namespace LogSpiralLibrary.CodeLibrary
         {
         }
     }
+    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
+    public sealed class SequenceDelegateAttribute : Attribute
+    {
+        public SequenceDelegateAttribute()
+        {
+        }
+    }
     /// <summary>
     /// 来把基剑
     /// </summary>
@@ -1345,7 +1352,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual bool LabeledAsCompleted => false;
         public static MeleeSequence LocalMeleeSequence;
         //public abstract void SetUpSequence(MeleeSequence meleeSequence);
-        public virtual void SetUpSequence(MeleeSequence sequence)
+        public virtual void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
             if (LabeledAsCompleted)
             {
@@ -1357,7 +1364,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 meleeSequence = LocalMeleeSequence;
                 return;
             }
-            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{Mod.Name}/{Name}.xml";
+            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{modName}/{fileName}.xml";
             if (File.Exists(path))
                 MeleeSequence.Load(path, sequence);
             else
@@ -1395,7 +1402,32 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 2;
-            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue(FullName, out var value) && value is MeleeSequence sequence)
+
+            InitializeSequence(Mod.Name, Name);
+
+            base.SetDefaults();
+        }
+        public override void Load()
+        {
+            var methods = GetType().GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            foreach (var method in methods)
+            {
+                if (!Attribute.IsDefined(method, typeof(SequenceDelegateAttribute)))
+                    continue;
+                var paras = method.GetParameters();
+                if (paras.Length != 1 || !paras[0].ParameterType.IsAssignableTo(typeof(ISequenceElement)))
+                    continue;
+                SequenceSystem.elementDelegates[$"{Name}/{method.Name}"] = element =>
+                {
+                    if (element is not MeleeAction action) return;
+                    method.Invoke(null, [element]);
+                };
+            }
+            base.Load();
+        }
+        public virtual void InitializeSequence(string modName, string fileName)
+        {
+            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue($"{modName}/{fileName}", out var value) && value is MeleeSequence sequence)
             {
                 meleeSequence = sequence;
             }
@@ -1403,10 +1435,8 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 //meleeSequence.sequenceName = Name;
                 //meleeSequence.mod = Mod;
-                SetUpSequence(meleeSequence);
+                SetUpSequence(meleeSequence, modName, fileName);
             }
-
-            base.SetDefaults();
         }
         public Player player => Main.player[Projectile.owner];
         public override bool ShouldUpdatePosition()

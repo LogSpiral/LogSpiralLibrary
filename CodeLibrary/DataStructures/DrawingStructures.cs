@@ -721,7 +721,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 var lerp = f.Lerp(num * .5f, 1);//num
                 float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
-                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler * MathHelper.Lerp(2f, 1, f);
+                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;// * MathHelper.Lerp(2 - 1 / (MathF.Abs(angleRange.from - angleRange.to) + 1), 1, f)
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
                 //adder = default;
                 var realColor = color.Invoke(f);

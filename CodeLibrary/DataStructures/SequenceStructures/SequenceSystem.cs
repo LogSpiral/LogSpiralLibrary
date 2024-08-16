@@ -66,7 +66,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public static class SequenceCollectionManager<T> where T : ISequenceElement
     {
-        public static Dictionary<string, SequenceBase<T>> sequences = new Dictionary<string, SequenceBase<T>>();
+        public static Dictionary<string, SequenceBase<T>> sequences = new Dictionary<string, SequenceBase<T>>();//{ { "LogSpiralLibrary/None", new SequenceBase<T>() { od = LogSpiralLibraryMod.Instance} } };
         public static void Load()
         {
             //foreach (var type in AvailableElementBaseTypes)
@@ -102,6 +102,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             instance.sequenceUI.PendingModify = flag;
         }
         //TODO 可以给其它类型的序列用
+        public static Dictionary<string, Action<ISequenceElement>> elementDelegates = new Dictionary<string, Action<ISequenceElement>>();
         public static Dictionary<Type, Dictionary<string, SequenceBase>> sequenceBases = new();
         public static Dictionary<string, SequenceBasicInfo> sequenceInfos = new Dictionary<string, SequenceBasicInfo>();
         public SequenceUI sequenceUI;
@@ -110,15 +111,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static SequenceSystem instance;
         public static Dictionary<string, Condition> conditions = new Dictionary<string, Condition>();
         public static List<Type> AvailableElementBaseTypes = new List<Type>();
+        public const string NoneDelegateKey = $"{nameof(LogSpiralLibrary)}/None";
         public override void Load()
         {
-            instance = this;
-            sequenceUI = new SequenceUI();
-            userInterfaceSequence = new UserInterface();
-            sequenceUI.Activate();
-            userInterfaceSequence.SetState(sequenceUI);
-            ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "ShowSequenceModifier", "Y");
-            //On_UIElement.DrawSelf += On_UIElement_DrawSelf;
+            if (Main.netMode != NetmodeID.Server)
+            {
+                instance = this;
+                sequenceUI = new SequenceUI();
+                userInterfaceSequence = new UserInterface();
+                sequenceUI.Activate();
+                userInterfaceSequence.SetState(sequenceUI);
+                ShowSequenceKeybind = KeybindLoader.RegisterKeybind(Mod, "ShowSequenceModifier", "Y");
+                //On_UIElement.DrawSelf += On_UIElement_DrawSelf;
+            }
+
+            elementDelegates[NoneDelegateKey] = element => { };
+
             #region conditions的赋值
             var noneCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.None"), () => true);
             conditions.Add("None", noneCondition);
@@ -866,9 +874,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (pendingModify)
                 {
-                    WorkingPlacePanel.Append(saveButton);
-                    WorkingPlacePanel.Append(saveAsButton);
-                    WorkingPlacePanel.Append(revertButton);
+                    if (saveButton != null)
+                        WorkingPlacePanel.Append(saveButton);
+                    if (saveAsButton != null)
+
+                        WorkingPlacePanel.Append(saveAsButton);
+                    if (revertButton != null)
+                        WorkingPlacePanel.Append(revertButton);
 
                 }
                 else
@@ -1544,7 +1556,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     if (center.Y > w.GetDimensions().ToRectangle().Bottom)
                         wIndex++;
-                    else if (center.X > w.GetDimensions().ToRectangle().Top)
+                    else if (center.Y > w.GetDimensions().ToRectangle().Top)
                         inWraper = true;
                 }
                 if (inWraper)
@@ -1552,13 +1564,25 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     WraperBox wraperBox = groupBox.wraperBoxes[wIndex];
                     if (wraperBox.wraper.IsSequence)
                     {
-                        wraperBox.sequenceBox.InsertWraper(wraper, center);//递归入口
-                        Main.NewText("递归");
+                        wraperBox.sequenceBox.InsertWraper(wraper, center);
                     }
                     else
                     {
                         //出口三，和先前的元素组成新的序列
-                        Main.NewText("这里本来有个出口三，但是我还没做完((");
+                        //Main.NewText("这里本来有个出口三，但是我还没做完((");
+
+                        bool flag = center.X < wraperBox.GetDimensions().Center().X;
+
+                        var seq = (SequenceBase)Activator.CreateInstance(this.sequenceBase.GetType());
+                        var nW = (SequenceBase.WraperBase)Activator.CreateInstance(wraper.wraper.GetType(), seq);
+                        for (int n = 0; n < 2; n++)
+                        {
+                            seq.Add(flag ? wraper.wraper : wraperBox.wraper, out _);
+                            flag = !flag;
+                        }
+                        groupBox.group.Replace(wIndex, nW);
+                        groupBox.wraperBoxes[wIndex] = new WraperBox(nW);
+
                     }
                 }
                 else
@@ -1566,7 +1590,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     //出口二，作为独立单元并联
                     this.sequenceBase.GroupBases[gIndex].Insert(wIndex, wraper.wraper);
                     this.groupBoxes[gIndex].wraperBoxes.Insert(wIndex, wraper);
-                    Main.NewText("出口二");
                 }
             }
             else
@@ -1576,7 +1599,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 groupBoxes.Insert(gIndex, new GroupBox(nG));
                 if (wraper.wraper.IsSequence)
                     groupBoxes[gIndex].wraperBoxes[0].sequenceBox.expand = wraper.sequenceBox.expand;
-                Main.NewText("出口一");
 
             }
         }
@@ -1585,7 +1607,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (CacheRefresh)
                 Recalculate();
             MaxWidth = MaxHeight = new StyleDimension(223214514, 0);
-
             base.Update(gameTime);
         }
         public override void OnInitialize()

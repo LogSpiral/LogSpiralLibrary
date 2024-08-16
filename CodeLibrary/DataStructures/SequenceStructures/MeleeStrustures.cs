@@ -347,23 +347,145 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Action<MeleeAction> _OnEndSingle;
         public Action<MeleeAction> _OnStartAttack;
         public Action<MeleeAction> _OnStartSingle;
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnEndAttackDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnStartAttackDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnAttackDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnChargeDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnActiveDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnDeactiveDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnEndSingleDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        [CustomModConfigItem(typeof(SeqDelegateDefinitionElement))]
+        public SeqDelegateDefinition OnStartSingleDelegate { get; set; } = new SeqDelegateDefinition();
         #region 加载 设置 写入
         public virtual void LoadAttribute(XmlReader xmlReader)
         {
             Cycle = int.Parse(xmlReader["Cycle"]);
             ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
+
+            var props = this.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                if (prop.PropertyType.IsAssignableTo(typeof(SeqDelegateDefinition)))
+                {
+                    var str = xmlReader[prop.Name];
+                    if (str != null)
+                        prop.SetValue(this, new SeqDelegateDefinition(str));
+                }
+            }
+
+            //var str = xmlReader["OnActiveDelegate"];
+            //if (str != null) 
+            //{
+            //    OnActiveDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnAttackDelegate"];
+            //if (str != null)
+            //{
+            //    OnAttackDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnChargeDelegate"];
+            //if (str != null)
+            //{
+            //    OnChargeDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnEndAttackDelegate"];
+            //if (str != null)
+            //{
+            //    OnEndAttackDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnEndSingleDelegate"];
+            //if (str != null)
+            //{
+            //    OnEndSingleDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnStartAttackDelegate"];
+            //if (str != null)
+            //{
+            //    OnStartAttackDelegate = new (str);
+            //}
+
+            //str = xmlReader["OnStartSingleDelegate"];
+            //if (str != null)
+            //{
+            //    OnStartSingleDelegate = new (str);
+            //}
         }
-        //public virtual void SetConfigPanel(UIList parent)
-        //{
-        //    IntRangeElement cycleElement = new IntRangeElement();
-        //    cycleElement.Bind(new PropertyFieldWrapper(this.GetType().GetProperty("Cycle")), this, null, -1);
-        //    parent.Add(cycleElement);
-        //    Main.NewText(cycleElement.GetType().Name);
-        //}
         public virtual void SaveAttribute(XmlWriter xmlWriter)
         {
             xmlWriter.WriteAttributeString("Cycle", Cycle.ToString());
             xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
+
+
+            var props = this.GetType().GetProperties();
+            foreach (var prop in props) 
+            {
+                if (prop.PropertyType.IsAssignableTo(typeof(SeqDelegateDefinition)))
+                {
+                    SeqDelegateDefinition definition = (SeqDelegateDefinition)prop.GetValue(this, null);
+                    if (definition != null && definition.Key != SequenceSystem.NoneDelegateKey)
+                        xmlWriter.WriteAttributeString(prop.Name, definition.Key);
+                }
+            }
+            //if (OnEndAttackDelegate != null && OnEndAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnEndAttackDelegate", OnEndAttackDelegate.Key);
+            //}
+            //if (OnStartAttackDelegate != null && OnStartAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnStartAttackDelegate", OnStartAttackDelegate.Key);
+            //}
+            //if (OnAttackDelegate != null && OnAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnAttackDelegate", OnAttackDelegate.Key);
+            //}
+            //if (OnChargeDelegate != null && OnChargeDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnChargeDelegate", OnChargeDelegate.Key);
+            //}
+            //if (OnActiveDelegate != null && OnActiveDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnActiveDelegate", OnActiveDelegate.Key);
+            //}
+            //if (OnDeactiveDelegate != null && OnDeactiveDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnDeactiveDelegate", OnDeactiveDelegate.Key);
+            //}
+            //if (OnEndSingleDelegate != null && OnEndSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnEndSingleDelegate", OnEndSingleDelegate.Key);
+            //}
+            //if (OnStartSingleDelegate != null && OnStartSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
+            //{
+            //    xmlWriter.WriteAttributeString("OnStartSingleDelegate", OnStartSingleDelegate.Key);
+            //}
         }
         #endregion
 
@@ -427,42 +549,79 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         #region 函数
         public virtual void OnActive()
         {
-
+            if (OnActiveDelegate != null && OnActiveDelegate.Key != SequenceSystem.NoneDelegateKey) 
+            {
+                SequenceSystem.elementDelegates[OnActiveDelegate.Key].Invoke(this);
+            }
             _OnActive?.Invoke(this);
         }
 
         public virtual void OnAttack()
         {
+            if (OnAttackDelegate != null && OnAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnAttackDelegate.Key].Invoke(this);
+            }
             _OnAttack?.Invoke(this);
         }
 
         public virtual void OnCharge()
         {
+
+            if (OnChargeDelegate != null && OnChargeDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnChargeDelegate.Key].Invoke(this);
+            }
             _OnCharge?.Invoke(this);
         }
 
         public virtual void OnDeactive()
         {
+
+            if (OnDeactiveDelegate != null && OnDeactiveDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnDeactiveDelegate.Key].Invoke(this);
+            }
             _OnDeactive?.Invoke(this);
         }
 
         public virtual void OnEndAttack()
         {
+
+            if (OnEndAttackDelegate != null && OnEndAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnEndAttackDelegate.Key].Invoke(this);
+            }
             _OnEndAttack?.Invoke(this);
         }
 
         public virtual void OnEndSingle()
         {
+
+            if (OnEndSingleDelegate != null && OnEndSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnEndSingleDelegate.Key].Invoke(this);
+            }
             _OnEndSingle?.Invoke(this);
         }
 
         public virtual void OnStartAttack()
         {
+
+            if (OnStartAttackDelegate != null && OnStartAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnStartAttackDelegate.Key].Invoke(this);
+            }
             _OnStartAttack?.Invoke(this);
         }
 
         public virtual void OnStartSingle()
         {
+
+            if (OnStartSingleDelegate != null && OnStartSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnStartSingleDelegate.Key].Invoke(this);
+            }
             _OnStartSingle?.Invoke(this);
             switch (Owner)
             {
@@ -558,7 +717,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
             #endregion
             targetedVector = c[4].Position - drawCen;
-            if (standardInfo.vertexStandard.scaler > 0) 
+            if (standardInfo.vertexStandard.scaler > 0)
             {
                 targetedVector.Normalize();
                 targetedVector *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
@@ -619,46 +778,42 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override float Factor => base.Factor;
 
         //public virtual bool useTransition => false;
-
+        float TimeToAngle(float t)
+        {
+            float max = timerMax;
+            var fac = t / max;
+            if (max > cutTime)
+            {
+                float tier2 = (max - cutTime) * k;
+                float tier1 = tier2 + cutTime;
+                if (t > tier1)
+                    fac = MathHelper.SmoothStep(mode == SwooshMode.Chop ? 160 / 99f : 1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
+                else if (t < tier2)
+                    fac = 0;
+                else
+                    fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
+            }
+            else
+            {
+                fac = MathHelper.SmoothStep(0, 1.125f, fac);
+            }
+            fac = flip ? 1 - fac : fac;
+            float start = -.75f;
+            float end = .625f;
+            return MathHelper.Lerp(end, start, fac) * MathHelper.Pi;
+        }
 
         [ElementCustomData]
         [CustomModConfigItem(typeof(SeqEnumElement))]
         public SwooshMode mode;
         int cutTime => 8;
-        float k => 0.2f;
-        public override float offsetRotation
-        {
-            get
-            {
-                var fac = Factor;
-                if (timerMax > cutTime)
-                {
-                    float max = timerMax;
-                    float t = timer;
-                    float tier2 = (max - cutTime) * k;
-                    float tier1 = tier2 + cutTime;
-                    if (t > tier1)
-                        fac = MathHelper.SmoothStep(mode == SwooshMode.Chop ? 160 / 99f : 1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
-                    else if (t < tier2)
-                        fac = 0;
-                    else
-                        fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
-                }
-                else
-                {
-                    fac = MathHelper.SmoothStep(0, 1.125f, fac);
-                }
-                fac = flip ? 1 - fac : fac;
-                float start = -.75f;
-                float end = .625f;
-                return MathHelper.Lerp(end, start, fac) * MathHelper.Pi;
-            }
-        }
+        float k => 0.25f;
+        public override float offsetRotation => TimeToAngle(timer);
         public override float offsetSize => base.offsetSize;
 
-        public override bool Attacktive 
+        public override bool Attacktive
         {
-            get 
+            get
             {
                 float t = (timerMax - cutTime) * k;
                 return timer > t && timer < t + cutTime;
@@ -667,6 +822,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void OnStartAttack()
         {
             SoundEngine.PlaySound(MySoundID.Scythe);
+
             base.OnStartAttack();
         }
         public override void OnStartSingle()
@@ -676,6 +832,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (mode == SwooshMode.Slash)
                 flip ^= true;
             KValue = Main.rand.NextFloat(1, 2);
+            NewSwoosh();
         }
         public override void OnDeactive()
         {
@@ -689,12 +846,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             flip = Owner.direction == -1;
             base.OnActive();
         }
-        public virtual UltraSwoosh NewSwoosh()
+        UltraSwoosh swoosh;
+        UltraSwoosh subSwoosh;
+        public void NewSwoosh()
         {
             var verS = standardInfo.vertexStandard;
             if (verS.active)
             {
                 UltraSwoosh u = null;
+                swoosh = subSwoosh = null;
                 var range = mode switch
                 {
                     SwooshMode.Chop => (.875f, -1f),
@@ -710,7 +870,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 if (standardInfo.itemType == ItemID.TrueExcalibur)
                 {
                     u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), colorVec: verS.colorVec);
-                    UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
+                    subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
 
                 }
                 else
@@ -723,14 +883,66 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
-                return u;
+                swoosh = u;
+                //return u;
             }
-            return null;
+            //return null;
         }
         public override void OnEndAttack()
         {
-            NewSwoosh();
+            //NewSwoosh();
             base.OnEndAttack();
+        }
+        void UpdateSwoosh(UltraSwoosh swoosh, (float, float) range)
+        {
+            if (swoosh == null)
+                return;
+            //swoosh.timeLeft = standardInfo.vertexStandard.timeLeft;
+            //var fac = 0f;
+            //switch (mode)
+            //{
+            //    case SwooshMode.Chop:
+            //        {
+            //            fac = Utils.GetLerpValue(MathHelper.Lerp(cutTime, timerMax, 1 - k), MathHelper.Lerp(cutTime, timerMax, k), timer, true);
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            fac = timer > MathHelper.Lerp(cutTime, timerMax, k) ? 0 : 1;
+            //            break;
+            //        }
+            //}
+            var fac = cutTime > timerMax ? 1 : Utils.GetLerpValue(MathHelper.Lerp(cutTime, timerMax, 1 - k), MathHelper.Lerp(cutTime, timerMax, k), timer, true);
+            swoosh.timeLeft = (int)MathHelper.Lerp(1, standardInfo.vertexStandard.timeLeft, MathHelper.SmoothStep(0, 1, fac));
+            swoosh.center = Owner.Center;
+            swoosh.rotation = Rotation;
+            swoosh.negativeDir = flip;
+            swoosh.angleRange = range;
+            if (flip)
+                swoosh.angleRange = (swoosh.angleRange.from, -swoosh.angleRange.to);
+        }
+        public override void Update(bool triggered)
+        {
+            if (timer > (timerMax - cutTime) * k)
+            {
+                //UpdateSwoosh(swoosh, (offsetRotation / MathF.PI, mode == SwooshMode.Chop ? 0.625f : -0.75f));
+                //UpdateSwoosh(subSwoosh, (offsetRotation / MathF.PI, mode == SwooshMode.Chop ? 0.75f : -0.875f));
+                timer--;
+                UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -0.75f, offsetRotation / MathF.PI));
+                UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -0.75f, offsetRotation / MathF.PI));
+                timer++;
+            }
+            else
+            {
+                swoosh = null;
+                subSwoosh = null;
+
+            }
+            base.Update(triggered);
+        }
+        public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        {
+            base.Draw(spriteBatch, texture);
         }
     }
     public class StabInfo : MeleeAction

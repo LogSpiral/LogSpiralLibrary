@@ -99,10 +99,19 @@ namespace LogSpiralLibrary
         public static LogSpiralLibraryMod Instance;
 
         public static BlendState AllOne;
+        public static BlendState InverseColor;
         public LogSpiralLibraryMod()
         {
             AllOne = new BlendState();
             AllOne.ColorDestinationBlend = AllOne.AlphaDestinationBlend = AllOne.ColorSourceBlend = AllOne.AlphaSourceBlend = Blend.One;
+
+            InverseColor = new BlendState() 
+            {
+                ColorDestinationBlend = Blend.InverseSourceColor,
+                ColorSourceBlend = Blend.InverseDestinationColor,
+                AlphaDestinationBlend = Blend.One,
+                AlphaSourceBlend = Blend.Zero
+            };
         }
         #endregion
 
@@ -168,6 +177,8 @@ namespace LogSpiralLibrary
         //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
         public override void Load()
         {
+            if (Main.netMode == NetmodeID.Server) return;
+
             Instance = this;
             LoadTextures(nameof(BaseTex), out BaseTex);
             LoadTextures(nameof(AniTex), out AniTex);
@@ -214,6 +225,8 @@ namespace LogSpiralLibrary
 
         public override void Unload()
         {
+            if (Main.netMode == NetmodeID.Server) return;
+
             Instance = null;
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
@@ -361,10 +374,10 @@ namespace LogSpiralLibrary
         public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
         public override void OnModLoad()
         {
-            if (Main.chatMonitor is RemadeChatMonitor remade)
-            {
-                remade._showCount = 40;
-            }
+            //if (Main.chatMonitor is RemadeChatMonitor remade)
+            //{
+            //    remade._showCount = 40;
+            //}
             //renderBasedDrawings = new List<RenderBasedDrawing>();
             //vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
             base.OnModLoad();

@@ -46,10 +46,9 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>());
 
-        public override void SetUpSequence(MeleeSequence meleeSequence)
+        public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
-
-            base.SetUpSequence(meleeSequence);
+            base.SetUpSequence(meleeSequence, modName, fileName);
             return;
             //meleeSequence.sequenceName = $"测试剑2号[i:{ModContent.ItemType<TestBlade2>()}]";
 

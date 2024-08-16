@@ -267,6 +267,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public abstract IReadOnlyList<WraperBase> Wrapers { get; }
             public abstract int Index { get; }
             public abstract void Insert(int index, WraperBase wraperBase);
+            public abstract void Replace(int index, WraperBase wraperBase);
             //public abstract GroupBase CreateFromWraper(WraperBase wraper);
         }
         [XmlRoot("Sequence")]
@@ -492,6 +493,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 wrapers.Insert(index, (Wraper)wraperBase);
             }
+            public override void Replace(int index, WraperBase wraperBase)
+            {
+                wrapers[index] = (Wraper)wraperBase;
+            }
             public static bool ReadGroup(XmlReader xmlReader, out Group result)
             {
                 xmlReader.Read();//读取下一个位置
@@ -701,12 +706,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         if (elementInfo.counter < elementInfo.Cycle || elementInfo.Cycle == 0)//如果没执行完所有次数
                         {
                             elementInfo.Owner = entity;
+                            elementInfo.Projectile = projectile;
+                            elementInfo.standardInfo = standardInfo;
                             if (elementInfo.counter == 0)//标志着刚切换上
                                 elementInfo.OnActive();
                             else elementInfo.OnEndSingle();
                             elementInfo.OnStartSingle();
-                            elementInfo.Projectile = projectile;
-                            elementInfo.standardInfo = standardInfo;
                             var result = (int)(standardInfo.standardTimer * elementInfo.ModifyData.actionOffsetTimeScaler / elementInfo.Cycle);
                             TimerMax = Timer = result;
                             elementInfo.counter++;

@@ -49,9 +49,9 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
             itemType = ModContent.ItemType<TestBlade3>()
         };
         public override bool LabeledAsCompleted => false;
-        public override void SetUpSequence(MeleeSequence meleeSequence)
+        public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
-            base.SetUpSequence(meleeSequence);
+            base.SetUpSequence(meleeSequence, modName, fileName);
             return;
             //meleeSequence.sequenceName = "TestBlade3Proj";
             //var subSequence1 = MeleeSequence.Load("C:\\Users\\32536\\Documents\\My Games\\Terraria\\tModLoader\\Mods\\LogSpiralLibrary_Sequence\\MeleeAction\\LogSpiralLibrary\\TestBladeProj.xml");

@@ -87,6 +87,46 @@ Configs: {
 			Label: 执行次数
 			Tooltip: _
 		}
+
+		OnEndAttackDelegate: {
+			Label: 结束攻击
+			Tooltip: _
+		}
+
+		OnStartAttackDelegate: {
+			Label: 开始攻击
+			Tooltip: _
+		}
+
+		OnAttackDelegate: {
+			Label: 攻击期间
+			Tooltip: _
+		}
+
+		OnChargeDelegate: {
+			Label: 前后摇间
+			Tooltip: _
+		}
+
+		OnActiveDelegate: {
+			Label: 切换上时
+			Tooltip: _
+		}
+
+		OnDeactiveDelegate: {
+			Label: 切换下时
+			Tooltip: _
+		}
+
+		OnEndSingleDelegate: {
+			Label: 单次结束
+			Tooltip: _
+		}
+
+		OnStartSingleDelegate: {
+			Label: 单次开始
+			Tooltip: _
+		}
 	}
 
 	WraperBase: {

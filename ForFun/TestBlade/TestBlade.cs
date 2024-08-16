@@ -48,11 +48,11 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             },
             itemType = ModContent.ItemType<TestBlade>()
         };
-        public override void SetUpSequence(MeleeSequence meleeSequence)
+        public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
-            //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
-            base.SetUpSequence(meleeSequence);
+            base.SetUpSequence(meleeSequence, modName, fileName);
             return;
+            //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
             SwooshInfo swooshInfo = new SwooshInfo()
             {
                 Cycle = 4,

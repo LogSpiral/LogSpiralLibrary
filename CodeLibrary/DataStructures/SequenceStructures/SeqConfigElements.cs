@@ -14,6 +14,8 @@ using Terraria.Localization;
 using Terraria.ModLoader.UI;
 using Terraria.UI.Chat;
 using ReLogic.Graphics;
+using ReLogic.Content;
+using System.Collections;
 
 //螺线懒，他用UIConfig的WrapIt来生成UI控件方便调参
 //螺线勤奋，他复制并微调了TML自带的几个控件，以更适合序列界面的编辑((
@@ -789,8 +791,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     memberInfo.SetValue(item, current);
                 else
                     array[index] = current;
-
-                Interface.modConfig.SetPendingChanges();
+                SequenceSystem.SetSequenceUIPending();
             }
             public DataObject(PropertyFieldWrapper memberInfo, object item)
             {

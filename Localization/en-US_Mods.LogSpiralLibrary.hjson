@@ -1,3 +1,34 @@
+SequenceUI: {
+	DefaultPage: Menu
+	DefaultPageHint:
+		'''
+		You're on the default page, where you can select a sequence to start editing.
+		A finished sequence is a sequence that is suitable for use directly with a weapon
+		An library sequence is a sequence that can be called up again and again to assist in composing the finished product sequence
+		There is No significant difference between the two, just mark it according to your feelings.
+		'''
+	FinishedSequences: Finished Sequences
+	LibrarySequences: Library Sequences
+	Save: Save
+	SaveAs: Save As...
+	Revert: Revert Changing
+	SaveOrRevertPlz: Please Save(As) or Revert
+	InfoTitle: Info of current Page Sequence
+	PropTitle: Info of Selected module
+	ActionLibrary: Action Library
+	SequenceLibrary: Sequence Library
+	Cancel: Cancel
+	OK: OK
+	EmptyFileNameException: The file name cannot be empty
+	EmptyDisplayNameException: The display name cannot be empty
+	InvalidFileNameException: File name is not available (Repeated)
+	UnknownModException: Mods that don't exist
+	SaveSucceed: Saved successfully!!
+	RepeatedNameHint: However, it is advisable to avoid duplication of display names
+	CantEditHere: Parameters cannot be edited here, please drag them into the sequence and edit them
+	SwitchToSequencePage: Switch to the Page of this Sequence
+}
+
 Items: {
 	FractalSpawnItem: {
 		DisplayName: Fractal Spawn Item

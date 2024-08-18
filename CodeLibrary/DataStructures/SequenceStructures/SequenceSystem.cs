@@ -26,6 +26,7 @@ using Microsoft.Xna.Framework.Input;
 using Terraria.UI.Chat;
 using Terraria;
 using rail;
+using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -268,6 +269,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class SequenceUI : UIState
     {
+        public const string localizationPath = "Mods.LogSpiralLibrary.SequenceUI";
         public static bool Visible = false;
         public UIList actionLib;
         public UIList sequenceLib;
@@ -331,7 +333,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public void ResetPage()
         {
             pageList.Clear();
-            UIButton<string> defPage = new UIButton<string>("默认页面");
+            UIButton<string> defPage = new UIButton<string>(Language.GetOrRegister(localizationPath + ".DefaultPage").Value);//"默认页面"
             defPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Add(defPage);
             defPage.OnLeftClick += (e, evt) => { SwitchToDefaultPage(); };
@@ -362,11 +364,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             currentWraper = null;
             propList.Clear();
             infoList.Clear();
-            UIText info = new UIText(
-                "你正处于默认页面，可以在这里选择一个序列以开始编辑。\n" +
-                "成品序列指适于直接给武器使用的完成序列\n" +
-                "库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
-                "二者没有硬性区别，根据自己感觉进行标记即可。");
+            UIText info = new UIText(Language.GetOrRegister(localizationPath + ".DefaultPageHint").Value);
+            //            "你正处于默认页面，可以在这里选择一个序列以开始编辑。\n" +
+            //"成品序列指适于直接给武器使用的完成序列\n" +
+            //"库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
+            //"二者没有硬性区别，根据自己感觉进行标记即可。"
             info.IsWrapped = true;
             info.SetSize(new Vector2(-40, 1), 1, 1);
             infoList.Add(info);
@@ -377,9 +379,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             libSequencePanel.Left.Set(0, 0.5f);
             WorkingPlacePanel.Append(libSequencePanel);
             WorkingPlacePanel.Append(finishedSequencePanel);
-            UIText fTitle = new UIText("成品序列");
+            UIText fTitle = new UIText(Language.GetOrRegister(localizationPath + ".FinishedSequences"));
             fTitle.SetSize(new Vector2(0, 20), 1, 0);
-            UIText lTitle = new UIText("库存序列");
+            UIText lTitle = new UIText(Language.GetOrRegister(localizationPath + ".LibrarySequences"));
             lTitle.SetSize(new Vector2(0, 20), 1, 0);
             finishedSequencePanel.Append(fTitle);
             libSequencePanel.Append(lTitle);
@@ -428,14 +430,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                     continue;
-                var (container, elem) = UIModConfig.WrapIt(infoList, ref top, variable, info, order++);
+                var (container, elem) = SeqConfigElement.WrapIt(infoList, ref top, variable, info, order++);
             }
             WorkingPlacePanel.OverflowHidden = true;
             box.SequenceSize(true);
             box.OnInitialize();
             WorkingPlacePanel.Append(box);
 
-            saveButton = new UIButton<string>("保存");
+            saveButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".Save").Value);
             saveButton.SetSize(64, 32);
             saveButton.Left.Set(32, 0);
             saveButton.Top.Set(-48, 1);
@@ -458,7 +460,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             };
 
 
-            saveAsButton = new UIButton<string>("另存为...");
+            saveAsButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".SaveAs").Value);
             saveAsButton.SetSize(128, 32);
             saveAsButton.Left.Set(112, 0);
             saveAsButton.Top.Set(-48, 1);
@@ -471,7 +473,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             };
 
-            revertButton = new UIButton<string>("撤销修改");
+            revertButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".Revert").Value);
             revertButton.SetSize(128, 32);
             revertButton.Left.Set(256, 0);
             revertButton.Top.Set(-48, 1);
@@ -502,7 +504,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                         continue;
-                    var (container, _elem) = UIModConfig.WrapIt(infoList, ref top, variable, info, order++);
+                    var (container, _elem) = SeqConfigElement.WrapIt(infoList, ref top, variable, info, order++);
                 }
             };
             pendingModify = pendingModifyChange = false;
@@ -513,7 +515,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             UIButton<string> seqPage = new UIButton<string>(box.sequenceBase.DisplayName);
             seqPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Insert(pageList.Count - 1, seqPage);
-            seqPage.OnLeftClick += (_evt, _elem) => { if (!pendingModify) SwitchToSequencePage(box); else Main.NewText("请先保存或撤销修改"); };
+            string hint = Language.GetOrRegister(localizationPath + ".SaveOrRevertPlz").Value;
+            seqPage.OnLeftClick += (_evt, _elem) => { if (!pendingModify) SwitchToSequencePage(box); else Main.NewText(hint); };
             seqPage.OnRightClick += (_evt, _elem) =>
             {
                 if (!pendingModify)
@@ -521,7 +524,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     SwitchToDefaultPage();
                     pageList.Remove(_elem);
                 }
-                else Main.NewText("请先保存或撤销修改");
+                else Main.NewText(hint);
             };
             //UIText seqText = new UIText(box.sequenceBase.SequenceNameBase);
             //seqText.IgnoresMouseInteraction = true;
@@ -598,14 +601,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             InfoPanel.Append(infoScrollBar);
             infoList.SetScrollbar(infoScrollBar);
             BasePanel.Append(InfoPanel);
-            UIText infoTitle = new UIText("当前页面序列信息");
+            UIText infoTitle = new UIText(Language.GetOrRegister(localizationPath + ".InfoTitle").Value);
             infoTitle.SetSize(0, 20, 1, 0);
             InfoPanel.Append(infoTitle);
             UIPanel PropertyPanel = new UIPanel();
             PropertyPanel.SetSize(default, 0.15f, 0.6f);
             PropertyPanel.Top.Set(0, 0.4f);
             BasePanel.Append(PropertyPanel);
-            UIText propTitle = new UIText("选中组件信息");
+            UIText propTitle = new UIText(Language.GetOrRegister(localizationPath + ".PropTitle").Value);
             propTitle.SetSize(0, 20, 1, 0);
             PropertyPanel.Append(propTitle);
             propList = new UIList();
@@ -665,7 +668,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             actionScrollbar.Height.Set(0f, 1f);
             actionScrollbar.HAlign = 1f;
             ActionLibraryPanel.Append(actionScrollbar);
-            UIText actionTitle = new UIText("元素库");
+            UIText actionTitle = new UIText(Language.GetOrRegister(localizationPath + ".ActionLibrary").Value);
             actionTitle.SetSize(0, 20, 1, 0);
             ActionLibraryPanel.Append(actionTitle);
             actionLib.SetScrollbar(actionScrollbar);
@@ -684,7 +687,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             SequenceLibraryPanel.Append(sequenceScrollbar);
             sequenceLib.SetScrollbar(sequenceScrollbar);
             sequenceLib.Top.Set(20, 0);
-            UIText sequenceTitle = new UIText("序列库");
+            UIText sequenceTitle = new UIText(Language.GetOrRegister(localizationPath + ".SequenceLibrary").Value);
             sequenceTitle.SetSize(0, 20, 1, 0);
             SequenceLibraryPanel.Append(sequenceTitle);
             OuterWorkingPanel.Append(SequenceLibraryPanel);
@@ -732,7 +735,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             BasicInfoPanel.Append(infoList);
 
             //UIButton<string> yesButton = new UIButton<string>("确定");
-            UIButton<string> noButton = new UIButton<string>("取消");
+            UIButton<string> noButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".Cancel").Value);
             noButton.BackgroundColor = Color.Red * .7f;
             //yesButton.SetSize(64, 32, 0, 0);
             noButton.SetSize(64, 32, 0, 0);
@@ -761,7 +764,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (variable.Type == typeof(DateTime) || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                     continue;
-                var (container, elem) = UIModConfig.WrapIt(list, ref top, variable, info, order++);
+                var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, info, order++);
                 //elem.OnLeftClick += (_evt, uielem) => { };
             }
             UIScrollbar uIScrollbar = new UIScrollbar();
@@ -770,7 +773,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             uIScrollbar.HAlign = 1f;
             list.SetScrollbar(uIScrollbar);
             BasicInfoPanel.Append(uIScrollbar);
-            UIButton<string> yesButton = new UIButton<string>("确定");
+            UIButton<string> yesButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".OK").Value);
             yesButton.SetSize(64, 32, 0, 0);
             yesButton.Top.Set(-32, 1);
             yesButton.HAlign = 0.125f;
@@ -779,31 +782,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (info.FileName == "")
                 {
-                    Main.NewText("文件名不可为空", Color.Red);
+                    Main.NewText(Language.GetOrRegister(localizationPath + ".EmptyFileNameException").Value, Color.Red);
                     return;
                 }
                 if (info.DisplayName == "")
                 {
-                    Main.NewText("显示名不可为空", Color.Red);
+                    Main.NewText(Language.GetOrRegister(localizationPath + ".EmptyDisplayNameException").Value, Color.Red);
                     return;
                 }
                 if (info.FileName == SequenceBase.SequenceDefaultName || currentSequences.ContainsKey(info.KeyName))
                 {
-                    Main.NewText("文件名不可用", Color.Red);
+                    Main.NewText(Language.GetOrRegister(localizationPath + ".InvalidFileNameException").Value, Color.Red);
                     return;
                 }
                 if (info.ModName == null || !ModLoader.TryGetMod(info.ModName, out _))
                 {
-                    Main.NewText("不存在的模组", Color.Red);
+                    Main.NewText(Language.GetOrRegister(localizationPath + ".UnknownModException").Value, Color.Red);
                     return;
                 }
                 pendingModify = false;
                 BasicInfoPanel.Remove();
-                Main.NewText("保存成功", Color.LimeGreen);
+                Main.NewText(Language.GetOrRegister(localizationPath + ".SaveSucceed").Value, Color.LimeGreen);
                 var dnames = from i in SequenceSystem.sequenceInfos.Values select i.DisplayName;
                 if (dnames.Contains(info.DisplayName))
                 {
-                    Main.NewText("但是建议避免显示名的重复", Color.Orange);
+                    Main.NewText(Language.GetOrRegister(localizationPath + ".RepeatedNameHint").Value, Color.Orange);
                 }
                 //SequenceSystem.instance.sequenceUI.currentSequences[info.KeyName] = sequence;
                 (typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary)[info.KeyName] = sequence;
@@ -898,26 +901,26 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         [JsonIgnore]
         public string KeyName => $"{ModName}/{FileName}";
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string AuthorName;
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string Description;
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string FileName;
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string DisplayName;
         //[CustomModConfigItem(typeof(SeqStringInputElement))]
         //public string ModName;
-        [CustomModConfigItem(typeof(ModDefinitionElement))]
+        [CustomSeqConfigItem(typeof(ModDefinitionElement))]
         public ModDefinition ModDefinition = new ModDefinition("LogSpiralLibrary");
         [JsonIgnore]
         public string ModName => ModDefinition?.Name ?? "UnknownMod";
-        [CustomModConfigItem(typeof(DateTimeElement))]
+        //[CustomSeqConfigItem(typeof(SeqDateTimeElement))]
         public DateTime createDate;
-        [CustomModConfigItem(typeof(DateTimeElement))]
+        //[CustomSeqConfigItem(typeof(SeqDateTimeElement))]
         public DateTime lastModifyDate;
         //TODO RSA加密
-        [CustomModConfigItem(typeof(SeqStringInputElement))]
+        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string passWord;
         public bool Finished;
         //public enum SequenceMode
@@ -1179,7 +1182,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             if (IsClone)
             {
-                Main.NewText("此处无法编辑参数，请将其拖入序列中再编辑");
+                Main.NewText(Language.GetOrRegister(SequenceUI.localizationPath + ".CantEditHere").Value);
                 return;
             }
             if (evt.Target != this && !(this.BelongToMe(evt.Target) && evt.Target is not WraperBox)) return;
@@ -1197,13 +1200,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 var fieldInfo = wraper.GetType().GetField("conditionDefinition", BindingFlags.Instance | BindingFlags.Public);
                 if (fieldInfo != null)
-                    UIModConfig.WrapIt(list, ref top, new PropertyFieldWrapper(fieldInfo), wraper, order);
+                    SeqConfigElement.WrapIt(list, ref top, new PropertyFieldWrapper(fieldInfo), wraper, order);
             }
             if (wraper.IsSequence)
             {
                 if (!sequenceBox.Expand || sequenceBox.sequenceBase.FileName != SequenceBase.SequenceDefaultName)
                 {
-                    UIButton<string> TurnToButton = new UIButton<string>("SwtichToSequencePage");
+                    UIButton<string> TurnToButton = new UIButton<string>(Language.GetOrRegister(SequenceUI.localizationPath + ".SwitchToSequencePage").Value);
                     TurnToButton.SetSize(new Vector2(0, 32), 0.8f, 0f);
                     TurnToButton.HAlign = 0.5f;
                     list.Add(TurnToButton);
@@ -1217,11 +1220,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             else
             {
                 //wraper.SetConfigPanel(list);
-                foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(wraper.Element))
+                var props = ConfigManager.GetFieldsAndProperties(wraper.Element);
+                foreach (PropertyFieldWrapper variable in props)
                 {
                     if (!Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAttribute)) || Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAbabdonedAttribute)))
                         continue;
-                    var (container, elem) = UIModConfig.WrapIt(list, ref top, variable, wraper.Element, order++);
+                    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
+                }
+
+                foreach (PropertyFieldWrapper variable in props)
+                {
+                    if (variable.Type != typeof(SeqDelegateDefinition))
+                        continue;
+                    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
                 }
             }
             base.RightClick(evt);

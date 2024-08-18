@@ -1,3 +1,34 @@
+SequenceUI: {
+	DefaultPage: 目录
+	DefaultPageHint:
+		'''
+		你正处于默认页面，可以在这里选择一个序列以开始编辑。
+		成品序列指适于直接给武器使用的完成序列
+		库存序列指适于用来辅助组成成品序列可以反复调用的序列
+		二者没有硬性区别，根据自己感觉进行标记即可。
+		'''
+	FinishedSequences: 成品序列
+	LibrarySequences: 文库序列
+	Save: 保存
+	SaveAs: 另存为...
+	Revert: 撤销修改
+	SaveOrRevertPlz: 请先保存或撤销修改
+	InfoTitle: 当前页面序列信息
+	PropTitle: 选中组件信息
+	ActionLibrary: 元素库
+	SequenceLibrary: 序列库
+	Cancel: 取消
+	OK: 确定
+	EmptyFileNameException: 文件名不可为空
+	EmptyDisplayNameException: 显示名不可空
+	InvalidFileNameException: 文件名不可用(重复)
+	UnknownModException: 不存在的模组
+	SaveSucceed: 保存成功!!
+	RepeatedNameHint: 但是建议避免显示名的重复
+	CantEditHere: 此处无法编辑参数，请将其拖入序列中再编辑
+	SwitchToSequencePage: 转到该序列页面
+}
+
 Items: {
 	FractalSpawnItem: {
 		DisplayName: 分形生成测试物品
@@ -193,7 +224,11 @@ Configs: {
 
 		FileName: {
 			Label: 文件名
-			Tooltip: 实际存储路径用到的名字\n最好不要有特殊字符
+			Tooltip:
+				'''
+				实际存储路径用到的名字
+				最好不要有特殊字符
+				'''
 		}
 
 		DisplayName: {

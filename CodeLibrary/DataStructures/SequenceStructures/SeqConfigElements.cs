@@ -16,13 +16,444 @@ using Terraria.UI.Chat;
 using ReLogic.Graphics;
 using ReLogic.Content;
 using System.Collections;
+using System.Reflection;
 
 //螺线懒，他用UIConfig的WrapIt来生成UI控件方便调参
 //螺线勤奋，他复制并微调了TML自带的几个控件，以更适合序列界面的编辑((
 //螺线最坏乐哈哈哈哈
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
-    public class DateTimeElement : ConfigElement<DateTime>
+    public abstract class SeqConfigElement<T> : SeqConfigElement
+    {
+        public virtual T Value
+        {
+            get => (T)GetObject();
+            set => SetObject(value);
+        }
+    }
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Field)]
+    public class CustomSeqConfigItemAttribute : Attribute
+    {
+        public Type Type { get; }
+
+        public CustomSeqConfigItemAttribute(Type type)
+        {
+            Type = type;
+        }
+    }
+    public abstract class SeqConfigElement : UIElement
+    {
+        public static Tuple<UIElement, UIElement> WrapIt(UIElement parent, ref int top, PropertyFieldWrapper memberInfo, object item, int order, object list = null, Type arrayType = null, int index = -1)
+        {
+            //TODO 添加对更对类型的支持 尽管我觉着应该不会设计出要那么复杂参数的元素吧(?
+            int elementHeight;
+            Type type = memberInfo.Type;
+
+            if (arrayType != null)
+            {
+                type = arrayType;
+            }
+
+            UIElement e;
+
+            // TODO: Other common structs? -- Rectangle, Point
+            var customUI = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomSeqConfigItemAttribute>(memberInfo, null, null);//是否对该成员有另外实现的UI支持
+
+            if (customUI != null)
+            {
+                Type customUIType = customUI.Type;
+
+                if (typeof(SeqConfigElement).IsAssignableFrom(customUIType))
+                {
+                    ConstructorInfo ctor = customUIType.GetConstructor(Array.Empty<Type>());
+
+                    if (ctor != null)
+                    {
+                        object instance = ctor.Invoke(new object[0]);//执行相应UI的构造函数
+                        e = instance as UIElement;
+                    }
+                    else
+                    {
+                        e = new UIText($"{customUIType.Name} specified via CustomModConfigItem for {memberInfo.Name} does not have an empty constructor.");
+                    }
+                }
+                else
+                {
+                    e = new UIText($"{customUIType.Name} specified via CustomModConfigItem for {memberInfo.Name} does not inherit from ConfigElement.");
+                }
+            }
+            else if (item.GetType() == typeof(HeaderAttribute))
+            {
+                e = new HeaderElement((string)memberInfo.GetValue(item));
+            }
+            //基于成员类型添加上默认的编辑UI
+            //else if (type == typeof(ItemDefinition))
+            //{
+            //    e = new ItemDefinitionElement();
+            //}
+            //else if (type == typeof(ProjectileDefinition))
+            //{
+            //    e = new ProjectileDefinitionElement();
+            //}
+            //else if (type == typeof(NPCDefinition))
+            //{
+            //    e = new NPCDefinitionElement();
+            //}
+            //else if (type == typeof(PrefixDefinition))
+            //{
+            //    e = new PrefixDefinitionElement();
+            //}
+            //else if (type == typeof(BuffDefinition))
+            //{
+            //    e = new BuffDefinitionElement();
+            //}
+            //else if (type == typeof(TileDefinition))
+            //{
+            //    e = new TileDefinitionElement();
+            //}
+            //else if (type == typeof(Color))
+            //{
+            //    e = new ColorElement();
+            //}
+            //else if (type == typeof(Vector2))
+            //{
+            //    e = new Vector2Element();
+            //}
+            else if (type == typeof(bool)) // isassignedfrom?
+            {
+                e = new SeqBooleanElement();
+            }
+            else if (type == typeof(float))
+            {
+                e = new SeqFloatElement();
+            }
+            else if (type == typeof(DateTime))
+            {
+                e = new SeqDateTimeElement();
+            }
+            else if (type == typeof(ActionModifyData))
+            {
+                e = new SeqActionModifyDataElement();
+            }
+            else if (type == typeof(SeqDelegateDefinition)) 
+            {
+                e = new SeqDelegateDefinitionElement();
+            }
+            //else if (type == typeof(byte))
+            //{
+            //    e = new ByteElement();
+            //}
+            //else if (type == typeof(uint))
+            //{
+            //    e = new UIntElement();
+            //}
+            else if (type == typeof(int))
+            {
+                SliderAttribute sliderAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<SliderAttribute>(memberInfo, item, list);
+
+                //if (sliderAttribute != null)
+                //    e = new IntRangeElement();
+                //else
+                e = new SeqIntInputElement();
+            }
+            else if (type == typeof(string))
+            {
+                OptionStringsAttribute ost = ConfigManager.GetCustomAttributeFromMemberThenMemberType<OptionStringsAttribute>(memberInfo, item, list);
+                //if (ost != null)
+                //    e = new StringOptionElement();
+                //else
+                e = new SeqStringInputElement();
+            }
+            else if (type.IsEnum)
+            {
+                if (list != null)
+                    e = new UIText($"{memberInfo.Name} not handled yet ({type.Name}).");
+                else
+                    e = new SeqEnumElement();
+            }
+            //else if (type.IsArray)
+            //{
+            //    e = new ArrayElement();
+            //}
+            //else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            //{
+            //    e = new ListElement();
+            //}
+            //else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(HashSet<>))
+            //{
+            //    e = new SetElement();
+            //}
+            //else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+            //{
+            //    e = new DictionaryElement();
+            //}
+            //else if (type.IsClass)
+            //{
+            //    e = new ObjectElement(/*, ignoreSeparatePage: ignoreSeparatePage*/);
+            //}
+            else if (type.IsValueType && !type.IsPrimitive)
+            {
+                e = new UIText($"{memberInfo.Name} not handled yet ({type.Name}) Structs need special UI.");
+                //e.Top.Pixels += 6;
+                e.Height.Pixels += 6;
+                e.Left.Pixels += 4;
+
+                //object subitem = memberInfo.GetValue(item);
+            }
+            else
+            {
+                e = new UIText($"{memberInfo.Name} not handled yet ({type.Name})");
+                e.Top.Pixels += 6;
+                e.Left.Pixels += 4;
+            }
+
+            if (e != null)
+            {
+                if (e is SeqConfigElement configElement)
+                {
+                    configElement.Bind(memberInfo, item, (IList)list, index);//将UI控件与成员信息及实例绑定
+                    configElement.OnBind();
+                }
+
+                e.Recalculate();
+
+                elementHeight = (int)e.GetOuterDimensions().Height;
+
+                var container = UIModConfig.GetContainer(e, index == -1 ? order : index);
+                container.Height.Pixels = elementHeight;
+
+                if (parent is UIList uiList)
+                {
+                    uiList.Add(container);
+                    uiList.GetTotalHeight();
+                }
+                else
+                {
+                    // Only Vector2 and Color use this I think, but modders can use the non-UIList approach for custom UI and layout.
+                    container.Top.Pixels = top;
+                    container.Width.Pixels = -20;
+                    container.Left.Pixels = 20;
+                    top += elementHeight + 4;
+                    parent.Append(container);
+                    parent.Height.Set(top, 0);
+                }
+
+                var tuple = new Tuple<UIElement, UIElement>(container, e);
+
+                //if (parent == Interface.modConfig.mainConfigList)
+                //{
+                //    Interface.modConfig.mainConfigItems.Add(tuple);
+                //}
+
+                return tuple;
+            }
+            return null;
+        }
+        private Color backgroundColor; // TODO inherit parent object color?
+
+        public int Index { get; set; }
+
+        public Asset<Texture2D> PlayTexture { get; set; } = Main.Assets.Request<Texture2D>("Images/UI/ButtonPlay");
+        public Asset<Texture2D> DeleteTexture { get; set; } = Main.Assets.Request<Texture2D>("Images/UI/ButtonDelete");
+        public Asset<Texture2D> PlusTexture { get; set; } = UICommon.ButtonPlusTexture;
+        //public Texture2D UpArrowTexture { get; set; } = Texture2D.FromStream(Main.instance.GraphicsDevice, Assembly.GetExecutingAssembly().GetManifestResourceStream("Terraria.ModLoader.Config.UI.ButtonIncrement.png"));
+        //public Texture2D DownArrowTexture { get; set; } = Texture2D.FromStream(Main.instance.GraphicsDevice, Assembly.GetExecutingAssembly().GetManifestResourceStream("Terraria.ModLoader.Config.UI.ButtonDecrement.png"));
+        public Asset<Texture2D> UpDownTexture { get; set; } = UICommon.ButtonUpDownTexture;
+        public Asset<Texture2D> CollapsedTexture { get; set; } = UICommon.ButtonCollapsedTexture;
+        public Asset<Texture2D> ExpandedTexture { get; set; } = UICommon.ButtonExpandedTexture;
+
+        // Provides access to the field/property contained in the item
+        public PropertyFieldWrapper MemberInfo { get; set; }
+        // The object that contains the memberInfo. This is usually a ModConfig instance or an object instance contained within a ModConfig instance.
+        public object Item { get; set; }
+        // If non-null, the memberInfo actually referes to the collection containing this item and array and index need to be used to assign this data
+        public IList List { get; set; }
+        // Attributes
+        public LabelKeyAttribute LabelAttribute;
+        public string Label;
+        public TooltipKeyAttribute TooltipAttribute;
+        public BackgroundColorAttribute BackgroundColorAttribute;
+        public RangeAttribute RangeAttribute;
+        public IncrementAttribute IncrementAttribute;
+        public JsonDefaultValueAttribute JsonDefaultValueAttribute;
+        // Etc
+        public bool NullAllowed { get; set; }
+        public Func<string> TextDisplayFunction { get; set; }
+        public Func<string> TooltipFunction { get; set; }
+        public bool DrawLabel { get; set; } = true;
+        public bool ReloadRequired { get; set; }
+        public bool ShowReloadRequiredTooltip { get; set; }
+        public object OldValue { get; set; }
+        public bool ValueChanged => !ConfigManager.ObjectEquals(OldValue, GetObject());
+
+        public SeqConfigElement()
+        {
+            Width.Set(0f, 1f);
+            Height.Set(30f, 0f);
+        }
+
+        /// <summary>
+        /// Bind must always be called after the ctor and serves to facilitate a convenient inheritance workflow for custom ConfigElemets from mods.
+        /// </summary>
+        public void Bind(PropertyFieldWrapper memberInfo, object item, IList array, int index)
+        {
+            MemberInfo = memberInfo;
+            Item = item;
+            List = array;
+            Index = index;
+            backgroundColor = UICommon.DefaultUIBlue;
+        }
+
+        public virtual void OnBind()
+        {
+            LabelAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<LabelKeyAttribute>(MemberInfo, Item, List);
+            Label = ConfigManager.GetLocalizedLabel(MemberInfo);
+            // Potential TODO if highly requested: Support interpolating value itself into label.
+            TextDisplayFunction = () => Label;
+
+            TooltipAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<TooltipKeyAttribute>(MemberInfo, Item, List);
+            string tooltip = ConfigManager.GetLocalizedTooltip(MemberInfo);
+            if (tooltip != null)
+            {
+                TooltipFunction = () => tooltip;
+            }
+
+            BackgroundColorAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<BackgroundColorAttribute>(MemberInfo, Item, List);
+
+            if (BackgroundColorAttribute != null)
+            {
+                backgroundColor = BackgroundColorAttribute.Color;
+            }
+
+            RangeAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<RangeAttribute>(MemberInfo, Item, List);
+            IncrementAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<IncrementAttribute>(MemberInfo, Item, List);
+            NullAllowed = ConfigManager.GetCustomAttributeFromMemberThenMemberType<NullAllowedAttribute>(MemberInfo, Item, List) != null;
+            JsonDefaultValueAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<JsonDefaultValueAttribute>(MemberInfo, Item, List);
+            ShowReloadRequiredTooltip = ConfigManager.GetCustomAttributeFromMemberThenMemberType<ReloadRequiredAttribute>(MemberInfo, Item, List) != null;
+
+            //if (ShowReloadRequiredTooltip && List == null && Item is ModConfig modConfig)
+            //{
+            //    // Default ModConfig.NeedsReload logic currently only checks members of the ModConfig class, this mirrors that logic.
+            //    ReloadRequired = true;
+            //    // We need to check against the value in the load time config, not the value at the time of binding.
+            //    ModConfig loadTimeConfig = ConfigManager.GetLoadTimeConfig(modConfig.Mod, modConfig.Name);
+            //    OldValue = MemberInfo.GetValue(loadTimeConfig);
+            //}
+        }
+
+        public virtual void SetObject(object value)
+        {
+            if (List != null)
+            {
+                List[Index] = value;
+                SequenceSystem.SetSequenceUIPending();
+                return;
+            }
+
+            if (!MemberInfo.CanWrite)
+                return;
+
+            MemberInfo.SetValue(Item, value);
+            SequenceSystem.SetSequenceUIPending();
+        }
+
+        public virtual object GetObject()
+        {
+            if (List != null)
+                return List[Index];
+
+            return MemberInfo.GetValue(Item);
+        }
+
+        public override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            base.DrawSelf(spriteBatch);
+            CalculatedStyle dimensions = base.GetDimensions();
+            float settingsWidth = dimensions.Width + 1f;
+            Vector2 vector = new Vector2(dimensions.X, dimensions.Y);
+            Vector2 baseScale = new Vector2(0.8f);
+            Color color = IsMouseHovering ? Color.White : Color.White;
+
+            if (!MemberInfo.CanWrite)
+                color = Color.Gray;
+
+            //color = Color.Lerp(color, Color.White, base.IsMouseHovering ? 1f : 0f);
+            Color panelColor = base.IsMouseHovering ? backgroundColor : backgroundColor.MultiplyRGBA(new Color(180, 180, 180));
+            Vector2 position = vector;
+
+            DrawPanel2(spriteBatch, position, TextureAssets.SettingsPanel.Value, settingsWidth, dimensions.Height, panelColor);
+
+            if (DrawLabel)
+            {
+                position.X += 8f;
+                position.Y += 8f;
+
+                string label = TextDisplayFunction();
+                if (ReloadRequired && ValueChanged)
+                {
+                    label += " - [c/FF0000:" + Language.GetTextValue("tModLoader.ModReloadRequired") + "]";
+                }
+
+                // TODO: Support chat tag hover?
+                ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, label, position, color, 0f, Vector2.Zero, baseScale, settingsWidth, 2f);
+            }
+
+            if (IsMouseHovering && TooltipFunction != null)
+            {
+                string tooltip = TooltipFunction();
+
+                // TODO - Add line for default value?
+
+                if (ShowReloadRequiredTooltip)
+                {
+                    tooltip += string.IsNullOrEmpty(tooltip) ? "" : "\n";
+                    tooltip += $"[c/{Color.Orange.Hex3()}:" + Language.GetTextValue("tModLoader.ModReloadRequiredMemberTooltip") + "]";
+                }
+                Main.instance.MouseText(tooltip);
+            }
+        }
+
+        public static void DrawPanel2(SpriteBatch spriteBatch, Vector2 position, Texture2D texture, float width, float height, Color color)
+        {
+            // left edge
+            //	spriteBatch.Draw(texture, position, new Rectangle(0, 0, 2, texture.Height), color);
+            //	spriteBatch.Draw(texture, new Vector2(position.X + 2, position.Y), new Rectangle(2, 0, texture.Width - 4, texture.Height), color, 0f, Vector2.Zero, new Vector2((width - 4) / (texture.Width - 4), (height - 4) / (texture.Height - 4)), SpriteEffects.None, 0f);
+            //	spriteBatch.Draw(texture, new Vector2(position.X + width - 2, position.Y), new Rectangle(texture.Width - 2, 0, 2, texture.Height), color);
+
+            //width and height include border
+            spriteBatch.Draw(texture, position + new Vector2(0, 2), new Rectangle(0, 2, 1, 1), color, 0, Vector2.Zero, new Vector2(2, height - 4), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position + new Vector2(width - 2, 2), new Rectangle(0, 2, 1, 1), color, 0, Vector2.Zero, new Vector2(2, height - 4), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position + new Vector2(2, 0), new Rectangle(2, 0, 1, 1), color, 0, Vector2.Zero, new Vector2(width - 4, 2), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position + new Vector2(2, height - 2), new Rectangle(2, 0, 1, 1), color, 0, Vector2.Zero, new Vector2(width - 4, 2), SpriteEffects.None, 0f);
+
+            spriteBatch.Draw(texture, position + new Vector2(2, 2), new Rectangle(2, 2, 1, 1), color, 0, Vector2.Zero, new Vector2(width - 4, (height - 4) / 2), SpriteEffects.None, 0f);
+            spriteBatch.Draw(texture, position + new Vector2(2, 2 + ((height - 4) / 2)), new Rectangle(2, 16, 1, 1), color, 0, Vector2.Zero, new Vector2(width - 4, (height - 4) / 2), SpriteEffects.None, 0f);
+        }
+    }
+    public class SeqBooleanElement : SeqConfigElement<bool>
+    {
+        private Asset<Texture2D> _toggleTexture;
+
+        // TODO. Display status string? (right now only on/off texture, but True/False, Yes/No, Enabled/Disabled options)
+        public override void OnBind()
+        {
+            base.OnBind();
+            _toggleTexture = Main.Assets.Request<Texture2D>("Images/UI/Settings_Toggle");
+
+            OnLeftClick += (ev, v) => Value = !Value;
+        }
+        public override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            base.DrawSelf(spriteBatch);
+            CalculatedStyle dimensions = base.GetDimensions();
+            // "Yes" and "No" since no "True" and "False" translation available
+            Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, Value ? Lang.menu[126].Value : Lang.menu[124].Value, new Vector2(dimensions.X + dimensions.Width - 60, dimensions.Y + 8f), Color.White, 0f, Vector2.Zero, new Vector2(0.8f));
+            Rectangle sourceRectangle = new Rectangle(Value ? ((_toggleTexture.Width() - 2) / 2 + 2) : 0, 0, (_toggleTexture.Width() - 2) / 2, _toggleTexture.Height());
+            Vector2 drawPosition = new Vector2(dimensions.X + dimensions.Width - sourceRectangle.Width - 10f, dimensions.Y + 8f);
+            spriteBatch.Draw(_toggleTexture.Value, drawPosition, sourceRectangle, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
+        }
+    }
+    public class SeqDateTimeElement : SeqConfigElement<DateTime>
     {
         public override void OnBind()
         {
@@ -39,34 +470,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             string content = Value.ToString();
             Vector2 size = font.MeasureString(content);
             Rectangle rect = GetDimensions().ToRectangle();
-            spriteBatch.DrawString(font, Value.ToString(), rect.TopRight() - Vector2.UnitX * size - new Vector2(4, (size.Y - rect.Height) * .5f), Color.White);
+            ChatManager.DrawColorCodedStringWithShadow(spriteBatch, font, content, rect.TopRight() - Vector2.UnitX * size - new Vector2(4, (size.Y - rect.Height) * .5f), Color.White, 0, default, new Vector2(1f));
+            //spriteBatch.DrawString(font, Value.ToString(), rect.TopRight() - Vector2.UnitX * size - new Vector2(4, (size.Y - rect.Height) * .5f), Color.White);
             //spriteBatch.DrawRectangle(GetDimensions().ToRectangle(), Main.DiscoColor);
-        }
-    }
-    public abstract class SeqConfigElement : ConfigElement
-    {
-        public override void SetObject(object value)
-        {
-            if (List != null)
-            {
-                List[Index] = value;
-                SequenceSystem.SetSequenceUIPending();
-                return;
-            }
-
-            if (!MemberInfo.CanWrite)
-                return;
-
-            MemberInfo.SetValue(Item, value);
-            SequenceSystem.SetSequenceUIPending();
-        }
-    }
-    public abstract class SeqConfigElement<T> : SeqConfigElement
-    {
-        protected virtual T Value
-        {
-            get => (T)GetObject();
-            set => SetObject(value);
         }
     }
     public class SeqIntInputElement : SeqConfigElement
@@ -105,7 +511,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             textBoxBackground.Width.Set(120, 0f);
             textBoxBackground.Height.Set(30, 0f);
             Append(textBoxBackground);
-
+            string l = Label;
             uIInputTextField.SetText(GetValue().ToString());
             uIInputTextField.Top.Set(5, 0f);
             uIInputTextField.Left.Set(10, 0f);
@@ -145,9 +551,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Recalculate();
         }
 
-        protected virtual int GetValue() => (int)GetObject();
+        public virtual int GetValue() => (int)GetObject();
 
-        protected virtual void SetValue(int value) => SetObject(Utils.Clamp(value, Min, Max));
+        public virtual void SetValue(int value) => SetObject(Utils.Clamp(value, Min, Max));
     }
     public class SeqStringInputElement : SeqConfigElement<string>
     {
@@ -381,15 +787,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         private static SeqRangeElement rightLock;
         private static SeqRangeElement rightHover;
 
-        protected Color SliderColor { get; set; } = Color.White;
-        protected Utils.ColorLerpMethod ColorMethod { get; set; }
+        public Color SliderColor { get; set; } = Color.White;
+        public Utils.ColorLerpMethod ColorMethod { get; set; }
 
         internal bool DrawTicks { get; set; }
 
         public abstract int NumberTicks { get; }
         public abstract float TickIncrement { get; }
 
-        protected abstract float Proportion { get; set; }
+        public abstract float Proportion { get; set; }
 
         public SeqRangeElement()
         {
@@ -416,7 +822,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             IngameOptions.valuePosition.X -= (float)((int)vector.X);
             Rectangle rectangle = new Rectangle((int)IngameOptions.valuePosition.X, (int)IngameOptions.valuePosition.Y - (int)vector.Y / 2, (int)vector.X, (int)vector.Y);
             Rectangle destinationRectangle = rectangle;
-            int num = 107;
+            int num = 107 + (int)Math.Cos(LogSpiralLibraryMod.ModTime / 60) * 30;
             float num2 = rectangle.X + 5f * scale;
             float num3 = rectangle.Y + 4f * scale;
 
@@ -577,9 +983,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
         }
 
-        protected virtual T GetValue() => (T)GetObject();
+        public virtual T GetValue() => (T)GetObject();
 
-        protected virtual void SetValue(object value)
+        public virtual void SetValue(object value)
         {
             if (value is T t)
                 SetObject(Utils.Clamp(t, Min, Max));
@@ -590,7 +996,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override int NumberTicks => (int)((Max - Min) / Increment) + 1;
         public override float TickIncrement => (Increment) / (Max - Min);
 
-        protected override float Proportion
+        public override float Proportion
         {
             get => (GetValue() - Min) / (Max - Min);
             set => SetValue((float)Math.Round((value * (Max - Min) + Min) * (1 / Increment)) * Increment);
@@ -615,7 +1021,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override int NumberTicks => valueStrings.Length;
         public override float TickIncrement => 1f / (valueStrings.Length - 1);
 
-        protected override float Proportion
+        public override float Proportion
         {
             get => _getIndex() / (float)(max - 1);
             set => _setValue((int)(Math.Round(value * (max - 1))));
@@ -686,7 +1092,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             return valueStrings[_getIndex()];
         }
     }
-    public class ActionModifyDataElement : SeqConfigElement
+    public class SeqActionModifyDataElement : SeqConfigElement
     {
         class DataObject
         {
@@ -700,7 +1106,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //[LabelKey("缩放系数")]
             const string key = "$Mods.LogSpiralLibrary.Configs.ActionModifyData.";
             [LabelKey($"{key}sizeScaler.Label")]
-            [CustomModConfigItem(typeof(SeqFloatElement))]
+            [CustomSeqConfigItem(typeof(SeqFloatElement))]
             [Range(0.01f,3f)]
             [Increment(0.1f)]
             public float actionOffsetSize
@@ -715,7 +1121,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             //[LabelKey("时长系数")]
             [LabelKey($"{key}timeScaler.Label")]
-            [CustomModConfigItem(typeof(SeqFloatElement))]
+            [CustomSeqConfigItem(typeof(SeqFloatElement))]
             [Range(0.01f, 4f)]
             [Increment(0.05f)]
             public float actionOffsetTimeScaler
@@ -730,7 +1136,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             //[LabelKey("击退系数")]
             [LabelKey($"{key}knockBack.Label")]
-            [CustomModConfigItem(typeof(SeqFloatElement))]
+            [CustomSeqConfigItem(typeof(SeqFloatElement))]
             [Range(0.01f, 10f)]
             [Increment(0.05f)]
             public float actionOffsetKnockBack
@@ -744,7 +1150,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             //[LabelKey("伤害系数")]
             [LabelKey($"{key}damage.Label")]
-            [CustomModConfigItem(typeof(SeqFloatElement))]
+            [CustomSeqConfigItem(typeof(SeqFloatElement))]
             [Range(0.01f, 10f)]
             [Increment(0.05f)]
             public float actionOffsetDamage
@@ -758,7 +1164,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             //[LabelKey("暴击率增益")]
             [LabelKey($"{key}critAdd.Label")]
-            [CustomModConfigItem(typeof(SeqIntInputElement))]
+            [CustomSeqConfigItem(typeof(SeqIntInputElement))]
             [Range(1, 100)]
             [Increment(1)]
             public int actionOffsetCritAdder
@@ -772,7 +1178,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             //[LabelKey("暴击率系数")]
             [LabelKey($"{key}critMul.Label")]
-            [CustomModConfigItem(typeof(SeqFloatElement))]
+            [CustomSeqConfigItem(typeof(SeqFloatElement))]
             [Range(0.01f, 10f)]
             [Increment(0.05f)]
             public float actionOffsetCritMultiplyer
@@ -847,7 +1253,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             int order = 0;
             foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(c))
             {
-                var wrapped = UIModConfig.WrapIt(this, ref height, variable, c, order++);
+                var wrapped = SeqConfigElement.WrapIt(this, ref height, variable, c, order++);
 
                 // Can X and Y inherit range and increment automatically? Pass in "fake PropertyFieldWrapper" to achieve? Real one desired for label.
                 if (wrapped.Item2 is FloatElement floatElement)

@@ -609,8 +609,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     Value = optionElement.Definition;
                     UpdateNeeded = true;
                     SelectionExpanded = false;
-                    SequenceSystem.SetSequenceUIPending();
-
+                    Interface.modConfig.SetPendingChanges();
                 };
 
                 options.Add(optionElement);

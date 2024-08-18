@@ -108,6 +108,19 @@ Configs: {
 		}
 	}
 
+	SwooshInfo: {
+		mode: {
+			Label: mode
+			Tooltip: _
+		}
+	}
+
+	SwooshMode: {
+		Chop.Label: Chop
+		Slash.Label: Slash
+		Storm.Label: Storm
+	}
+
 	MeleeAction: {
 		ModifyData: {
 			Label: 调整数据

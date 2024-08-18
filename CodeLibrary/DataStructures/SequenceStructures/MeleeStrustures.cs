@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using System;
 using System.Collections.Generic;
@@ -32,23 +33,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public abstract class MeleeSequenceProj : ModProjectile
     {
         //bool IsLocalProj => false;
-        bool IsLocalProj =>  player.whoAmI == Main.myPlayer;//Main.netMode != NetmodeID.Server &&
+        bool IsLocalProj => player.whoAmI == Main.myPlayer;//Main.netMode != NetmodeID.Server &&
         public override void SendExtraAI(BinaryWriter writer)
         {
             bool flag = currentData != null;
             writer.Write(flag);
+
             if (flag)//IsLocalProj && 
             {
+                writer.Write(currentData.FullName);
                 writer.Write(currentData.Rotation);
                 writer.Write(currentData.KValue);
-                writer.Write(currentData.timer);
                 writer.Write(currentData.timerMax);
                 writer.Write(currentData.flip);
-                writer.WriteVector2(currentData.offsetCenter);
-                writer.WriteVector2(currentData.offsetOrigin);
-                writer.Write(currentData.offsetRotation);
-                writer.Write(currentData.offsetSize);
-                writer.Write(currentData.Attacktive);
             }
             base.SendExtraAI(writer);
         }
@@ -56,18 +53,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             bool flag = reader.ReadBoolean();
             if (!flag) return;
+            string actionName = reader.ReadString();
+            if (syncMelee == null || syncMelee.FullName != actionName)
+            {
+                ModContent.TryFind(actionName, out MeleeAction action);
+                if (action == null) return;
+                syncMelee = (MeleeAction)Activator.CreateInstance(action.GetType());
+            }
             if (syncMelee != null)//!IsLocalProj && 
             {
                 syncMelee.Rotation = reader.ReadSingle();
                 syncMelee.KValue = reader.ReadSingle();
-                syncMelee.timer = reader.ReadInt32();
+                syncMelee.timer =
                 syncMelee.timerMax = reader.ReadInt32();
                 syncMelee.flip = reader.ReadBoolean();
-                syncMelee._offCen = reader.ReadVector2();
-                syncMelee._offOrig = reader.ReadVector2();
-                syncMelee._rotation = reader.ReadSingle();
-                syncMelee._size = reader.ReadSingle();
-                syncMelee.attacktive = reader.ReadBoolean();
             }
             base.ReceiveExtraAI(reader);
         }
@@ -120,7 +119,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             SequenceCollectionManager<MeleeAction>.sequences[sequence.KeyName] = sequence;
         }
         protected MeleeSequence meleeSequence = new MeleeSequence();
-        SyncMelee syncMelee = null;
+        MeleeAction syncMelee = null;
         public IMeleeAttackData currentData => IsLocalProj ? meleeSequence.currentData : syncMelee;
         public override void SetDefaults()
         {
@@ -206,8 +205,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     flag2 = currentData.counter < currentData.Cycle;//我还没完事呢
                     flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
-                                                                                                                                          //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
-                                                                                                                                          //Main.NewText(currentData.Cycle);
+                                                                                                //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
+                                                                                                //Main.NewText(currentData.Cycle);
                 }
                 if (
                    flag1 || flag2// 
@@ -220,18 +219,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
                     //Main.NewText((MathF.Log10(Main.player[Projectile.owner].velocity.Length() + 1) + 1) * Projectile.damage * currentData.ModifyData.actionOffsetDamage);
                 }
-                Projectile.netUpdate = true;
                 if (currentData == null) return;
+                if (currentData.timer == currentData.timerMax - 1)
+                {
+                    //Main.NewText("同步!!");
+                    Projectile.netUpdate = true;
+                }
             }
             else
             {
-                syncMelee ??= new SyncMelee();
-                syncMelee.Owner = player;
+                if (syncMelee == null) return;
                 Projectile.timeLeft = 2;
-                syncMelee.standardInfo = StandardInfo;
-                //syncMelee._size = 1;
-                //syncMelee._rotation = (float)LogSpiralLibraryMod.ModTime / 20f;
-                syncMelee.Update(true);
+                MeleeSequence.Wraper wraper = new SequenceBase<MeleeAction>.Wraper(syncMelee);
+                wraper.Update(player, Projectile, StandardInfo, true, ref syncMelee);
             }
 
 
@@ -771,7 +771,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// </summary>
         public float KValue { get; set; } = 1f;
         public int counter { get; set; }
-        public int timer { get; set; }
+        public float fTimer;
+        public int timer
+        {
+            get => (int)fTimer; set => fTimer = value;
+        }
         public int timerMax { get; set; }
         public bool flip { get; set; }
         #endregion
@@ -779,7 +783,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 当前周期的进度
         /// </summary>
-        public virtual float Factor => timer / (float)timerMax;
+        public virtual float Factor => fTimer / timerMax;
+        //public virtual float Factor => timer / (float)timerMax;
         /// <summary>
         /// 中心偏移量，默认零向量
         /// </summary>
@@ -989,10 +994,33 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             if (Attacktive)
             {
-                float point = 0f;
 
-                return Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
-                    Projectile.Center + targetedVector, 48f, ref point);
+                int t = timer;
+                for (int n = 0; n < 10; n++) 
+                {
+                    fTimer = t - n * .1f;
+                    Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
+                    float finalRotation = offsetRotation + standardInfo.standardRotation;
+                    Vector2 drawCen = offsetCenter + Owner.Center;
+
+                    CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, !flip);
+
+                    float point = 0f;
+                    Vector2 tar = c[4].Position - drawCen;
+                    if (standardInfo.vertexStandard.scaler > 0)
+                    {
+                        tar.Normalize();
+                        tar *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
+                    }
+                    if (Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
+                        tar + Projectile.Center, 48f, ref point)) 
+                    {
+                        fTimer = t;
+                        return true;
+                    }
+                }
+                fTimer = t;
+
             }
             return false;
         }
@@ -1085,7 +1113,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public SwooshMode mode;
         int cutTime => 8;
         float k => 0.25f;
-        public override float offsetRotation => TimeToAngle(timer);
+        public override float offsetRotation => TimeToAngle(fTimer);
         public override float offsetSize => base.offsetSize;
 
         public override bool Attacktive
@@ -1093,12 +1121,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             get
             {
                 float t = (timerMax - cutTime) * k;
-                return timer > t && timer < t + cutTime;
+                return fTimer > t && fTimer < t + cutTime;
             }
         }
         public override void OnStartAttack()
         {
-            SoundEngine.PlaySound(MySoundID.Scythe);
+            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe);
 
             base.OnStartAttack();
         }
@@ -1144,15 +1172,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     _ => flip
                 };
                 float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
+                var pair = standardInfo.vertexStandard.swooshTexIndex;
                 if (standardInfo.itemType == ItemID.TrueExcalibur)
                 {
-                    u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), colorVec: verS.colorVec);
-                    subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
+                    u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
+                    subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
 
                 }
                 else
                 {
-                    u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size, Owner.Center, verS.heatMap, f, Rotation, KValue, range, colorVec: verS.colorVec);
+                    u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
                 }
                 if (verS.renderInfos == null)
                     u.ResetAllRenderInfo();
@@ -1229,7 +1258,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
         public override void OnStartAttack()
         {
-            SoundEngine.PlaySound(MySoundID.SwooshNormal_1);
+            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.SwooshNormal_1);
             base.OnStartAttack();
         }
         public override void OnStartSingle()
@@ -1245,18 +1274,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (verS.active)
             {
                 UltraStab u = null;
+                var pair = standardInfo.vertexStandard.stabTexIndex;
                 if (standardInfo.itemType == ItemID.TrueExcalibur)
                 {
                     float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
                     u = UltraStab.NewUltraStab(standardInfo.standardColor, (int)(verS.timeLeft * 1.2f), size,
-                    Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                    Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
                     UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
-                    Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                    Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
                 }
                 else
                 {
                     u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f,
-                    Owner.Center, verS.heatMap, flip, Rotation, 2, -3, 8, colorVec: verS.colorVec);
+                    Owner.Center, verS.heatMap, flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
                 }
                 //Main.NewText(Owner.Center);
                 //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
@@ -1381,7 +1411,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnStartAttack();
         }
     }
-    public class ShockingDashInfo : MeleeAction
+    /*public class ShockingDashInfo : MeleeAction
     {
-    }
+    }*/
 }

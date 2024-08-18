@@ -120,6 +120,19 @@ Configs: {
 		}
 	}
 
+	SwooshInfo: {
+		mode: {
+			Label: 模式
+			Tooltip: _
+		}
+	}
+
+	SwooshMode: {
+		Chop.Label: 重斩
+		Slash.Label: 横批
+		Storm.Label: 风暴
+	}
+
 	MeleeAction: {
 		ModifyData: {
 			Label: 调整数据

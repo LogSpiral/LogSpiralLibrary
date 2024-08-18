@@ -235,6 +235,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 热度/采样图
         /// </summary>
         public Texture2D heatMap;
+
+        public Texture2D weaponTex;
         /// <summary>
         /// 颜色插值
         /// </summary>
@@ -297,7 +299,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //return;
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
             Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
-            Main.graphics.GraphicsDevice.Textures[2] = TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
+            Main.graphics.GraphicsDevice.Textures[2] = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
             ShaderSwooshUL.Parameters["lightShift"].SetValue(factor - 1f);
             float dS = ShaderSwooshUL.Parameters["distortScaler"].GetValueSingle();

@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader.Config;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
@@ -33,6 +34,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
         /// </summary>
         public Vector3 colorVec;
+
+        public (int, int)? swooshTexIndex;
+        public (int, int)? stabTexIndex;
     }
     /// <summary>
     /// 不同物品有自己独有的标准值
@@ -62,6 +66,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Texture2D standardGlowTexture;
         public VertexDrawInfoStandardInfo vertexStandard = default;
         public int itemType;
+        public SoundStyle? soundStyle;
         public StandardInfo()
         {
         }

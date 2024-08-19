@@ -485,7 +485,6 @@ namespace LogSpiralLibrary
     {
         public override void OnEnterWorld()
         {
-            ModDefinitionElement.locals = ModOrganizer.FindAllMods();
             base.OnEnterWorld();
         }
         public float strengthOfShake;

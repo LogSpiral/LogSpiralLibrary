@@ -27,6 +27,7 @@ SequenceUI: {
 	RepeatedNameHint: 但是建议避免显示名的重复
 	CantEditHere: 此处无法编辑参数，请将其拖入序列中再编辑
 	SwitchToSequencePage: 转到该序列页面
+	LeastOneElementHint: 只剩这个元素了，无法移动或者移除
 }
 
 Items: {
@@ -351,7 +352,7 @@ Condition: {
 	MouseRight: 右键
 	FrontThreat: 正面胁迫!!
 	SurroundThreat: 四面楚歌!!
-	Always: Always
+	Always: 总是
 	// None: Mods.LogSpiralLibrary.Condition.None
 }
 

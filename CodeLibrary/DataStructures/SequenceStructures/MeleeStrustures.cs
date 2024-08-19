@@ -158,9 +158,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public virtual void InitializeSequence(string modName, string fileName)
         {
-            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue($"{modName}/{fileName}", out var value) && value is MeleeSequence sequence)
+            if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
+            if (!SequenceCollectionManager<MeleeAction>.loaded) SequenceCollectionManager<MeleeAction>.Load();
+            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue($"{modName}/{fileName}", out var value) && value is SequenceBase<MeleeAction> sequence)
             {
-                meleeSequence = sequence;
+                meleeSequence = new MeleeSequence() { groups = sequence.groups };
             }
             else
             {
@@ -996,7 +998,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
 
                 int t = timer;
-                for (int n = 0; n < 10; n++) 
+                for (int n = 0; n < 10; n++)
                 {
                     fTimer = t - n * .1f;
                     Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
@@ -1013,7 +1015,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         tar *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
                     }
                     if (Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
-                        tar + Projectile.Center, 48f, ref point)) 
+                        tar + Projectile.Center, 48f, ref point))
                     {
                         fTimer = t;
                         return true;

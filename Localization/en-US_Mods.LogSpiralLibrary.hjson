@@ -27,6 +27,7 @@ SequenceUI: {
 	RepeatedNameHint: However, it is advisable to avoid duplication of display names
 	CantEditHere: Parameters cannot be edited here, please drag them into the sequence and edit them
 	SwitchToSequencePage: Switch to the Page of this Sequence
+	LeastOneElementHint: This is the only element left, and it cannot be moved or removed
 }
 
 Items: {
@@ -93,17 +94,17 @@ Configs: {
 
 	RapidlyStabInfo: {
 		rangeOffsetMax: {
-			Label: 执行次数偏移上界
+			Label: Executions count upper offset bound
 			Tooltip: _
 		}
 
 		rangeOffsetMin: {
-			Label: 执行次数偏移下界
+			Label: Executions count lower offset bound
 			Tooltip: _
 		}
 
 		givenCycle: {
-			Label: 执行次数基值
+			Label: Executions count basic value
 			Tooltip: _
 		}
 	}
@@ -123,91 +124,91 @@ Configs: {
 
 	MeleeAction: {
 		ModifyData: {
-			Label: 调整数据
+			Label: Modify Data
 			Tooltip: _
 		}
 
 		Cycle: {
-			Label: 执行次数
+			Label: Executions count
 			Tooltip: _
 		}
 
 		OnEndAttackDelegate: {
-			Label: 结束攻击
+			Label: On End Attack
 			Tooltip: _
 		}
 
 		OnStartAttackDelegate: {
-			Label: 开始攻击
+			Label: On Start Attack
 			Tooltip: _
 		}
 
 		OnAttackDelegate: {
-			Label: 攻击期间
+			Label: On Attack
 			Tooltip: _
 		}
 
 		OnChargeDelegate: {
-			Label: 前后摇间
+			Label: On Charge
 			Tooltip: _
 		}
 
 		OnActiveDelegate: {
-			Label: 切换上时
+			Label: On Active
 			Tooltip: _
 		}
 
 		OnDeactiveDelegate: {
-			Label: 切换下时
+			Label: On Deactive
 			Tooltip: _
 		}
 
 		OnEndSingleDelegate: {
-			Label: 单次结束
+			Label: On End Single
 			Tooltip: _
 		}
 
 		OnStartSingleDelegate: {
-			Label: 单次开始
+			Label: On Start Single
 			Tooltip: _
 		}
 	}
 
 	WraperBase: {
 		conditionDefinition: {
-			Label: 执行条件
+			Label: Execution condition
 			Tooltip: _
 		}
 	}
 
 	ActionModifyData: {
 		sizeScaler: {
-			Label: 大小系数
+			Label: Size Scaler
 			Tooltip: 基于原来的进行缩放
 		}
 
 		timeScaler: {
-			Label: 时长系数
+			Label: Time Scaler
 			Tooltip: 基于原来的进行缩放
 		}
 
 		knockBack: {
-			Label: 击退系数
+			Label: Knockback Scaler
 			Tooltip: 基于原来的进行缩放
 		}
 
 		damage: {
-			Label: 伤害系数
+			Label: Damage Scaler
 			Tooltip: 基于原来的进行缩放
 		}
 
 		critAdd: {
-			Label: 暴击率增加值
+			Label: Additional Crit
 			Tooltip: 加在面板值上
 		}
 
 		critMul: {
-			Label: 暴击率系数
+			Label: Crit Scaler
 			Tooltip: 加完增加值再乘上这个
 		}
 	}

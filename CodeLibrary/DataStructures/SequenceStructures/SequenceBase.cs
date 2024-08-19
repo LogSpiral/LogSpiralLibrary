@@ -70,7 +70,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public StandardInfo()
         {
         }
-        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow,int type)
+        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow, int type)
         {
             standardRotation = rotation;
             standardOrigin = origin;
@@ -330,7 +330,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             settings.Indent = true;
             settings.Encoding = new UTF8Encoding(false);
             settings.NewLineChars = Environment.NewLine;
-            string tempPath = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}/{SequenceBase.SequenceDefaultName}.xml";
+            string dire = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}";
+            string tempPath = $"{dire}/{SequenceBase.SequenceDefaultName}.xml";
+            if (!Directory.Exists(dire)) Directory.CreateDirectory(dire);
             using XmlWriter xmlWriter = XmlWriter.Create(tempPath, settings);
             WriteContent(xmlWriter);
 
@@ -601,10 +603,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             }
                             else
                             {
+                                string filePath = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}/{ModName}/{xmlReader.Value}.xml";
+                                if (File.Exists(filePath))
+                                {
+                                    var resultSequence = Load(filePath);
+                                    SequenceCollectionManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = resultSequence;
+                                    result = new Wraper(resultSequence);
+                                }
+                                else
+                                {
+                                    Mod mod = ModLoader.GetMod(ModName);
+                                    sequence = new SequenceBase<T>();
+                                    //Load($"PresetSequences/{typeof(T).Name}/{xmlReader.Value}.xml",mod, sequence);
+                                    SequenceCollectionManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
+                                    result = new Wraper(sequence);
 
-                                var resultSequence = Load($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}/{ModName}/{xmlReader.Value}.xml");
-                                SequenceCollectionManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
-                                result = new Wraper(resultSequence);
+                                }
+
                             }
                         }
                         xmlReader.Read();//节点结束
@@ -689,9 +704,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 if (finished) throw new Exception("咱已经干完活了");
                 if (IsSequence)
                 {
-                    if (sequenceInfo.counter >= sequenceInfo.groups.Count - 1 && sequenceInfo.currentWrapper.finished)
+                    if (sequenceInfo.currentWrapper != null && sequenceInfo.counter >= sequenceInfo.groups.Count - 1 && sequenceInfo.currentWrapper.finished)
                     //if (sequenceInfo.counter >= sequenceInfo.groups.Count)
                     {
+                        //Main.NewText("好欸");
                         Attacktive = false;
                         sequenceInfo.currentWrapper.finished = false;
                         sequenceInfo.currentWrapper = null;
@@ -846,7 +862,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override int Counter => counter;
         public Wraper currentWrapper;
         public T currentData;
-        List<Group> groups = new List<Group>();
+        public List<Group> groups = new List<Group>();
         public IReadOnlyList<Group> Groups => groups;
         public override string FileName => sequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
@@ -890,16 +906,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (!currentWrapper.finished && currentWrapper.Update(entity, projectile, standardInfo, triggered, ref currentData))//只要没结束就继续执行更新
                 goto Label;
         }
-        public void ResetCounter() 
+        public void ResetCounter()
         {
             counter = 0;
             currentWrapper = null;
             currentData = default;
-            foreach (var g in groups) 
+            foreach (var g in groups)
             {
                 foreach (var w in g.wrapers)
                 {
-                    if(w.IsSequence)
+                    if (w.IsSequence)
                         w.sequenceInfo.ResetCounter();
                     else
                         w.Timer = w.TimerMax = 0;

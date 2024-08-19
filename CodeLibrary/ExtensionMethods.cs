@@ -3327,7 +3327,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             float locationTreat = Vector2.Dot(player.Center - target.Center, target.velocity - player.velocity) / (target.Center - player.Center).LengthSquared();
             float baseDataTreat = (target.life * target.defense / 10) * (1 / target.width / target.height / target.scale) + target.damage * (1 - 1 / target.width / target.height / target.scale);
-            Main.NewText(new Vector2(locationTreat, baseDataTreat));
+            //Main.NewText(new Vector2(locationTreat, baseDataTreat));
             return locationTreat + baseDataTreat;
         }
 

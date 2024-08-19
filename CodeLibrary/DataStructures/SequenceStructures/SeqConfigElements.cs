@@ -398,7 +398,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, label, position, color, 0f, Vector2.Zero, baseScale, settingsWidth, 2f);
             }
 
-            if (IsMouseHovering && TooltipFunction != null)
+            if (IsMouseHovering && TooltipFunction != null && false)
             {
                 string tooltip = TooltipFunction();
 

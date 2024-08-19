@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.Localization;
@@ -47,7 +48,8 @@ namespace LogSpiralLibrary.CodeLibrary
             OptionChoice = CreateDefinitionOptionElement();
             OptionChoice.Top.Set(2f, 0f);
             OptionChoice.Left.Set(-30, 1f);
-            OptionChoice.OnLeftClick += (a, b) => {
+            OptionChoice.OnLeftClick += (a, b) =>
+            {
                 SelectionExpanded = !SelectionExpanded;
                 UpdateNeeded = true;
             };
@@ -67,7 +69,8 @@ namespace LogSpiralLibrary.CodeLibrary
             textBoxBackgroundA.PaddingTop = 0;
             textBoxBackgroundA.PaddingBottom = 0;
             ChooserFilter = new UIFocusInputTextField("Filter by Name");
-            ChooserFilter.OnTextChange += (a, b) => {
+            ChooserFilter.OnTextChange += (a, b) =>
+            {
                 UpdateNeeded = true;
             };
             ChooserFilter.OnRightClick += (a, b) => ChooserFilter.SetText("");
@@ -81,7 +84,8 @@ namespace LogSpiralLibrary.CodeLibrary
             textBoxBackgroundB.CopyStyle(textBoxBackgroundA);
             textBoxBackgroundB.Left.Set(180, 0);
             ChooserFilterMod = new UIFocusInputTextField("Filter by Mod");
-            ChooserFilterMod.OnTextChange += (a, b) => {
+            ChooserFilterMod.OnTextChange += (a, b) =>
+            {
                 UpdateNeeded = true;
             };
             ChooserFilterMod.OnRightClick += (a, b) => ChooserFilterMod.SetText("");
@@ -111,7 +115,8 @@ namespace LogSpiralLibrary.CodeLibrary
             upDownButton.Recalculate();
             upDownButton.Top.Set(-4f, 0f);
             upDownButton.Left.Set(-18, 1f);
-            upDownButton.OnLeftClick += (a, b) => {
+            upDownButton.OnLeftClick += (a, b) =>
+            {
                 Rectangle r = b.GetDimensions().ToRectangle();
                 if (a.MousePosition.Y < r.Y + r.Height / 2)
                 {
@@ -190,6 +195,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 return -1;
             }
         }
+        public override bool IsUnloaded => Type < 0;
         public static readonly Func<TagCompound, ModDefinition> DESERIALIZER = Load;
         public ModDefinition() : base() { }
         public ModDefinition(int type) : base(ModLoader.Mods[type].Name) { }
@@ -296,7 +302,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 var localMod = ModToLocal(mod);
                 if (localMod != null)
                 {
-                    var refMods = from refMod in localMod.properties.modReferences select refMod.mod == "LogSpiralLibrary";
+                    var refMods = from refMod in localMod.properties.modReferences where refMod.mod == nameof(LogSpiralLibrary) select refMod;
                     if (refMods.Count() != 0)
                         passed.Add(option);
                 }
@@ -316,6 +322,8 @@ namespace LogSpiralLibrary.CodeLibrary
         public Texture2D modIcon;
         public ModDefinitionOptionElement(ModDefinition definition, float scale = .75f) : base(definition, scale)
         {
+            NullID = -1;
+            SetItem(definition);
             BackgroundTexture = TextureAssets.InventoryBack10;
             Width = Height = new StyleDimension(180 * scale, 0f);
         }
@@ -323,6 +331,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override void SetItem(ModDefinition definition)
         {
             base.SetItem(definition);
+            Tooltip = definition.DisplayName;
 
             try
             {
@@ -390,6 +399,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 return -1;
             }
         }
+        public override bool IsUnloaded => Type < 0;
         public ConditionDefinition() : base() { }
         public ConditionDefinition(int type) : base(SequenceSystem.conditions.ToList()[type].Key) { }
         public ConditionDefinition(string key) : base(key) { }
@@ -409,14 +419,14 @@ namespace LogSpiralLibrary.CodeLibrary
             if (!resetted)
             {
                 resetted = true;
-                TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Label + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+                TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Label + ": " + OptionChoice.Tooltip, GetDimensions().Width);
                 if (List != null)
                 {
-                    TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Index + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+                    TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Index + ": " + OptionChoice.Tooltip, GetDimensions().Width);
                 }
                 var str = TextDisplayFunction.Invoke();
 
-                Height = MinHeight = new StyleDimension(Math.Max(Height.Pixels, FontAssets.MouseText.Value.MeasureString(str).Y), 0);
+                Height = MinHeight = new StyleDimension(Math.Max(Height.Pixels, FontAssets.MouseText.Value.MeasureString(str).Y + 80 * OptionScale), 0);
                 if (Parent?.Parent?.Parent is UIList list)
                 {
                     Parent.MinHeight = MinHeight;
@@ -433,8 +443,11 @@ namespace LogSpiralLibrary.CodeLibrary
 
         public override void TweakDefinitionOptionElement(DefinitionOptionElement<ConditionDefinition> optionElement)
         {
-            optionElement.Top.Set(0f, 0f);
-            optionElement.Left.Set(-124, 1f);
+            optionElement.Top.Set(-40f, 1f);
+            //optionElement.Left.Set(-124, 1f);
+            optionElement.HAlign = 0.5f;
+            optionElement.Left.Set(0f, 0f);
+
         }
 
         public override List<DefinitionOptionElement<ConditionDefinition>> CreateDefinitionOptionElementList()
@@ -494,14 +507,17 @@ namespace LogSpiralLibrary.CodeLibrary
 
         public ConditionDefinitionOptionElement(ConditionDefinition definition, float scale = .75f) : base(definition, scale)
         {
-            Width.Set(150 * scale, 0f);
+            NullID = -1;
+            SetItem(definition);
+            Scale = scale;
+            Width.Set(280 * scale, 0f);
             Height.Set(40 * scale, 0f);
-
             text = new UIAutoScaleTextTextPanel<string>(Definition.DisplayName)
             {
                 Width = { Percent = 1f },
                 Height = { Percent = 1f },
             };
+
             Append(text);
         }
 
@@ -510,14 +526,14 @@ namespace LogSpiralLibrary.CodeLibrary
             base.SetItem(item);
 
             text?.SetText(item.DisplayName);
-
+            Tooltip = item.DisplayName;
         }
 
         public override void SetScale(float scale)
         {
             base.SetScale(scale);
 
-            Width.Set(150 * scale, 0f);
+            Width.Set(280 * scale, 0f);
             Height.Set(40 * scale, 0f);
         }
 
@@ -546,6 +562,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 return -1;
             }
         }
+        public override bool IsUnloaded => Type < 0;
         public SequenceDefinition() : base() { }
         public SequenceDefinition(int type) : base(SequenceCollectionManager<T>.sequences.ToList()[type].Key) { }
         public SequenceDefinition(string key) : base(key) { }
@@ -645,6 +662,9 @@ namespace LogSpiralLibrary.CodeLibrary
 
         public SequenceDefinitionOptionElement(SequenceDefinition<T> definition, float scale = .75f) : base(definition, scale)
         {
+            NullID = -1;
+            SetItem(definition);
+            Scale = scale;
             Width.Set(150 * scale, 0f);
             Height.Set(40 * scale, 0f);
             if (definition == null)
@@ -717,6 +737,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 return -1;
             }
         }
+        public override bool IsUnloaded => Type < 0;
         public string Key => $"{Mod}/{Name}";
         public SeqDelegateDefinition() : base(SequenceSystem.NoneDelegateKey) { }
         public SeqDelegateDefinition(int type) : base(SequenceSystem.elementDelegates.ToList()[type].Key) { }

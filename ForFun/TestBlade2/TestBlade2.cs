@@ -24,22 +24,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             base.SetDefaults();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
-        /// <summary>
-        /// 发射弹幕后用发射的弹幕的参数来整活用的函数！！
-        /// </summary>
-        /// <param name="player">发射出这个弹幕的玩家</param>
-        /// <param name="source">发射源，包含物品 弹药等信息</param>
-        /// <param name="position">发射位置</param>
-        /// <param name="velocity">发射速度</param>
-        /// <param name="type">发射弹幕的ID</param>
-        /// <param name="damage">发射出的弹幕的伤害</param>
-        /// <param name="knockback">击退</param>
-        /// <returns>是否发射这个弹幕</returns> //所以我刚刚记错了，这个应该是在发出弹幕前就执行的，用这个可以控制是否发射，但是CanShoot又是干嘛的，目前只能觉着应该是历史遗留问题，旧版是用这个控制修改和是否发射
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            Item.damage = Main.rand.Next(214, 514);
-            return base.Shoot(player, source, position, velocity, type, damage, knockback);
-        }
+        public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
     }
     public class TestBlade2Proj : MeleeSequenceProj
     {

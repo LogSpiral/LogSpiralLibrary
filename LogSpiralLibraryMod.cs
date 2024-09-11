@@ -21,6 +21,8 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using System.IO;
 using ReLogic.Graphics;
 using Terraria.ModLoader.Core;
+using NetSimplified;
+using NetSimplified.Syncing;
 
 namespace LogSpiralLibrary
 {
@@ -100,17 +102,28 @@ namespace LogSpiralLibrary
 
         public static BlendState AllOne;
         public static BlendState InverseColor;
+        public static BlendState SoftAdditive;//from yiyang233
         public LogSpiralLibraryMod()
         {
             AllOne = new BlendState();
+            AllOne.Name = "BlendState.AllOne";
             AllOne.ColorDestinationBlend = AllOne.AlphaDestinationBlend = AllOne.ColorSourceBlend = AllOne.AlphaSourceBlend = Blend.One;
 
-            InverseColor = new BlendState() 
+            InverseColor = new BlendState()
             {
+                Name = "BlendState.InverseColor",
                 ColorDestinationBlend = Blend.InverseSourceColor,
                 ColorSourceBlend = Blend.InverseDestinationColor,
                 AlphaDestinationBlend = Blend.One,
                 AlphaSourceBlend = Blend.Zero
+            };
+            SoftAdditive = new BlendState()
+            {
+                Name = "BlendState.SoftAdditve",
+                ColorDestinationBlend = Blend.One,
+                ColorSourceBlend = Blend.InverseDestinationColor,
+                AlphaDestinationBlend = Blend.One,
+                AlphaSourceBlend = Blend.SourceAlpha
             };
         }
         #endregion
@@ -174,12 +187,15 @@ namespace LogSpiralLibrary
             Render_Tiny_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
         }
         #endregion
+
         //public static bool CIVELoaded => ModLoader.HasMod("CoolerItemVisualEffect");
         public override void Load()
         {
+            Instance = this;
+            AddContent<NetModuleLoader>();
+
             if (Main.netMode == NetmodeID.Server) return;
 
-            Instance = this;
             LoadTextures(nameof(BaseTex), out BaseTex);
             LoadTextures(nameof(AniTex), out AniTex);
             LoadTextures(nameof(HeatMap), out HeatMap);
@@ -225,9 +241,9 @@ namespace LogSpiralLibrary
 
         public override void Unload()
         {
+            Instance = null;
             if (Main.netMode == NetmodeID.Server) return;
 
-            Instance = null;
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
             On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
@@ -341,6 +357,68 @@ namespace LogSpiralLibrary
             }
         }
         #endregion
+
+        //public enum MessageType
+        //{
+        //    SequenceSyncAll = 0,
+        //    SyncMousePosition = 1,
+        //}
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            NetModule.ReceiveModule(reader, whoAmI);
+            /*
+            MessageType msgType = (MessageType)reader.ReadByte();
+            switch (msgType)
+            {
+                case MessageType.SequenceSyncAll:
+                    {
+                        int plrIndex = reader.ReadByte();
+                        Player plr = Main.player[plrIndex];
+                        SequencePlayer sequencePlayer = plr.GetModPlayer<SequencePlayer>();
+                        sequencePlayer.ReceiveAllSeqFile(reader);
+                        if (Main.netMode == NetmodeID.Server)
+                        {
+                            sequencePlayer.SyncPlayer(-1, whoAmI, false);
+                        }
+                        break;
+                    }
+                case MessageType.SyncMousePosition:
+                    {
+                        int plrIndex = reader.ReadByte();
+                        Player plr = Main.player[plrIndex];
+                        LogSpiralLibraryPlayer logSpiralLibraryPlayer = plr.GetModPlayer<LogSpiralLibraryPlayer>();
+                        Vector2 tarVec = reader.ReadVector2();
+                        logSpiralLibraryPlayer.targetedMousePosition = tarVec;
+                        if (Main.netMode == NetmodeID.Server)
+                        {
+                            ModPacket modPacket = Instance.GetPacket();
+                            modPacket.Write((byte)MessageType.SyncMousePosition);
+                            modPacket.Write((byte)plrIndex);
+                            modPacket.WriteVector2(tarVec);
+                            modPacket.Send(-1, whoAmI);
+                        }
+                        break;
+                    }
+                //case MessageType.TestMessage: 
+                //    {
+                //        int plrIndex = reader.ReadByte();
+                //        Player plr = Main.player[plrIndex];
+                //        SyncTestPlayer syncPlayer = plr.GetModPlayer<SyncTestPlayer>();
+                //        syncPlayer.hashCode = reader.ReadInt32();
+                //        if (Main.netMode == NetmodeID.Server)
+                //        {
+                //            syncPlayer.SyncPlayer(-1, whoAmI, true);
+                //        }
+                //        break;
+                //    }
+                default:
+                    {
+                        Main.NewText("意外的数据类型");
+                        break;
+                    }
+            }*/
+            base.HandlePacket(reader, whoAmI);
+        }
     }
     public abstract class RenderBasedDrawing : ModType
     {
@@ -367,7 +445,6 @@ namespace LogSpiralLibrary
     {
         public override void PostSetupContent()
         {
-
             base.PostSetupContent();
         }
         public static List<RenderBasedDrawing> renderBasedDrawings = new List<RenderBasedDrawing>();
@@ -481,6 +558,27 @@ namespace LogSpiralLibrary
         }
 
     }
+    [AutoSync]
+    public class SyncMousePosition : NetModule
+    {
+        int whoAmI;
+        Vector2 pos;
+        public static SyncMousePosition Get(int whoAmI, Vector2 position)
+        {
+            var result = NetModuleLoader.Get<SyncMousePosition>();
+            result.pos = position;
+            result.whoAmI = whoAmI;
+            return result;
+        }
+        public override void Receive()
+        {
+            Main.player[whoAmI].GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition = pos;
+            if (Main.dedServ)
+            {
+                Get(whoAmI, pos).Send(-1, whoAmI);
+            }
+        }
+    }
     public class LogSpiralLibraryPlayer : ModPlayer
     {
         public override void OnEnterWorld()
@@ -498,6 +596,22 @@ namespace LogSpiralLibrary
         {
             if (ultraFallEnable)
                 Player.maxFallSpeed = 214514;
+
+            if (Main.myPlayer == Player.whoAmI)
+            {
+                targetedMousePosition = Main.MouseWorld;
+                //if (Main.netMode == NetmodeID.MultiplayerClient)
+                //{
+                //    ModPacket modPacket = LogSpiralLibraryMod.Instance.GetPacket();
+                //    modPacket.Write((byte)LogSpiralLibraryMod.MessageType.SyncMousePosition);
+                //    modPacket.Write((byte)Player.whoAmI);
+                //    modPacket.WriteVector2(targetedMousePosition);
+                //    modPacket.Send(-1, Player.whoAmI);
+                //}
+                SyncMousePosition.Get(Player.whoAmI, targetedMousePosition).Send();
+            }
+
+
             base.PreUpdate();
         }
         public override void PreUpdateMovement()
@@ -514,6 +628,8 @@ namespace LogSpiralLibrary
                 Main.screenPosition += Main.rand.NextVector2Unit() * strengthOfShake * 48 * set.strength;
             }
         }
+        public Vector2 targetedMousePosition;
+
     }
     public class LogSpiralLibraryMiscConfig : ModConfig
     {

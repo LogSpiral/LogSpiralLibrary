@@ -2015,16 +2015,16 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             //对数据进行矩阵变换吧！
             Matrix matrix =
-            Matrix.CreateTranslation(-origin.X, origin.Y - 1, 0) *
-                Matrix.CreateScale(texture.Width, texture.Height, 1) *
-                Matrix.CreateRotationZ(rotation) *
-                Matrix.CreateScale(1, 1 / KValue, 1) *
-                Matrix.CreateRotationZ(rotationDir) *
-                Matrix.CreateScale(size);
+            Matrix.CreateTranslation(-origin.X, origin.Y - 1, 0) *          //把变换中心平移到传入的origin上，这里我应该是为了方便改成数学常用的坐标系下的origin了(?)
+                Matrix.CreateScale(texture.Width, texture.Height, 1) *      //缩放到图片原本的正常比例
+                Matrix.CreateRotationZ(rotation) *                          //先进行一个旋转操作
+                Matrix.CreateScale(1, 1 / KValue, 1) *                      //压扁来有一种横批的感觉(??)
+                Matrix.CreateRotationZ(rotationDir) *                       //朝向旋转量，我用这个的时候是这个固定，上面那个从小变大，形成一种纸片挥砍的动态感(x
+                Matrix.CreateScale(size);                                   //单纯大小缩放
             Vector2[] vecs = new Vector2[4];
             for (int i = 0; i < 4; i++)
-                vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2 % 2), matrix);
-            CustomVertexInfo[] c = new CustomVertexInfo[6];
+                vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2 % 2), matrix);//生成单位正方形四个顶点
+            CustomVertexInfo[] c = new CustomVertexInfo[6];//两个三角形，六个顶点
             float light = 1f;
             int num0 = flip.ToInt();
             c[0] = new CustomVertexInfo(vecs[0] + drawCen, new Vector3(0, 1, light));
@@ -3067,6 +3067,17 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public static class OtherMethods
     {
+        public static void FastDust(Vector2 Center, Vector2 velocity, Color color)
+        {
+            var hsl = Main.rgbToHsl(color);//Color.MediumPurple
+            var dustColor = Color.Lerp(Main.hslToRgb(Vector3.Clamp(hsl * new Vector3(1, 2, Main.rand.NextFloat(0.85f, 1.15f)), default, Vector3.One)), Color.White, Main.rand.NextFloat(0, 0.3f));
+            Dust dust = Dust.NewDustPerfect(Center, 278, velocity, 0, dustColor, 1f);
+            dust.scale = 0.4f + Main.rand.NextFloat(-1, 1) * 0.1f;
+            dust.scale *= Main.rand.NextFloat(1, 2f);
+            dust.fadeIn = 0.4f + Main.rand.NextFloat() * 0.3f;
+            dust.fadeIn *= .5f;
+            dust.noGravity = true;
+        }
         public static T HardmodeValue<T>(T normalValue, T expertValue, T masterValue)
         {
             return Main.expertMode ? (Main.masterMode ? masterValue : expertValue) : normalValue;

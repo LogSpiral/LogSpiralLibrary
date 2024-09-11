@@ -28,6 +28,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
             base.SetDefaults();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+        public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
     }
     public class TestBlade3Proj : MeleeSequenceProj
     {
@@ -89,6 +91,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
             base.SetDefaults();
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+        public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
     }
     public class TestBlade3ProjV2 : MeleeSequenceProj
     {

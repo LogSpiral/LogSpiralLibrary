@@ -1,4 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+﻿using LogSpiralLibrary.CodeLibrary;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.ForFun.ScreenProjectorUI;
 using ReLogic.Content;
 using System;
 using Terraria.Audio;
@@ -27,17 +29,17 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             if (player.itemAnimation == 0)
             {
                 active = !active;
-                //if (active)
-                //{
-                //    //Main.NewText("圆神，启动！");
-                //    foreach (var sequence in SequenceSystem.sequenceBases.Values)
-                //    {
-                //        //Main.NewText(sequence == null);
-                //        sequence.Save();
-                //    }
-                //    SoundEngine.PlaySound(SoundID.Zombie104, player.Center);
-                //    //SetDefaults();
-                //}
+                if (active)
+                {
+                    //Main.NewText("圆神，启动！");
+                    //foreach (var sequence in SequenceSystem.sequenceBases.Values)
+                    //{
+                    //    //Main.NewText(sequence == null);
+                    //    sequence.Save();
+                    //}
+                    SoundEngine.PlaySound(SoundID.Zombie104, player.Center);
+                    //SetDefaults();
+                }
             }
             base.UseAnimation(player);
         }
@@ -51,7 +53,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
             //ModContent.Request<Effect>("LogSpiralLibrary/Effects/ColorScreen", AssetRequestMode.ImmediateLoad);
             ScreenTransformData = (ScreenTransformData)new ScreenTransformData(new Ref<Effect>(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad).Value),
-                "ConicSection");//.UseImage(ModContent.Request<Texture2D>("LogSpiralLibrary/Images/HeatMap/HeatMap_0").Value, 1).UseImage(LogSpiralLibrary.AniTex[8].Value, 2)
+                "Gradient").UseImage(ModContent.Request<Texture2D>("LogSpiralLibrary/Images/Misc/Misc_24",AssetRequestMode.ImmediateLoad).Value, 1);//.UseImage(LogSpiralLibrary.AniTex[8].Value, 2)
             Filters.Scene["LogSpiralLibrary:WTFScreen"] = new Filter(ScreenTransformData, EffectPriority.Medium);
         }
         public override void PreUpdateEntities()
@@ -147,6 +149,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             #endregion
 
             #region 启动！
+            /*
             //var factor = ForFun.ggb.Factor;
             var factor = CombinedOpacity;
             var fac1 = MathHelper.SmoothStep(0, 1, factor * 2);
@@ -165,13 +168,16 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             Shader.Parameters["TransformMatrix"].SetValue(Matrix.Lerp(Matrix.Identity, matrix, fac2));
             Shader.Parameters["width"].SetValue(Vector2.Lerp(new Vector2(0.35f), new Vector2(0.2f, 0.5f), fac1));
             Shader.Parameters["offset"].SetValue(Vector2.Lerp(default, new Vector2(0.5f) * new Vector2(Main.screenWidth / (float)Main.screenHeight, 1), fac2));
-
+            */
+            Matrix result = ScreenProjectorUI.ScreenProjectorUI.Transform;
+            result = Matrix.Invert(result);
+            Shader.Parameters["TransformMatrix"].SetValue(result);
             Main.instance.GraphicsDevice.SamplerStates[0] = SamplerState.AnisotropicWrap;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.AnisotropicWrap;
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
 
-            Main.instance.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.AniTex[8].Value;
-            Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.AniTex[8].Value;
+            Main.instance.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.Misc[24].Value;
+            //Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.AniTex[8].Value;
 
             Shader.Parameters["useHeatMap"].SetValue(false);
             base.Apply();

@@ -129,7 +129,7 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 Projectile.timeLeft = 2;
                 Projectile.ai[0]++;
-                Projectile.velocity = Utils.SafeNormalize(Main.MouseWorld - HeldCenter, Vector2.One);
+                Projectile.velocity = Utils.SafeNormalize(Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - HeldCenter, Vector2.One);
                 Projectile.rotation = Projectile.velocity.ToRotation();
                 Projectile.ai[1] = Player.controlUseItem ? 1 : 0;
                 if (Player.controlUseItem)
@@ -322,7 +322,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Player.RotatedRelativePoint(Player.MountedCenter, true);
             Player.itemTime = 2;
             Player.itemAnimation = 2;
-            Player.ChangeDir(Math.Sign((Main.MouseWorld - projCenter).X));
+            Player.ChangeDir(Math.Sign((Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).X));
             Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
 
             projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
@@ -1305,9 +1305,9 @@ namespace LogSpiralLibrary.CodeLibrary
             Player.RotatedRelativePoint(Player.MountedCenter, true);
             Player.itemTime = 2;
             Player.itemAnimation = 2;
-            Player.ChangeDir(Math.Sign((Main.MouseWorld - projCenter).X));
+            Player.ChangeDir(Math.Sign((Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).X));
             Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
-            projectile.velocity = (Main.MouseWorld - projCenter).SafeNormalize(default);
+            projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).SafeNormalize(default);
             projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
 
         }

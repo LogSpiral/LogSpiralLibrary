@@ -142,6 +142,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             /// <br><see cref="Draw"/></br>
             /// </summary>
             //bool StandAlone { get; }
+
+            /// <summary>
+            /// 是否绘制实体(?)
+            /// </summary>
+            bool DoRealDraw { get; }
         }
         public sealed override void Register()
         {
@@ -190,8 +195,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
             var newInfos = from info in infos where info != null && info.Active select info;
             if (!newInfos.Any()) return;
-            var renderPipeLines = from pipeLine in instance.RenderDrawInfos select pipeLine;//where info.Active 
-            if (!renderPipeLines.Any() || !CanUseRender || graphicsDevice == null)
+            List<List<IRenderDrawInfo>> renderPipeLines = new List<List<IRenderDrawInfo>>();
+            foreach (var pipe in instance.RenderDrawInfos)
+            {
+                var list = new List<IRenderDrawInfo>();
+                foreach (var rInfo in pipe)
+                {
+                    if (rInfo.Active)
+                        list.Add(rInfo);
+                }
+                if (list.Count != 0)
+                    renderPipeLines.Add(list);
+            }
+            if (renderPipeLines.Count == 0 || !CanUseRender || graphicsDevice == null)
             {
                 instance.PreDraw(spriteBatch, graphicsDevice, render, renderSwap);
                 foreach (var info in newInfos) info.Draw(spriteBatch);
@@ -199,11 +215,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             }
             else
             {
+                
                 foreach (var pipeLine in renderPipeLines)
                 {
-                    var realLine = from info in pipeLine where info.Active select info;
+                    var realLine = pipeLine;
                     if (!realLine.Any()) continue;
                     int counter = 0;
+                    bool realDraw = false;
                     foreach (var renderEffect in realLine)
                     {
                         if (counter == 0)
@@ -219,6 +237,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                         {
                             renderEffect.DrawToScreen(spriteBatch, graphicsDevice, render, renderSwap);
                         }
+                        realDraw |= renderEffect.DoRealDraw;
+                    }
+                    if (!realDraw) 
+                    {
+                        instance.PreDraw(spriteBatch, graphicsDevice, render, renderSwap);
+                        foreach (var info in newInfos) info.Draw(spriteBatch);
+                        instance.PostDraw(spriteBatch, graphicsDevice, render, renderSwap);
                     }
                 }
             }
@@ -366,7 +391,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             effect.Parameters["alphaFactor"].SetValue(2f);
             effect.Parameters["heatMapAlpha"].SetValue(true);
             effect.Parameters["stab"].SetValue(false);
-
+            effect.Parameters["alphaOffset"].SetValue(0f);
             //if (flag)
             //    effect.Parameters["AlphaVector"].SetValue(ConfigurationUltraTest.ConfigSwooshUltraInstance.AlphaVector);
             var sampler = SamplerState.AnisotropicWrap;
@@ -763,7 +788,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 色差距离
         /// </summary>
         public float colorOffset;
-        public bool StandAlone => true;
+        public bool DoRealDraw => false;
 
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -826,7 +851,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 翻转亮度决定值
         /// </summary>
         public bool inverse;
-        public bool StandAlone => false;
+        public bool DoRealDraw => true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
@@ -855,7 +880,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             RenderEffect.Parameters["ImageSize"].SetValue(TexSize);
             RenderEffect.Parameters["inverse"].SetValue(inverse);
             //spriteBatch.Draw(render, Vector2.Zero, Color.White);
-            RenderEffect.CurrentTechnique.Passes[1].Apply();
+                RenderEffect.CurrentTechnique.Passes[1].Apply();
             spriteBatch.Draw(render, Vector2.Zero, Color.White);
 
             spriteBatch.End();
@@ -917,7 +942,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 是否启动加法模式
         /// </summary>
         public bool additive;
-        public bool StandAlone => false;
+        public bool DoRealDraw => true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
@@ -989,6 +1014,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, 0.25f, 0, 0);
             //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
+
+            //spriteBatch.Draw(render, default, null, Color.White with { A = 0 }, 0, default, 0.25f, 0, 0);
             spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White with { A = 0 });  //(byte)(additive ? 0 : 255)
 
 
@@ -996,10 +1023,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 0.25f, 0, 0);
 
-            Main.instance.GraphicsDevice.BlendState = AllOne;
+            Main.instance.GraphicsDevice.BlendState = LogSpiralLibraryMod.AllOne;
             //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
             spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);// with { A = 0 }
-            Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
+            Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
             spriteBatch.End();
         }
 

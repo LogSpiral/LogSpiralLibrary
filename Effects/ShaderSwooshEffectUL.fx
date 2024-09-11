@@ -202,6 +202,7 @@ float4 PixelShaderFunction_VertexColor2(PSInput input) : COLOR0
 	}
 	return result;
 }
+float alphaOffset;
 float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 {
 	float3 coord = input.Texcoord;
@@ -220,7 +221,8 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 	if (heatMapAlpha)
 	{
 		result.a *= greyValue * airFactor;
-		result.a = saturate(result.a);
+		result.a += alphaOffset;
+		//result.a = saturate(result.a);
 	}
 	return result;
 }

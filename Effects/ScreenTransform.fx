@@ -148,10 +148,10 @@ float4 PixelShaderFunction_Single(PSInput input) : COLOR0
 {
 	float2 modifier = float2(uScreenResolution.x / uScreenResolution.y, 1);
 	float2 coords = input.Texcoord.xy;
-	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 1, 0), TransformMatrix);
-	if (homoCoord.z == 0)
+	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 0, 1), TransformMatrix);
+	if (homoCoord.w == 0)
 		return float4(0, 0, 0, 0);
-	float2 current = homoCoord.xy / homoCoord.z / modifier + float2(0.5, 0.5);
+	float2 current = homoCoord.xy / homoCoord.w / modifier + float2(0.5, 0.5);
 	float4 result = float4(0, 0, 0, 0);
 	if (current.x == saturate(current.x) && current.y == saturate(current.y))//
 	{
@@ -167,10 +167,10 @@ float4 PixelShaderFunction_Wrap(PSInput input) : COLOR0
 {
 	float2 modifier = float2(uScreenResolution.x / uScreenResolution.y, 1);
 	float2 coords = input.Texcoord.xy;
-	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 1, 0), TransformMatrix);
-	if (homoCoord.z == 0)
+	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 0, 1), TransformMatrix);
+	if (homoCoord.w == 0)
 		return float4(0, 0, 0, 0);
-	float2 current = homoCoord.xy / homoCoord.z / modifier + float2(0.5, 0.5);
+	float2 current = homoCoord.xy / homoCoord.w / modifier + float2(0.5, 0.5);
 	float4 result = float4(0, 0, 0, 0);
 	if (true)//current.x == saturate(current.x) && current.y == saturate(current.y)
 	{
@@ -186,10 +186,10 @@ float4 PixelShaderFunction_ConicSection(PSInput input) : COLOR0
 {
 	float2 modifier = float2(uScreenResolution.x / uScreenResolution.y, 1);
 	float2 coords = input.Texcoord.xy;
-	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 1, 0), TransformMatrix);
-	if (homoCoord.z == 0)
+	float4 homoCoord = mul(float4((coords - float2(0.5, 0.5)) * modifier, 0, 1), TransformMatrix);
+	if (homoCoord.w == 0)
 		return float4(0, 0, 0, 0);
-	float2 current = homoCoord.xy / homoCoord.z / modifier + float2(0.5, 0.5);
+	float2 current = homoCoord.xy / homoCoord.w / modifier + float2(0.5, 0.5);
 	float4 result = float4(0, 0, 0, 0);
 	if (true)//current.x == saturate(current.x) && current.y == saturate(current.y)
 	{
@@ -228,7 +228,35 @@ float4 PixelShaderFunction_Test(PSInput input) : COLOR0
 	//result += tex2D(uImage1, float2(saturate(factor), 0.5));
 	return result;
 }
-
+float4 PixelShaderFunction_Simple(PSInput input) : COLOR0
+{
+	float2 coords = input.Texcoord.xy;
+	float4 homoCoord = mul(float4(coords, 0, 1), TransformMatrix);
+	if (homoCoord.w == 0)
+		return float4(0, 0, 0, 0);
+	float2 current = homoCoord.xy / homoCoord.w;
+	float4 result = float4(0, 0, 0, 0);
+	if (current.x == saturate(current.x) && current.y == saturate(current.y))//
+	{
+		result = tex2D(uImage0, current);
+	}
+	return result;
+}
+float4 PixelShaderFunction_Gradient(PSInput input) : COLOR0
+{
+	float2 coords = input.Texcoord.xy;
+	float4 homoCoord = mul(float4(coords, 0, 1), TransformMatrix);
+	float4 base = float4(0, 0, 0, 0); //tex2D(uImage1, coords);
+	
+	if (homoCoord.w == 0)
+		return base;
+	float2 current = homoCoord.xy / homoCoord.w;
+	
+	float4 result = tex2D(uImage0, current);
+	float dist = length(floor(current));
+	result = lerp(base, result, 1 / (dist + 1));
+	return result;
+}
 technique Technique1
 {
 	pass Single
@@ -247,4 +275,14 @@ technique Technique1
 	{
 		PixelShader = compile ps_3_0 PixelShaderFunction_Test();
 	}
+	pass Simple
+	{
+		PixelShader = compile ps_3_0 PixelShaderFunction_Simple();
+	}
+	pass Gradient
+	{
+		PixelShader = compile ps_3_0 PixelShaderFunction_Gradient();
+
+	}
+
 }

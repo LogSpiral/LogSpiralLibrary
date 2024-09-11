@@ -56,7 +56,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 };
                 if (flag && entity.active && distance < distanceMax)
                 {
-                    if (VectorMethods.Cos(entity.Center, Main.MouseWorld, Player.Center) > 0.5f)
+                    if (VectorMethods.Cos(entity.Center, Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition, Player.Center) > 0.5f)
                     {
                         frontTargets.Add(entity);
                         if (distance < distanceMaxF)
@@ -74,7 +74,7 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             if (frontTargets.Count == 0)
             {
-                targetF = Main.MouseWorld;
+                targetF = Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition;
             }
             else
             {

@@ -551,7 +551,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             get
             {
-                var list = from pair in SequenceCollectionManager<T>.sequences select pair.Value;
+                var list = from pair in SequenceManager<T>.sequences select pair.Value;
                 int n = 0;
                 foreach (var seq in list)
                 {
@@ -564,13 +564,13 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override bool IsUnloaded => Type < 0;
         public SequenceDefinition() : base() { }
-        public SequenceDefinition(int type) : base(SequenceCollectionManager<T>.sequences.ToList()[type].Key) { }
+        public SequenceDefinition(int type) : base(SequenceManager<T>.sequences.ToList()[type].Key) { }
         public SequenceDefinition(string key) : base(key) { }
         public SequenceDefinition(string mod, string name) : base(mod, name) { }
         public static ConditionDefinition FromString(string s) => new(s);
         public static ConditionDefinition Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
         public static readonly Func<TagCompound, ConditionDefinition> DESERIALIZER = Load;
-        public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceCollectionManager<T>.sequences.ToList()[Type].Value.DisplayName);
+        public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceManager<T>.sequences.ToList()[Type].Value.DisplayName);
     }
 
     public class SequenceDefinitionElement<T> : DefinitionElement<SequenceDefinition<T>> where T : ISequenceElement
@@ -615,7 +615,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             var options = new List<DefinitionOptionElement<SequenceDefinition<T>>>();
 
-            for (int i = 0; i < SequenceCollectionManager<T>.sequences.Count; i++)
+            for (int i = 0; i < SequenceManager<T>.sequences.Count; i++)
             {
                 SequenceDefinitionOptionElement<T> optionElement;
 

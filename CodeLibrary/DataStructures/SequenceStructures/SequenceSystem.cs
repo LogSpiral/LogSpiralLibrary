@@ -29,6 +29,8 @@ using rail;
 using static Terraria.Localization.NetworkText;
 using AsmResolver.IO;
 using Terraria.ModLoader.Core;
+using System.Text;
+using NetSimplified;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -53,6 +55,46 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnChanged();
         }
     }
+    /*public class SyncTestPlayer : ModPlayer
+    {
+        public int hashCode;
+        public SyncTestPlayer()
+        {
+            hashCode = this.GetHashCode();
+        }
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            SpriteBatch spb = Main.spriteBatch;
+            spb.DrawString(FontAssets.MouseText.Value, hashCode.ToString(), Player.Top + new Vector2(0, -64) - Main.screenPosition, Main.DiscoColor);
+            base.ModifyDrawInfo(ref drawInfo);
+        }
+        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
+        {
+            if (!newPlayer) return;
+            var packet = LogSpiralLibraryMod.Instance.GetPacket();
+            packet.Write((byte)LogSpiralLibraryMod.MessageType.TestMessage);
+            packet.Write((byte)Player.whoAmI);
+            packet.Write(hashCode);
+            packet.Send(toWho, fromWho);
+            base.SyncPlayer(toWho, fromWho, newPlayer);
+        }
+        //public override void SendClientChanges(ModPlayer clientPlayer)
+        //{
+        //    if (clientPlayer is SyncTestPlayer syncCopy && syncCopy.hashCode != hashCode)
+        //    {
+        //        SyncPlayer(-1, Main.myPlayer, false);
+        //    }
+        //    base.SendClientChanges(clientPlayer);
+        //}
+        //public override void CopyClientState(ModPlayer targetCopy)
+        //{
+        //    if (targetCopy is SyncTestPlayer syncCopy) 
+        //    {
+        //        syncCopy.hashCode = hashCode;
+        //    }
+        //    base.CopyClientState(targetCopy);
+        //}
+    }*/
     public class SequencePlayer : ModPlayer
     {
         public override void ProcessTriggers(TriggersSet triggersSet)
@@ -66,8 +108,156 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             base.ProcessTriggers(triggersSet);
         }
+        public Dictionary<Type, Dictionary<string, SequenceBase>> plrLocSeq = null;
+        public override void OnEnterWorld()
+        {
+            //if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
+            //{
+
+            //}
+            base.OnEnterWorld();
+        }
+        public void InitPlrLocSeq()
+        {
+            plrLocSeq = new();
+            foreach (var type in SequenceSystem.AvailableElementBaseTypes)
+            {
+                plrLocSeq[type] = new();
+            }
+        }
+        public SequencePlayer()
+        {
+            InitPlrLocSeq();
+        }
+        public void ReceiveAllSeqFile(BinaryReader reader)
+        {
+            foreach (var type in SequenceSystem.AvailableElementBaseTypes)
+            {
+                byte seqCount = reader.ReadByte();
+                var dict = plrLocSeq[type];
+                var method = SequenceSystem.GetLoad(type);
+                for (int u = 0; u < seqCount; u++)
+                {
+                    int bCount = reader.ReadInt32();
+                    string keyName = reader.ReadString();
+                    byte[] bytes = reader.ReadBytes(bCount);
+                    using MemoryStream memoryStream = new MemoryStream(bytes);
+                    using XmlReader xmlReader = XmlReader.Create(memoryStream);
+                    var seq = method.Invoke(null, [xmlReader, keyName.Split('/')[0]]);
+                    dict[keyName] = (SequenceBase)seq;
+                }
+            }
+        }
+        /*public void SendAllSeqFIle(int toWho, int fromWho)
+        {
+            var packet = LogSpiralLibraryMod.Instance.GetPacket();
+            packet.Write((byte)LogSpiralLibraryMod.MessageType.SequenceSyncAll);
+            packet.Write((byte)Player.whoAmI);
+
+            foreach (var type in SequenceSystem.AvailableElementBaseTypes)
+                SequenceSystem.GetWrite(type).Invoke(null, [packet]);
+            packet.Send(toWho, fromWho);
+        }*/
+        public override void SyncPlayer(int toWho, int fromWho, bool newPlayer)
+        {
+            // SendAllSeqFIle(toWho, fromWho);
+
+
+            SyncAllSequence.Get(Player.whoAmI, plrLocSeq).Send(toWho, fromWho);
+            base.SyncPlayer(toWho, fromWho, newPlayer);
+        }
     }
-    public static class SequenceCollectionManager<T> where T : ISequenceElement
+    public class SyncSingleSequence : NetModule
+    {
+        public SequenceBase Sequence;
+        public int plrIndex;
+        public int ElementTypeIndex;
+        public Type ElementType;
+        public static SyncSingleSequence Get(int plrIndex, SequenceBase sequence, Type ElementType)
+        {
+            SyncSingleSequence result = NetModuleLoader.Get<SyncSingleSequence>();
+            result.Sequence = sequence;
+            result.plrIndex = plrIndex;
+            result.ElementTypeIndex = SequenceSystem.AvailableElementBaseTypes.IndexOf(ElementType);
+            result.ElementType = ElementType;
+            //result.ElementType = elementType;
+            return result;
+        }
+        public override void Send(ModPacket p)
+        {
+            p.Write((byte)plrIndex);
+            p.Write((byte)ElementTypeIndex);
+            using MemoryStream memoryStream = new MemoryStream();
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.Encoding = new UTF8Encoding(false);
+            settings.NewLineChars = Environment.NewLine;
+            XmlWriter xmlWriter = XmlWriter.Create(memoryStream, settings);
+            Sequence.WriteContent(xmlWriter);
+            //SequenceSystem.GetWrite(ElementType).Invoke(Sequence, [xmlWriter]);
+            xmlWriter.Dispose();
+            p.Write(Sequence.KeyName);
+            p.Write((int)memoryStream.Length);
+            p.Write(memoryStream.ToArray());
+            base.Send(p);
+        }
+        public override void Read(BinaryReader r)
+        {
+            plrIndex = r.ReadByte();
+            ElementTypeIndex = r.ReadByte();
+            ElementType = SequenceSystem.AvailableElementBaseTypes[ElementTypeIndex];
+            string keyName = r.ReadString();
+            int bLength = r.ReadInt32();
+            byte[] buffer = r.ReadBytes(bLength);
+            using MemoryStream memoryStream = new MemoryStream(buffer);
+            using XmlReader xmlReader = XmlReader.Create(memoryStream);
+            var seq = SequenceSystem.GetLoad(ElementType).Invoke(null, [xmlReader, keyName.Split('/')[0]]);
+
+            Sequence = Main.player[plrIndex].GetModPlayer<SequencePlayer>().plrLocSeq[ElementType][keyName] = (SequenceBase)seq;
+            base.Read(r);
+        }
+        public override void Receive()
+        {
+            if (Main.dedServ)
+            {
+                Get(plrIndex, Sequence, ElementType).Send(-1, plrIndex);
+            }
+        }
+    }
+    public class SyncAllSequence : NetModule
+    {
+        public Dictionary<Type, Dictionary<string, SequenceBase>> plrLocSeq;
+        public int plrIndex;
+        public static SyncAllSequence Get(int plrIndex, Dictionary<Type, Dictionary<string, SequenceBase>> plrSeq)
+        {
+            SyncAllSequence result = NetModuleLoader.Get<SyncAllSequence>();
+            result.plrLocSeq = plrSeq;
+            result.plrIndex = plrIndex;
+            return result;
+        }
+        public override void Send(ModPacket p)
+        {
+            p.Write((byte)plrIndex);
+            foreach (var type in SequenceSystem.AvailableElementBaseTypes)
+                SequenceSystem.GetWriteAll(type).Invoke(null, [p]);
+        }
+        public override void Read(BinaryReader r)
+        {
+            plrIndex = r.ReadByte();
+            var seqPlr = Main.player[plrIndex].GetModPlayer<SequencePlayer>();
+            seqPlr.ReceiveAllSeqFile(r);
+            plrLocSeq = seqPlr.plrLocSeq;
+        }
+        public override void Receive()
+        {
+            //Main.player[plrIndex].GetModPlayer<SequencePlayer>().plrLocSeq = plrLocSeq;
+            if (Main.dedServ)
+            {
+                Get(plrIndex, plrLocSeq).Send(-1, plrIndex);
+            }
+        }
+    }
+    public static class SequenceManager<T> where T : ISequenceElement
     {
         public static Dictionary<string, SequenceBase<T>> sequences = new Dictionary<string, SequenceBase<T>>();//{ { "LogSpiralLibrary/None", new SequenceBase<T>() { od = LogSpiralLibraryMod.Instance} } };
         public static bool loaded;
@@ -131,10 +321,71 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
             }
         }
-
+        public static void WriteAllToPacket(ModPacket packet)
+        {
+            packet.Write((byte)sequences.Count);
+            foreach (var pair in sequences)
+            {
+                using MemoryStream stream = new MemoryStream();
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.Encoding = new UTF8Encoding(false);
+                settings.NewLineChars = Environment.NewLine;
+                XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
+                pair.Value.WriteContent(xmlWriter);
+                xmlWriter.Dispose();
+                packet.Write((int)stream.Length);
+                packet.Write(pair.Key);
+                packet.Write(stream.ToArray());
+            }
+        }
     }
     public class SequenceSystem : ModSystem
     {
+        public static Condition ToEntityCondition(string key, string LocalizationKey, Entity entity)
+        {
+            if (entityConditions.TryGetValue(key, out var func))
+            {
+                return new Condition(Language.GetOrRegister(LocalizationKey), () => func(entity));
+            }
+            return null;
+        }
+        static void FastAddStandardEntityCondition(string LocalizationKey) 
+        {
+            string key = LocalizationKey.Split('.')[^1];
+            conditions.Add(key, ToEntityCondition(key, LocalizationKey, Main.LocalPlayer));
+        }
+        public static Dictionary<string, Func<Entity, bool>> entityConditions = new();
+        public static Dictionary<Type, MethodInfo> seqLoadMethods = new Dictionary<Type, MethodInfo>();
+        public static Dictionary<Type, MethodInfo> seqWriteAllMethods = new Dictionary<Type, MethodInfo>();
+        public static Dictionary<Type, MethodInfo> seqWriteMethods = new Dictionary<Type, MethodInfo>();
+        public static MethodInfo GetLoad(Type type)
+        {
+            if (!seqLoadMethods.TryGetValue(type, out var method))
+            {
+                var sType = typeof(SequenceBase<>).MakeGenericType(type);
+                seqLoadMethods[type] = method = sType.GetMethod("Load", BindingFlags.Static | BindingFlags.Public, [typeof(XmlReader), typeof(string)]);
+            }
+            return method;
+        }
+        public static MethodInfo GetWriteAll(Type type)
+        {
+            if (!seqWriteAllMethods.TryGetValue(type, out var method))
+            {
+                var sType = typeof(SequenceManager<>).MakeGenericType(type);
+                seqWriteAllMethods[type] = method = sType.GetMethod("WriteAllToPacket", BindingFlags.Static | BindingFlags.Public);
+            }
+            return method;
+        }
+        public static MethodInfo GetWrite(Type type)
+        {
+            if (!seqLoadMethods.TryGetValue(type, out var method))
+            {
+                var sType = typeof(SequenceBase<>).MakeGenericType(type);
+                seqLoadMethods[type] = method = sType.GetMethod("WriteContent", BindingFlags.Instance | BindingFlags.Public, [typeof(XmlWriter)]);
+            }
+            return method;
+        }
         public static void SetSequenceUIPending(bool flag = true)
         {
             instance.sequenceUI.PendingModify = flag;
@@ -176,22 +427,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //conditions.Add("None", noneCondition);
             var alwaysCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.Always"), () => true);
             conditions.Add("Always", alwaysCondition);
-            var mouseLeftCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseLeft"), () => Main.LocalPlayer.controlUseItem);
-            conditions.Add("MouseLeft", mouseLeftCondition);
-            var mouseRightCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.MouseRight"), () => Main.LocalPlayer.controlUseTile);
-            conditions.Add("MouseRight", mouseRightCondition);
-            var surroundThreatCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.SurroundThreat"), () =>
-            {
-                SurroundStatePlayer ssp = Main.LocalPlayer.GetModPlayer<SurroundStatePlayer>();
-                return ssp.state == SurroundState.SurroundThreat;
-            });
-            conditions.Add("SurroundThreat", surroundThreatCondition);
-            var frontThreatCondition = new Condition(Language.GetOrRegister("Mods.LogSpiralLibrary.Condition.FrontThreat"), () =>
-            {
-                SurroundStatePlayer ssp = Main.LocalPlayer.GetModPlayer<SurroundStatePlayer>();
-                return ssp.state == SurroundState.FrontThreat;
-            });
-            conditions.Add("FrontThreat", frontThreatCondition);
+
+            //TODO 增加其它类型实体的判别条件
+            entityConditions.Add("MouseLeft", entity => entity switch { Player plr => plr.controlUseItem, _ => false });
+            entityConditions.Add("MouseRight", entity => entity switch { Player plr => plr.controlUseTile, _ => false });
+            entityConditions.Add("SurroundThreat", entity => entity switch { Player plr => plr.GetModPlayer<SurroundStatePlayer>().state == SurroundState.SurroundThreat, _ => false });
+            entityConditions.Add("FrontThreat", entity => entity switch { Player plr => plr.GetModPlayer<SurroundStatePlayer>().state == SurroundState.FrontThreat, _ => false });
+
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.MouseLeft");
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.MouseRight");
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.SurroundThreat");
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.FrontThreat");
             var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fieldInfos)
             {
@@ -263,8 +509,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public static void LoadSequences<T>() where T : ISequenceElement
         {
-            SequenceCollectionManager<MeleeAction>.Load();
-            var seq = SequenceCollectionManager<MeleeAction>.sequences;
+            SequenceManager<MeleeAction>.Load();
+            var seq = SequenceManager<MeleeAction>.sequences;
             sequenceBases[typeof(T)] = (from s in seq select new KeyValuePair<string, SequenceBase>(s.Key, s.Value)).ToDictionary();
         }
         public static void LoadSequenceWithType(Type type) => typeof(SequenceSystem).GetMethod("LoadSequences", BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(type).Invoke(null, []);
@@ -327,7 +573,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public UIButton<string> revertButton;
         public UIPanel BasicInfoPanel;
         public Type CurrentSelectedType;
-        public Dictionary<string, SequenceBase> currentSequences => (from pair in SequenceCollectionManager<MeleeAction>.sequences select new KeyValuePair<string, SequenceBase>(pair.Key, pair.Value)).ToDictionary();//SequenceSystem.sequenceBases[CurrentSelectedType];//(Dictionary<string, SequenceBase>)typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences",BindingFlags.Static | BindingFlags.Public).GetValue(null);
+        public Dictionary<string, SequenceBase> currentSequences => (from pair in SequenceManager<MeleeAction>.sequences select new KeyValuePair<string, SequenceBase>(pair.Key, pair.Value)).ToDictionary();//SequenceSystem.sequenceBases[CurrentSelectedType];//(Dictionary<string, SequenceBase>)typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences",BindingFlags.Static | BindingFlags.Public).GetValue(null);
         public bool Draggable;
         public bool Dragging;
         bool pendingModify;
@@ -491,7 +737,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Type type = sequence.GetType();
                 var method = type.GetMethod("Load", BindingFlags.Static | BindingFlags.Public, [typeof(string), type]);
 
-                Type mgrType = typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType);
+                Type mgrType = typeof(SequenceManager<>).MakeGenericType(CurrentSelectedType);
 
                 var target = (mgrType.GetField("sequences", BindingFlags.Public | BindingFlags.Static).GetValue(null) as IDictionary)[sequence.KeyName];
 
@@ -501,6 +747,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 SequenceSystem.sequenceInfos[box.sequenceBase.KeyName] = info;
                 PendingModify = false;
                 SoundEngine.PlaySound(SoundID.MenuOpen);
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    SyncSingleSequence.Get(Main.myPlayer, sequence, CurrentSelectedType).Send();
+                }
             };
 
 
@@ -514,7 +764,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var info = SequenceSystem.sequenceInfos[sequence.KeyName].Clone();
                 info.lastModifyDate = DateTime.Now;
                 OpenBasicSetter(info, sequence);
-
             };
 
             revertButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".Revert").Value);
@@ -685,7 +934,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             WorkingPlacePanel.OnLeftMouseDown +=
                 (evt, elem) =>
                 {
-                    if (Draggable && evt.Target == elem)
+                    if (Draggable && (evt.Target == elem || (WorkingPlacePanel.Elements[0] is SequenceBox sb && sb.MouseCheckInEmptySpace(evt.MousePosition))))
                     {
                         var e = elem.Elements.FirstOrDefault();
                         Offset = new Vector2(evt.MousePosition.X - e.Left.Pixels, evt.MousePosition.Y - e.Top.Pixels);
@@ -862,13 +1111,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     Main.NewText(Language.GetOrRegister(localizationPath + ".RepeatedNameHint").Value, Color.Orange);
                 }
                 //SequenceSystem.instance.sequenceUI.currentSequences[info.KeyName] = sequence;
-                (typeof(SequenceCollectionManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary)[info.KeyName] = sequence;
+                (typeof(SequenceManager<>).MakeGenericType(CurrentSelectedType).GetField("sequences", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary)[info.KeyName] = sequence;
                 SequenceSystem.sequenceInfos[info.KeyName] = info;
                 var box = new SequenceBox(sequence);
                 sequence.SyncInfo(info);
                 sequence.Save();
                 SequenceToPage(box);
                 SwitchToSequencePage(box);
+                if (Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    SyncSingleSequence.Get(Main.myPlayer, sequence, CurrentSelectedType).Send();
+                }
             };
         }
         public void Open()
@@ -1297,6 +1550,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //}
             base.MouseOver(evt);
         }
+        public void ParentCacheRefreshSet()
+        {
+            if (Parent is GroupBox gb)
+            {
+                gb.CacheRefresh = true;
+                var sb = gb.Parent as SequenceBox;
+                sb.CacheRefresh = true;
+                if (sb.Parent is WraperBox wb)
+                {
+                    wb.CacheRefresh = true;
+                    wb.ParentCacheRefreshSet();
+                }
+            }
+        }
         public override void LeftMouseDown(UIMouseEvent evt)
         {
             if (SequenceSystem.instance.sequenceUI.WorkingPlacePanel.Elements[0] is not SequenceBox box)
@@ -1334,6 +1601,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
                     SequenceBox sBox = (group.Parent as SequenceBox);
                     sBox.sequenceBase.Remove(wraper, group.group);
+                    sBox.CacheRefresh = true;
                     if (group.wraperBoxes.Count == 0)
                     {
                         sBox.groupBoxes.Remove(group);
@@ -1341,7 +1609,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
 
                     }
-
+                    if (sBox.Parent is WraperBox wb)
+                    {
+                        wb.CacheRefresh = true;
+                        wb.WrapperSize();
+                        wb.ParentCacheRefreshSet();
+                    }
                     SequenceBox mainBox = SequenceSystem.instance.sequenceUI.WorkingPlacePanel.Elements[0] as SequenceBox;
                     mainBox.Elements.Clear();
                     mainBox.CacheRefresh = true;
@@ -1366,13 +1639,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             sequenceUI.OuterWorkingPanel.RemoveChild(this);
             box.InsertWraper(this, evt.MousePosition);
             sequenceUI.PendingModify = true;
-            box.Elements.Clear();
-            box.CacheRefresh = true;
-            box.OnInitialize();
-            box.Recalculate();
-            //box = new SequenceBox(box.sequenceBase);
-            //box.SequenceSize();
-            //box.OnInitialize();
+
+
             Dragging = false;
             base.LeftMouseUp(evt);
         }
@@ -1597,6 +1865,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             }
         }
+        /// <summary>
+        /// 检测鼠标是否在空隙中(也就是非打包器区域
+        /// </summary>
+        /// <returns></returns>
+        public bool MouseCheckInEmptySpace(Vector2 position)
+        {
+            foreach (var g in groupBoxes)
+            {
+                foreach (var w in g.wraperBoxes)
+                {
+                    if (w.GetDimensions().ToRectangle().Contains(position.ToPoint()))
+                        return false;
+                }
+            }
+            return true;
+        }
         public void InsertWraper(WraperBox wraper, Vector2 center)
         {
             if (!ContainsPoint(center))
@@ -1628,6 +1912,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     if (wraperBox.wraper.IsSequence)
                     {
                         wraperBox.sequenceBox.InsertWraper(wraper, center);
+                        wraperBox.SetSize(wraperBox.sequenceBox.GetSize());
+                        groupBox.CacheRefresh = true;
+                        groupBox.GroupSize();
                     }
                     else
                     {
@@ -1645,14 +1932,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         }
                         groupBox.group.Replace(wIndex, nW);
                         groupBox.wraperBoxes[wIndex] = new WraperBox(nW);
-
+                        groupBox.CacheRefresh = true;
                     }
+                    wraperBox.ParentCacheRefreshSet();
                 }
                 else
                 {
                     //出口二，作为独立单元并联
                     this.sequenceBase.GroupBases[gIndex].Insert(wIndex, wraper.wraper);
                     this.groupBoxes[gIndex].wraperBoxes.Insert(wIndex, wraper);
+                    this.groupBoxes[gIndex].CacheRefresh = true;
                 }
             }
             else
@@ -1664,6 +1953,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     groupBoxes[gIndex].wraperBoxes[0].sequenceBox.expand = wraper.sequenceBox.expand;
 
             }
+            var box = this;
+            box.Elements.Clear();
+            box.CacheRefresh = true;
+            box.OnInitialize();
+            box.Recalculate();
         }
         public override void Update(GameTime gameTime)
         {
@@ -1773,6 +2067,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Vector2 curr = wrapBox.GetSize();
             if (curr == default || wrapBox.CacheRefresh)
             {
+                wrapBox.CacheRefresh = false;
                 Vector2 delta;
                 var wraper = wrapBox.wraper;
                 var desc = wraper.Condition.Description;
@@ -1822,6 +2117,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Vector2 curr = groupBox.GetSize();
             if (curr == default || groupBox.CacheRefresh)
             {
+                groupBox.CacheRefresh = false;
                 Vector2 result = default;
                 foreach (var wrapper in groupBox.wraperBoxes)
                 {

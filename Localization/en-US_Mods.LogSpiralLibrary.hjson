@@ -60,6 +60,11 @@ Items: {
 		DisplayName: Test Blade3 V2
 		Tooltip: ""
 	}
+
+	DrawTestHelmet: {
+		DisplayName: Draw Test Helmet
+		Tooltip: ""
+	}
 }
 
 MeleeAction: {
@@ -329,7 +334,10 @@ Projectiles: {
 	TestBlade3ProjV2.DisplayName: Test Blade3 Proj V2
 }
 
-Keybinds.ShowSequenceModifier.DisplayName: Show Sequence Modifier
+Keybinds: {
+	ShowSequenceModifier.DisplayName: Show Sequence Modifier
+	ShowScreenProjector.DisplayName: Show Screen Projector
+}
 
 Condition: {
 	MouseLeft: MouseLeft

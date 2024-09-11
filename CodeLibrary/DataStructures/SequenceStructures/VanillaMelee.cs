@@ -34,7 +34,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public bool back;
         public override void OnStartSingle()
         {
-            Vector2 unit = Main.MouseWorld - Owner.Center;
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
+                _ => default
+            };
+            Vector2 unit = tarVec - Owner.Center;
             unit.Normalize();
             realCenter = Owner.Center + unit * 16;
             Rotation = unit.ToRotation();
@@ -94,7 +99,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override Vector2 offsetCenter => (new Vector2(64, 16) * ((float)LogSpiralLibraryMod.ModTime2 / 4f).ToRotationVector2()).RotatedBy(Rotation);
         public override void OnAttack()
         {
-            Rotation = (Main.MouseWorld - Owner.Center).ToRotation();
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
+                _ => default
+            };
+            Rotation = (tarVec - Owner.Center).ToRotation();
             if ((int)LogSpiralLibraryMod.ModTime2 % 10 == 0)
                 SoundEngine.PlaySound(SoundID.Item7);
             base.OnAttack();
@@ -116,9 +126,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     public class SpearInfo : MeleeAction
     {
         public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi);
-        public override Vector2 offsetCenter 
+        public override Vector2 offsetCenter
         {
-            get 
+            get
             {
                 float v = MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2);
                 //KValue = 1 + v * 4f;
@@ -173,9 +183,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Vector2 realCenter;
         public override void Update(bool triggered)
         {
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
+                _ => default
+            };
             if (!triggered) timer = 1;
             if (timer > 10)
-                realCenter = Vector2.Lerp(realCenter, Main.MouseWorld, 0.05f);
+                realCenter = Vector2.Lerp(realCenter, tarVec, 0.05f);
             else
             {
                 realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.15f);
@@ -578,7 +593,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override float offsetRotation => Main.rand.NextFloat(-0.1f, 0.1f);
         public override void OnAttack()
         {
-            Rotation = (Main.MouseWorld - Owner.Center).ToRotation();
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
+                _ => default
+            };
+            Rotation = (tarVec - Owner.Center).ToRotation();
 
             base.OnAttack();
         }
@@ -594,7 +614,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public float dist;
         public override void OnStartSingle()
         {
-            dist = (Main.MouseWorld - Owner.Center).Length();
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
+                _ => default
+            };
+            dist = (tarVec - Owner.Center).Length();
             if (dist < 32) dist = 32;
             base.OnStartSingle();
         }

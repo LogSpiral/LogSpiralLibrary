@@ -32,44 +32,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// </summary>
     public abstract class MeleeSequenceProj : ModProjectile
     {
-        //bool IsLocalProj => false;
-        bool IsLocalProj => player.whoAmI == Main.myPlayer;//Main.netMode != NetmodeID.Server &&
-        public override void SendExtraAI(BinaryWriter writer)
-        {
-            bool flag = currentData != null;
-            writer.Write(flag);
-
-            if (flag)//IsLocalProj && 
-            {
-                writer.Write(currentData.FullName);
-                writer.Write(currentData.Rotation);
-                writer.Write(currentData.KValue);
-                writer.Write(currentData.timerMax);
-                writer.Write(currentData.flip);
-            }
-            base.SendExtraAI(writer);
-        }
-        public override void ReceiveExtraAI(BinaryReader reader)
-        {
-            bool flag = reader.ReadBoolean();
-            if (!flag) return;
-            string actionName = reader.ReadString();
-            if (syncMelee == null || syncMelee.FullName != actionName)
-            {
-                ModContent.TryFind(actionName, out MeleeAction action);
-                if (action == null) return;
-                syncMelee = (MeleeAction)Activator.CreateInstance(action.GetType());
-            }
-            if (syncMelee != null)//!IsLocalProj && 
-            {
-                syncMelee.Rotation = reader.ReadSingle();
-                syncMelee.KValue = reader.ReadSingle();
-                syncMelee.timer =
-                syncMelee.timerMax = reader.ReadInt32();
-                syncMelee.flip = reader.ReadBoolean();
-            }
-            base.ReceiveExtraAI(reader);
-        }
+        bool IsLocalProj => player.whoAmI == Main.myPlayer;
 
         public MeleeSequence MeleeSequenceData
         {
@@ -82,6 +45,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public virtual bool LabeledAsCompleted => false;
         public static MeleeSequence LocalMeleeSequence;
         //public abstract void SetUpSequence(MeleeSequence meleeSequence);
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            //meleeSequence?.currentData?.NetReceive(reader);
+            base.ReceiveExtraAI(reader);
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            //meleeSequence?.currentData?.NetSend(writer);
+            base.SendExtraAI(writer);
+        }
         public virtual void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
             if (LabeledAsCompleted)
@@ -91,36 +64,54 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     LocalMeleeSequence = new MeleeSequence();
                     MeleeSequence.Load((GetType().Namespace.Replace(Mod.Name + ".", "") + "." + Name).Replace('.', '/') + ".xml", Mod, LocalMeleeSequence);
                 }
-                meleeSequence = LocalMeleeSequence;
+                //meleeSequence = (MeleeSequence)LocalMeleeSequence.Clone();
+                meleeSequence = new MeleeSequence() { groups = ((SequenceBase<MeleeAction>)LocalMeleeSequence.Clone()).groups };
                 return;
             }
-            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{modName}/{fileName}.xml";
-            if (File.Exists(path))
-                MeleeSequence.Load(path, sequence);
+            if (IsLocalProj)
+            {
+                var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{modName}/{fileName}.xml";
+                if (File.Exists(path))
+                    MeleeSequence.Load(path, sequence);
+                else
+                {
+                    sequence.Add(new SwooshInfo());
+                    sequence.mod = Mod;
+                    sequence.sequenceName = Name;
+                    SequenceSystem.sequenceInfos[sequence.KeyName] =
+                        new SequenceBasicInfo()
+                        {
+                            AuthorName = "LSL",
+                            Description = "Auto Spawn By LogSpiralLibrary.",
+                            FileName = Name,
+                            DisplayName = Name,
+                            ModDefinition = new ModDefinition(Mod.Name),
+                            createDate = DateTime.Now,
+                            lastModifyDate = DateTime.Now,
+                            Finished = true
+                        };
+                    sequence.Save();
+                }
+                SequenceManager<MeleeAction>.sequences[sequence.KeyName] = sequence;
+            }
             else
             {
-                sequence.Add(new SwooshInfo());
-                sequence.mod = Mod;
-                sequence.sequenceName = Name;
-                SequenceSystem.sequenceInfos[sequence.KeyName] =
-                    new SequenceBasicInfo()
-                    {
-                        AuthorName = "LSL",
-                        Description = "Auto Spawn By LogSpiralLibrary.",
-                        FileName = Name,
-                        DisplayName = Name,
-                        ModDefinition = new ModDefinition(Mod.Name),
-                        createDate = DateTime.Now,
-                        lastModifyDate = DateTime.Now,
-                        Finished = true
-                    };
-                sequence.Save();
+                var sPlayer = player.GetModPlayer<SequencePlayer>();
+                var sDict = sPlayer.plrLocSeq;
+                if (sDict == null)
+                {
+                    sPlayer.InitPlrLocSeq();
+                    sDict = sPlayer.plrLocSeq;
+                    return;
+                }
+                var dict = sDict[typeof(MeleeAction)];
+                var result = dict[$"{modName}/{fileName}"];
+                //meleeSequence = (MeleeSequence)result;
+                meleeSequence = new MeleeSequence() { groups = ((SequenceBase<MeleeAction>)result).groups };
             }
-            SequenceCollectionManager<MeleeAction>.sequences[sequence.KeyName] = sequence;
         }
-        protected MeleeSequence meleeSequence = new MeleeSequence();
-        MeleeAction syncMelee = null;
-        public IMeleeAttackData currentData => IsLocalProj ? meleeSequence.currentData : syncMelee;
+        protected MeleeSequence meleeSequence = null;
+        public IMeleeAttackData currentData => meleeSequence.currentData;
         public override void SetDefaults()
         {
             Projectile.timeLeft = 10;
@@ -132,9 +123,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Projectile.aiStyle = -1;
             Projectile.hide = true;
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 2;
-
-            InitializeSequence(Mod.Name, Name);
+            Projectile.localNPCHitCooldown = 8;
+            Projectile.ownerHitCheck = true;
+            if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
+            if (!SequenceManager<MeleeAction>.loaded) SequenceManager<MeleeAction>.Load();
+            //InitializeSequence(Mod.Name, Name);
 
             base.SetDefaults();
         }
@@ -158,9 +151,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public virtual void InitializeSequence(string modName, string fileName)
         {
-            if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
-            if (!SequenceCollectionManager<MeleeAction>.loaded) SequenceCollectionManager<MeleeAction>.Load();
-            if (SequenceCollectionManager<MeleeAction>.sequences.TryGetValue($"{modName}/{fileName}", out var value) && value is SequenceBase<MeleeAction> sequence)
+
+            if (!LabeledAsCompleted && IsLocalProj && SequenceManager<MeleeAction>.sequences.TryGetValue($"{modName}/{fileName}", out var value) && value is SequenceBase<MeleeAction> sequence)
             {
                 meleeSequence = new MeleeSequence() { groups = sequence.groups };
             }
@@ -170,6 +162,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //meleeSequence.mod = Mod;
                 SetUpSequence(meleeSequence, modName, fileName);
             }
+            meleeSequence?.ResetCounter();
         }
         public Player player => Main.player[Projectile.owner];
         public override bool ShouldUpdatePosition()
@@ -193,48 +186,36 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             player.heldProj = Projectile.whoAmI;
             Projectile.damage = player.GetWeaponDamage(player.HeldItem);
             Projectile.direction = player.direction;
-            Projectile.velocity = (Main.MouseWorld - player.Center).SafeNormalize(default);
+            Projectile.velocity = (player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - player.Center).SafeNormalize(default);
+            if (meleeSequence == null)
+            {
+                InitializeSequence(Mod.Name, Name);
+                meleeSequence.SetOwner(player);
+            }
             if (player.DeadOrGhost) Projectile.Kill();
             if (Projectile.timeLeft == 10) return;
 
 
-            if (IsLocalProj)
+            if (meleeSequence.Groups.Count < 1) return;
+            bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
+            bool flag2 = false;//次要-持续条件
+            if (currentData != null)
             {
-                if (meleeSequence.Groups.Count < 1) return;
-                bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
-                bool flag2 = false;//次要-持续条件
-                if (currentData != null)
-                {
-                    flag2 = currentData.counter < currentData.Cycle;//我还没完事呢
-                    flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
-                                                                                                //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
-                                                                                                //Main.NewText(currentData.Cycle);
-                }
-                if (
-                   flag1 || flag2// 
-                    )
-                {
-                    if (flag1 || ((currentData.counter < currentData.Cycle || (currentData.counter == currentData.Cycle && currentData.timer > 0)) && !meleeSequence.currentWrapper.finished))
-                        Projectile.timeLeft = 2;
-                    meleeSequence.Update(player, Projectile, StandardInfo, flag1);
-
-
-                    //Main.NewText((MathF.Log10(Main.player[Projectile.owner].velocity.Length() + 1) + 1) * Projectile.damage * currentData.ModifyData.actionOffsetDamage);
-                }
-                if (currentData == null) return;
-                if (currentData.timer == currentData.timerMax - 1)
-                {
-                    //Main.NewText("同步!!");
-                    Projectile.netUpdate = true;
-                }
+                flag2 = currentData.counter < currentData.Cycle;//我还没完事呢
+                flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
+                                                                                            //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
+                                                                                            //Main.NewText(currentData.Cycle);
             }
-            else
+            if (
+               flag1 || flag2// 
+                )
             {
-                if (syncMelee == null) return;
-                Projectile.timeLeft = 2;
-                MeleeSequence.Wraper wraper = new SequenceBase<MeleeAction>.Wraper(syncMelee);
-                wraper.Update(player, Projectile, StandardInfo, true, ref syncMelee);
+                if (flag1 || ((currentData.counter < currentData.Cycle || (currentData.counter == currentData.Cycle && currentData.timer > 0)) && !meleeSequence.currentWrapper.finished))
+                    Projectile.timeLeft = 2;
+
+                meleeSequence.Update(player, Projectile, StandardInfo, flag1);
             }
+            if (currentData == null) return;
 
 
             Projectile.Center = player.Center + currentData.offsetCenter;
@@ -244,8 +225,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             if (currentData != null)
             {
-                if (!IsLocalProj)
-                    meleeSequence.active = true;
+                meleeSequence.active = true;
                 currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
             }
             var spb = Main.spriteBatch;
@@ -253,7 +233,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
         {
-            if (!IsLocalProj) return false;
             if (currentData == null || !currentData.Attacktive) return false;
             return currentData.Collide(targetHitbox);
         }
@@ -603,6 +582,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public abstract class MeleeAction : ModType, IMeleeAttackData
     {
+        public virtual void NetSend(BinaryWriter writer)
+        {
+
+        }
+        public virtual void NetReceive(BinaryReader reader)
+        {
+
+        }
         public MeleeAction()
         {
             foreach (var n in ModTypeLookup<MeleeAction>.dict.Values)
@@ -880,7 +867,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
         public virtual void OnStartSingle()
         {
-
             if (OnStartSingleDelegate != null && OnStartSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
             {
                 SequenceSystem.elementDelegates[OnStartSingleDelegate.Key].Invoke(this);
@@ -891,8 +877,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 case Player player:
                     {
                         //SoundEngine.PlaySound(SoundID.Item71);
-                        player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
-                        Rotation = (Main.MouseWorld - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
+                        var tarpos = player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition;
+                        player.direction = Math.Sign(tarpos.X - player.Center.X);
+                        Rotation = (tarpos - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
                         break;
                     }
 
@@ -921,6 +908,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
             //spriteBatch.Draw(LogSpiralLibraryMod.Misc[24].Value, new Vector2(0,0), Color.White);
+            //spriteBatch.DrawRectangle(new Rectangle(640 + 160, 400 + 100,1280 * 3 / 4, 800 * 3 / 4), Color.White, 4);
+
+
             Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
             float finalRotation = offsetRotation + standardInfo.standardRotation;
             #region 好久前的绘制代码，直接搬过来用用试试
@@ -935,7 +925,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //    drawCen += adder;
             //    spriteBatch.Draw(TextureAssets.MagicPixel.Value, Owner.Center + adder - Main.screenPosition, new Rectangle(0, 0, 1, 1), Main.DiscoColor, 0, new Vector2(.5f), 4f, 0, 0);
             //}
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, !flip);
+            float sc = 1;
+            if (Owner is Player plr)
+                sc = plr.GetAdjustedItemScale(plr.HeldItem);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !flip);
             //bool flag = LogSpiralLibraryMod.ModTime / 60 % 2 < 1;
             //Effect ItemEffect = flag ? LogSpiralLibraryMod.ItemEffectEX : LogSpiralLibraryMod.ItemEffect;
             //if (flag)
@@ -980,11 +973,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
             #endregion
             targetedVector = c[4].Position - drawCen;
-            if (standardInfo.vertexStandard.scaler > 0)
-            {
-                targetedVector.Normalize();
-                targetedVector *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
-            }
+            //if (standardInfo.vertexStandard.scaler > 0)
+            //{
+            //    targetedVector.Normalize();
+            //    targetedVector *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize * sc;
+            //}
 
             #region 显示弹幕碰撞区域
             //spriteBatch.DrawLine(Projectile.Center, targetedVector, Color.Red, 4, true, -Main.screenPosition);
@@ -996,8 +989,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             if (Attacktive)
             {
+                Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 2, 1, 514);
 
                 int t = timer;
+                float sc = 1;
+                if (Owner is Player plr)
+                    sc = plr.GetAdjustedItemScale(plr.HeldItem);
                 for (int n = 0; n < 10; n++)
                 {
                     fTimer = t - n * .1f;
@@ -1005,15 +1002,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     float finalRotation = offsetRotation + standardInfo.standardRotation;
                     Vector2 drawCen = offsetCenter + Owner.Center;
 
-                    CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize, drawCen, !flip);
+                    float k = 1f;
+                    if (standardInfo.vertexStandard.scaler > 0)
+                    {
+                        k = standardInfo.vertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
+                    }
+                    CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !flip);
 
                     float point = 0f;
                     Vector2 tar = c[4].Position - drawCen;
-                    if (standardInfo.vertexStandard.scaler > 0)
-                    {
-                        tar.Normalize();
-                        tar *= standardInfo.vertexStandard.scaler * offsetSize * ModifyData.actionOffsetSize;
-                    }
                     if (Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
                         tar + Projectile.Center, 48f, ref point))
                     {
@@ -1033,33 +1030,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public StandardInfo standardInfo { get; set; }
 
         public string LocalizationCategory => nameof(MeleeAction);
-        public override void Register()
+        public sealed override void Register()
         {
             ModTypeLookup<MeleeAction>.Register(this);
         }
         public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
         #endregion
-    }
-    public class SyncMelee : MeleeAction
-    {
-        public Vector2 _offCen;
-        public override Vector2 offsetCenter => _offCen;
-        public Vector2 _offOrig;
-        public override Vector2 offsetOrigin => _offOrig;
-        public float _rotation;
-        public override float offsetRotation => _rotation;
-        public float _size;
-        public override float offsetSize => _size;
-        public bool attacktive;
-        public override bool Attacktive => attacktive;
-        public override void Register()
-        {
-        }
-        public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
-        {
-            spriteBatch.DrawString(FontAssets.MouseText.Value, "我是同步弹幕", Owner.Top - Main.screenPosition, Main.DiscoColor);
-            base.Draw(spriteBatch, texture);
-        }
     }
     public class SwooshInfo : MeleeAction
     {
@@ -1068,9 +1044,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             Chop,
             Slash,
-            Storm
+            //Storm
         }
-
+        public override void NetReceive(BinaryReader reader)
+        {
+            Rotation = reader.ReadSingle();
+            KValue = reader.ReadSingle();
+            base.NetReceive(reader);
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(Rotation);
+            writer.Write(KValue);
+            base.NetSend(writer);
+        }
         public override void LoadAttribute(XmlReader xmlReader)
         {
             mode = (SwooshMode)int.Parse(xmlReader["mode"] ?? "0");
@@ -1128,17 +1115,27 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void OnStartAttack()
         {
-            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe);
+            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
+            if (Owner is Player plr)
+            {
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
 
+            }
             base.OnStartAttack();
         }
         public override void OnStartSingle()
         {
             base.OnStartSingle();
             Rotation += Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6);
+            KValue = Main.rand.NextFloat(1, 2);
+            //if (Projectile.owner == Main.myPlayer)
+            //{
+            //    Rotation += Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6);
+            //    KValue = Main.rand.NextFloat(1, 2);
+            //    Projectile.netImportant = true;
+            //}
             if (mode == SwooshMode.Slash)
                 flip ^= true;
-            KValue = Main.rand.NextFloat(1, 2);
             NewSwoosh();
         }
         public override void OnDeactive()
@@ -1151,7 +1148,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             //flip = Main.rand.NextBool();
             flip = Owner.direction == -1;
-            base.OnActive();
+
+            if (Attacktive)
+
+                base.OnActive();
         }
         UltraSwoosh swoosh;
         UltraSwoosh subSwoosh;
@@ -1166,7 +1166,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     SwooshMode.Chop => (.875f, -1f),
                     SwooshMode.Slash => (.625f, -.75f),
-                    SwooshMode.Storm or _ => (.625f, -.75f)
+                    //SwooshMode.Storm or _ => (.625f, -.75f)
                 };
                 bool f = mode switch
                 {
@@ -1192,6 +1192,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
                 swoosh = u;
+                u.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
+                if (subSwoosh != null)
+                    subSwoosh.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
                 //return u;
             }
             //return null;
@@ -1252,15 +1255,57 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             base.Draw(spriteBatch, texture);
         }
+        public override void OnAttack()
+        {
+            for (int n = 0; n < 30 * (1 - Factor) * standardInfo.dustAmount; n++)
+            {
+                var Center = Owner.Center + offsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
+                var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
+                OtherMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, standardInfo.standardColor);
+
+
+            }
+            base.OnAttack();
+        }
     }
     public class StabInfo : MeleeAction
     {
+        public override void NetReceive(BinaryReader reader)
+        {
+            Rotation = reader.ReadSingle();
+            KValue = reader.ReadSingle();
+            base.NetReceive(reader);
+        }
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write(Rotation);
+            writer.Write(KValue);
+            base.NetSend(writer);
+        }
         public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
         public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
         public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
         public override void OnStartAttack()
         {
-            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.SwooshNormal_1);
+            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
+            if (Owner is Player plr)
+            {
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                for (int n = 0; n < 30; n++)
+                {
+                    if (Main.rand.NextFloat(0, 1) < standardInfo.dustAmount)
+                        for (int k = 0; k < 2; k++)
+                        {
+                            var flag = k == 0;
+                            var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, 2)).RotatedBy(Rotation) * (flag ? 2 : 1);
+                            var Center = Owner.Center + offsetCenter + targetedVector * .75f;
+                            var velocity = -Owner.velocity * 2 + unit - targetedVector * .125f;
+                            velocity *= 2;
+                            OtherMethods.FastDust(Center, velocity, standardInfo.standardColor);
+
+                        }
+                }
+            }
             base.OnStartAttack();
         }
         public override void OnStartSingle()
@@ -1268,6 +1313,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.OnStartSingle();
             KValue = Main.rand.NextFloat(1f, 2.4f);
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
+            //if (Projectile.owner == Main.myPlayer)
+            //{
+            //    KValue = Main.rand.NextFloat(1f, 2.4f);
+            //    Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
+            //    Projectile.netImportant = true;
+            //}
+
             flip ^= true;
         }
         public virtual UltraStab NewStab()
@@ -1282,8 +1334,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
                     u = UltraStab.NewUltraStab(standardInfo.standardColor, (int)(verS.timeLeft * 1.2f), size,
                     Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
-                    UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
+                    var su = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
                     Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
+                    su.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
                 }
                 else
                 {
@@ -1298,6 +1351,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
+                u.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
                 return u;
             }
             return null;
@@ -1334,6 +1388,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class RapidlyStabInfo : StabInfo
     {
+        public override void NetSend(BinaryWriter writer)
+        {
+            writer.Write((byte)realCycle);
+            base.NetSend(writer);
+        }
+        public override void NetReceive(BinaryReader reader)
+        {
+            realCycle = reader.ReadByte();
+            base.NetReceive(reader);
+        }
         public RapidlyStabInfo()
         {
 
@@ -1381,6 +1445,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         void ResetCycle()
         {
             realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
+
+            //if (Projectile.owner == Main.myPlayer)
+            //{
+            //    realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
+            //    Projectile.netImportant = true;
+            //}
+
         }
         public override void OnActive()
         {
@@ -1404,7 +1475,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void OnAttack()
         {
             if ((int)LogSpiralLibraryMod.ModTime2 % 6 == 0)
-                SoundEngine.PlaySound(MySoundID.BoomerangRotating);
+                SoundEngine.PlaySound(MySoundID.BoomerangRotating, Owner?.Center);
 
             base.OnAttack();
         }

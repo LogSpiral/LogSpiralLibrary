@@ -67,6 +67,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public VertexDrawInfoStandardInfo vertexStandard = default;
         public int itemType;
         public SoundStyle? soundStyle;
+        public float dustAmount;
         public StandardInfo()
         {
         }
@@ -238,6 +239,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         #region UIConfig
         //void SetConfigPanel(UIList parent);
         #endregion
+
+        #region Net
+        void NetSend(BinaryWriter writer);
+        void NetReceive(BinaryReader reader);
+        #endregion
         #endregion
         #region 吃闲饭的
         Entity Owner { get; set; }
@@ -266,6 +272,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
         public abstract SequenceBase Clone();
 
+        public abstract void WriteContent(XmlWriter xmlWriter);
+
         [XmlRoot("Group")]
         public abstract class GroupBase
         {
@@ -287,7 +295,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public bool Available => IsSequence || IsElement;
             [CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
             public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
-            public Condition Condition => SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
+            public Entity owner;
+            public Condition Condition => SequenceSystem.ToEntityCondition(conditionDefinition.Name, $"mods.{conditionDefinition.Mod}.Condition.{conditionDefinition.Name}", owner) ?? SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
+
             //public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
             public abstract WraperBase Clone();
@@ -325,8 +335,27 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override string DisplayName => SequenceSystem.sequenceInfos[KeyName]?.DisplayName ?? sequenceName;
         public override SequenceBase Clone()
         {
-            //StringBuilder stringBuilder = new StringBuilder();
             XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.Encoding = new UTF8Encoding(false);
+            settings.NewLineChars = Environment.NewLine;
+            MemoryStream stream = new MemoryStream();
+            XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
+            WriteContent(xmlWriter);
+            xmlWriter.Dispose();
+            byte[] data = stream.ToArray();
+            stream.Dispose();
+
+            stream = new MemoryStream(data);
+            XmlReader xmlReader = XmlReader.Create(stream);
+            xmlReader.Read();//读取声明
+            xmlReader.Read();//读取空格
+            ReadSequence(xmlReader, mod.Name, out var result);
+            result.mod = mod;
+            xmlReader.Dispose();
+            stream.Dispose();
+            return result;
+            /*XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.Encoding = new UTF8Encoding(false);
             settings.NewLineChars = Environment.NewLine;
@@ -335,7 +364,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (!Directory.Exists(dire)) Directory.CreateDirectory(dire);
             using XmlWriter xmlWriter = XmlWriter.Create(tempPath, settings);
             WriteContent(xmlWriter);
-
             xmlWriter.Dispose();
             //TextReader reader = new StringReader(tempPath);
             using XmlReader xmlReader = XmlReader.Create(tempPath);
@@ -345,11 +373,26 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             result.mod = mod;
             xmlReader.Dispose();
             File.Delete(tempPath);
-            return result;
+            return result;*/
         }
+        //public void ReconstructCondition(Entity owner)
+        //{
+        //    foreach (var g in groups)
+        //    {
+        //        foreach (var w in g.wrapers)
+        //        {
+        //            if (w.IsSequence)
+        //            {
+        //                w.sequenceInfo.ReconstructCondition(owner);
+        //            }
+        //            string key = w.conditionDefinition.Name;
+        //            var condition = SequenceSystem.ToEntityCondition(key, $"", owner);
+        //            if (condition != null) w.SetCondition(condition);
+        //        }
+        //    }
+        //}
 
-
-        public void WriteContent(XmlWriter xmlWriter)
+        public override void WriteContent(XmlWriter xmlWriter)
         {
             xmlWriter.WriteStartElement("Sequence");
             if (FileName != SequenceDefaultName)
@@ -439,9 +482,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static SequenceBase<T> Load(string path)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
+            var modName = path.Split('\\', '/')[^2];
+            return Load(xmlReader, modName);
+        }
+        public static SequenceBase<T> Load(XmlReader xmlReader, string modName)
+        {
             xmlReader.Read();//读取声明
             xmlReader.Read();//读取空格
-            var modName = path.Split('\\', '/')[^2];
             ReadSequence(xmlReader, modName, out var result);
             result.mod = ModLoader.GetMod(modName);
             return result;
@@ -597,7 +644,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         }
                         else
                         {
-                            if (SequenceCollectionManager<T>.sequences.TryGetValue($"{ModName}/{xmlReader.Value}", out var sequence))
+                            if (SequenceManager<T>.sequences.TryGetValue($"{ModName}/{xmlReader.Value}", out var sequence))
                             {
                                 result = new Wraper(sequence);
                             }
@@ -607,7 +654,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                                 if (File.Exists(filePath))
                                 {
                                     var resultSequence = Load(filePath);
-                                    SequenceCollectionManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = resultSequence;
+                                    SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = resultSequence;
                                     result = new Wraper(resultSequence);
                                 }
                                 else
@@ -615,7 +662,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                                     Mod mod = ModLoader.GetMod(ModName);
                                     sequence = new SequenceBase<T>();
                                     //Load($"PresetSequences/{typeof(T).Name}/{xmlReader.Value}.xml",mod, sequence);
-                                    SequenceCollectionManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
+                                    SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
                                     result = new Wraper(sequence);
 
                                 }
@@ -702,6 +749,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (!Available) throw new Exception("序列不可用");
                 if (finished) throw new Exception("咱已经干完活了");
+                owner = entity;
                 if (IsSequence)
                 {
                     if (sequenceInfo.currentWrapper != null && sequenceInfo.counter >= sequenceInfo.groups.Count - 1 && sequenceInfo.currentWrapper.finished)
@@ -918,10 +966,25 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     if (w.IsSequence)
                         w.sequenceInfo.ResetCounter();
                     else
+                    {
                         w.Timer = w.TimerMax = 0;
+                        w.elementInfo.counter = 0;
+                    }
+                    w.owner = null;
+                    w.finished = false;
                 }
             }
         }
+        public void SetOwner(Entity owner)
+        {
+            foreach (var g in groups)
+                foreach (var w in g.wrapers)
+                {
+                    w.owner = owner;
+                    if (w.IsSequence) w.sequenceInfo.SetOwner(owner);
+                }
+        }
+
         public override void SyncInfo(SequenceBasicInfo info)
         {
             sequenceName = info.FileName;

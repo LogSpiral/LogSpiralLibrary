@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
@@ -114,12 +115,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override string ToString()
         {
             //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
-            return $"({actionOffsetSize:0.00},{actionOffsetTimeScaler:0.00},{actionOffsetKnockBack:0.00},{actionOffsetDamage:0.00},{actionOffsetCritAdder},{actionOffsetCritMultiplyer:0.00})";
+            var result = $"({actionOffsetSize:0.00}|{actionOffsetTimeScaler:0.00}|{actionOffsetKnockBack:0.00}|{actionOffsetDamage:0.00}|{actionOffsetCritAdder}|{actionOffsetCritMultiplyer:0.00})";
+            return result;
         }
         public static ActionModifyData LoadFromString(string str)
         {
-            var content = str.Remove(0, 1).Remove(str.Length - 2).Split(',');
-            return new ActionModifyData(float.Parse(content[0]), float.Parse(content[1]), float.Parse(content[2]), float.Parse(content[3]), int.Parse(content[4]), float.Parse(content[5]));
+            var content = str.Remove(0, 1).Remove(str.Length - 2).Split('|');
+            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0]), float.Parse(content[1]), float.Parse(content[2]), float.Parse(content[3]), int.Parse(content[4]), float.Parse(content[5]));
+            var result = new ActionModifyData(size,timeScaler,knockBack,damage,critAdder,critMultiplyer);
+            return result;
         }
     }
     public interface ISequenceElement : ILocalizedModType, ILoadable

@@ -2,22 +2,22 @@
 <Sequence name="TestBladeProj" AuthorName="LogSpiral" Description="一号测试剑，最简单的串联结构" FileName="TestBladeProj" DisplayName="测试剑" ModName="LogSpiralLibrary" createTime="0" lastModifyDate="638589937379550152" passWord="" Finished="True">
   <Group>
     <Wraper condition="Always">
-      <Action mode="1" Cycle="8" ModifyData="(1.00,3.00,1.00,1.00,0,1.00)" name="LogSpiralLibrary/SwooshInfo" />
+      <Action mode="1" Cycle="8" ModifyData="(1.00|3.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/SwooshInfo" />
     </Wraper>
   </Group>
   <Group>
     <Wraper condition="Always">
-      <Action givenCycle="5" ModifyData="(1.00,1.00,1.00,1.00,0,1.00)" rangeOffsetMin="0" rangeOffsetMax="1" name="LogSpiralLibrary/RapidlyStabInfo" />
+      <Action givenCycle="5" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" rangeOffsetMin="0" rangeOffsetMax="1" name="LogSpiralLibrary/RapidlyStabInfo" />
     </Wraper>
   </Group>
   <Group>
     <Wraper condition="Always">
-      <Action Cycle="4" ModifyData="(1.00,2.00,1.00,1.00,0,1.00)" name="LogSpiralLibrary/ConvoluteInfo" />
+      <Action Cycle="4" ModifyData="(1.00|2.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/ConvoluteInfo" />
     </Wraper>
   </Group>
   <Group>
     <Wraper condition="Always">
-      <Action givenCycle="7" ModifyData="(1.00,1.00,1.00,1.00,0,1.00)" rangeOffsetMin="0" rangeOffsetMax="1" name="LogSpiralLibrary/RapidlyStabInfo" />
+      <Action givenCycle="7" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" rangeOffsetMin="0" rangeOffsetMax="1" name="LogSpiralLibrary/RapidlyStabInfo" />
     </Wraper>
   </Group>
 </Sequence>

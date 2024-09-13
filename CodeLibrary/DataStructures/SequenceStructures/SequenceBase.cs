@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
+using Terraria.Localization;
 using Terraria.ModLoader.Config;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -115,16 +116,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override string ToString()
         {
             //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
-            var result = $"({actionOffsetSize:0.00}|{actionOffsetTimeScaler:0.00}|{actionOffsetKnockBack:0.00}|{actionOffsetDamage:0.00}|{actionOffsetCritAdder}|{actionOffsetCritMultiplyer:0.00})";
+            var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
+            var result = $"({actionOffsetSize.ToString("0.00",cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString( cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
             return result;
         }
         public static ActionModifyData LoadFromString(string str)
         {
+            var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
             var content = str.Remove(0, 1).Remove(str.Length - 2).Split('|');
-            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0]), float.Parse(content[1]), float.Parse(content[2]), float.Parse(content[3]), int.Parse(content[4]), float.Parse(content[5]));
-            var result = new ActionModifyData(size,timeScaler,knockBack,damage,critAdder,critMultiplyer);
+            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0],cultureInfo), float.Parse(content[1], cultureInfo), float.Parse(content[2], cultureInfo), float.Parse(content[3], cultureInfo), int.Parse(content[4], cultureInfo), float.Parse(content[5], cultureInfo));
+            var result = new ActionModifyData(size, timeScaler, knockBack, damage, critAdder, critMultiplyer);
             return result;
         }
+        
     }
     public interface ISequenceElement : ILocalizedModType, ILoadable
     {

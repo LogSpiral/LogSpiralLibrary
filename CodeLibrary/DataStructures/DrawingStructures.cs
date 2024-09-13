@@ -305,7 +305,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <param name="spriteBatch"></param>
         public virtual void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate,BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
         }
         public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true, !distortScaler.Equals(1.0f)), 0, VertexInfos.Length - 2);
         /// <summary>
@@ -1016,17 +1016,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
 
             //spriteBatch.Draw(render, default, null, Color.White with { A = 0 }, 0, default, 0.25f, 0, 0);
-            spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White with { A = 0 });  //(byte)(additive ? 0 : 255)
+            Main.instance.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+            spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);
+            Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
+            spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White);
 
 
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 0.25f, 0, 0);
 
-            Main.instance.GraphicsDevice.BlendState = LogSpiralLibraryMod.AllOne;
-            //if ((int)LogSpiralLibraryMod.ModTime / 60 % 2 == 0)
-            spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);// with { A = 0 }
-            Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
+            //Main.instance.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
+            //spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);
+            //Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
             spriteBatch.End();
         }
 

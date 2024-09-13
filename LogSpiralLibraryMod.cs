@@ -23,6 +23,7 @@ using ReLogic.Graphics;
 using Terraria.ModLoader.Core;
 using NetSimplified;
 using NetSimplified.Syncing;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LogSpiralLibrary
 {
@@ -46,6 +47,7 @@ namespace LogSpiralLibrary
         private static Effect transformEffectEX;
         private static Effect fadeEffect;
         private static Effect airDistortEffect;
+        private static Effect magicRing;
         public static Effect ItemEffect => itemEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ItemGlowEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ItemEffectEX => itemEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/ItemGlowEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect ShaderSwooshEffect => shaderSwooshEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/ShaderSwooshEffect", AssetRequestMode.ImmediateLoad).Value;
@@ -61,6 +63,7 @@ namespace LogSpiralLibrary
         public static Effect TransformEffectEX => transformEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/TransformEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect AirDistortEffect => airDistortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/AirDistortEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect FadeEffect => fadeEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/FadeEffect", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/MagicRing", AssetRequestMode.ImmediateLoad).Value;
         #endregion
 
         #region Textures
@@ -629,7 +632,15 @@ namespace LogSpiralLibrary
             }
         }
         public Vector2 targetedMousePosition;
-
+        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        {
+            SpriteBatch spb = Main.spriteBatch;
+            LogSpiralLibraryMod.MagicRing.Parameters["factor"].SetValue(1.0f);
+            LogSpiralLibraryMod.MagicRing.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f);
+            LogSpiralLibraryMod.MagicRing.CurrentTechnique.Passes[0].Apply();
+            spb.Draw(TextureAssets.MagicPixel.Value, drawInfo.drawPlayer.Center - Main.screenPosition, new Rectangle(0, 0, 1, 1), Main.DiscoColor, 0, Vector2.One * .5f, 256f, 0, 0);
+            base.ModifyDrawInfo(ref drawInfo);
+        }
     }
     public class LogSpiralLibraryMiscConfig : ModConfig
     {

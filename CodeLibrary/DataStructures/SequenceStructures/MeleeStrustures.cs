@@ -75,6 +75,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     MeleeSequence.Load(path, sequence);
                 else
                 {
+                    sequence = new MeleeSequence();
                     sequence.Add(new SwooshInfo());
                     sequence.mod = Mod;
                     sequence.sequenceName = Name;

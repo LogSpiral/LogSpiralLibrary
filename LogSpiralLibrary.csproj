@@ -3,7 +3,7 @@
 	<Import Project="..\tModLoader.targets" />
 	<PropertyGroup>
 		<AssemblyName>LogSpiralLibrary</AssemblyName>
-		<Solaestas-UseAssetPath>false</Solaestas-UseAssetPath>
+		<Solaestas-UseAssetPath>true</Solaestas-UseAssetPath>
 		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>

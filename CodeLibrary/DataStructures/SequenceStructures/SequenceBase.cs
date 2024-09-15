@@ -8,6 +8,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using Microsoft.Xna.Framework.Input;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
@@ -117,18 +118,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
             var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
-            var result = $"({actionOffsetSize.ToString("0.00",cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString( cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
+            var result = $"({actionOffsetSize.ToString("0.00", cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString(cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
             return result;
         }
         public static ActionModifyData LoadFromString(string str)
         {
             var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
-            var content = str.Remove(0, 1).Remove(str.Length - 2).Split('|');
-            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0],cultureInfo), float.Parse(content[1], cultureInfo), float.Parse(content[2], cultureInfo), float.Parse(content[3], cultureInfo), int.Parse(content[4], cultureInfo), float.Parse(content[5], cultureInfo));
+            var content = str.Remove(0, 1).Remove(str.Length - 2).Split('|', ',');
+            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0], cultureInfo), float.Parse(content[1], cultureInfo), float.Parse(content[2], cultureInfo), float.Parse(content[3], cultureInfo), int.Parse(content[4], cultureInfo), float.Parse(content[5], cultureInfo));
             var result = new ActionModifyData(size, timeScaler, knockBack, damage, critAdder, critMultiplyer);
             return result;
         }
-        
+
     }
     public interface ISequenceElement : ILocalizedModType, ILoadable
     {
@@ -282,6 +283,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
         public abstract void WriteContent(XmlWriter xmlWriter);
 
+        public abstract void Reset();
+
         [XmlRoot("Group")]
         public abstract class GroupBase
         {
@@ -338,6 +341,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         //    result.wrapers.Add((Wraper)wraperBase);
         //    return result;
         //}
+        public override void Reset()
+        {
+            var seq = new SequenceBase<T>();
+            Load($"PresetSequences/{ElementTypeName}/{FileName}.xml", mod, seq);
+            SequenceManager<T>.sequences[seq.KeyName] = seq;
+        }
         public override string LocalPath => $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{mod.Name}/{sequenceName}.xml";
         public override string KeyName => $"{mod.Name}/{sequenceName}";
         public override string DisplayName => SequenceSystem.sequenceInfos[KeyName]?.DisplayName ?? sequenceName;

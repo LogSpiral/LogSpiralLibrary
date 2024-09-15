@@ -144,12 +144,11 @@ float4 ColorBlend(float4 c1, float4 c2)
 
 float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 {
-	float2 vec = coords;
-	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
+	float4 color = tex2D(uImage0, coords);
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(n, 0);
-		float4 _color = tex2D(uImage1, coords + v / screenScale * range);
+		float4 _color = tex2D(uImage0, coords + v / screenScale * range);
 		if (dot(_color.xyz, 0.333) > threshold)
 		{
 			_color *= gauss[n + 3] * intensity;
@@ -160,12 +159,11 @@ float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 }
 float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 {
-	float2 vec = coords;
-	float4 color = uBloomAdditive ? tex2D(uImage0, vec) : 0;
+	float4 color = tex2D(uImage0, coords);
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(0, n);
-		float4 _color = tex2D(uImage1, coords + v / screenScale * range);
+		float4 _color = tex2D(uImage0, coords + v / screenScale * range);
 		if (dot(_color.xyz, 0.333) > threshold)
 		{
 			_color *= gauss[n + 3] * intensity;

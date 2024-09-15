@@ -195,16 +195,12 @@ float4 PixelShaderFunction_ConicSection(PSInput input) : COLOR0
 	{
 		result += tex2D(uImage0, current);
 	}
-	float _length = length(homoCoord.xy / homoCoord.z + offset);
+	float _length = length(homoCoord.xy / homoCoord.w + offset);
 	if (_length == clamp(_length, width.x, width.y))
 	{
 		float factor = (_length - width.x) / (width.y - width.x);
 		float angle = atan2(current.y, current.x);
 		result += tex2D(uImage1, float2(angle / 3.1415 + 0.5 + uTime, factor));
-	}
-	if (useHeatMap)
-	{
-		return tex2D(uImage1, float2(GetGrayValue(result.xyz), coords.y));
 	}
 	return result;
 }

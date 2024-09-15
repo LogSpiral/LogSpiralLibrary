@@ -28,6 +28,18 @@ SequenceUI: {
 	CantEditHere: Parameters cannot be edited here, please drag them into the sequence and edit them
 	SwitchToSequencePage: Switch to the Page of this Sequence
 	LeastOneElementHint: This is the only element left, and it cannot be moved or removed
+	OpenHomePage:
+		'''
+		Open LogSpiral's Page on Bilibili
+		And blame him for plenty of bugs in UI Editing
+		'''
+	OpenSquenceFolder:
+		'''
+		Open the folder of your local Sequences
+		and you can Share your works with your friends through the files(yeah! :P
+		'''
+	resetSequence: RESET this Sequence to Preset value
+	deleteSequence: DELETE this Sequence
 }
 
 Items: {
@@ -58,11 +70,6 @@ Items: {
 
 	TestBlade3V2: {
 		DisplayName: Test Blade3 V2
-		Tooltip: ""
-	}
-
-	DrawTestHelmet: {
-		DisplayName: Draw Test Helmet
 		Tooltip: ""
 	}
 }
@@ -336,7 +343,7 @@ Projectiles: {
 
 Keybinds: {
 	ShowSequenceModifier.DisplayName: Show Sequence Modifier
-	ShowScreenProjector.DisplayName: Show Screen Projector
+	ShowScreenProjector.DisplayName: Show Screen Transforming Vertex(Draggable, Just for fun)
 }
 
 Condition: {

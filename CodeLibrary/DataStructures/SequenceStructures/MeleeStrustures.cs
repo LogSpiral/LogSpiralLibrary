@@ -224,12 +224,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            var spb = Main.spriteBatch;
+            //spb.Draw(LogSpiralLibraryMod.AniTex[8].Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Red);
             if (currentData != null)
             {
                 meleeSequence.active = true;
                 currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
             }
-            var spb = Main.spriteBatch;
+            //spb.PushSprite(LogSpiralLibraryMod.AniTex[8].Value, 0, 0, 1, 1, 400, 400, 800, 800, Color.Red, Color.Green, Color.Blue, Color.White, 162.5f, 162.5f, 0, 1, 0, 0);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -908,9 +910,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Vector2 targetedVector;
         public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
-            //spriteBatch.Draw(LogSpiralLibraryMod.Misc[24].Value, new Vector2(0,0), Color.White);
-            //spriteBatch.DrawRectangle(new Rectangle(640 + 160, 400 + 100,1280 * 3 / 4, 800 * 3 / 4), Color.White, 4);
-
 
             Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
             float finalRotation = offsetRotation + standardInfo.standardRotation;
@@ -1298,7 +1297,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         for (int k = 0; k < 2; k++)
                         {
                             var flag = k == 0;
-                            var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, 2)).RotatedBy(Rotation) * (flag ? 2 : 1);
+                            var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
                             var Center = Owner.Center + offsetCenter + targetedVector * .75f;
                             var velocity = -Owner.velocity * 2 + unit - targetedVector * .125f;
                             velocity *= 2;

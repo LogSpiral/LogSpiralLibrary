@@ -63,7 +63,7 @@ namespace LogSpiralLibrary
         public static Effect TransformEffectEX => transformEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/TransformEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect AirDistortEffect => airDistortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/AirDistortEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect FadeEffect => fadeEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/FadeEffect", AssetRequestMode.ImmediateLoad).Value;
-        public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/MagicRing", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/MagicRing", AssetRequestMode.ImmediateLoad).Value;
         #endregion
 
         #region Textures
@@ -135,7 +135,7 @@ namespace LogSpiralLibrary
         public static bool CanUseRender => Lighting.Mode != Terraria.Graphics.Light.LightMode.Retro && Lighting.Mode != Terraria.Graphics.Light.LightMode.Trippy && Main.WaveQuality != 0;
         public RenderTarget2D Render
         {
-            get => render ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            get => render ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
             set
             {
                 render = value;
@@ -144,7 +144,7 @@ namespace LogSpiralLibrary
         private RenderTarget2D render;
         public RenderTarget2D Render_Swap
         {
-            get => render_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            get => render_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
             set
             {
                 render_Swap = value;
@@ -157,7 +157,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny
         {
-            get => render_Tiny ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            get => render_Tiny ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
             set
             {
                 render_Tiny = value;
@@ -170,7 +170,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny_Swap
         {
-            get => render_Tiny_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            get => render_Tiny_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
             set
             {
                 render_Tiny_Swap = value;
@@ -181,13 +181,13 @@ namespace LogSpiralLibrary
         public void CreateRender()
         {
             if (Render != null) Render.Dispose();
-            Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
             if (Render_Swap != null) Render_Swap.Dispose();
-            Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth == 0 ? 1920 : Main.screenWidth, Main.screenHeight == 0 ? 1120 : Main.screenHeight);
+            Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
             if (Render_Tiny != null) Render_Tiny.Dispose();
-            Render_Tiny = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            Render_Tiny = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
             if (Render_Tiny_Swap != null) Render_Tiny_Swap.Dispose();
-            Render_Tiny_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, (Main.screenWidth == 0 ? 1920 : Main.screenWidth) / 4, (Main.screenHeight == 0 ? 1120 : Main.screenHeight) / 4);
+            Render_Tiny_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
         }
         #endregion
 
@@ -207,10 +207,20 @@ namespace LogSpiralLibrary
             LoadTextures(nameof(Fractal), out Fractal);
 
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
+            On_Main.SetDisplayMode += On_Main_SetDisplayMode;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
-            On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
+            //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
             base.Load();
+        }
+
+        private void On_Main_SetDisplayMode(On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
+        {
+            int nw = width / 4 * 4;
+            if (nw < width) nw += 4;
+            int nh = height / 4 * 4;
+            if (nh < height) nh += 4;
+            orig.Invoke(nw, nh, fullscreen);
         }
 
         private void FilterManager_EndCapture_LSLib(Terraria.Graphics.Effects.On_FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
@@ -248,8 +258,9 @@ namespace LogSpiralLibrary
             if (Main.netMode == NetmodeID.Server) return;
 
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
+            On_Main.SetDisplayMode -= On_Main_SetDisplayMode;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
-            On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib; ;
+            On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib;
             base.Unload();
         }
         private void LoadTextures(string textureName, out List<Asset<Texture2D>> assets)
@@ -632,15 +643,20 @@ namespace LogSpiralLibrary
             }
         }
         public Vector2 targetedMousePosition;
-        public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
-        {
-            SpriteBatch spb = Main.spriteBatch;
-            LogSpiralLibraryMod.MagicRing.Parameters["factor"].SetValue(1.0f);
-            LogSpiralLibraryMod.MagicRing.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f);
-            LogSpiralLibraryMod.MagicRing.CurrentTechnique.Passes[0].Apply();
-            spb.Draw(TextureAssets.MagicPixel.Value, drawInfo.drawPlayer.Center - Main.screenPosition, new Rectangle(0, 0, 1, 1), Main.DiscoColor, 0, Vector2.One * .5f, 256f, 0, 0);
-            base.ModifyDrawInfo(ref drawInfo);
-        }
+        //public override void ModifyDrawInfo(ref PlayerDrawSet drawInfo)
+        //{
+        //    SpriteBatch spb = Main.spriteBatch;
+
+        //    spb.End();
+        //    spb.Begin(SpriteSortMode.Immediate, BlendState.Additive);
+        //    LogSpiralLibraryMod.MagicRing.Parameters["factor"].SetValue(1.0f);
+        //    LogSpiralLibraryMod.MagicRing.Parameters["uTimer"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f);
+        //    LogSpiralLibraryMod.MagicRing.CurrentTechnique.Passes[0].Apply();
+        //    spb.Draw(LogSpiralLibraryMod.BaseTex[8].Value, drawInfo.drawPlayer.Center - Main.screenPosition, null, Color.White, 0, Vector2.One *385 * .5f, 1f, 0, 0);
+        //    spb.End();
+        //    spb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,SamplerState.PointClamp,DepthStencilState.None,RasterizerState.CullNone,null,Main.GameViewMatrix.TransformationMatrix);
+        //    base.ModifyDrawInfo(ref drawInfo);
+        //}
     }
     public class LogSpiralLibraryMiscConfig : ModConfig
     {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Sequence name="TestBladeProj" AuthorName="LogSpiral" Description="一号测试剑，最简单的串联结构" FileName="TestBladeProj" DisplayName="测试剑" ModName="LogSpiralLibrary" createTime="0" lastModifyDate="638589937379550152" passWord="" Finished="True">
+<Sequence name="TestBladeProj" AuthorName="LogSpiral" Description="一号测试剑，最简单的串联结构" FileName="TestBladeProj" DisplayName="测试剑一号" ModName="LogSpiralLibrary" createTime="0" lastModifyDate="638620301069814471" passWord="" Finished="True">
   <Group>
     <Wraper condition="Always">
       <Action mode="1" Cycle="8" ModifyData="(1.00|3.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/SwooshInfo" />

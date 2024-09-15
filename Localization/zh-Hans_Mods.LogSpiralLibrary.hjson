@@ -28,6 +28,18 @@ SequenceUI: {
 	CantEditHere: 此处无法编辑参数，请将其拖入序列中再编辑
 	SwitchToSequencePage: 转到该序列页面
 	LeastOneElementHint: 只剩这个元素了，无法移动或者移除
+	OpenHomePage:
+		'''
+		打开螺线的B站主页
+		然后因为编辑UI的一堆BUG好好谴责一下他
+		'''
+	OpenSquenceFolder:
+		'''
+		打开自定义序列的本地目录
+		这样就可以和朋友分享自己的作品了(耶
+		'''
+	resetSequence: 将该序列重置为预设值
+	deleteSequence: 删除该序列
 }
 
 Items: {
@@ -70,11 +82,6 @@ Items: {
 
 	TestBlade3V2: {
 		// DisplayName: Test Blade3 V2
-		// Tooltip: ""
-	}
-
-	DrawTestHelmet: {
-		// DisplayName: Draw Test Helmet
 		// Tooltip: ""
 	}
 }
@@ -352,7 +359,7 @@ Projectiles: {
 
 Keybinds: {
 	ShowSequenceModifier.DisplayName: 打开序列编辑器
-	// ShowScreenProjector.DisplayName: Show Screen Projector
+	ShowScreenProjector.DisplayName: 显示屏幕变换顶点(可拖动，只是为了好玩)
 }
 
 Condition: {

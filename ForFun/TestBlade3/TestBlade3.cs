@@ -34,7 +34,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
     public class TestBlade3Proj : MeleeSequenceProj
     {
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => base.StandardInfo with 
+        public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
         {
             standardColor = Color.Purple,
             //standardGlowTexture = DrawingMethods.GetTexture("LogSpiralLibrary/ForFun/TestBlade3/KluexStaffPH_Glow", false),
@@ -97,7 +97,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
     public class TestBlade3ProjV2 : MeleeSequenceProj
     {
         public override string Texture => base.Texture.Replace("ProjV2", "");
-        public override StandardInfo StandardInfo => base.StandardInfo with
+        public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with
         {
             standardColor = Color.Purple,
             standardRotation = -MathHelper.PiOver4,

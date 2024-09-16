@@ -36,7 +36,7 @@ namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
         public static ScreenTransformData ScreenTransformData;
         public override void PostSetupContent()
         {
-            if (Main.netMode != NetmodeID.Server) 
+            if (Main.netMode != NetmodeID.Server)
             {
                 ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
                 ScreenTransformData = (ScreenTransformData)new ScreenTransformData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "Simple");
@@ -59,6 +59,8 @@ namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
         }
         public override void PreUpdateEntities()
         {
+            if (Main.netMode == NetmodeID.Server)
+                return;
             ControlScreenShader("LogSpiralLibrary:WTFScreen", true);
         }
         private void ControlScreenShader(string name, bool state)
@@ -120,8 +122,8 @@ namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, GetDimensions().ToRectangle(), Color.White);
             Vector2 center = GetDimensions().Center();
             float angle = (float)LogSpiralLibraryMod.ModTime / 60f;
-            spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value,center, null, Color.White with { A = 0 } * .5f, angle, new Vector2(118), 64/118f, 0, 0);
-            spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value, center, null, Color.White with { A = 0 }, -angle, new Vector2(118), 48/118f, 0, 0);
+            spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value, center, null, Color.White with { A = 0 } * .5f, angle, new Vector2(118), 64 / 118f, 0, 0);
+            spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value, center, null, Color.White with { A = 0 }, -angle, new Vector2(118), 48 / 118f, 0, 0);
             Vector2 scale = new Vector2(1, 3);
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.Cyan with { A = 0 } * .5f, angle * 2, new Vector2(36), scale * .75f, 0, 0);
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.Cyan with { A = 0 } * .5f, angle * 2 + MathHelper.PiOver2, new Vector2(36), scale * .75f, 0, 0);
@@ -183,7 +185,7 @@ namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
 
         }
         public static Matrix Transform =>
-            //QuadrangleToMatrix([((float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(1, 0) + ((float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(0, 1) + (-(float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() + (-(float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200]) * Matrix.Invert(QuadrangleToMatrix([default, new Vector2(Main.screenWidth, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2()]));
+        //QuadrangleToMatrix([((float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(1, 0) + ((float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(0, 1) + (-(float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() + (-(float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200]) * Matrix.Invert(QuadrangleToMatrix([default, new Vector2(Main.screenWidth, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2()]));
 
         //QuadrangleToMatrix([Main.ScreenSize.ToVector2() * .25f + ((float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(.75f,.25f) + ((float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(.25f, .75f) + (-(float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(.75f) + (-(float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200]) * Matrix.Invert(QuadrangleToMatrix([default, new Vector2(Main.screenWidth, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2()]));
 

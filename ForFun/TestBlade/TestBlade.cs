@@ -32,7 +32,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
     public class TestBladeProj : MeleeSequenceProj
     {
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => base.StandardInfo with 
+        public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
         {
             standardColor = Color.Red,
             vertexStandard = new VertexDrawInfoStandardInfo() with 

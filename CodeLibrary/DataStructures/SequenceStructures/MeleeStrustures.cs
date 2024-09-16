@@ -270,7 +270,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void OnKill(int timeLeft)
         {
-            meleeSequence.ResetCounter();
+            //if (Main.netMode != NetmodeID.Server)
+            meleeSequence?.ResetCounter();
             base.OnKill(timeLeft);
         }
     }

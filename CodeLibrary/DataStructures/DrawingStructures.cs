@@ -263,6 +263,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public Texture2D heatMap;
 
         public Texture2D weaponTex;
+        public Rectangle? frame;
         /// <summary>
         /// 颜色插值
         /// </summary>
@@ -327,10 +328,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
             Main.graphics.GraphicsDevice.Textures[2] = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
-            ShaderSwooshUL.Parameters["lightShift"].SetValue(factor - 1f);
-            float dS = ShaderSwooshUL.Parameters["distortScaler"].GetValueSingle();
+            var swooshUL = ShaderSwooshUL;
+            swooshUL.Parameters["lightShift"].SetValue(factor - 1f);
+            if (frame != null)
+            {
+                Rectangle uframe = frame.Value;
+                Vector2 size = weaponTex.Size();
+                swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(uframe.TopLeft() / size, uframe.Width / size.X, uframe.Height / size.Y));
+            }
+            else
+                swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
+            float dS = swooshUL.Parameters["distortScaler"].GetValueSingle();
             //ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
-            ShaderSwooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();
+            swooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();//
             DrawPrimitives(dS);
         }
         /// <summary>
@@ -652,7 +662,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         #region 参数和属性
         CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
-
         public (float from, float to) angleRange;
         #endregion
         #region 生成函数

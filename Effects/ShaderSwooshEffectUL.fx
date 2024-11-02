@@ -16,6 +16,8 @@ bool heatMapAlpha;
 float alphaFactor;
 float3 AlphaVector; //ultra版本新增变量，自己看下面的颜色矩阵√
 bool stab; //ultra版本新增变量，打造突刺的感觉
+float4 uItemFrame = float4(0, 0, 1, 1);//ultra版本新增变量，添加对多帧武器的支持
+
 struct VSInput
 {
 	float2 Pos : POSITION0;
@@ -76,7 +78,7 @@ float modifyY(float2 coord)
 
 float4 weaponColor(float coordy)
 {
-	return tex2D(uImage2, lerp(float2(0, 1), float2(1, 0), coordy * airFactor));
+	return tex2D(uImage2, lerp(float2(uItemFrame.x, uItemFrame.y + uItemFrame.w), float2(uItemFrame.x + uItemFrame.z, uItemFrame.y), coordy * airFactor));
 }
 
 float4 getBaseValue(float3 coord)

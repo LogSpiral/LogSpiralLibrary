@@ -5,6 +5,7 @@ global using Terraria;
 global using Terraria.ID;
 global using Terraria.DataStructures;
 global using Terraria.GameContent;
+global using MeleeSequence = LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Sequence<LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee.MeleeAction>;
 using ReLogic.Content;
 using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary;
@@ -24,6 +25,7 @@ using Terraria.ModLoader.Core;
 using NetSimplified;
 using NetSimplified.Syncing;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.VisualBasic;
 
 namespace LogSpiralLibrary
 {
@@ -63,7 +65,7 @@ namespace LogSpiralLibrary
         public static Effect TransformEffectEX => transformEffectEX ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/TransformEffectEX", AssetRequestMode.ImmediateLoad).Value;
         public static Effect AirDistortEffect => airDistortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/AirDistortEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect FadeEffect => fadeEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/FadeEffect", AssetRequestMode.ImmediateLoad).Value;
-        public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/MagicRing", AssetRequestMode.ImmediateLoad).Value;
+        public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/MagicRing", AssetRequestMode.ImmediateLoad).Value;
         #endregion
 
         #region Textures
@@ -557,8 +559,11 @@ namespace LogSpiralLibrary
             }
             foreach (var pair in dict)
             {
-                if (pair.Value.Count > 0)
+                if (pair.Value.Count > 0) 
+                {
                     VertexDrawInfo.DrawVertexInfo(pair.Value, pair.Key, spriteBatch, graphicsDevice, render, renderAirDistort);
+
+                }
             }
         }
         public override void CommonDrawingMethods(SpriteBatch spriteBatch)
@@ -587,6 +592,27 @@ namespace LogSpiralLibrary
         public override void Receive()
         {
             Main.player[whoAmI].GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition = pos;
+            if (Main.dedServ)
+            {
+                Get(whoAmI, pos).Send(-1, whoAmI);
+            }
+        }
+    }
+    [AutoSync]
+    public class SyncPlayerPosition : NetModule
+    {
+        int whoAmI;
+        Vector2 pos;
+        public static SyncPlayerPosition Get(int whoAmI, Vector2 position)
+        {
+            var result = NetModuleLoader.Get<SyncPlayerPosition>();
+            result.pos = position;
+            result.whoAmI = whoAmI;
+            return result;
+        }
+        public override void Receive()
+        {
+            Main.player[whoAmI].position = pos;
             if (Main.dedServ)
             {
                 Get(whoAmI, pos).Send(-1, whoAmI);

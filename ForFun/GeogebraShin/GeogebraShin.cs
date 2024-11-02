@@ -1,6 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using LogSpiralLibrary.ForFun.ScreenProjectorUI;
 using ReLogic.Content;
 using System;
 using Terraria.Audio;

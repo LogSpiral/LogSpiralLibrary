@@ -15,7 +15,7 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.UI;
 
-namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
+namespace LogSpiralLibrary.ForFun.ScreenTransformUI
 {
     public class ScreenTransformPlayer : ModPlayer
     {
@@ -39,7 +39,7 @@ namespace LogSpiralLibrary.ForFun.ScreenProjectorUI
             if (Main.netMode != NetmodeID.Server)
             {
                 ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
-                ScreenTransformData = (ScreenTransformData)new ScreenTransformData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "Simple");
+                ScreenTransformData = new ScreenTransformData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "Simple");
                 Filters.Scene["LogSpiralLibrary:WTFScreen"] = new Filter(ScreenTransformData, EffectPriority.Medium);
             }
             base.PostSetupContent();

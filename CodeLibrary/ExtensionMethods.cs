@@ -8,6 +8,8 @@ using static Terraria.Utils;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using Microsoft.Xna.Framework.Graphics;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -36,6 +38,35 @@ namespace LogSpiralLibrary.CodeLibrary
     public static class DrawingMethods
     {
         #region 直接用来绘制的b崽子们
+
+        public static void DrawStarLight(this SpriteBatch spriteBatch, float Rotation, Vector2 center, Color color, float range, float scale = 1f, float alpha = .5f)
+        {
+            if (scale < 1) scale = 1;
+            int max = (int)Math.Ceiling(3f * scale);
+            for (int k = 0; k < max; k++)
+            {
+                float randValue = Main.rand.NextFloat();
+                float amount = Utils.GetLerpValue(0f, 0.3f, randValue, true) * Utils.GetLerpValue(1f, 0.5f, randValue, true);//由此可以实现一个梯形的插值函数
+                float size = MathHelper.Lerp(0.6f, 1f, amount);
+                Texture2D starLight = TextureAssets.Projectile[927].Value;
+                float num1 = (scale - 1f) / 2f;
+                float num2 = Main.rand.NextFloat() * 2f * scale;
+                num2 += num1;
+                Vector2 scalerVector = new Vector2((2.8f + num2 * (1f + num1)) * range / 200f, 1f) * size;
+                float angleRange = 0.03f - k * 0.012f;
+                angleRange /= scale;
+                float randLength = range / 4f + MathHelper.Lerp(0f, 50f * scale, randValue) + num2 * 16f;
+                float rotation = Rotation + Main.rand.NextFloatDirection() * MathHelper.TwoPi * angleRange;
+                center += Rotation.ToRotationVector2() * 2 + rotation.ToRotationVector2() * randLength + Main.rand.NextVector2Circular(20f, 20f) - Main.screenPosition;
+                if (k > 0)
+                    center += Rotation.ToRotationVector2() * 56;
+                Vector2 origin = starLight.Size() / 2f;
+                Color mainColor = color with { A = 0 } * 4f * alpha;
+                Color whiteLight = Color.White with { A = 0 } * amount * alpha;
+                spriteBatch.Draw(starLight, center, null, mainColor, rotation, origin, scalerVector, 0, 0f);
+                spriteBatch.Draw(starLight, center, null, whiteLight, rotation, origin, scalerVector * 0.6f, 0, 0f);
+            }
+        }
         public static void DrawHorizonBLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float scale = 1f, float width = 4f, int counts = 20)
         {
             Vector2[] vecs = new Vector2[counts];
@@ -700,21 +731,23 @@ namespace LogSpiralLibrary.CodeLibrary
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
-            ShaderSwooshUL.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
+            var swooshUL = ShaderSwooshUL;
+            swooshUL.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
             //这里是依次右乘这些矩阵
             //先是model，它的作用和-Main.screenPosition一样
             //然后是Main.GameViewMatrix.TransformationMatrix，包括画面缩放翻转之类(我记得有翻转
             //最后是projection，这个就是最后进行压缩区间的
-            ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
-            ShaderSwooshUL.Parameters["uLighter"].SetValue(0);
-            ShaderSwooshUL.Parameters["checkAir"].SetValue(false);
-            ShaderSwooshUL.Parameters["airFactor"].SetValue(1);
-            ShaderSwooshUL.Parameters["gather"].SetValue(false);
-            ShaderSwooshUL.Parameters["lightShift"].SetValue(0);
-            ShaderSwooshUL.Parameters["distortScaler"].SetValue(0);
-            ShaderSwooshUL.Parameters["alphaFactor"].SetValue(1.5f);
-            ShaderSwooshUL.Parameters["heatMapAlpha"].SetValue(true);
-            ShaderSwooshUL.Parameters["AlphaVector"].SetValue(new Vector3(0, 0, 1));
+            swooshUL.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
+            swooshUL.Parameters["uLighter"].SetValue(0);
+            swooshUL.Parameters["checkAir"].SetValue(false);
+            swooshUL.Parameters["airFactor"].SetValue(1);
+            swooshUL.Parameters["gather"].SetValue(false);
+            swooshUL.Parameters["lightShift"].SetValue(0);
+            swooshUL.Parameters["distortScaler"].SetValue(0);
+            swooshUL.Parameters["alphaFactor"].SetValue(1.5f);
+            swooshUL.Parameters["heatMapAlpha"].SetValue(true);
+            swooshUL.Parameters["AlphaVector"].SetValue(new Vector3(0, 0, 1));
+            swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
             Main.graphics.GraphicsDevice.Textures[0] = baseTex;//传入各种辅助贴图，对应.fx那边的sampler(s[n])
             Main.graphics.GraphicsDevice.Textures[1] = aniTex;
             Main.graphics.GraphicsDevice.Textures[2] = BaseTex[8].Value;
@@ -2011,12 +2044,13 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
-        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip)
+        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip, float alpha = 1f, Rectangle? frame = null)
         {
+            Rectangle realFrame = frame ?? new Rectangle(0, 0, texture.Width, texture.Height);
             //对数据进行矩阵变换吧！
             Matrix matrix =
             Matrix.CreateTranslation(-origin.X, origin.Y - 1, 0) *          //把变换中心平移到传入的origin上，这里我应该是为了方便改成数学常用的坐标系下的origin了(?)
-                Matrix.CreateScale(texture.Width, texture.Height, 1) *      //缩放到图片原本的正常比例
+                Matrix.CreateScale(realFrame.Width, realFrame.Height, 1) *      //缩放到图片原本的正常比例
                 Matrix.CreateRotationZ(rotation) *                          //先进行一个旋转操作
                 Matrix.CreateScale(1, 1 / KValue, 1) *                      //压扁来有一种横批的感觉(??)
                 Matrix.CreateRotationZ(rotationDir) *                       //朝向旋转量，我用这个的时候是这个固定，上面那个从小变大，形成一种纸片挥砍的动态感(x
@@ -2025,13 +2059,15 @@ namespace LogSpiralLibrary.CodeLibrary
             for (int i = 0; i < 4; i++)
                 vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2 % 2), matrix);//生成单位正方形四个顶点
             CustomVertexInfo[] c = new CustomVertexInfo[6];//两个三角形，六个顶点
-            float light = 1f;
-            int num0 = flip.ToInt();
-            c[0] = new CustomVertexInfo(vecs[0] + drawCen, new Vector3(0, 1, light));
-            c[1] = new CustomVertexInfo(vecs[1] + drawCen, new Vector3(num0 ^ 1, num0 ^ 1, light));
-            c[2] = new CustomVertexInfo(vecs[2] + drawCen, new Vector3(num0, num0, light));
+            Vector2 startCoord = realFrame.TopLeft() / texture.Size();
+            Vector2 endCoord = realFrame.BottomRight() / texture.Size();
+            c[0] = new CustomVertexInfo(vecs[0] + drawCen, new Vector3(startCoord.X, endCoord.Y, alpha));
+            c[1] = new CustomVertexInfo(vecs[1] + drawCen, new Vector3(flip ? startCoord : endCoord, alpha));
+            c[2] = new CustomVertexInfo(vecs[2] + drawCen, new Vector3(flip ? endCoord : startCoord, alpha));
             c[3] = c[1];
-            c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(1, 0, light));
+            c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(endCoord.X, startCoord.Y, alpha));
+            //c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(startCoord.Y,endCoord.X, alpha));
+
             c[5] = c[2];
             return c;
         }

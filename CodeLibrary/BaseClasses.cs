@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using LogSpiralLibrary.ForFun.TestBlade3;
+using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using ReLogic.Content;
 using System;
@@ -402,7 +403,9 @@ namespace LogSpiralLibrary.CodeLibrary
             bool predraw = false;
             if (!RedrawSelf)
                 predraw = base.PreDraw(ref lightColor);
-            if (!WhenVertexDraw || ShaderSwooshUL == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylable; //
+            var swooshUL = ShaderSwooshUL;
+
+            if (!WhenVertexDraw || swooshUL == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylable; //
             var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
 
 
@@ -671,21 +674,28 @@ namespace LogSpiralLibrary.CodeLibrary
                 gd.SetRenderTarget(render);
                 gd.Clear(Color.Transparent);
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
-                ShaderSwooshUL.Parameters["uTransform"].SetValue(model * trans * projection);
-                ShaderSwooshUL.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
-                ShaderSwooshUL.Parameters["checkAir"].SetValue(false);
-                ShaderSwooshUL.Parameters["airFactor"].SetValue(1);
-                ShaderSwooshUL.Parameters["gather"].SetValue(true);
-                ShaderSwooshUL.Parameters["lightShift"].SetValue(0);
-                ShaderSwooshUL.Parameters["distortScaler"].SetValue(0);
-
+                swooshUL.Parameters["uTransform"].SetValue(model * trans * projection);
+                swooshUL.Parameters["uLighter"].SetValue(0);
+                swooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
+                swooshUL.Parameters["checkAir"].SetValue(false);
+                swooshUL.Parameters["airFactor"].SetValue(1);
+                swooshUL.Parameters["gather"].SetValue(true);
+                swooshUL.Parameters["lightShift"].SetValue(0);
+                swooshUL.Parameters["distortScaler"].SetValue(0);
+                if (frame != null)
+                {
+                    Rectangle uframe = frame.Value;
+                    Vector2 size = itemTex.Size();
+                    swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(uframe.TopLeft() / size, uframe.Width / size.X, uframe.Height / size.Y));
+                }
+                else
+                    swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
                 //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
                 //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                ShaderSwooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
-                ShaderSwooshUL.Parameters["alphaFactor"].SetValue(1f);
-                ShaderSwooshUL.Parameters["heatMapAlpha"].SetValue(true);
-                ShaderSwooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
+                swooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
+                swooshUL.Parameters["alphaFactor"].SetValue(1f);
+                swooshUL.Parameters["heatMapAlpha"].SetValue(true);
+                swooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
 
 
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
@@ -701,7 +711,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
-                ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
+                swooshUL.CurrentTechnique.Passes[7].Apply();
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
                 Main.graphics.GraphicsDevice.RasterizerState = originalState;
 
@@ -718,7 +728,7 @@ namespace LogSpiralLibrary.CodeLibrary
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(false);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-                    ShaderSwooshUL.Parameters["distortScaler"].SetValue(useDistort.distortScaler);
+                    swooshUL.Parameters["distortScaler"].SetValue(useDistort.distortScaler);
                     //sb.Draw(AniTex[8].Value, new Vector2(200, 200), Color.White);
                     Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
                     Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
@@ -738,7 +748,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     //    case ConfigurationSwoosh_Advanced.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
                     //    case ConfigurationSwoosh_Advanced.SwooshColorType.单向渐变: passCount = 4; break;
                     //}
-                    ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
+                    swooshUL.CurrentTechnique.Passes[7].Apply();
                     for (int n = 0; n < triangleList.Length; n++)
                     {
                         triangleList[n].Position = (triangleList[n].Position - Player.Center) * useDistort.distortScaler + Player.Center;
@@ -977,22 +987,29 @@ namespace LogSpiralLibrary.CodeLibrary
                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["alphaFactor"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor);
                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor == 0);
 
-                ShaderSwooshUL.Parameters["uTransform"].SetValue(VertexDrawInfo.uTransform);
-                ShaderSwooshUL.Parameters["uLighter"].SetValue(0);
-                ShaderSwooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
-                ShaderSwooshUL.Parameters["checkAir"].SetValue(false);
-                ShaderSwooshUL.Parameters["airFactor"].SetValue(1);
-                ShaderSwooshUL.Parameters["gather"].SetValue(true);
-                ShaderSwooshUL.Parameters["lightShift"].SetValue(0);
+                swooshUL.Parameters["uTransform"].SetValue(VertexDrawInfo.uTransform);
+                swooshUL.Parameters["uLighter"].SetValue(0);
+                swooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
+                swooshUL.Parameters["checkAir"].SetValue(false);
+                swooshUL.Parameters["airFactor"].SetValue(1);
+                swooshUL.Parameters["gather"].SetValue(true);
+                swooshUL.Parameters["lightShift"].SetValue(0);
 
                 //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
                 //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                ShaderSwooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
-                ShaderSwooshUL.Parameters["distortScaler"].SetValue(0);
-                ShaderSwooshUL.Parameters["alphaFactor"].SetValue(1.5f);
-                ShaderSwooshUL.Parameters["heatMapAlpha"].SetValue(true);
-                ShaderSwooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
-
+                swooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
+                swooshUL.Parameters["distortScaler"].SetValue(0);
+                swooshUL.Parameters["alphaFactor"].SetValue(1.5f);
+                swooshUL.Parameters["heatMapAlpha"].SetValue(true);
+                swooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
+                if (frame != null)
+                {
+                    Rectangle uframe = frame.Value;
+                    Vector2 size = itemTex.Size();
+                    swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(uframe.TopLeft() / size, uframe.Width / size.X, uframe.Height / size.Y));
+                }
+                else
+                    swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
 
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
@@ -1005,7 +1022,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
                 Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
 
-                ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();
+                swooshUL.CurrentTechnique.Passes[7].Apply();
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
                 Main.graphics.GraphicsDevice.RasterizerState = originalState;
                 sb.End();

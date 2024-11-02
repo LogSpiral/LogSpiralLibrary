@@ -1,5 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
+using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
 
 namespace LogSpiralLibrary.ForFun.TestBlade2
 {
@@ -29,7 +31,17 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
     public class TestBlade2Proj : MeleeSequenceProj
     {
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>());
+        public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>()) with 
+        {
+            vertexStandard = new VertexDrawInfoStandardInfo() with
+            {
+                active = true,
+                renderInfos = [[new AirDistortEffectInfo(3)], [default(MaskEffectInfo), new BloomEffectInfo(0.05f, 0.5f, 1f, 2, true)]],
+
+                scaler = 120,
+                timeLeft = 15
+            }
+        };
 
         public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {

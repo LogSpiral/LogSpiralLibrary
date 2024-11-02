@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
 using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
@@ -18,6 +19,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.shoot = ModContent.ProjectileType<TestBladeProj>();
+            Item.channel = true;
             Item.shootSpeed = 1f;
             Item.useTime = 30;
             Item.useAnimation = 30;
@@ -25,6 +27,11 @@ namespace LogSpiralLibrary.ForFun.TestBlade
 
             Item.rare = ItemRarityID.Red;
             base.SetDefaults();
+        }
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            //Projectile.NewProjectile(source, position, velocity * 12f, ProjectileID.FlowerPow, damage, knockback, player.whoAmI, 5);
+            return true;
         }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
         public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;

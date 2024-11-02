@@ -72,6 +72,11 @@ Items: {
 		DisplayName: Test Blade3 V2
 		Tooltip: ""
 	}
+
+	HyperCube: {
+		DisplayName: Hyper Cube
+		Tooltip: ""
+	}
 }
 
 MeleeAction: {

@@ -71,6 +71,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public int itemType;
         public SoundStyle? soundStyle;
         public float dustAmount;
+        public Rectangle? frame;
         public StandardInfo()
         {
         }
@@ -266,7 +267,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     /// 去泛型化的序列基类
     /// </summary>
     [XmlRoot("Sequence")]
-    public abstract class SequenceBase
+    public abstract class Sequence
     {
         //public abstract GroupBase CreateSimpleGroup(WraperBase wraperBase);
         public const string SequenceDefaultName = "My Sequence";
@@ -279,7 +280,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
         public abstract void Save();
 
-        public abstract SequenceBase Clone();
+        public abstract Sequence Clone();
 
         public abstract void WriteContent(XmlWriter xmlWriter);
 
@@ -300,7 +301,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public abstract ISequenceElement Element { get; }
             public abstract bool IsElement { get; }
             public abstract string Name { get; }
-            public abstract SequenceBase SequenceInfo { get; }
+            public abstract Sequence SequenceInfo { get; }
             //public abstract void SetConfigPanel(UIList uIList);
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
@@ -332,7 +333,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public abstract bool Active { get; set; }
 
     }
-    public class SequenceBase<T> : SequenceBase where T : ISequenceElement
+    public class Sequence<T> : Sequence where T : ISequenceElement
     {
 
         //public override GroupBase CreateSimpleGroup(WraperBase wraperBase)
@@ -343,14 +344,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         //}
         public override void Reset()
         {
-            var seq = new SequenceBase<T>();
+            var seq = new Sequence<T>();
             Load($"PresetSequences/{ElementTypeName}/{FileName}.xml", mod, seq);
             SequenceManager<T>.sequences[seq.KeyName] = seq;
         }
         public override string LocalPath => $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{mod.Name}/{sequenceName}.xml";
         public override string KeyName => $"{mod.Name}/{sequenceName}";
         public override string DisplayName => SequenceSystem.sequenceInfos[KeyName]?.DisplayName ?? sequenceName;
-        public override SequenceBase Clone()
+        public override Sequence Clone()
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -432,7 +433,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     {
                         xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
                         if (wraper.Name == SequenceDefaultName)
-                            ((SequenceBase<T>)wraper.SequenceInfo).WriteContent(xmlWriter);
+                            ((Sequence<T>)wraper.SequenceInfo).WriteContent(xmlWriter);
                         else
                         {
                             if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
@@ -474,7 +475,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public bool active;
         public override bool Active { get => active; set => active = value; }
-        public static void Load(string pathInMod, Mod mod, SequenceBase<T> target)
+        public static void Load(string pathInMod, Mod mod, Sequence<T> target)
         {
             using Stream stream = mod.GetFileStream(pathInMod);
             using XmlReader xmlReader = XmlReader.Create(stream);
@@ -486,7 +487,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             ReadSequence(xmlReader, mod.Name, target);
             target.mod = mod;
         }
-        public static void Load(string path, SequenceBase<T> target)
+        public static void Load(string path, Sequence<T> target)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
             xmlReader.Read();//读取声明
@@ -496,13 +497,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             ReadSequence(xmlReader, modName, target);
             target.mod = ModLoader.GetMod(modName);
         }
-        public static SequenceBase<T> Load(string path)
+        public static Sequence<T> Load(string path)
         {
             using XmlReader xmlReader = XmlReader.Create(path);
             var modName = path.Split('\\', '/')[^2];
             return Load(xmlReader, modName);
         }
-        public static SequenceBase<T> Load(XmlReader xmlReader, string modName)
+        public static Sequence<T> Load(XmlReader xmlReader, string modName)
         {
             xmlReader.Read();//读取声明
             xmlReader.Read();//读取空格
@@ -510,7 +511,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             result.mod = ModLoader.GetMod(modName);
             return result;
         }
-        public static bool ReadSequence(XmlReader xmlReader, string modName, SequenceBase<T> empty)
+        public static bool ReadSequence(XmlReader xmlReader, string modName, Sequence<T> empty)
         {
             xmlReader.Read();//读取序列节点开始部分
             if (xmlReader.Name != "Sequence")
@@ -531,7 +532,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 return true;
             }
         }
-        public static bool ReadSequence(XmlReader xmlReader, string modName, out SequenceBase<T> result)
+        public static bool ReadSequence(XmlReader xmlReader, string modName, out Sequence<T> result)
         {
             xmlReader.Read();//读取序列节点开始部分
             if (xmlReader.Name != "Sequence")
@@ -542,7 +543,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             else
             {
-                result = new SequenceBase<T>();
+                result = new Sequence<T>();
                 var fileName = result.sequenceName = xmlReader["name"] ?? SequenceDefaultName;
                 if (fileName != SequenceDefaultName)
                     SequenceSystem.sequenceInfos[$"{modName}/{fileName}"] = new SequenceBasicInfo().Load(xmlReader);
@@ -610,7 +611,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
                 return null;
             }
-            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public bool ContainsSequence(Sequence<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 foreach (var wraper in wrapers)
@@ -656,7 +657,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         xmlReader.Read();
                         if (xmlReader.Value.Contains("\n"))
                         {
-                            ReadSequence(xmlReader, ModName, out SequenceBase<T> resultSequence);
+                            ReadSequence(xmlReader, ModName, out Sequence<T> resultSequence);
                             result = new Wraper(resultSequence);
                         }
                         else
@@ -677,7 +678,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                                 else
                                 {
                                     Mod mod = ModLoader.GetMod(ModName);
-                                    sequence = new SequenceBase<T>();
+                                    sequence = new Sequence<T>();
                                     //Load($"PresetSequences/{typeof(T).Name}/{xmlReader.Value}.xml",mod, sequence);
                                     SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
                                     result = new Wraper(sequence);
@@ -707,8 +708,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             public override ISequenceElement Element => elementInfo;
             public readonly T elementInfo;
-            public readonly SequenceBase<T> sequenceInfo;
-            public override SequenceBase SequenceInfo => sequenceInfo;
+            public readonly Sequence<T> sequenceInfo;
+            public override Sequence SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
             public override string Name => sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
@@ -716,12 +717,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 elementInfo = sequenceELement;
             }
-            public Wraper(SequenceBase<T> sequence)
+            public Wraper(Sequence<T> sequence)
             {
                 sequenceInfo = sequence;
             }
-            public static implicit operator Wraper(SequenceBase<T> sequence) => new Wraper(sequence);
-            public bool ContainsSequence(SequenceBase<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
+            public static implicit operator Wraper(Sequence<T> sequence) => new Wraper(sequence);
+            public bool ContainsSequence(Sequence<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
                 if (!IsSequence) return false;
@@ -831,6 +832,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                         }
                         if (Attacktive) elementInfo.OnAttack();
                         else elementInfo.OnCharge();
+                        elementInfo.standardInfo = standardInfo;//elementInfo.standardInfo with { frame = standardInfo.frame };
                         elementInfo.Update(triggered);
                         Active = true;
                         //Main.NewText(GetHashCode());

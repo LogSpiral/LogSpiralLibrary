@@ -1,6 +1,6 @@
 displayName = 错数前置库~LogSpiral's Library
 author = 错数螺线Log_Spiral
-version = 0.1.2.0
+version = 0.1.2.1
 homepage = https://github.com/LogSpiral
 includeSource = true
 dllReferences = NetSimplified

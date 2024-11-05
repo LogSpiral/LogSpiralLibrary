@@ -112,7 +112,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     plr.Center = realCenter;
                     plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
                     plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient) 
+                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                     {
                         SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                     }
@@ -1034,7 +1034,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// </summary>
     public class TerraprismaInfo : MeleeAction
     {
-        public override Vector2 offsetCenter => Projectile.ownerHitCheck ? Owner.Center : (realCenter - Owner.Center);
+        public override Vector2 offsetCenter => realCenter - Owner.Center;
         public override float offsetRotation => realRotation;
         public override bool Attacktive => target != null;
         public override bool Collide(Rectangle rectangle)
@@ -1054,7 +1054,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     if (Owner is Player player && Main.rand.NextBool(5))
                     {
                         Vector2 orig = player.Center;
-                        player.Center += realCenter;
+                        player.Center = realCenter;
                         player.ItemCheck_Shoot(player.whoAmI, player.HeldItem, (int)(ModifyData.actionOffsetDamage * player.GetWeaponDamage(player.HeldItem)));
                         player.Center = orig;
                         if (Main.myPlayer == player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
@@ -1123,11 +1123,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             realRotation = MathHelper.PiOver2;
             Projectile.ownerHitCheck = false;
             assistParas = new float[5];
+            realCenter = Owner.Center;
         }
         public override void Update(bool triggered)
         {
             var verS = standardInfo.vertexStandard;
-            if (realCenter == default) realCenter = Owner.Center;
             if (Owner is Player plr)
                 plr.direction = Math.Sign(plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition.X - plr.Center.X);
             if (target == null || !target.CanBeChasedBy())
@@ -1215,7 +1215,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         public override void OnEndSingle()
         {
             target = null;
-            realCenter = default;
+            //realCenter = default;
             assistVelocity = default;
             realRotation = default;
             Array.Clear(oldCenters);

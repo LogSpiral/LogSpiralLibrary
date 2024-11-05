@@ -308,7 +308,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             [CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
             public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
             public Entity owner;
-            public Condition Condition => SequenceSystem.ToEntityCondition(conditionDefinition.Name, $"mods.{conditionDefinition.Mod}.Condition.{conditionDefinition.Name}", owner) ?? SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
+            public Condition Condition => SequenceSystem.ToEntityCondition(
+                conditionDefinition.Name, 
+                $"mods.{conditionDefinition.Mod}.Condition.{conditionDefinition.Name}", 
+                owner) ?? 
+                SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
 
             //public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
@@ -426,7 +430,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     Wraper wraper = group.wrapers[j];
                     xmlWriter.WriteStartElement("Wraper");
-                    if (wraper.Condition.Description.Value != "Always")
+                    if (wraper.conditionDefinition.Name != "Always" && wraper.conditionDefinition.Name != "None")
                         xmlWriter.WriteAttributeString("condition", wraper.Condition.Description.Key.Split('.')[^1]);
                     //xmlWriter.WriteValue(wraper.Name);
                     if (wraper.IsSequence)

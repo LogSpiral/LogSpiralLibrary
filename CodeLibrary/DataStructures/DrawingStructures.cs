@@ -318,7 +318,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         {
             //for (int n = 0; n < VertexInfos.Length - 1; n++)
             //{
-            //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, -Main.screenPosition);
+            //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, UIDrawing ? default : -Main.screenPosition);
             //}
 
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
@@ -342,6 +342,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
             swooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();//
             DrawPrimitives(dS);
+
+
+            //CustomVertexInfo[] customVertexInfos = new CustomVertexInfo[6];
+            //customVertexInfos[0] = new CustomVertexInfo(new Vector2(1800, 600), new Vector3(0, 0, 1));
+            //customVertexInfos[1] = new CustomVertexInfo(new Vector2(2200, 600), new Vector3(1, 0, 1));
+            //customVertexInfos[2] = new CustomVertexInfo(new Vector2(1800, 1000), new Vector3(0, 1, 1));
+            //customVertexInfos[5] = new CustomVertexInfo(new Vector2(2200, 1000), new Vector3(1, 1, 1));
+            //customVertexInfos[3] = customVertexInfos[2];
+            //customVertexInfos[4] = customVertexInfos[1];
+            //Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, customVertexInfos, 0, 2);
         }
         /// <summary>
         /// 合批绘制完毕记得<see cref="SpriteBatch.End"/>
@@ -359,9 +369,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <summary>
         /// spbdraw那边的矩阵
         /// </summary>
-        public static Matrix TransformationMatrix => Main.GameViewMatrix?.TransformationMatrix ?? Matrix.Identity;
-        static Matrix projection => Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
-        static Matrix model => Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+        public static Matrix TransformationMatrix => UIDrawing ? Main.UIScaleMatrix : Main.GameViewMatrix?.TransformationMatrix ?? Matrix.Identity;
+        static Matrix projection => Matrix.CreateOrthographicOffCenter(0, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height, 0, 0, 1);//Main.screenWidth  Main.screenHeight
+        static Matrix model => Matrix.CreateTranslation(UIDrawing ? default : new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
         /// <summary>
         /// 丢给顶点坐标变换的矩阵
         /// <br>先右乘<see cref="model"/>将世界坐标转屏幕坐标</br>
@@ -369,6 +379,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <br>最后右乘<see cref="projection"/>将坐标压缩至[0,1]</br>
         /// </summary>
         public static Matrix uTransform => model * TransformationMatrix * projection;
+
+        public static bool UIDrawing;
     }
     public abstract class MeleeVertexInfo : VertexDrawInfo
     {
@@ -418,7 +430,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             {
                 ColorVector = new Vector3(0, 1, 0);
             }
-            else if (ColorVector == default)
+            else if (ColorVector == default && normalize)
                 ColorVector = new Vector3(0.33f);
             else if (normalize)
                 ColorVector /= Vector3.Dot(ColorVector, Vector3.One);
@@ -702,7 +714,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
 
                         swoosh.aniTexIndex = _aniIndex;
                         swoosh.baseTexIndex = _baseIndex;
-                        swoosh.ColorVector = colorVec == default ? new Vector3(0.33f) : colorVec;
+                        swoosh.ColorVector = (colorVec == default && normalize) ? new Vector3(0.33f) : colorVec;
                         swoosh.normalize = normalize;
                         result = swoosh;
                     }
@@ -1059,7 +1071,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(Main.screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
-                spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero,Color.White);
+                spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             }
 
 

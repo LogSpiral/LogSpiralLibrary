@@ -1645,12 +1645,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 }
 
                 //TODO 委托挂载优化
-                foreach (PropertyFieldWrapper variable in props)
-                {
-                    if (variable.Type != typeof(SeqDelegateDefinition))
-                        continue;
-                    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
-                }
+                //foreach (PropertyFieldWrapper variable in props)
+                //{
+                //    if (variable.Type != typeof(SeqDelegateDefinition))
+                //        continue;
+                //    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
+                //}
             }
             base.RightClick(evt);
         }

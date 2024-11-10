@@ -121,6 +121,19 @@ float4 PixelShaderFunction_VertexColor(PSInput input) : COLOR0
 		alpha *= color * alphaFactor;
 	return float4(input.Color.rgb, alpha);
 }
+float4 SampleFromHeatMap(float2 coord)
+{
+	//coord.x = saturate(coord.x);
+	//coord.x *= 0.9999;
+	coord.x = clamp(coord.x, 0.01, 0.99);
+	return tex2D(uImage3, coord);
+
+}
+float3 getMapColor(float3 texcoord)
+{
+	return SampleFromHeatMap(mul(float2(texcoord.x, modifyY(texcoord.xy)) - 0.5, heatRotation) + 0.5).xyz;
+}
+
 float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
 {
 	if (checkAir)
@@ -134,7 +147,7 @@ float4 PixelShaderFunction_MapColor(PSInput input) : COLOR0
 	float alpha = input.Color.a;
 	if (heatMapAlpha)
 		alpha *= color * alphaFactor;
-	return float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz, alpha);
+	return float4(getMapColor(input.Texcoord), alpha);
 }
 float4 PixelShaderFunction_WeaponColor(PSInput input) : COLOR0
 {
@@ -161,7 +174,7 @@ float4 PixelShaderFunction_HeatMap(PSInput input) : COLOR0
 	float light = getBaseValue(coord).r;
 	if (!any(light))
 		return float4(0, 0, 0, 0);
-	float4 c = tex2D(uImage3, light);
+	float4 c = SampleFromHeatMap(light);
 	float alpha = input.Color.a;
 	if (heatMapAlpha)
 		alpha *= light * alphaFactor;
@@ -173,13 +186,13 @@ float4 PixelShaderFunction_BlendMW(PSInput input) : COLOR0
 	float4 c = weaponColor(coord.y);
 	if (!any(c))
 		return float4(0, 0, 0, 0);
-	float color = getBaseValue(input.Texcoord).r;
+	float color = getBaseValue(coord).r;
 	if (!any(color))
 		return float4(0, 0, 0, 0);
 	float alpha = input.Color.a;
 	if (heatMapAlpha)
 		alpha *= color * alphaFactor;
-	return float4((c.rgb + tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation)).xyz) * .5f, alpha);
+	return float4((c.rgb + getMapColor(coord)) * .5f, alpha);
 }
 float4 PixelShaderFunction_OriginColor(PSInput input) : COLOR0
 {
@@ -211,18 +224,18 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 	float4 _weaponColor = weaponColor(coord.y);
 	if (!any(_weaponColor))
 		return float4(0, 0, 0, 0);
-	float4 _mapColor = float4(tex2D(uImage3, mul(float2(input.Texcoord.x, modifyY(input.Texcoord.xy)), heatRotation) % 1).xyz, 1);
+	float4 _mapColor = float4(getMapColor(coord), 1);
 	//float4 mapColor = tex2D(uImage3, mul(float4(coord, 1) - float4(0.5, 0.5, 0, 0), heatRotation).xy + float2(0.5, 0.5));
 	float greyValue = getBaseValue(input.Texcoord).r;
 	if (!any(greyValue))
 		return float4(0, 0, 0, 0);
-	float4 _heatColor = tex2D(uImage3, greyValue);
+	float4 _heatColor = SampleFromHeatMap(greyValue);
 	float3x4 colorMatrix = float3x4(_mapColor, _weaponColor, _heatColor);
 	float4 result = mul(AlphaVector, colorMatrix) * coord.z;
 	result.a = input.Color.a;
 	if (heatMapAlpha)
 	{
-		result.a *= greyValue * airFactor;
+		result.a *= greyValue * alphaFactor;
 		result.a += alphaOffset;
 		//result.a = saturate(result.a);
 	}

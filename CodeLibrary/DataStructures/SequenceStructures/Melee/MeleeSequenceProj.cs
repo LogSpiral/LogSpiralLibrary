@@ -175,7 +175,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 InitializeSequence(Mod.Name, Name);
                 meleeSequence.SetOwner(player);
             }
-            if (player.DeadOrGhost) Projectile.Kill();
+            if (player.DeadOrGhost) 
+            {
+                currentData?.OnDeactive();
+                Projectile.Kill();
+            }
             if (Projectile.timeLeft == 10) return;
 
 

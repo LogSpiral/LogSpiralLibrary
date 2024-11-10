@@ -370,7 +370,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// spbdraw那边的矩阵
         /// </summary>
         public static Matrix TransformationMatrix => UIDrawing ? Main.UIScaleMatrix : Main.GameViewMatrix?.TransformationMatrix ?? Matrix.Identity;
-        static Matrix projection => Matrix.CreateOrthographicOffCenter(0, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height, 0, 0, 1);//Main.screenWidth  Main.screenHeight
+        static Matrix projection => Main.gameMenu ? Matrix.CreateOrthographicOffCenter(0, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);//Main.screenWidth  Main.screenHeight
         static Matrix model => Matrix.CreateTranslation(UIDrawing ? default : new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
         /// <summary>
         /// 丢给顶点坐标变换的矩阵
@@ -396,6 +396,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public Vector3 ColorVector;
         public bool normalize;
+        public float alphaFactor = 2f;
+        public float heatRotation;
         //public override IRenderDrawInfo[] RenderDrawInfos => _rendeDrawInfos;
         //IRenderDrawInfo[] _rendeDrawInfos = [new AirDistortEffectInfo(), new MaskEffectInfo(), new BloomEffectInfo()];
 
@@ -407,11 +409,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             effect.Parameters["uTime"].SetValue(-(float)LogSpiralLibrarySystem.ModTime * 0.03f);
             effect.Parameters["checkAir"].SetValue(false);
             effect.Parameters["airFactor"].SetValue(2);
-            //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-            effect.Parameters["heatRotation"].SetValue(Matrix.Identity);
+            effect.Parameters["heatRotation"].SetValue(Matrix.CreateRotationZ(heatRotation));
             effect.Parameters["lightShift"].SetValue(0f);
             effect.Parameters["distortScaler"].SetValue(1f);
-            effect.Parameters["alphaFactor"].SetValue(2f);
+            effect.Parameters["alphaFactor"].SetValue(alphaFactor);
             effect.Parameters["heatMapAlpha"].SetValue(true);
             effect.Parameters["stab"].SetValue(false);
             effect.Parameters["alphaOffset"].SetValue(0f);
@@ -421,11 +422,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             Main.graphics.GraphicsDevice.SamplerStates[0] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
-            Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.AnisotropicClamp;
+            Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.AnisotropicWrap;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            ShaderSwooshUL.Parameters["gather"].SetValue(gather);
+            Effect effect = ShaderSwooshUL;
+            effect.Parameters["gather"].SetValue(gather);
             if (heatMap == null)
             {
                 ColorVector = new Vector3(0, 1, 0);
@@ -434,7 +436,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 ColorVector = new Vector3(0.33f);
             else if (normalize)
                 ColorVector /= Vector3.Dot(ColorVector, Vector3.One);
-            ShaderSwooshUL.Parameters["AlphaVector"].SetValue(ColorVector);
+            effect.Parameters["AlphaVector"].SetValue(ColorVector);
+            effect.Parameters["heatRotation"].SetValue(Matrix.CreateRotationZ(heatRotation));
+            effect.Parameters["alphaFactor"].SetValue(alphaFactor);
 
             base.Draw(spriteBatch);
         }

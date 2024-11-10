@@ -721,7 +721,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
             Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
             ItemEffect.CurrentTechnique.Passes[0].Apply();
-            for (int n = 0; n < c.Length; n++) c[n].Color = standardInfo.standardColor;
+            for (int n = 0; n < c.Length; n++) c[n].Color = standardInfo.standardColor * standardInfo.extraLight;
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, c, 0, c.Length / 3);
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             Main.spriteBatch.End();

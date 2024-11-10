@@ -620,7 +620,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, randR, randK, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
                     subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, randR, randK, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
-
+                    subSwoosh.ApplyStdValueToVtxEffect(standardInfo);
                 }
                 else
                 {
@@ -632,13 +632,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
-                u.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                u.frame = standardInfo.frame;
-                if (subSwoosh != null)
-                {
-                    subSwoosh.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                    subSwoosh.frame = standardInfo.frame;
-                }
+                u.ApplyStdValueToVtxEffect(standardInfo);
                 //return u;
             }
             base.OnStartAttack();
@@ -931,6 +925,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 ultras[n] = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, timerMax, heat: verS.heatMap, _aniIndex: pair.Item1, _baseIndex: pair.Item2, colorVec: verS.colorVec);
                 ultras[n].autoUpdate = false;
                 ultras[n].timeLeft = 1;
+                ultras[n].ApplyStdValueToVtxEffect(standardInfo);
             }
             if (verS.renderInfos == null)
                 ultras[0].ResetAllRenderInfo();
@@ -982,6 +977,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 float alphaG = 1 - n / 3f;
                 UltraSwoosh u = ultras[n];
                 u.timeLeft--;
+                u.center = Owner.Center + Rotation.ToRotationVector2() * dist * .5f;
                 var vertex = u.VertexInfos;
                 for (int i = 0; i < 45; i++)
                 {
@@ -991,7 +987,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     var f = i / 44f;
                     var realColor = standardInfo.standardColor;
 
-                    realColor.A = (byte)(f.HillFactor2(1) * 128 * alphaT * alphaG);
+                    realColor.A = (byte)(f.HillFactor2(1) * 204 * alphaT * alphaG);
                     vertex[2 * i] = new CustomVertexInfo(curTex[4].Position, realColor, new Vector3(f, 1, 1));
                     vertex[2 * i + 1] = new CustomVertexInfo(curTex[0].Position, realColor, new Vector3(0, 0, 1));
 
@@ -1027,6 +1023,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             }
             fTimer = origf_s;
             return false;
+        }
+        public override void OnDeactive()
+        {
+            foreach (var u in ultras)
+            {
+                if (u != null)
+                    u.timeLeft = 0;
+            }
+            base.OnDeactive();
         }
     }
     /// <summary>
@@ -1111,7 +1116,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             ultra = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, timerMax, heat: verS.heatMap, _aniIndex: pair.Item1, _baseIndex: pair.Item2, colorVec: verS.colorVec);
             ultra.autoUpdate = false;
             ultra.timeLeft = 1;
-
+            ultra.ApplyStdValueToVtxEffect(standardInfo);
             if (verS.renderInfos == null)
                 ultra.ResetAllRenderInfo();
             else
@@ -1198,13 +1203,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 oldRotations[0] = realRotation;
             }
             ultra.timeLeftMax = timerMax;
-            ultra.timeLeft = timer;
+            ultra.timeLeft = (int)(timerMax * Math.Pow(Factor,0.25));
+            ultra.center = Owner.Center;;
+
             var vertex = ultra.VertexInfos;
             for (int i = 0; i < 45; i++)
             {
                 var f = i / 44f;
                 var realColor = standardInfo.standardColor;
-                realColor.A = (byte)(f.HillFactor2(1) * 96);
+                realColor.A = (byte)(f.HillFactor2(1) * 255);//96
                 vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
                 vertex[2 * i + 1] = new CustomVertexInfo(oldCenters[i] + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(0, 0, 1));
             }
@@ -1221,10 +1228,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             Array.Clear(oldCenters);
             Array.Clear(oldRotations);
             Array.Clear(assistParas);
+            ultra.timeLeft = -1;
             ultra = null;
+            //Array.Clear(LogSpiralLibrarySystem.vertexEffects);
             Projectile.ownerHitCheck = true;
             base.OnEndSingle();
         }
-
+        public override void OnDeactive()
+        {
+            if (ultra != null)
+            {
+                ultra.timeLeft = 0;
+                ultra = null;
+            }
+            base.OnDeactive();
+        }
     }
 }

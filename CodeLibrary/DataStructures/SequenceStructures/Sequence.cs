@@ -32,6 +32,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public Texture2D heatMap;
         public int timeLeft;
         public float scaler;
+        public float heatRotation;
+        public float alphaFactor;
         public VertexDrawInfo.IRenderDrawInfo[][] renderInfos;
         /// <summary>
         /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
@@ -72,6 +74,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public SoundStyle? soundStyle;
         public float dustAmount;
         public Rectangle? frame;
+        public float extraLight = 1f;
         public StandardInfo()
         {
         }

@@ -151,7 +151,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
                     subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
-                    subSwoosh.frame = standardInfo.frame;
+                    subSwoosh.ApplyStdValueToVtxEffect(standardInfo);
                 }
                 else
                 {
@@ -164,11 +164,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
                 swoosh = u;
-                u.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                u.frame = standardInfo.frame;
-                if (subSwoosh != null)
-                    subSwoosh.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                //return u;
+                u.ApplyStdValueToVtxEffect(standardInfo);
             }
             //return null;
         }
@@ -310,7 +306,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     var su = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
                     Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
                     su.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                    su.frame = standardInfo.frame;
+                    su.ApplyStdValueToVtxEffect(standardInfo);
                 }
                 else
                 {
@@ -325,8 +321,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     u.ModityAllRenderInfo(verS.renderInfos);
                 }
-                u.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
-                u.frame = standardInfo.frame;
+                u.ApplyStdValueToVtxEffect(standardInfo);
                 return u;
             }
             return null;

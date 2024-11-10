@@ -37,6 +37,15 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public static class DrawingMethods
     {
+        public static void ApplyStdValueToVtxEffect(this MeleeVertexInfo info, StandardInfo std) 
+        {
+            info.frame = std.frame;
+            info.heatRotation = std.vertexStandard.heatRotation;
+            info.alphaFactor = std.vertexStandard.alphaFactor;
+            info.weaponTex = TextureAssets.Item[std.itemType].Value;
+        }
+
+
         #region 直接用来绘制的b崽子们
 
         public static void DrawStarLight(this SpriteBatch spriteBatch, float Rotation, Vector2 center, Color color, float range, float scale = 1f, float alpha = .5f)

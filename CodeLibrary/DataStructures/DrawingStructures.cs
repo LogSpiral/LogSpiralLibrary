@@ -174,7 +174,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             var array = Representative.RenderDrawInfos;
             for (int n = 0; n < newInfos.Length; n++)
                 array[n] = newInfos[n];
-            OnModifyRenderInfo(array);
+            OnModifyRenderInfo(newInfos);
+            //Representative.RenderDrawInfos = newInfos;
+            //OnModifyRenderInfo(newInfos);
         }
         public void ResetAllRenderInfo()
         {

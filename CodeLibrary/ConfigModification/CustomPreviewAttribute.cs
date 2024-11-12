@@ -13,6 +13,7 @@ using Terraria.UI;
 using MonoMod.Cil;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader.UI;
+using log4net.Filter;
 
 namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {
@@ -71,6 +72,9 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         public static bool PVRenderUsing => LogSpiralLibraryMiscConfig.Instance.WTHConfig || (Main.gameMenu ? Main.MenuUI : Main.InGameUI).CurrentState == Interface.modConfig && Interface.modConfig?.modConfig?.GetType()?.GetCustomAttribute<RenderDrawingPreviewNeededAttribute>() != null;
         public override void Load()
         {
+
+            Filters.Scene.OnPostDraw += () => { };
+
             var previewDrawingMethod = typeof(ConfigElement).GetMethod(nameof(ConfigElement.DrawSelf), BindingFlags.NonPublic | BindingFlags.Instance);
             MonoModHooks.Add(previewDrawingMethod, PreviewDrawing);
             On_UIElement.GetClippingRectangle += UIElement_GetClippingRectangle;

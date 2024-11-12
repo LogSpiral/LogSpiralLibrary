@@ -84,18 +84,18 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 		float t1 = tier1;
 		float t2 = tier2;
 		float dist = t2 - t1;
-			float4 colorMask = tex2D(uImage2, (coords * screenScale + offset / 2) / ImageSize);
+		float4 colorMask = tex2D(uImage2, (coords * screenScale + offset / 2) / ImageSize);
 		if (inverse)
 		{
 			float4 cache = c;
 			c = colorMask;
 			colorMask = cache;
 		}
-			if (v < t1 + dist)
-				return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(t1 - dist), t1 + dist)));
+		if (v < t1 + dist)
+			return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(t1 - dist), t1 + dist)));
 		
-			return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, t1 + dist, saturate(t2 + dist))));
-		}
+		return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, t1 + dist, saturate(t2 + dist))));
+	}
 	return tex2D(uImage0, coords);
 }
 //float4 PSFunction_Bloom(float2 coords : TEXCOORD0) : COLOR0
@@ -172,6 +172,42 @@ float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 	}
 	return color;
 }
+
+
+float4 PSFunction_BloomMK(float2 coords : TEXCOORD0) : COLOR0 //MasakiKawase
+{
+	float4 color = tex2D(uImage0, coords);
+	float k = 0.125 * intensity;
+	for (int m = -1; m <= 1; m += 1)
+	{
+		for (int n = -1; n <= 1; n += 1)
+		{
+			float2 v = float2(m, n);
+			float4 _color = tex2D(uImage0, coords + v / screenScale * range);
+			if (dot(_color.xyz, 0.333) > threshold)
+			{
+				_color *= k;
+				color = ColorBlend(color, _color);
+			}
+		}
+	}
+	for (int i = -1; i <= 1; i += 1)
+	{
+		k = 0.125 / (abs(i) + 1) * intensity;
+		for (int j = -1; j <= 1; j += 1)
+		{
+			float2 v = float2(i, j) * 2.0;
+			float4 _color = tex2D(uImage0, coords + v / screenScale * range);
+			if (dot(_color.xyz, 0.333) > threshold)
+			{
+				_color *= k / (abs(j) + 1);
+				color = ColorBlend(color, _color);
+			}
+		}
+	}
+	return color;
+}
+
 technique Technique1
 {
 	pass DistortEffect
@@ -189,5 +225,9 @@ technique Technique1
 	pass BloomEffectY
 	{
 		PixelShader = compile ps_3_0 PSFunction_BloomY();
+	}
+	pass BloomEffectMK
+	{
+		PixelShader = compile ps_3_0 PSFunction_BloomMK();
 	}
 }

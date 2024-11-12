@@ -338,6 +338,15 @@ Configs: {
 			Label: 震屏设置
 			Tooltip: 参考挥刀
 		}
+
+		WTHConfig: {
+			Label: 神秘设置！
+			Tooltip:
+				'''
+				这个其实源自一个忘记删调试代码的测试版
+				有朋友觉得这样挺好玩，就保留了
+				'''
+		}
 	}
 
 	ShakingSetting: {

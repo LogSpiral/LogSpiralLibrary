@@ -322,6 +322,15 @@ Configs: {
 			Label: screen Shaking Setting
 			Tooltip: ""
 		}
+
+		WTHConfig: {
+			Label: Mystery setting!!
+			Tooltip:
+				'''
+				This actually comes from a beta version that forgot to delete the debugging code
+				Some friends thought it was fun, so I kept it
+				'''
+		}
 	}
 
 	ShakingSetting: {

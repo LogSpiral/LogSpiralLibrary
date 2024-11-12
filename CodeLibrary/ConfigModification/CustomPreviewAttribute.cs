@@ -10,6 +10,9 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.UI;
+using MonoMod.Cil;
+using Terraria.Graphics.Effects;
+using Terraria.ModLoader.UI;
 
 namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {
@@ -62,15 +65,49 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         public CustomPreviewAttribute() : base(typeof(T)) { }
     }
     public class HorizonOverflowEnableAttribute : Attribute { }
+    public class RenderDrawingPreviewNeededAttribute : Attribute { }
     public class ConfigPreviewSystem : ModSystem
     {
+        public static bool PVRenderUsing => LogSpiralLibraryMiscConfig.Instance.WTHConfig || (Main.gameMenu ? Main.MenuUI : Main.InGameUI).CurrentState == Interface.modConfig && Interface.modConfig?.modConfig?.GetType()?.GetCustomAttribute<RenderDrawingPreviewNeededAttribute>() != null;
         public override void Load()
         {
             var previewDrawingMethod = typeof(ConfigElement).GetMethod(nameof(ConfigElement.DrawSelf), BindingFlags.NonPublic | BindingFlags.Instance);
             MonoModHooks.Add(previewDrawingMethod, PreviewDrawing);
             On_UIElement.GetClippingRectangle += UIElement_GetClippingRectangle;
-
+            IL_Main.DoDraw += AddPreviewRenderOn;
             base.Load();
+        }
+        private void AddPreviewRenderOn(ILContext il)
+        {
+            ILCursor cursor = new ILCursor(il);
+            for (int n = 0; n < 5; n++)
+                if (!cursor.TryGotoNext(i => i.MatchLdstr("Sepia")))
+                    return;
+            cursor.Index += 14;
+            cursor.EmitDelegate(() =>
+            {
+                return !PVRenderUsing;
+            });
+            cursor.EmitAnd();
+            for (int n = 0; n < 2; n++)
+                if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(typeof(FilterManager).GetMethod(nameof(FilterManager.EndCapture), BindingFlags.Public | BindingFlags.Instance))))
+                    return;
+            cursor.Index -= 6;
+            cursor.EmitDelegate<Func<bool, bool>>(flag =>
+            {
+                return flag && (!PVRenderUsing || Main.hideUI);
+            });
+
+            for (int n = 0; n < 2; n++)
+                if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(typeof(Main).GetMethod(nameof(Main.DrawInterface), BindingFlags.NonPublic | BindingFlags.Instance))))
+                    return;
+
+            cursor.Index += 3;
+            cursor.EmitDelegate(() =>
+            {
+                if (Lighting.NotRetro && PVRenderUsing)
+                    Filters.Scene.EndCapture(null, Main.screenTarget, Main.screenTargetSwap, Color.Black);
+            });
         }
         private static void PreviewDrawing(Action<ConfigElement, SpriteBatch> orig, ConfigElement self, SpriteBatch spriteBatch)
         {
@@ -78,11 +115,6 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             var pvAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomPreviewAttribute>(self.MemberInfo, self.Item, self.List);
             if (pvAttribute != null && self.IsMouseHovering)
             {
-                //try
-                //{
-                //    self.Parent.Parent.Parent.OverflowHidden = false;
-                //}
-                //catch { }
                 var drawer = (ICustomConfigPreview)Activator.CreateInstance(pvAttribute.pvType);
                 drawer.Draw(spriteBatch, self);
             }
@@ -112,7 +144,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         public override void Unload()
         {
             On_UIElement.GetClippingRectangle -= UIElement_GetClippingRectangle;
-
+            IL_Main.DoDraw -= AddPreviewRenderOn;
             base.Unload();
         }
     }

@@ -48,7 +48,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade
                 renderInfos = [[new AirDistortEffectInfo(3)],[default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)]],
 
                 scaler = 120,
-                timeLeft = 15
+                timeLeft = 15,
+                alphaFactor = 2f,
             },
             itemType = ModContent.ItemType<TestBlade>()
         };

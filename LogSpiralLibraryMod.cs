@@ -135,9 +135,18 @@ namespace LogSpiralLibrary
 
         #region Render
         public static bool CanUseRender => Lighting.Mode != Terraria.Graphics.Light.LightMode.Retro && Lighting.Mode != Terraria.Graphics.Light.LightMode.Trippy && Main.WaveQuality != 0;
+
+        public const int tinyScalerInvert = 2;
+        RenderTarget2D DirectCreateNewRender(bool tiny = false) 
+        {
+            if(tiny)
+                return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width / tinyScalerInvert, Main.instance.Window.ClientBounds.Height / tinyScalerInvert) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / tinyScalerInvert, Main.screenHeight / tinyScalerInvert);
+            else
+                return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+        }
         public RenderTarget2D Render
         {
-            get => render ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+            get => render ??= DirectCreateNewRender();
             set
             {
                 render = value;
@@ -146,7 +155,7 @@ namespace LogSpiralLibrary
         private RenderTarget2D render;
         public RenderTarget2D Render_Swap
         {
-            get => render_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+            get => render_Swap ??= DirectCreateNewRender();
             set
             {
                 render_Swap = value;
@@ -159,7 +168,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny
         {
-            get => render_Tiny ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
+            get => render_Tiny ??= DirectCreateNewRender(true);
             set
             {
                 render_Tiny = value;
@@ -172,7 +181,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny_Swap
         {
-            get => render_Tiny_Swap ??= new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
+            get => render_Tiny_Swap ??= DirectCreateNewRender(true);
             set
             {
                 render_Tiny_Swap = value;
@@ -183,13 +192,13 @@ namespace LogSpiralLibrary
         public void CreateRender()
         {
             if (Render != null) Render.Dispose();
-            Render = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+            Render = DirectCreateNewRender();
             if (Render_Swap != null) Render_Swap.Dispose();
-            Render_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+            Render_Swap = DirectCreateNewRender();
             if (Render_Tiny != null) Render_Tiny.Dispose();
-            Render_Tiny = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
+            Render_Tiny = DirectCreateNewRender(true);
             if (Render_Tiny_Swap != null) Render_Tiny_Swap.Dispose();
-            Render_Tiny_Swap = new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / 4, Main.screenHeight / 4);
+            Render_Tiny_Swap = DirectCreateNewRender(true);
         }
         #endregion
 
@@ -209,21 +218,21 @@ namespace LogSpiralLibrary
             LoadTextures(nameof(Fractal), out Fractal);
 
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
-            On_Main.SetDisplayMode += On_Main_SetDisplayMode;
+            //On_Main.SetDisplayMode += On_Main_SetDisplayMode;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
             //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
             base.Load();
         }
 
-        private void On_Main_SetDisplayMode(On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
-        {
-            int nw = width / 4 * 4;
-            if (nw < width) nw += 4;
-            int nh = height / 4 * 4;
-            if (nh < height) nh += 4;
-            orig.Invoke(nw, nh, fullscreen);
-        }
+        //private void On_Main_SetDisplayMode(On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
+        //{
+        //    int nw = width / 4 * 4;
+        //    if (nw < width) nw += 4;
+        //    int nh = height / 4 * 4;
+        //    if (nh < height) nh += 4;
+        //    orig.Invoke(nw, nh, fullscreen);
+        //}
 
         private void FilterManager_EndCapture_LSLib(Terraria.Graphics.Effects.On_FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
@@ -260,7 +269,7 @@ namespace LogSpiralLibrary
             if (Main.netMode == NetmodeID.Server) return;
 
             Main.OnResolutionChanged -= OnResolutionChanged_RenderCreate;
-            On_Main.SetDisplayMode -= On_Main_SetDisplayMode;
+            //On_Main.SetDisplayMode -= On_Main_SetDisplayMode;
             Terraria.Graphics.Effects.On_FilterManager.EndCapture -= FilterManager_EndCapture_LSLib; ;
             On_Main.DrawProjectiles -= Main_DrawProjectiles_LSLib;
             base.Unload();
@@ -698,5 +707,8 @@ namespace LogSpiralLibrary
             public float strength = 0.25f;
 
         }
+
+        [DefaultValue(false)]
+        public bool WTHConfig = false;
     }
 }

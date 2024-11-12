@@ -320,7 +320,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //{
             //    spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White, 1, false, UIDrawing ? default : -Main.screenPosition);
             //}
-
+            //var m = Main.spriteBatch.transformMatrix;
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(800), new Rectangle(0, 0, 1, 1), Color.White, 0, new Vector2(.5f), 4f, 0, 0);
             //return;
@@ -479,11 +479,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         #region 生成函数
         public static T NewFractalStab<T>(
     Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : FractalStabInfo, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : FractalStabInfo, new()
             => NewFractalStab<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
         public static T NewFractalStab<T>(
     Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : FractalStabInfo, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : FractalStabInfo, new()
         {
             T result = null;
             for (int n = 0; n < vertexEffects.Length; n++)
@@ -520,14 +520,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static FractalStabInfo NewFractalStab(
             Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewFractalStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewFractalStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的穿刺于指定数组中
         /// </summary>
         public static FractalStabInfo NewFractalStab(
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false)
             => NewFractalStab<FractalStabInfo>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static FractalStabInfo NewFractalStab(
             Color color, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
             NewFractalStab(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -543,7 +543,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static FractalStabInfo NewFractalStab(
             Func<float, Color> colorFunc, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
             NewFractalStab(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         #endregion
@@ -558,11 +558,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         #region 生成函数
         public static T NewUltraStab<T>(
     Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraStab, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
             => NewUltraStab<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
         public static T NewUltraStab<T>(
     Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraStab, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
         {
             T result = null;
             for (int n = 0; n < vertexEffects.Length; n++)
@@ -599,14 +599,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的穿刺于指定数组中
         /// </summary>
         public static UltraStab NewUltraStab(
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false)
             => NewUltraStab<UltraStab>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -614,7 +614,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Color color, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
             NewUltraStab(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -622,7 +622,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Func<float, Color> colorFunc, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
             NewUltraStab(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         #endregion
@@ -687,14 +687,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public static T NewUltraSwoosh<T>(
             Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraSwoosh, new() => NewUltraSwoosh<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
+            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraSwoosh, new() => NewUltraSwoosh<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
         /// <summary>
         /// 生成新的剑气于指定数组中，给子类用
         /// </summary>
         public static T NewUltraSwoosh<T>(
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) where T : UltraSwoosh, new()
+            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraSwoosh, new()
         {
             T result = null;
             for (int n = 0; n < vertexEffects.Length; n++)
@@ -734,13 +734,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public static UltraSwoosh NewUltraSwoosh(
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true)
+            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false)
             => NewUltraSwoosh<UltraSwoosh>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
 
         public static UltraSwoosh NewUltraSwoosh(
     Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
     Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-    (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraSwoosh(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
+    (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraSwoosh(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的剑气于<see cref="LogSpiralLibrarySystem.vertexEffects"/>
@@ -748,7 +748,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public static UltraSwoosh NewUltraSwoosh(
             Color color, int timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraSwoosh(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
+            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraSwoosh(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的剑气于<see cref="LogSpiralLibrarySystem.vertexEffects"/>
@@ -756,7 +756,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public static UltraSwoosh NewUltraSwoosh(
             Func<float, Color> colorFunc, int timeLeft = 30, float _scaler = 1f,
             Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1,
-            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = true) => NewUltraSwoosh(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
+            (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraSwoosh(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
         #endregion
         #region 绘制和更新，主体
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
@@ -842,6 +842,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
+
+            //graphicsDevice.SetRenderTarget(Main.screenTarget);
+
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             spriteBatch.End();
         }
@@ -928,7 +931,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
-
             spriteBatch.End();
         }
 
@@ -976,45 +978,58 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             graphicsDevice.SetRenderTarget(render);
             graphicsDevice.Clear(Color.Transparent);
         }
+        //static bool useDownSample => false;
+
+        /// <summary>
+        /// 是否启用降采样
+        /// </summary>
+        public bool useDownSample = true;
+        /// <summary>
+        /// 是否使用MasakiKawase算法
+        /// </summary>
+        public bool useModeMK;
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
-            bool useDownSample = true;
+            //bool useDownSample = true;
             RenderEffect.Parameters["threshold"].SetValue(threshold);
             RenderEffect.Parameters["range"].SetValue(range);
             RenderEffect.Parameters["intensity"].SetValue(intensity);
             RenderEffect.Parameters["uBloomAdditive"].SetValue(true);
             if (useDownSample)
             {
-                RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2() / 4f);
+                RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2() / LogSpiralLibraryMod.tinyScalerInvert);
                 RenderTarget2D renderTiny = LogSpiralLibraryMod.Instance.Render_Tiny;
                 RenderTarget2D renderTinySwap = LogSpiralLibraryMod.Instance.Render_Tiny_Swap;
                 for (int n = 0; n < times - 1; n++)//times是模糊次数(
                 {
                     graphicsDevice.SetRenderTarget(renderTinySwap);
-                    RenderEffect.Parameters["tex0"].SetValue(render);//这里其实似乎用不到这个参数?
+                    RenderEffect.Parameters["tex0"].SetValue(n == 0 ? render : renderTiny);//这里其实似乎用不到这个参数?
                     graphicsDevice.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[3].Apply();
-                    spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                    RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
+                    if (n != 0)
+                        spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                    else
+                        spriteBatch.Draw(render, Vector2.Zero, Color.White);
                     graphicsDevice.SetRenderTarget(renderTiny);
                     RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
                     graphicsDevice.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[2].Apply();
-                    spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, 4f, 0, 0);
+                    RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
+                    spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
                 }
                 graphicsDevice.SetRenderTarget(renderTinySwap);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.Parameters["tex0"].SetValue(times > 1 ? renderTiny : render);
-                RenderEffect.CurrentTechnique.Passes[3].Apply();
+                RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                 if (times > 1)
-                    spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, 4f, 0, 0);
+                    spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
                 else
                     spriteBatch.Draw(render, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(renderTiny);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
-                RenderEffect.CurrentTechnique.Passes[2].Apply();
-                spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, 4f, 0, 0);
+                RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
+                spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
             }
             else
             {
@@ -1024,47 +1039,48 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                     graphicsDevice.SetRenderTarget(renderSwap);
                     RenderEffect.Parameters["tex0"].SetValue(render);//这里其实似乎用不到这个参数?
                     graphicsDevice.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[3].Apply();
+                    RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                     spriteBatch.Draw(render, Vector2.Zero, Color.White);
                     graphicsDevice.SetRenderTarget(render);
                     RenderEffect.Parameters["tex0"].SetValue(renderSwap);
                     graphicsDevice.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[2].Apply();
+                    RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                     spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
                 }
                 graphicsDevice.SetRenderTarget(renderSwap);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.Parameters["tex0"].SetValue(render);
-                RenderEffect.CurrentTechnique.Passes[3].Apply();
+                RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                 spriteBatch.Draw(render, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(render);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.Parameters["tex0"].SetValue(renderSwap);
-                RenderEffect.CurrentTechnique.Passes[2].Apply();
+                RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                 spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
             }
             spriteBatch.End();
         }
         public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
-            bool useDownSample = true;
+            //bool useDownSample = true;
             if (useDownSample)
             {
                 var renderTiny = Instance.Render_Tiny;
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
                 graphicsDevice.Clear(Color.Transparent);
-                spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, .25f, 0, 0);
+                spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
                 Main.instance.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
-                spriteBatch.Draw(render, default, null, Color.White, 0, default, 0.25f, 0, 0);
+                spriteBatch.Draw(render, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
                 Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
                 spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(Main.screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
-                spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 0.25f, 0, 0);
+                spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
             }
             else
             {
+                var m = Main.UIScaleMatrix;
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
                 graphicsDevice.Clear(Color.Transparent);

@@ -18,7 +18,7 @@ float getValue(float4 c1)
 {
 	float maxValue = max(max(c1.x, c1.y), c1.z);
 	float minValue = min(min(c1.x, c1.y), c1.z);
-	return (maxValue + minValue) / 2;
+	return (maxValue + minValue) / 2 * c1.a;
 }
 
 float4 PSFunction(float2 coords : TEXCOORD0) : COLOR0
@@ -91,10 +91,11 @@ float4 PSFunction_Mask(float2 coords : TEXCOORD0) : COLOR0
 			c = colorMask;
 			colorMask = cache;
 		}
+		float4 result = lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, t1 + dist, saturate(t2 + dist))));
 		if (v < t1 + dist)
-			return lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(t1 - dist), t1 + dist)));
+			result = lerp(c, maskGlowColor, smoothstep(0, 1, GetLerpValue(v, saturate(t1 - dist), t1 + dist)));
 		
-		return lerp(maskGlowColor, colorMask, smoothstep(0, 1, GetLerpValue(v, t1 + dist, saturate(t2 + dist))));
+		return float4(result.xyz, c.a);
 	}
 	return tex2D(uImage0, coords);
 }
@@ -137,14 +138,18 @@ float intensity;
 //c1是底色，c2是上色
 float4 ColorBlend(float4 c1, float4 c2)
 {
-	return c1 + c2;
+	//return c1 + c2;
 	float3 vec = uBloomAdditive ? c1.xyz * c1.a + c2.xyz * c2.a : lerp(c1.xyz, c2.xyz, c2.a);
-	return float4(vec, c1.a + c2.a - c1.a * c2.a);
+	float a = c1.a + c2.a - c1.a * c2.a;
+	if (a == 0)
+		return float4(0, 0, 0, 0);
+	return float4(vec / a, a); // 
+
 }
 
 float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 {
-	float4 color = tex2D(uImage0, coords);
+	float4 color = float4(0, 0, 0, 0);
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(n, 0);
@@ -159,7 +164,7 @@ float4 PSFunction_BloomX(float2 coords : TEXCOORD0) : COLOR0
 }
 float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 {
-	float4 color = tex2D(uImage0, coords);
+	float4 color = float4(0, 0, 0, 0);
 	for (int n = -3; n <= 3; n++)
 	{
 		float2 v = float2(0, n);
@@ -176,7 +181,7 @@ float4 PSFunction_BloomY(float2 coords : TEXCOORD0) : COLOR0
 
 float4 PSFunction_BloomMK(float2 coords : TEXCOORD0) : COLOR0 //MasakiKawase
 {
-	float4 color = tex2D(uImage0, coords);
+	float4 color = float4(0,0,0,0);
 	float k = 0.125 * intensity;
 	for (int m = -1; m <= 1; m += 1)
 	{

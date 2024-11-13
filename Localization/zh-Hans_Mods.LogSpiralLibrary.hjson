@@ -121,6 +121,128 @@ MeleeAction: {
 Configs: {
 	StringInputHint: 点击以输入
 
+	AirDistortConfigs: {
+		// Tooltip: ""
+		
+		intensity: {
+			Label: 扭曲强度
+			Tooltip: 拉得越大越明显
+		}
+
+		rotation: {
+			Label: 角偏移量
+			Tooltip: 不是很重要的莫名奇妙的设置
+		}
+
+		colorOffset: {
+			Label: 色差距离
+			Tooltip: 你可以试试拉满或者拉一半
+		}
+
+		tier: {
+			Label: 阶数
+			Tooltip: 反直觉的是，0是采样次数最多的，卡了就改2，配置好可以用0
+		}
+
+		Available: {
+			Label: 启用
+			Tooltip: 空气扭曲，启动！
+		}
+
+		// Tooltip: ""
+	}
+
+	BloomConfigs: {
+		// Tooltip: ""
+		
+		threshold: {
+			Label: 阈值
+			Tooltip: 亮度高于这个值的像素会进行外发光
+		}
+
+		intensity: {
+			Label: 强度
+			Tooltip: 要瞎了要瞎了
+		}
+
+		range: {
+			Label: 范围
+			Tooltip: 点亮一大片！
+		}
+
+		times: {
+			Label: 迭代次数
+			Tooltip: 迭代太多次绝对会亮瞎眼而卡爆的吧
+		}
+
+		useDownSample: {
+			Label: 启用降采样
+			Tooltip:
+				'''
+				不启用降采样时更加清晰，但是范围小
+				启用之后模糊但是范围大
+				'''
+		}
+
+		useModeMK: {
+			Label: 采用精细采样
+			Tooltip: ""
+		}
+
+		Available: {
+			Label: 启用
+			Tooltip: 外发光，启动！
+		}
+
+		// Tooltip: ""
+	}
+
+	MaskConfigs: {
+		// Tooltip: ""
+		
+		SkyStyle: {
+			Label: 星空样式
+			Tooltip: 现在你可以两种星空里切换了(x
+		}
+
+		glowColor: {
+			Label: 主体颜色
+			Tooltip: ""
+		}
+
+		boundColor: {
+			Label: 边界颜色
+			Tooltip: ""
+		}
+
+		tier1: {
+			Label: 边界阈值
+			Tooltip: 低于这个值的会替换为主体颜色
+		}
+
+		tier2: {
+			Label: 遮罩阈值
+			Tooltip: 高于这个值的会替换为星空遮罩
+		}
+
+		lightAsAlpha: {
+			Label: 是否让亮度参与透明度的生成
+			Tooltip: 你可以关了试试，我也不知道为什么我要你选这个
+		}
+
+		inverse: {
+			Label: 亮度反向
+			Tooltip: 现在最暗的被换成星空了
+		}
+
+		Available: {
+			Label: 启用
+			Tooltip: 星空遮罩，启动！
+		}
+
+		// Tooltip: ""
+	}
+
 	RapidlyStabInfo: {
 		rangeOffsetMax: {
 			Label: 执行次数偏移上界

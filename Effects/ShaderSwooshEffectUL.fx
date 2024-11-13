@@ -15,8 +15,10 @@ float distortScaler;
 bool heatMapAlpha;
 float alphaFactor;
 float3 AlphaVector; //ultra版本新增变量，自己看下面的颜色矩阵√
+bool normalize; //ultra版本新增变量，用于单位化系数向量
 bool stab; //ultra版本新增变量，打造突刺的感觉
-float4 uItemFrame = float4(0, 0, 1, 1);//ultra版本新增变量，添加对多帧武器的支持
+float4 uItemFrame = float4(0, 0, 1, 1); //ultra版本新增变量，添加对多帧武器的支持√
+
 
 struct VSInput
 {
@@ -37,6 +39,11 @@ float getLerpValue(float from, float to, float t, bool clamped = true)
 		result = saturate(result);
 	return result;
 }
+float csaturate(float v)
+{
+	return clamp(v, 0.005, 0.995);
+
+}
 
 float modifyY(float2 coord)
 {
@@ -44,19 +51,23 @@ float modifyY(float2 coord)
 	if (stab)
 	{
 		float targetWidth = 0;
-		float f = coord.x * 8;
+		float f = (1 - coord.x) * 8;
 		if (f > 5.5)
 			targetWidth = 2.6 + 52 / (5 * f - 60);
 		else if (f > 3.5)
 			targetWidth = 1;
 		else if (f > 2)
-			targetWidth = 0.66 + 0.8333 / (f - 1);
+			targetWidth = 2 / 3.0 + 5.0 / 6 / (f - 1);
 		else if (f > 1)
 			targetWidth = 0.5 + 1 / (3 - f);
 		else
 			targetWidth = f;
-		targetWidth *= .5f;
+		targetWidth /= 3.0;
 		_coord.y = getLerpValue(0.5 - targetWidth, 0.5 + targetWidth, coord.y);
+		//for (int n = 0; n < 2; n++)
+		//	_coord.y = smoothstep(0, 1, _coord.y);
+		//_coord.y = 4 * pow(_coord.y - 0.5, 3.0) + 0.5;
+
 	}
 	float start = 0;
 	float end = 1;
@@ -87,7 +98,7 @@ float4 getBaseValue(float3 coord)
 	float y = modifyY(coord.xy);
 	//if (y > 1)
 	//	return float4(coord.x, coord.y, 0, 1);
-	if (y != saturate(y))
+	if (y != csaturate(y))
 		return float4(0, 0, 0, 0);
 	float4 c1 = tex2D(uImage0, float2(coord.x, y));
 	float4 c3 = tex2D(uImage1, float2(x, y));
@@ -125,7 +136,7 @@ float4 SampleFromHeatMap(float2 coord)
 {
 	//coord.x = saturate(coord.x);
 	//coord.x *= 0.9999;
-	coord.x = clamp(coord.x, 0.01, 0.99);
+	coord.x = csaturate(coord.x);
 	return tex2D(uImage3, coord);
 
 }
@@ -220,6 +231,10 @@ float4 PixelShaderFunction_VertexColor2(PSInput input) : COLOR0
 float alphaOffset;
 float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 {
+	float a = 1 - saturate(1 - AlphaVector.x) * saturate(1 - AlphaVector.y) * saturate(1 - AlphaVector.z);
+	if (a == 0)
+		return float4(0, 0, 0, 0);
+	
 	float3 coord = input.Texcoord;
 	float4 _weaponColor = weaponColor(coord.y);
 	if (!any(_weaponColor))
@@ -231,8 +246,16 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 		return float4(0, 0, 0, 0);
 	float4 _heatColor = SampleFromHeatMap(greyValue);
 	float3x4 colorMatrix = float3x4(_mapColor, _weaponColor, _heatColor);
-	float4 result = mul(AlphaVector, colorMatrix) * coord.z;
-	result.a = input.Color.a;
+	float3 cVector = AlphaVector;
+	if (normalize)
+	{
+		float d = dot(float3(1.0, 1.0, 1.0), AlphaVector);
+		cVector = d == 0 ? float3(0.3333, 0.3333, 0.3333) : cVector / d;
+
+	}
+	float4 result = mul(AlphaVector, colorMatrix) * coord.z / a;
+
+	result.a = input.Color.a * a;
 	if (heatMapAlpha)
 	{
 		result.a *= greyValue * alphaFactor;

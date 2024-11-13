@@ -284,13 +284,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// 最大存在时长，用于插值
         /// </summary>
         public int timeLeftMax;
-        /// <summary>
-        /// 加上11为<see cref="AniTex"/>的下标，取值范围为[0,5]
-        /// </summary>
+
         public int aniTexIndex;
-        /// <summary>
-        /// <see cref="BaseTex"/>的下标，取值范围为[0,11]
-        /// </summary>
+
         public int baseTexIndex;
 
         /// <summary>
@@ -309,7 +305,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// <param name="spriteBatch"></param>
         public virtual void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullNone, null, TransformationMatrix);
         }
         public void DrawPrimitives(float distortScaler) => Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, DrawingMethods.CreateTriList(VertexInfos, center, distortScaler, true, !distortScaler.Equals(1.0f)), 0, VertexInfos.Length - 2);
         /// <summary>
@@ -326,8 +322,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Black);
             //spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Vector2(800), new Rectangle(0, 0, 1, 1), Color.White, 0, new Vector2(.5f), 4f, 0, 0);
             //return;
-            Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
-            Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
+
+            //Main.graphics.GraphicsDevice.Textures[0] = BaseTex[baseTexIndex].Value;
+            //Main.graphics.GraphicsDevice.Textures[1] = AniTex[aniTexIndex + 11].Value;
             Main.graphics.GraphicsDevice.Textures[2] = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
             Main.graphics.GraphicsDevice.Textures[3] = heatMap;
             var swooshUL = ShaderSwooshUL;
@@ -431,17 +428,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             Effect effect = ShaderSwooshUL;
             effect.Parameters["gather"].SetValue(gather);
             if (heatMap == null)
-            {
                 ColorVector = new Vector3(0, 1, 0);
-            }
-            else if (ColorVector == default && normalize)
-                ColorVector = new Vector3(0.33f);
-            else if (normalize)
-                ColorVector /= Vector3.Dot(ColorVector, Vector3.One);
             effect.Parameters["AlphaVector"].SetValue(ColorVector);
+            effect.Parameters["normalize"].SetValue(normalize);
             effect.Parameters["heatRotation"].SetValue(Matrix.CreateRotationZ(heatRotation));
             effect.Parameters["alphaFactor"].SetValue(alphaFactor);
-
             base.Draw(spriteBatch);
         }
         public override void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
@@ -552,19 +543,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
     }
     public class UltraStab : MeleeVertexInfo
     {
+        const bool usePSShaderTransform = true;
         #region 参数和属性
         //TODO 改成用ps实现
-        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
+        CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[usePSShaderTransform ? 4 : 90];//
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
         #endregion
         #region 生成函数
         public static T NewUltraStab<T>(
     Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
             => NewUltraStab<T>(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
         public static T NewUltraStab<T>(
     Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
+    Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false) where T : UltraStab, new()
         {
             T result = null;
             for (int n = 0; n < vertexEffects.Length; n++)
@@ -601,14 +593,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Color color, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false) => NewUltraStab(t => color, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
         /// 生成新的穿刺于指定数组中
         /// </summary>
         public static UltraStab NewUltraStab(
             Func<float, Color> colorFunc, VertexDrawInfo[] vertexEffects, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false)
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false)
             => NewUltraStab<UltraStab>(colorFunc, vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -616,7 +608,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Color color, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false) =>
             NewUltraStab(color, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         /// <summary>
@@ -624,7 +616,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         /// </summary>
         public static UltraStab NewUltraStab(
             Func<float, Color> colorFunc, int timeLeft = 30, float _scaler = 1f,
-            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) =>
+            Vector2? center = default, Texture2D heat = null, bool _negativeDir = false, float _rotation = 0, float xscaler = 1, int _aniIndex = 5, int _baseIndex = 0, Vector3 colorVec = default, bool normalize = false) =>
             NewUltraStab(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, _aniIndex, _baseIndex, colorVec, normalize);
 
         #endregion
@@ -632,45 +624,58 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
         public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
             base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-            //LogSpiralLibraryMod.ShaderSwooshUL.Parameters["stab"].SetValue(true);
-            //graphicsDevice.SetRenderTarget(render);
-            //graphicsDevice.Clear(Color.White);
+            LogSpiralLibraryMod.ShaderSwooshUL.Parameters["stab"].SetValue(usePSShaderTransform);
         }
-        public override void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-            => base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex_Stab[baseTexIndex].Value;
+            Main.graphics.GraphicsDevice.Textures[1] = AniTex_Stab[aniTexIndex].Value;
+            base.Draw(spriteBatch);
+        }
         public override void Uptate()
         {
-            //if (OnSpawn)
-            //{
-            //    var realColor = Color.White;
-            //    Vector2 offsetVec = 20f * new Vector2(8, 3 / xScaler) * scaler;
-            //    if (negativeDir) offsetVec.Y *= -1;
-            //    VertexInfos[0] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 1, 0.5f));
-            //    VertexInfos[2] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 1, 0.5f));
-            //    offsetVec.Y *= -1;
-            //    VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 0.5f));
-            //    VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 0.5f));
-            //}
-            center += rotation.ToRotationVector2();
-            for (int i = 0; i < 45; i++)
+            if (usePSShaderTransform)
             {
-                var f = i / 44f;
-                var num = 1 - factor;
-                var realColor = color.Invoke(f);
-                //realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
-                float width;
-                var t = 8 * f;
-                if (t < 1) width = t;
-                else if (t < 2) width = .5f + 1 / (3 - t);
-                else if (t < 3.5f) width = 0.66f + 5f / (t - 1) / 6f;
-                else if (t < 5.5f) width = 1;
-                else width = 2.6f + 52 / (5 * t - 60);
-                Vector2 offsetVec = scaler / 8 * new Vector2(t, width / xScaler * 2);
-                if (negativeDir) offsetVec.Y *= -1;
-                VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(1 - f, 1, 1));
-                offsetVec.Y *= -1;
-                VertexInfos[2 * i + 1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 1));
+                if (OnSpawn)
+                {
+                    var realColor = Color.White;
+                    //Vector2 offsetVec = 20f * new Vector2(8, 3 / xScaler) * scaler;
+                    Vector2 offsetVec = new Vector2(1, 3 / xScaler / 8) * scaler;
+
+                    if (negativeDir) offsetVec.Y *= -1;
+                    VertexInfos[0] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 1, 1f));
+                    VertexInfos[2] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 1, 1f));
+                    offsetVec.Y *= -1;
+                    VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 1f));
+                    VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 1f));
+                }
+                for (int n = 0; n < 4; n++)
+                    VertexInfos[n].Position += rotation.ToRotationVector2();
             }
+            else
+            {
+                center += rotation.ToRotationVector2();
+                for (int i = 0; i < 45; i++)
+                {
+                    var f = i / 44f;
+                    var num = 1 - factor;
+                    var realColor = color.Invoke(f);
+                    //realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
+                    float width;
+                    var t = 8 * f;
+                    if (t < 1) width = t;
+                    else if (t < 2) width = .5f + 1 / (3 - t);
+                    else if (t < 3.5f) width = 0.66f + 5f / (t - 1) / 6f;
+                    else if (t < 5.5f) width = 1;
+                    else width = 2.6f + 52 / (5 * t - 60);
+                    Vector2 offsetVec = scaler / 8 * new Vector2(t, width / xScaler * 2);
+                    if (negativeDir) offsetVec.Y *= -1;
+                    VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(1 - f, 1, 1));
+                    offsetVec.Y *= -1;
+                    VertexInfos[2 * i + 1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 1));
+                }
+            }
+
             timeLeft--;
         }
         #endregion
@@ -761,10 +766,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             (float, float)? angleRange = null, int _aniIndex = 3, int _baseIndex = 7, Vector3 colorVec = default, bool normalize = false) => NewUltraSwoosh(colorFunc, LogSpiralLibrarySystem.vertexEffects, timeLeft, _scaler, center, heat, _negativeDir, _rotation, xscaler, angleRange, _aniIndex, _baseIndex, colorVec, normalize);
         #endregion
         #region 绘制和更新，主体
-        public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-            => base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
-        public override void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-            => base.PostDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            Main.graphics.GraphicsDevice.Textures[0] = BaseTex_Swoosh[baseTexIndex].Value;
+            Main.graphics.GraphicsDevice.Textures[1] = AniTex_Swoosh[aniTexIndex].Value;
+            base.Draw(spriteBatch);
+        }
         public override void Uptate()
         {
             timeLeft--;
@@ -776,7 +783,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 var lerp = f.Lerp(num * .5f, 1);//num
                 float theta2 = MathHelper.Lerp(angleRange.from, angleRange.to, lerp) * MathHelper.Pi;
                 if (negativeDir) theta2 = MathHelper.TwoPi - theta2;
-                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;// * MathHelper.Lerp(2 - 1 / (MathF.Abs(angleRange.from - angleRange.to) + 1), 1, f)
+                Vector2 offsetVec = (theta2.ToRotationVector2() * new Vector2(1, 1 / xScaler)).RotatedBy(rotation) * scaler;//  * MathHelper.Lerp(2 - 1 / (MathF.Abs(angleRange.from - angleRange.to) + 1), 1, f)
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
                 //adder = default;
                 var realColor = color.Invoke(f);
@@ -906,7 +913,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             RenderEffect.Parameters["lightAsAlpha"].SetValue(lightAsAlpha);
             RenderEffect.Parameters["tier1"].SetValue(tier1);
             RenderEffect.Parameters["tier2"].SetValue(tier2);
-            RenderEffect.Parameters["offset"].SetValue(offset);
+            RenderEffect.Parameters["offset"].SetValue((float)LogSpiralLibraryMod.ModTime * new Vector2(0.707f) + (Main.gameMenu ? default : Main.LocalPlayer.Center));//offset
             RenderEffect.Parameters["maskGlowColor"].SetValue(glowColor.ToVector4());
             RenderEffect.Parameters["ImageSize"].SetValue(TexSize);
             RenderEffect.Parameters["inverse"].SetValue(inverse);
@@ -996,7 +1003,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             //bool useDownSample = true;
             RenderEffect.Parameters["threshold"].SetValue(threshold);
             RenderEffect.Parameters["range"].SetValue(range);
-            RenderEffect.Parameters["intensity"].SetValue(intensity);
+            RenderEffect.Parameters["intensity"].SetValue(intensity * 2.5f);
             RenderEffect.Parameters["uBloomAdditive"].SetValue(true);
             if (useDownSample)
             {
@@ -1006,7 +1013,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                 for (int n = 0; n < times - 1; n++)//times是模糊次数(
                 {
                     graphicsDevice.SetRenderTarget(renderTinySwap);
-                    RenderEffect.Parameters["tex0"].SetValue(n == 0 ? render : renderTiny);//这里其实似乎用不到这个参数?
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                     if (n != 0)
@@ -1014,14 +1020,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                     else
                         spriteBatch.Draw(render, Vector2.Zero, Color.White);
                     graphicsDevice.SetRenderTarget(renderTiny);
-                    RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                     spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
                 }
                 graphicsDevice.SetRenderTarget(renderTinySwap);
                 graphicsDevice.Clear(Color.Transparent);
-                RenderEffect.Parameters["tex0"].SetValue(times > 1 ? renderTiny : render);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                 if (times > 1)
                     spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
@@ -1029,34 +1033,36 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
                     spriteBatch.Draw(render, Vector2.Zero, Color.White);
                 graphicsDevice.SetRenderTarget(renderTiny);
                 graphicsDevice.Clear(Color.Transparent);
-                RenderEffect.Parameters["tex0"].SetValue(renderTinySwap);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                 spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
             }
             else
             {
+                RenderTarget2D renderSwap2 = LogSpiralLibraryMod.Instance.Render_Swap2;
                 RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
                 for (int n = 0; n < times - 1; n++)//times是模糊次数(
                 {
                     graphicsDevice.SetRenderTarget(renderSwap);
-                    RenderEffect.Parameters["tex0"].SetValue(render);//这里其实似乎用不到这个参数?
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
-                    spriteBatch.Draw(render, Vector2.Zero, Color.White);
-                    graphicsDevice.SetRenderTarget(render);
-                    RenderEffect.Parameters["tex0"].SetValue(renderSwap);
+                    if (n != 0)
+                        spriteBatch.Draw(renderSwap2, Vector2.Zero, Color.White);
+                    else
+                        spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                    graphicsDevice.SetRenderTarget(renderSwap2);
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                     spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
                 }
                 graphicsDevice.SetRenderTarget(renderSwap);
                 graphicsDevice.Clear(Color.Transparent);
-                RenderEffect.Parameters["tex0"].SetValue(render);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
-                spriteBatch.Draw(render, Vector2.Zero, Color.White);
-                graphicsDevice.SetRenderTarget(render);
+                if (times > 1)
+                    spriteBatch.Draw(renderSwap2, Vector2.Zero, Color.White);
+                else
+                    spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                graphicsDevice.SetRenderTarget(renderSwap2);
                 graphicsDevice.Clear(Color.Transparent);
-                RenderEffect.Parameters["tex0"].SetValue(renderSwap);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
                 spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
             }
@@ -1082,7 +1088,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures
             }
             else
             {
-                var m = Main.UIScaleMatrix;
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
                 graphicsDevice.Clear(Color.Transparent);

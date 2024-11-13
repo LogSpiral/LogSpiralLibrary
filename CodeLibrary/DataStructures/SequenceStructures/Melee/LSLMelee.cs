@@ -302,16 +302,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
                     u = UltraStab.NewUltraStab(standardInfo.standardColor, (int)(verS.timeLeft * 1.2f), size,
-                    Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
+                    Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, pair?.Item1 ?? 5, pair?.Item2 ?? 0, colorVec: verS.colorVec);
                     var su = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
-                    Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
+                    Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? 5, pair?.Item2 ?? 0, colorVec: verS.colorVec);
                     su.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
                     su.ApplyStdValueToVtxEffect(standardInfo);
                 }
                 else
                 {
                     u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f,
-                    Owner.Center, verS.heatMap, flip, Rotation, 2, pair?.Item1 ?? -3, pair?.Item2 ?? 8, colorVec: verS.colorVec);
+                    Owner.Center, verS.heatMap, flip, Rotation, 2, pair?.Item1 ?? 5, pair?.Item2 ?? 0, colorVec: verS.colorVec);
                 }
                 //Main.NewText(Owner.Center);
                 //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);

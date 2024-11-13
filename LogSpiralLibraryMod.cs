@@ -71,6 +71,10 @@ namespace LogSpiralLibrary
         #region Textures
         public static List<Asset<Texture2D>> BaseTex;
         public static List<Asset<Texture2D>> AniTex;
+        public static List<Asset<Texture2D>> BaseTex_Swoosh;
+        public static List<Asset<Texture2D>> AniTex_Swoosh;
+        public static List<Asset<Texture2D>> BaseTex_Stab;
+        public static List<Asset<Texture2D>> AniTex_Stab;
         public static List<Asset<Texture2D>> HeatMap;
         public static List<Asset<Texture2D>> MagicZone;
         /// <summary>
@@ -137,9 +141,9 @@ namespace LogSpiralLibrary
         public static bool CanUseRender => Lighting.Mode != Terraria.Graphics.Light.LightMode.Retro && Lighting.Mode != Terraria.Graphics.Light.LightMode.Trippy && Main.WaveQuality != 0;
 
         public const int tinyScalerInvert = 2;
-        RenderTarget2D DirectCreateNewRender(bool tiny = false) 
+        RenderTarget2D DirectCreateNewRender(bool tiny = false)
         {
-            if(tiny)
+            if (tiny)
                 return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width / tinyScalerInvert, Main.instance.Window.ClientBounds.Height / tinyScalerInvert) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / tinyScalerInvert, Main.screenHeight / tinyScalerInvert);
             else
                 return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
@@ -162,7 +166,15 @@ namespace LogSpiralLibrary
             }
         }
         private RenderTarget2D render_Swap;
-
+        public RenderTarget2D Render_Swap2
+        {
+            get => render_Swap2 ??= DirectCreateNewRender();
+            set
+            {
+                render_Swap2 = value;
+            }
+        }
+        private RenderTarget2D render_Swap2;
         /// <summary>
         /// 处理Bloom效果专用的小RenderTarget2D
         /// </summary>
@@ -212,6 +224,10 @@ namespace LogSpiralLibrary
 
             LoadTextures(nameof(BaseTex), out BaseTex);
             LoadTextures(nameof(AniTex), out AniTex);
+            LoadTextures("Swoosh/" + nameof(BaseTex), nameof(BaseTex), out BaseTex_Swoosh);
+            LoadTextures("Swoosh/" + nameof(AniTex), nameof(AniTex), out AniTex_Swoosh);
+            LoadTextures("Stab/" + nameof(BaseTex), nameof(BaseTex), out BaseTex_Stab);
+            LoadTextures("Stab/" + nameof(AniTex), nameof(AniTex), out AniTex_Stab);
             LoadTextures(nameof(HeatMap), out HeatMap);
             LoadTextures(nameof(MagicZone), out MagicZone);
             LoadTextures(nameof(Misc), out Misc);
@@ -288,6 +304,21 @@ namespace LogSpiralLibrary
                 assets.Add(Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad));
             }
         }
+        private void LoadTextures(string folderName, string textureName, out List<Asset<Texture2D>> assets)
+        {
+            string basePath = $"Images/{folderName}/{textureName}_";
+            assets = new();
+            for (int i = 0; ; i++)
+            {
+                string path = $"{basePath}{i}";
+                if (!RootContentSource.HasAsset(path))
+                {
+                    break;
+                }
+                assets.Add(Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad));
+            }
+        }
+
         #region TestCode
         public static byte[] musicBuffer;
         public static ulong globalCounter;
@@ -568,7 +599,7 @@ namespace LogSpiralLibrary
             }
             foreach (var pair in dict)
             {
-                if (pair.Value.Count > 0) 
+                if (pair.Value.Count > 0)
                 {
                     VertexDrawInfo.DrawVertexInfo(pair.Value, pair.Key, spriteBatch, graphicsDevice, render, renderAirDistort);
 

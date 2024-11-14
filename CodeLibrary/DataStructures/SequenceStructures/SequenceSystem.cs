@@ -25,6 +25,7 @@ using Terraria.ModLoader.Core;
 using System.Text;
 using NetSimplified;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {

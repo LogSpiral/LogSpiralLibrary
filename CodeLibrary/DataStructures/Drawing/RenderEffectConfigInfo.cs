@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader.Config;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 {
     public class AirDistortConfigs : IAvailabilityChangableConfig
     {

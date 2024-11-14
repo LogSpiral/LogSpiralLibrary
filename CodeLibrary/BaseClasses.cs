@@ -1,5 +1,6 @@
 ﻿//using CoolerItemVisualEffect;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using LogSpiralLibrary.ForFun.TestBlade3;
 using Microsoft.Xna.Framework.Graphics;

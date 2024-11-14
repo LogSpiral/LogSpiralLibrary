@@ -14,6 +14,7 @@ using MonoMod.Cil;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader.UI;
 using log4net.Filter;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 
 namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {

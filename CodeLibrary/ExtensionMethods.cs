@@ -10,6 +10,7 @@ using Terraria.ObjectData;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using Microsoft.Xna.Framework.Graphics;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary

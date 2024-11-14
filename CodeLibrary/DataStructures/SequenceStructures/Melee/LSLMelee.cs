@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System;
 using System.Collections.Generic;
 using System.IO;

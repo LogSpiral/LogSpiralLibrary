@@ -26,6 +26,7 @@ using NetSimplified;
 using NetSimplified.Syncing;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualBasic;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 
 namespace LogSpiralLibrary
 {
@@ -143,10 +144,12 @@ namespace LogSpiralLibrary
         public const int tinyScalerInvert = 2;
         RenderTarget2D DirectCreateNewRender(bool tiny = false)
         {
+            var r1 = Main.screenTarget;
+            var r2 = Main.screenTargetSwap;
             if (tiny)
-                return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width / tinyScalerInvert, Main.instance.Window.ClientBounds.Height / tinyScalerInvert) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth / tinyScalerInvert, Main.screenHeight / tinyScalerInvert);
+                return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width / tinyScalerInvert, Main.screenTarget.Height / tinyScalerInvert);
             else
-                return Main.gameMenu ? new RenderTarget2D(Main.graphics.GraphicsDevice, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height) : new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenWidth, Main.screenHeight);
+                return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width, Main.screenTarget.Height);
         }
         public RenderTarget2D Render
         {
@@ -207,6 +210,8 @@ namespace LogSpiralLibrary
             Render = DirectCreateNewRender();
             if (Render_Swap != null) Render_Swap.Dispose();
             Render_Swap = DirectCreateNewRender();
+            if (Render_Swap2 != null) Render_Swap2.Dispose();
+            Render_Swap2 = DirectCreateNewRender();
             if (Render_Tiny != null) Render_Tiny.Dispose();
             Render_Tiny = DirectCreateNewRender(true);
             if (Render_Tiny_Swap != null) Render_Tiny_Swap.Dispose();

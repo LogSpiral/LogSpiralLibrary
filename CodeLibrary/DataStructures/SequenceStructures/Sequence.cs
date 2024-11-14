@@ -8,6 +8,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using Microsoft.Xna.Framework.Input;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;

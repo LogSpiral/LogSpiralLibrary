@@ -175,12 +175,12 @@ Configs: {
 			Tooltip: 迭代太多次绝对会亮瞎眼而卡爆的吧
 		}
 
-		useDownSample: {
-			Label: 启用降采样
+		downSampleLevel: {
+			Label: 降采样等级
 			Tooltip:
 				'''
-				不启用降采样时更加清晰，但是范围小
-				启用之后模糊但是范围大
+				等级越高范围越大，性能消耗越低
+				代价是没那么细腻清新
 				'''
 		}
 

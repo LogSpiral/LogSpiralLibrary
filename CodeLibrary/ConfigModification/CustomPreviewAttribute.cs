@@ -20,10 +20,12 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {
     public interface ICustomConfigPreview
     {
+        bool usePreview { get; }
         void Draw(SpriteBatch spriteBatch, ConfigElement element);
     }
     public abstract class SimplePreview<T> : ICustomConfigPreview
     {
+        public virtual bool usePreview => true;
         public void Draw(SpriteBatch spriteBatch, ConfigElement element)
         {
             Vector2 topLeft = element.GetDimensions().ToRectangle().TopRight() + new Vector2(60, 0);
@@ -121,7 +123,8 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             if (pvAttribute != null && self.IsMouseHovering)
             {
                 var drawer = (ICustomConfigPreview)Activator.CreateInstance(pvAttribute.pvType);
-                drawer.Draw(spriteBatch, self);
+                if (drawer.usePreview)
+                    drawer.Draw(spriteBatch, self);
             }
         }
         private Rectangle UIElement_GetClippingRectangle(On_UIElement.orig_GetClippingRectangle orig, UIElement self, SpriteBatch spriteBatch)

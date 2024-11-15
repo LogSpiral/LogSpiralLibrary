@@ -35,23 +35,30 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         [Range(1f, 12f)]
         public float range = 1;
         [Range(1, 5)]
+        [Slider]
+        [DrawTicks]
         public int times = 3;
         [JsonIgnore]
         public bool additive = true;
 
-        [DefaultValue(true)]
-        public bool useDownSample = true;
+        [DefaultValue(2)]
+        [Range(0, 2)]
+        [Slider]
+        [DrawTicks]
+        public int downSampleLevel = 2;
 
         [DefaultValue(true)]
         public bool useModeMK = true;
 
         [JsonIgnore]
-        public BloomEffectInfo effectInfo => !Available ? default : new BloomEffectInfo(threshold, intensity, range, times, additive) with { useDownSample = useDownSample, useModeMK = useModeMK };// - 4 + 8 * Main.GlobalTimeWrappedHourly.CosFactor()
+        public BloomEffectInfo effectInfo => !Available ? default : new BloomEffectInfo(threshold, intensity, range, times, additive) with { downSampleLevel = (byte)downSampleLevel, useModeMK = useModeMK };// - 4 + 8 * Main.GlobalTimeWrappedHourly.CosFactor()
     }
     public class MaskConfigs : IAvailabilityChangableConfig
     {
         public bool Available { get; set; } = false;
-        [Range(0, 5)]
+        [Range(0, 6)]
+        [Slider]
+        [DrawTicks]
         public int SkyStyle = 1;
         public Color glowColor = new Color(152, 74, 255);//166,17,240//255,55,225//255,153,240
         [Range(0, 1f)]
@@ -62,7 +69,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         //public bool inverse;
         [JsonIgnore]
         public MaskEffectInfo maskEffectInfo => !Available ? default :
-            new MaskEffectInfo(LogSpiralLibraryMod.Misc[20 + SkyStyle].Value, glowColor, tier1, tier2, default, true, false);
+            new MaskEffectInfo(LogSpiralLibraryMod.Mask[SkyStyle].Value, glowColor, tier1, tier2, default, true, false);
 
     }
 }

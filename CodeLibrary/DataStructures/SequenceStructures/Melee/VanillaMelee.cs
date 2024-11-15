@@ -930,6 +930,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             {
                 ultras[0].ModityAllRenderInfo(verS.renderInfos);
             }
+            SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
+
             base.OnStartSingle();
         }
         public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
@@ -971,7 +973,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             {
                 var origf_s = fTimer;
                 fTimer += timerMax / 4f * n;
-                float alphaG = 1 - n / 3f;
+                float alphaG = 1 - MathF.Pow(n / 3f,4);
                 UltraSwoosh u = ultras[n];
                 u.timeLeft--;
                 u.center = Owner.Center + Rotation.ToRotationVector2() * dist * .5f;
@@ -984,7 +986,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     var f = i / 44f;
                     var realColor = standardInfo.standardColor;
 
-                    realColor.A = (byte)(f.HillFactor2(1) * 204 * alphaT * alphaG);
+                    realColor.A = (byte)MathHelper.Clamp(f.HillFactor2(1) * 640 * alphaT * alphaG, 0, 255);
                     vertex[2 * i] = new CustomVertexInfo(curTex[4].Position, realColor, new Vector3(f, 1, 1));
                     vertex[2 * i + 1] = new CustomVertexInfo(curTex[0].Position, realColor, new Vector3(0, 0, 1));
 
@@ -1209,7 +1211,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 var f = i / 44f;
                 var realColor = standardInfo.standardColor;
                 realColor.A = (byte)(f.HillFactor2(1) * 255);//96
-                vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
+                vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * offsetSize * ModifyData.actionOffsetSize + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
                 vertex[2 * i + 1] = new CustomVertexInfo(oldCenters[i] + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(0, 0, 1));
             }
 

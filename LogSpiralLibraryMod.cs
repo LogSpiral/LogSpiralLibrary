@@ -30,6 +30,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 
 namespace LogSpiralLibrary
 {
+
     public class LogSpiralLibraryMod : Mod
     {
         #region Effects
@@ -95,13 +96,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public static List<Asset<Texture2D>> Misc;
         public static List<Asset<Texture2D>> Fractal;
-
-        //public static string BaseTex = nameof(BaseTex);
-        //public static string AniTex = nameof(AniTex);
-        //public static string HeatMap = nameof(HeatMap);
-        //public static string MagicZone = nameof(MagicZone);
-        //public static string Misc = nameof(Misc);
-        //public static Dictionary<string, Asset<Texture2D>[]> Textures;
+        public static List<Asset<Texture2D>> Mask;
         #endregion
 
         #region Other
@@ -141,13 +136,15 @@ namespace LogSpiralLibrary
         #region Render
         public static bool CanUseRender => Lighting.Mode != Terraria.Graphics.Light.LightMode.Retro && Lighting.Mode != Terraria.Graphics.Light.LightMode.Trippy && Main.WaveQuality != 0;
 
-        public const int tinyScalerInvert = 2;
-        RenderTarget2D DirectCreateNewRender(bool tiny = false)
+        //public const int tinyScalerInvert = 4;
+        RenderTarget2D DirectCreateNewRender(int level = 0)
         {
+            
             var r1 = Main.screenTarget;
             var r2 = Main.screenTargetSwap;
-            if (tiny)
-                return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width / tinyScalerInvert, Main.screenTarget.Height / tinyScalerInvert);
+            int invert = 1 << level;
+            if (level != 0)
+                return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width / invert, Main.screenTarget.Height / invert);
             else
                 return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width, Main.screenTarget.Height);
         }
@@ -183,7 +180,7 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny
         {
-            get => render_Tiny ??= DirectCreateNewRender(true);
+            get => render_Tiny ??= DirectCreateNewRender(1);
             set
             {
                 render_Tiny = value;
@@ -196,13 +193,39 @@ namespace LogSpiralLibrary
         /// </summary>
         public RenderTarget2D Render_Tiny_Swap
         {
-            get => render_Tiny_Swap ??= DirectCreateNewRender(true);
+            get => render_Tiny_Swap ??= DirectCreateNewRender(1);
             set
             {
                 render_Tiny_Swap = value;
             }
         }
         private RenderTarget2D render_Tiny_Swap;
+
+        /// <summary>
+        /// 处理Bloom效果专用的小RenderTarget2D
+        /// </summary>
+        public RenderTarget2D Render_Tiniest
+        {
+            get => render_Tiniest ??= DirectCreateNewRender(2);
+            set
+            {
+                render_Tiniest = value;
+            }
+        }
+        private RenderTarget2D render_Tiniest;
+
+        /// <summary>
+        /// 处理Bloom效果专用的小RenderTarget2D 2号
+        /// </summary>
+        public RenderTarget2D Render_Tiniest_Swap
+        {
+            get => render_Tiniest_Swap ??= DirectCreateNewRender(2);
+            set
+            {
+                render_Tiniest_Swap = value;
+            }
+        }
+        private RenderTarget2D render_Tiniest_Swap;
         private void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
         public void CreateRender()
         {
@@ -213,9 +236,13 @@ namespace LogSpiralLibrary
             if (Render_Swap2 != null) Render_Swap2.Dispose();
             Render_Swap2 = DirectCreateNewRender();
             if (Render_Tiny != null) Render_Tiny.Dispose();
-            Render_Tiny = DirectCreateNewRender(true);
+            Render_Tiny = DirectCreateNewRender(1);
             if (Render_Tiny_Swap != null) Render_Tiny_Swap.Dispose();
-            Render_Tiny_Swap = DirectCreateNewRender(true);
+            Render_Tiny_Swap = DirectCreateNewRender(1);
+            if (Render_Tiniest != null) Render_Tiniest.Dispose();
+            Render_Tiniest = DirectCreateNewRender(2);
+            if (Render_Tiniest_Swap != null) Render_Tiniest_Swap.Dispose();
+            Render_Tiniest_Swap = DirectCreateNewRender(2);
         }
         #endregion
 
@@ -237,6 +264,7 @@ namespace LogSpiralLibrary
             LoadTextures(nameof(MagicZone), out MagicZone);
             LoadTextures(nameof(Misc), out Misc);
             LoadTextures(nameof(Fractal), out Fractal);
+            LoadTextures(nameof(Mask), out Mask);
 
             Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
             //On_Main.SetDisplayMode += On_Main_SetDisplayMode;

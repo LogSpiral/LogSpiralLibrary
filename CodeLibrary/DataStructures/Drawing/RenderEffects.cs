@@ -1,4 +1,5 @@
-﻿using static LogSpiralLibrary.LogSpiralLibraryMod;
+﻿using System.IO;
+using static LogSpiralLibrary.LogSpiralLibraryMod;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 {
     public struct AirDistortEffectInfo : VertexDrawInfo.IRenderDrawInfo
@@ -199,14 +200,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         /// <summary>
         /// 是否启用降采样
         /// </summary>
-        public bool useDownSample = true;
+        public bool useDownSample => downSampleLevel != 0;
+
+        public byte downSampleLevel;
+
+        public int downSampleCount => 1 << downSampleLevel;
         /// <summary>
         /// 是否使用MasakiKawase算法
         /// </summary>
         public bool useModeMK;
         public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Matrix.Identity);
+            RenderTarget2D renderTiny = downSampleLevel == 1 ? Instance.Render_Tiny : Instance.Render_Tiniest;
+            RenderTarget2D renderTinySwap = downSampleLevel == 1 ? Instance.Render_Tiny_Swap : Instance.Render_Tiniest_Swap;
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, useDownSample ? Matrix.CreateScale((float)render.Width / renderTiny.Width, (float)render.Height / renderTiny.Height, 1) : Matrix.identity);
             //bool useDownSample = true;
             RenderEffect.Parameters["threshold"].SetValue(threshold);
             RenderEffect.Parameters["range"].SetValue(range);
@@ -214,34 +221,35 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             RenderEffect.Parameters["uBloomAdditive"].SetValue(true);
             if (useDownSample)
             {
-                RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2() / LogSpiralLibraryMod.tinyScalerInvert);
-                RenderTarget2D renderTiny = LogSpiralLibraryMod.Instance.Render_Tiny;
-                RenderTarget2D renderTinySwap = LogSpiralLibraryMod.Instance.Render_Tiny_Swap;
+                RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2() / downSampleCount);
+
                 for (int n = 0; n < times - 1; n++)//times是模糊次数(
                 {
                     graphicsDevice.SetRenderTarget(renderTinySwap);
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                     if (n != 0)
-                        spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                        spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White);
                     else
-                        spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                        spriteBatch.Draw(render, default, null, Color.White, 0, default, 1f / downSampleCount, 0, 0);
                     graphicsDevice.SetRenderTarget(renderTiny);
+
                     graphicsDevice.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
-                    spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                    spriteBatch.Draw(renderTinySwap, Vector2.Zero, Color.White);
                 }
                 graphicsDevice.SetRenderTarget(renderTinySwap);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 3].Apply();
                 if (times > 1)
-                    spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                    spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White);
                 else
-                    spriteBatch.Draw(render, Vector2.Zero, Color.White);
+                    spriteBatch.Draw(render, default, null, Color.White, 0, default, 1f / downSampleCount, 0, 0);
+
                 graphicsDevice.SetRenderTarget(renderTiny);
                 graphicsDevice.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[useModeMK ? 4 : 2].Apply();
-                spriteBatch.Draw(renderTinySwap, default, null, Color.White, 0, default, LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                spriteBatch.Draw(renderTinySwap, Vector2.Zero, Color.White);
             }
             else
             {
@@ -278,20 +286,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
             //bool useDownSample = true;
+            var v = Main.graphics.GraphicsDevice.Viewport;
             if (useDownSample)
             {
-                var renderTiny = Instance.Render_Tiny;
-                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                var renderTiny = downSampleLevel == 1 ? Instance.Render_Tiny : Instance.Render_Tiniest;
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.CreateScale((float)renderTiny.Width / render.Width, (float)renderTiny.Height / render.Height, 1));
                 graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
                 graphicsDevice.Clear(Color.Transparent);
-                spriteBatch.Draw(Main.screenTarget, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                 Main.instance.GraphicsDevice.BlendState = BlendState.NonPremultiplied;
-                spriteBatch.Draw(render, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                spriteBatch.Draw(render, Vector2.Zero, Color.White);
                 Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
-                spriteBatch.Draw(renderTiny, Vector2.Zero, Color.White);
+                spriteBatch.Draw(renderTiny, default, null, Color.White, 0, default, downSampleCount, 0, 0);
                 graphicsDevice.SetRenderTarget(Main.screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
-                spriteBatch.Draw(Main.screenTargetSwap, default, null, Color.White, 0, default, 1f / LogSpiralLibraryMod.tinyScalerInvert, 0, 0);
+                spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             }
             else
             {

@@ -163,12 +163,12 @@ Configs: {
 			Tooltip: It'll be laggy if this value too big
 		}
 
-		useDownSample: {
-			Label: use Down Sample
+		downSampleLevel: {
+			Label: Down Sample Level
 			Tooltip:
 				'''
-				Clearer when downsampling is not enabled, but the range is small.
-				Blurred but large in range when enabled
+				The higher the level,the larger the range, the lower the cost of calculation.
+				The cost is less clear.
 				'''
 		}
 

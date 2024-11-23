@@ -26,6 +26,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
     public abstract class SimplePreview<T> : ICustomConfigPreview
     {
         public virtual bool usePreview => true;
+
         public void Draw(SpriteBatch spriteBatch, ConfigElement element)
         {
             Vector2 topLeft = element.GetDimensions().ToRectangle().TopRight() + new Vector2(60, 0);
@@ -44,13 +45,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
                 backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f
             };
             panel.DrawComplexPanel(spriteBatch);
-
-            UIElement pare = element;
-            while (pare != null && pare is not UIModConfig)
-                pare = pare.Parent;
-            ModConfig modConfig = null;
-            if (pare is UIModConfig uIModConfig)
-                modConfig = uIModConfig.pendingConfig;
+            ConfigPreviewSystem.GetModConfigFromElement(element, out ModConfig modConfig);
             if (element.GetObject() is T instance)
                 Draw(spriteBatch, targetRectanle, instance, modConfig);
         }
@@ -72,7 +67,48 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
     public class RenderDrawingPreviewNeededAttribute : Attribute { }
     public class ConfigPreviewSystem : ModSystem
     {
-        public static bool PVRenderUsing => LogSpiralLibraryMiscConfig.Instance.WTHConfig || (Main.gameMenu ? Main.MenuUI : Main.InGameUI).CurrentState == Interface.modConfig && Interface.modConfig?.modConfig?.GetType()?.GetCustomAttribute<RenderDrawingPreviewNeededAttribute>() != null;
+        public delegate void CustomConfigPreviewDelegate(UIElement element, out ModConfig modConfig);
+        static List<CustomConfigPreviewDelegate> delegates = new List<CustomConfigPreviewDelegate>();
+        static List<Func<bool>> useRenderDelegate = new List<Func<bool>>();
+        static HashSet<string> registeredDelegateName = new HashSet<string>();
+        public static void ConfigSettingRegister(CustomConfigPreviewDelegate func, Func<bool> useRender, string funcName)
+        {
+            if (registeredDelegateName.Contains(funcName))
+            {
+                throw new Exception("已经添加过了这个委托");
+            }
+            delegates.Add(func);
+            useRenderDelegate.Add(useRender);
+            registeredDelegateName.Add(funcName);
+        }
+        public static void GetModConfigFromElement(UIElement element, out ModConfig modConfig)
+        {
+            modConfig = null;
+            UIElement pare = element;
+            while (pare != null && pare is not UIModConfig)
+                pare = pare.Parent;
+            if (pare is UIModConfig uIModConfig)
+                modConfig = uIModConfig.pendingConfig;
+            if (modConfig == null)
+                foreach (var func in delegates)
+                {
+                    func?.Invoke(element, out modConfig);
+                    if (modConfig != null)
+                        break;
+                }
+        }
+        static bool ExtraRenderUsingCondition()
+        {
+            foreach (var func in useRenderDelegate)
+                if (func?.Invoke() == true)
+                    return true;
+            return false;
+        }
+        public static bool PVRenderUsing =>
+            LogSpiralLibraryMiscConfig.Instance.WTHConfig ||
+            ((Main.gameMenu ? Main.MenuUI : Main.InGameUI).CurrentState == Interface.modConfig && Interface.modConfig?.modConfig?.GetType()?.GetCustomAttribute<RenderDrawingPreviewNeededAttribute>() != null) ||
+            ExtraRenderUsingCondition();
+
         public override void Load()
         {
 
@@ -130,16 +166,20 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         private Rectangle UIElement_GetClippingRectangle(On_UIElement.orig_GetClippingRectangle orig, UIElement self, SpriteBatch spriteBatch)
         {
             var origin = orig.Invoke(self, spriteBatch);
-            UIElement element = self;//mainConfigList
-            for (int n = 0; n < 3; n++)
-                if (element.Parent != null)
-                    element = element.Parent;//依次是 uIPanel uIElement this(UIModConfig)
-                else
-                    return origin;//如果没有就润
-            if (element is not UIModConfig uIModConfig)
-                return origin;//找错人了，润
-
-            var type = uIModConfig.modConfig.GetType();
+            //UIElement element = self;//mainConfigList
+            //for (int n = 0; n < 3; n++)
+            //    if (element.Parent != null)
+            //        element = element.Parent;//依次是 uIPanel uIElement this(UIModConfig)
+            //    else
+            //        return origin;//如果没有就润
+            //if (element is not UIModConfig uIModConfig)
+            //    return origin;//找错人了，润
+            if (self is not UIList)
+                return origin;
+            GetModConfigFromElement(self, out var modConfig);
+            if (modConfig == null)
+                return origin;
+            var type = modConfig.GetType();
             var attribute = type.GetCustomAttribute<HorizonOverflowEnableAttribute>();
             if (attribute != null)
             {

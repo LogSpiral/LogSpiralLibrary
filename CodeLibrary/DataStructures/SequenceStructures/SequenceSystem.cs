@@ -26,6 +26,7 @@ using System.Text;
 using NetSimplified;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -337,6 +338,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public class SequenceSystem : ModSystem
     {
+        public static Tuple<UIElement, UIElement> WrapIt(UIElement parent, ref int top, PropertyFieldWrapper memberInfo, object item, int order, object list = null, Type arrayType = null, int index = -1)
+            => GenericConfigElement.WrapIt(parent, ref top, memberInfo, item, order, list, arrayType, index, (configElem, flag) => SequenceSystem.SetSequenceUIPending(flag), owner: instance.sequenceUI);
         public static Condition ToEntityCondition(string key, string LocalizationKey, Entity entity)
         {
             if (entityConditions.TryGetValue(key, out var func))
@@ -629,11 +632,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             UIButton<string> newPage = new UIButton<string>("+");
             newPage.SetSize(new Vector2(32, 0), 0, 1);
 
-            newPage.OnLeftClick += (e, evt) => 
+            newPage.OnLeftClick += (e, evt) =>
             {
                 var seq = new Sequence<MeleeAction>();
                 seq.Add(new SwooshInfo());
-                OpenBasicSetter(new SequenceBasicInfo() { createDate = DateTime.Now, lastModifyDate = DateTime.Now }, seq); 
+                OpenBasicSetter(new SequenceBasicInfo() { createDate = DateTime.Now, lastModifyDate = DateTime.Now }, seq);
             };
             pageList.Add(newPage);
             //UIText newText = new UIText("+");
@@ -721,7 +724,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                     continue;
-                var (container, elem) = SeqConfigElement.WrapIt(infoList, ref top, variable, info, order++);
+                var (container, elem) = SequenceSystem.WrapIt(infoList, ref top, variable, info, order++);
             }
             WorkingPlacePanel.OverflowHidden = true;
             box.SequenceSize(true);
@@ -735,8 +738,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             saveButton.OnLeftClick += (evt, elem) =>
             {
                 var sequence = box.sequenceBase;
-                if(currentInfo!=null)
-                SequenceSystem.sequenceInfos[sequence.KeyName] = currentInfo;
+                if (currentInfo != null)
+                    SequenceSystem.sequenceInfos[sequence.KeyName] = currentInfo;
                 var info = SequenceSystem.sequenceInfos[sequence.KeyName];
                 info.FileName = sequence.FileName;
                 info.lastModifyDate = DateTime.Now;
@@ -786,12 +789,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 SoundEngine.PlaySound(SoundID.MenuClose);
 
                 infoList.Clear();
-                currentInfo =info = SequenceSystem.sequenceInfos[box.sequenceBase.KeyName].Clone();
+                currentInfo = info = SequenceSystem.sequenceInfos[box.sequenceBase.KeyName].Clone();
                 foreach (PropertyFieldWrapper variable in ConfigManager.GetFieldsAndProperties(info))
                 {
                     if (variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                         continue;
-                    var (container, _elem) = SeqConfigElement.WrapIt(infoList, ref top, variable, info, order++);
+                    var (container, _elem) = SequenceSystem.WrapIt(infoList, ref top, variable, info, order++);
                 }
             };
             saveAsButton.OnLeftClick += (evt, elem) =>
@@ -887,7 +890,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (e.IsMouseHovering)
                     hintText = Language.GetOrRegister(localizationPath + (resetable ? ".resetSequence" : ".deleteSequence")).Value;
-                    //Main.instance.MouseText(Language.GetOrRegister(localizationPath + (resetable ? ".resetSequence" : ".deleteSequence")).Value);
+                //Main.instance.MouseText(Language.GetOrRegister(localizationPath + (resetable ? ".resetSequence" : ".deleteSequence")).Value);
             };
             if (resetable)//TODO 给其它序列添加游戏内删除功能
                 panel.Append(delete);
@@ -938,7 +941,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             };
             roseButton.OnUpdate += e =>
             {
-                if(e.IsMouseHovering)
+                if (e.IsMouseHovering)
                     hintText = Language.GetOrRegister(localizationPath + ".OpenHomePage").Value;
 
                 //Main.instance.MouseText(Language.GetOrRegister(localizationPath + ".OpenHomePage").Value);
@@ -1160,7 +1163,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (variable.Type == typeof(DateTime) || variable.Name == "passWord" || Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)))
                     continue;
-                var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, info, order++);
+                var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, info, order++);
                 //elem.OnLeftClick += (_evt, uielem) => { };
             }
             UIScrollbar uIScrollbar = new UIScrollbar();
@@ -1168,8 +1171,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             uIScrollbar.Height.Set(0f, 1f);
             uIScrollbar.HAlign = 1f;
             list.SetScrollbar(uIScrollbar);
-            if(BasicInfoPanel.Elements.Count > 2 && BasicInfoPanel.Elements[2] is UIScrollbar oldBar)
-            oldBar.Remove();
+            if (BasicInfoPanel.Elements.Count > 2 && BasicInfoPanel.Elements[2] is UIScrollbar oldBar)
+                oldBar.Remove();
             BasicInfoPanel.Append(uIScrollbar);
             UIButton<string> yesButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".OK").Value);
             yesButton.SetSize(64, 32, 0, 0);
@@ -1310,7 +1313,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
 
             base.DrawSelf(spriteBatch);
-            if(hintText != string.Empty)
+            if (hintText != string.Empty)
                 UICommon.TooltipMouseText(hintText);
         }
     }
@@ -1318,17 +1321,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     {
         [JsonIgnore]
         public string KeyName => $"{ModName}/{FileName}";
-        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string AuthorName;
-        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string Description;
-        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string FileName;
-        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string DisplayName;
         //[CustomModConfigItem(typeof(SeqStringInputElement))]
         //public string ModName;
-        [CustomSeqConfigItem(typeof(ModDefinitionElement))]
+        //[CustomSeqConfigItem(typeof(ModDefinitionElement))]
         public ModDefinition ModDefinition = new ModDefinition("LogSpiralLibrary");
         [JsonIgnore]
         public string ModName => ModDefinition?.Name ?? "UnknownMod";
@@ -1337,7 +1340,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         //[CustomSeqConfigItem(typeof(SeqDateTimeElement))]
         public DateTime lastModifyDate;
         //TODO RSA加密
-        [CustomSeqConfigItem(typeof(SeqStringInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqStringInputElement))]
         public string passWord;
         public bool Finished;
         //public enum SequenceMode
@@ -1617,7 +1620,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 var fieldInfo = wraper.GetType().GetField("conditionDefinition", BindingFlags.Instance | BindingFlags.Public);
                 if (fieldInfo != null)
-                    SeqConfigElement.WrapIt(list, ref top, new PropertyFieldWrapper(fieldInfo), wraper, order);
+                    SequenceSystem.WrapIt(list, ref top, new PropertyFieldWrapper(fieldInfo), wraper, order);
             }
             if (wraper.IsSequence)
             {
@@ -1642,7 +1645,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     if (!Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAttribute)) || Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAbabdonedAttribute)))
                         continue;
-                    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
+                    var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, wraper.Element, order++);
                 }
 
                 //TODO 委托挂载优化
@@ -1650,7 +1653,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //{
                 //    if (variable.Type != typeof(SeqDelegateDefinition))
                 //        continue;
-                //    var (container, elem) = SeqConfigElement.WrapIt(list, ref top, variable, wraper.Element, order++);
+                //    var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, wraper.Element, order++);
                 //}
             }
             base.RightClick(evt);
@@ -1963,10 +1966,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public UIPanel panel;
         Sequence seq;
-        public Sequence sequenceBase 
+        public Sequence sequenceBase
         {
             get => seq;
-            set 
+            set
             {
                 string name = seq?.DisplayName;
                 seq = value;
@@ -2133,55 +2136,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.DrawSelf(spriteBatch);
         }
     }
-    public class DraggableUIPanel : UIPanel
-    {
-        public bool Dragging = false;
-        public bool fixedSize;
-        public Vector2 Offset;
-        public override void LeftMouseDown(UIMouseEvent evt)
-        {
-            if (evt.Target == this)
-            {
-                Dragging = true;
-                var dimension = GetDimensions();
-                if (Vector2.Dot(evt.MousePosition - dimension.Position(), Vector2.One / new Vector2(dimension.Width, dimension.Height)) <= 1)
-                {
-                    fixedSize = true;
-                    Offset = new Vector2(evt.MousePosition.X - Left.Pixels, evt.MousePosition.Y - Top.Pixels);
-
-                }
-                else
-                {
-                    fixedSize = false;
-                    Offset = new Vector2(evt.MousePosition.X - Width.Pixels, evt.MousePosition.Y - Height.Pixels);
-                }
-            }
-            base.LeftMouseDown(evt);
-        }
-        public override void LeftMouseUp(UIMouseEvent evt)
-        {
-            Dragging = false;
-            base.LeftMouseUp(evt);
-        }
-        public override void Update(GameTime gameTime)
-        {
-            if (Dragging)
-            {
-                if (fixedSize)
-                {
-                    Left.Set(Main.mouseX - Offset.X, 0f);
-                    Top.Set(Main.mouseY - Offset.Y, 0f);
-                }
-                else
-                {
-                    Width.Set(Main.mouseX - Offset.X, 0f);
-                    Height.Set(Main.mouseY - Offset.Y, 0f);
-                }
-                Recalculate();
-            }
-            base.Update(gameTime);
-        }
-    }
     public static class SequenceDrawHelper
     {
         public static Vector2 WrapperSize(this WraperBox wrapBox)
@@ -2220,7 +2174,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     Vector2 boxSize = textSize;
                     if (wraper.Condition.Description.Key != SequenceSystem.AlwaysConditionKey)
                     {
-                        Vector2 descSize = font.MeasureString("→" + desc);
+                        Vector2 descSize = font.MeasureString("→" + desc.DisplayName);
                         boxSize.Y += descSize.Y;
                         boxSize.X = Math.Max(textSize.X, descSize.X);
                     }

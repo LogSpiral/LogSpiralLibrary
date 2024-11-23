@@ -329,16 +329,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     //    Projectile Projectile { get; set; }
     //}
     */
-    public interface IMeleeAttackData : ISequenceElement
-    {
-        bool Collide(Rectangle rectangle);
+    //public interface IMeleeAttackData : ISequenceElement
+    //{
+    //    bool Collide(Rectangle rectangle);
 
-    }
+    //}
     //public class MeleeSequence : Sequence<MeleeAction>
     //{
     //    public IReadOnlyList<Group> MeleeGroups => Groups;
     //}
-    public abstract class MeleeAction : ModType, IMeleeAttackData
+    public abstract class MeleeAction : ModType, ISequenceElement
     {
         public virtual void NetSend(BinaryWriter writer)
         {
@@ -505,7 +505,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         /// 执行次数
         /// </summary>
         [ElementCustomData]
-        [CustomSeqConfigItem(typeof(SeqIntInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
         public virtual int Cycle { get; set; } = 1;
         #endregion
         #region 动态调整，每次执行时重设

@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -73,7 +74,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         }
 
         [ElementCustomData]
-        [CustomSeqConfigItem(typeof(SeqEnumElement))]
+        //[CustomSeqConfigItem(typeof(SeqEnumElement))]
+        [DrawTicks]
         public SwooshMode mode;
         int cutTime => 8;
         float k => 0.25f;
@@ -386,11 +388,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             }
         }
         [ElementCustomData]
-        [CustomSeqConfigItem(typeof(SeqIntInputElement))]
-        public int rangeOffsetMin;
+        [DefaultValue(-2)]
+        [Range(-5, 5)]
+        //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
+        [Slider]
+        public int rangeOffsetMin = -2;
         [ElementCustomData]
-        [CustomSeqConfigItem(typeof(SeqIntInputElement))]
-        public int rangeOffsetMax;
+        [DefaultValue(1)]
+        [Range(-5, 5)]
+        [Slider]
+        //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
+        public int rangeOffsetMax = 1;
         public override void LoadAttribute(XmlReader xmlReader)
         {
             givenCycle = int.Parse(xmlReader["givenCycle"]);
@@ -410,12 +418,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
         [ElementCustomData]
-        [CustomSeqConfigItem(typeof(SeqIntInputElement))]
+        //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
         [Range(1, 10)]
-        public int givenCycle;
+        [DefaultValue(4)]
+        [Slider]
+        public int givenCycle = 4;
         void ResetCycle()
         {
-            realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
+            realCycle = Math.Clamp(rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
 
             //if (Projectile.owner == Main.myPlayer)
             //{

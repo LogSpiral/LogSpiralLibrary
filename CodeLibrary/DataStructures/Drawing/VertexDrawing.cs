@@ -596,6 +596,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
     public class UltraSwoosh : MeleeVertexInfo
     {
         #region 参数和属性
+        int counts = 45;
+        public int Counts 
+        {
+            get { return counts = Math.Clamp(counts, 2, 45); }
+            set { counts = Math.Clamp(value, 2, 45); Array.Resize(ref _vertexInfos, 2 * counts); if (autoUpdate) { Uptate(); timeLeft++; } }
+        }
         CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
         public (float from, float to) angleRange;
@@ -688,9 +694,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public override void Uptate()
         {
             timeLeft--;
-            for (int i = 0; i < 45; i++)
+            for (int i = 0; i < Counts; i++)
             {
-                var f = i / 44f;
+                var f = i / (Counts - 1f);
                 var num = 1 - factor;
                 //float theta2 = (1.8375f * MathHelper.Lerp(num, 1f, f) - 1.125f) * MathHelper.Pi;
                 var lerp = f.Lerp(num * .5f, 1);//num
@@ -700,7 +706,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
                 Vector2 adder = (offsetVec * 0.05f + rotation.ToRotationVector2() * 2f) * num;
                 //adder = default;
                 var realColor = color.Invoke(f);
-                realColor.A = (byte)((1 - f).HillFactor2(1) * 255);
+                realColor.A = (byte)((1 - f).HillFactor2(1) * 255);//
                 VertexInfos[2 * i] = new CustomVertexInfo(center + offsetVec + adder, realColor, new Vector3(1 - f, 1, 1));
                 VertexInfos[2 * i + 1] = new CustomVertexInfo(center + adder, realColor, new Vector3(0, 0, 1));
             }

@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
 using ReLogic.Content;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
-    public abstract class SeqDefinitionElement<T> : SeqConfigElement<T> where T : EntityDefinition
+    public abstract class GenericDefinitionElement<T> : GenericConfigElement<T> where T : EntityDefinition
     {
         protected bool UpdateNeeded { get; set; }
         protected bool SelectionExpanded { get; set; }
@@ -205,7 +206,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : ModLoader.GetMod(Name).DisplayName;//SequenceSystem.conditions[Name].Description.ToString();
     }
 
-    public class ModDefinitionElement : SeqDefinitionElement<ModDefinition>
+    public class ModDefinitionElement : GenericDefinitionElement<ModDefinition>
     {
         public bool resetted;
         public override void Update(GameTime gameTime)
@@ -247,7 +248,8 @@ namespace LogSpiralLibrary.CodeLibrary
                     Value = optionElement.Definition;
                     UpdateNeeded = true;
                     SelectionExpanded = false;
-                    SequenceSystem.SetSequenceUIPending();
+                    InternalOnSetObject();
+                    //SequenceSystem.SetSequenceUIPending();
                 };
                 options.Add(optionElement);
             }
@@ -411,7 +413,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceSystem.conditions[Name].Description.ToString());
     }
 
-    public class ConditionDefinitionElement : SeqDefinitionElement<ConditionDefinition>
+    public class ConditionDefinitionElement : GenericDefinitionElement<ConditionDefinition>
     {
         public bool resetted;
         public override void Update(GameTime gameTime)
@@ -470,7 +472,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     Value = optionElement.Definition;
                     UpdateNeeded = true;
                     SelectionExpanded = false;
-                    SequenceSystem.SetSequenceUIPending();
+                    InternalOnSetObject();
 
                 };
 
@@ -655,6 +657,93 @@ namespace LogSpiralLibrary.CodeLibrary
             return passed;
         }
     }
+    /// <summary>
+    /// 没有多继承导致的
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class GenericSequenceDefinitionElement<T> : GenericDefinitionElement<SequenceDefinition<T>> where T : ISequenceElement
+    {
+        public bool resetted;
+        public override void Update(GameTime gameTime)
+        {
+            if (!resetted)
+            {
+                resetted = true;
+                TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Label + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+                if (List != null)
+                {
+                    TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Index + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+                }
+                var str = TextDisplayFunction.Invoke();
+
+                Height = MinHeight = new StyleDimension(Math.Max(Height.Pixels, FontAssets.MouseText.Value.MeasureString(str).Y), 0);
+                if (Parent?.Parent?.Parent is UIList list)
+                {
+                    Parent.MinHeight = MinHeight;
+                    Parent.Height = Height;
+                    list.Recalculate();
+                }
+                else
+                    Recalculate();
+            }
+
+            base.Update(gameTime);
+        }
+        public override DefinitionOptionElement<SequenceDefinition<T>> CreateDefinitionOptionElement() => new SequenceDefinitionOptionElement<T>(Value, .8f);
+
+        public override void TweakDefinitionOptionElement(DefinitionOptionElement<SequenceDefinition<T>> optionElement)
+        {
+            optionElement.Top.Set(0f, 0f);
+            optionElement.Left.Set(-124, 1f);
+        }
+
+        public override List<DefinitionOptionElement<SequenceDefinition<T>>> CreateDefinitionOptionElementList()
+        {
+            OptionScale = 0.8f;
+
+            var options = new List<DefinitionOptionElement<SequenceDefinition<T>>>();
+
+            for (int i = 0; i < SequenceManager<T>.sequences.Count; i++)
+            {
+                SequenceDefinitionOptionElement<T> optionElement;
+
+                optionElement = new SequenceDefinitionOptionElement<T>(new SequenceDefinition<T>(i), OptionScale);
+
+                optionElement.OnLeftClick += (a, b) =>
+                {
+                    Value = optionElement.Definition;
+                    UpdateNeeded = true;
+                    SelectionExpanded = false;
+                    Interface.modConfig.SetPendingChanges();
+                };
+
+                options.Add(optionElement);
+            }
+
+            return options;
+        }
+
+        public override List<DefinitionOptionElement<SequenceDefinition<T>>> GetPassedOptionElements()
+        {
+            var passed = new List<DefinitionOptionElement<SequenceDefinition<T>>>();
+
+            foreach (var option in Options)
+            {
+                if (option.Definition.DisplayName.IndexOf(ChooserFilter.CurrentString, StringComparison.OrdinalIgnoreCase) == -1)
+                    continue;
+
+                string modname = option.Definition.Mod;
+
+                if (modname.IndexOf(ChooserFilterMod.CurrentString, StringComparison.OrdinalIgnoreCase) == -1)
+                    continue;
+
+                passed.Add(option);
+            }
+
+            return passed;
+        }
+    }
+
 
     public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<SequenceDefinition<T>> where T : ISequenceElement
     {
@@ -750,7 +839,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : Name);
     }
 
-    public class SeqDelegateDefinitionElement : SeqDefinitionElement<SeqDelegateDefinition>
+    public class SeqDelegateDefinitionElement : GenericDefinitionElement<SeqDelegateDefinition>
     {
         public bool resetted;
         public override void Update(GameTime gameTime)
@@ -778,7 +867,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             base.Update(gameTime);
         }
-        public override DefinitionOptionElement<SeqDelegateDefinition> CreateDefinitionOptionElement() => new SeqDelegateDefinitionOptionElement(Value, .8f);
+        public override DefinitionOptionElement<SeqDelegateDefinition> CreateDefinitionOptionElement() => new GenericDelegateDefinitionOptionElement(Value, .8f);
 
         public override void TweakDefinitionOptionElement(DefinitionOptionElement<SeqDelegateDefinition> optionElement)
         {
@@ -794,19 +883,20 @@ namespace LogSpiralLibrary.CodeLibrary
 
             for (int i = 0; i < SequenceSystem.elementDelegates.Count; i++)
             {
-                SeqDelegateDefinitionOptionElement optionElement;
+                GenericDelegateDefinitionOptionElement optionElement;
 
                 //if (i == 0)
                 //    optionElement = new SeqDelegateDefinitionOptionElement(new SeqDelegateDefinition("Terraria", "None"), OptionScale);
                 //else
-                optionElement = new SeqDelegateDefinitionOptionElement(new SeqDelegateDefinition(i), OptionScale);
+                optionElement = new GenericDelegateDefinitionOptionElement(new SeqDelegateDefinition(i), OptionScale);
 
                 optionElement.OnLeftClick += (a, b) =>
                 {
                     Value = optionElement.Definition;
                     UpdateNeeded = true;
                     SelectionExpanded = false;
-                    SequenceSystem.SetSequenceUIPending();
+                    InternalOnSetObject();
+                    //SequenceSystem.SetSequenceUIPending();
 
                 };
 
@@ -837,11 +927,11 @@ namespace LogSpiralLibrary.CodeLibrary
         }
     }
 
-    public class SeqDelegateDefinitionOptionElement : DefinitionOptionElement<SeqDelegateDefinition>
+    public class GenericDelegateDefinitionOptionElement : DefinitionOptionElement<SeqDelegateDefinition>
     {
         private readonly UIAutoScaleTextTextPanel<string> text;
 
-        public SeqDelegateDefinitionOptionElement(SeqDelegateDefinition definition, float scale = .75f) : base(definition, scale)
+        public GenericDelegateDefinitionOptionElement(SeqDelegateDefinition definition, float scale = .75f) : base(definition, scale)
         {
             Width.Set(150 * scale, 0f);
             Height.Set(40 * scale, 0f);

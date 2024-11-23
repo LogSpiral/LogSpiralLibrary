@@ -309,7 +309,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //public abstract void SetConfigPanel(UIList uIList);
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
-            [CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
+            //[CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
             public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
             public Entity owner;
             public Condition Condition => SequenceSystem.ToEntityCondition(

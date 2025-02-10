@@ -21,9 +21,14 @@
 		<Publicize Include="MonoMod.Utils" />
 	</ItemGroup>
 	<ItemGroup>
-		<AdditionalFiles Include="**/*.xml"
+		<AdditionalFiles Include="**/*.xml;**/*.xnb"
 						 Exclude="bin/**/*;obj/**/*"
 						 Pack="true"
 						 ModPath="%(Identity)"/>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">
+			<Visible>true</Visible>
+		</None>
 	</ItemGroup>
 </Project>

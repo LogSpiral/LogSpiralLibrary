@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
+using Terraria.Graphics.Shaders;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
@@ -23,6 +24,7 @@ using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
+
     public abstract class GenericDefinitionElement<T> : GenericConfigElement<T> where T : EntityDefinition
     {
         protected bool UpdateNeeded { get; set; }
@@ -266,7 +268,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             LocalMod localMod = null;
             string fileName = $"{mod.Name}.tmod";
-            List<LocalMod> targetLocals = new List<LocalMod>();
+            List<LocalMod> targetLocals = [];
             foreach (var localsItem in locals)
             {
                 if (localsItem.Name == mod.Name)
@@ -965,5 +967,67 @@ namespace LogSpiralLibrary.CodeLibrary
             if (IsMouseHovering)
                 UIModConfig.Tooltip = Tooltip;
         }
+    }
+
+    public class GenericItemDefinitionElement : GenericDefinitionElement<ItemDefinition>
+    {
+        public override DefinitionOptionElement<ItemDefinition> CreateDefinitionOptionElement() => new ItemDefinitionOptionElement(Value, 0.5f);
+
+        public override List<DefinitionOptionElement<ItemDefinition>> CreateDefinitionOptionElementList()
+        {
+            var options = new List<DefinitionOptionElement<ItemDefinition>>();
+
+            for (int i = 0; i < ItemLoader.ItemCount; i++)
+            {
+                var optionElement = new ItemDefinitionOptionElement(new ItemDefinition(i), OptionScale);
+                optionElement.OnLeftClick += (a, b) => {
+                    Value = optionElement.Definition;
+                    UpdateNeeded = true;
+                    SelectionExpanded = false;
+                };
+                options.Add(optionElement);
+            }
+
+            return options;
+        }
+
+        public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
+        {
+            var passed = new List<DefinitionOptionElement<ItemDefinition>>();
+
+            foreach (var option in Options)
+            {
+                if (ItemID.Sets.Deprecated[option.Type])
+                    continue;
+
+                // Should this be the localized item name?
+                if (!Lang.GetItemNameValue(option.Type).Contains(ChooserFilter.CurrentString, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                string modname = "Terraria";
+
+                if (option.Type >= ItemID.Count)
+                {
+                    modname = ItemLoader.GetItem(option.Type).Mod.DisplayNameClean; // or internal name?
+                }
+
+                if (modname.IndexOf(ChooserFilterMod.CurrentString, StringComparison.OrdinalIgnoreCase) == -1)
+                    continue;
+
+                passed.Add(option);
+            }
+            return passed;
+        }
+    }
+
+    public class GenericDyeDefinitionElement : GenericItemDefinitionElement
+    {
+        public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
+            => (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem).ToList();
+    }
+    public class DyeDefinitionElement : ItemDefinitionElement
+    {
+        public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
+            => (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem).ToList();
     }
 }

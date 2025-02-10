@@ -501,7 +501,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public static void DrawWhip(this Projectile proj)
         {
-            List<Vector2> list = new List<Vector2>();
+            List<Vector2> list = [];
             Projectile.FillWhipControlPoints(proj, list);
             Texture2D value = TextureAssets.FishingLine.Value;
             Rectangle value2 = value.Frame();
@@ -592,7 +592,7 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             if (trailing)
             {
-                List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList = [];
                 for (int i = 0; i < vertexs.Length - 2; i += 2)
                 {
                     triangleList.Add(vertexs[i]);
@@ -659,7 +659,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             if (trailing)
             {
-                List<CustomVertexInfoEX> triangleList = new List<CustomVertexInfoEX>();
+                List<CustomVertexInfoEX> triangleList = [];
                 for (int i = 0; i < vertexs.Length - 2; i += 2)
                 {
                     triangleList.Add(vertexs[i]);
@@ -739,7 +739,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);
             //Main.graphics.GraphicsDevice.RasterizerState = originalState;
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             var swooshUL = ShaderSwooshUL;
             swooshUL.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
@@ -768,7 +768,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.PointClamp;
 
-            ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();//启用shader
+            ShaderSwooshUL.CurrentTechnique.Passes[0].Apply();//启用shader
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);//传入绘制信息
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             spriteBatch.End();
@@ -980,7 +980,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             }
-            List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars1 = [];
             if (shakeRadMax > 0)
             {
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
@@ -992,7 +992,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y2, light)));
             bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(texcoord.x2, texcoord.y1, 0)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, alpha, new Vector3(texcoord.x2, texcoord.y2, 0)));
-            List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList1 = [];
             if (bars1.Count > 2)
             {
                 for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1065,7 +1065,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             foreach (var (start, _unit) in startAndUnits)
             {
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
                 if (shakeRadMax > 0)
                 {
@@ -1077,7 +1077,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(1, 0, 0)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, alpha, new Vector3(1, 1, 0)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1107,7 +1107,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             }
-            List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars1 = [];
             if (shakeRadMax > 0)
             {
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
@@ -1119,7 +1119,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y2, light)));
             bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(texcoord.x2, texcoord.y1, 0)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, alpha, new Vector3(texcoord.x2, texcoord.y2, 0)));
-            List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList1 = [];
             if (bars1.Count > 2)
             {
                 for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1192,7 +1192,7 @@ namespace LogSpiralLibrary.CodeLibrary
 
             foreach (var (start, _unit) in startAndUnits)
             {
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
                 if (shakeRadMax > 0)
                 {
@@ -1204,7 +1204,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(1, 0, 0)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, alpha, new Vector3(1, 1, 0)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1234,7 +1234,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 spriteBatch.End();
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             }
-            List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars1 = [];
             if (shakeRadMax > 0)
             {
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
@@ -1245,7 +1245,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, light)));
             bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, 0)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, color, new Vector3(1, 1, 0)));
-            List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList1 = [];
             if (bars1.Count > 2)
             {
                 for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1258,7 +1258,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList1.Add(bars1[i + 3]);
                 }
                 RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-                var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+                var projection = Matrix.CreateOrthographicOffCenter(0,Main.gameMenu ? Main.instance.Window.ClientBounds.Width: Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
@@ -1298,7 +1298,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.CurrentTechnique.Passes["EightTrigramsFurnaceEffect"].Apply();
             foreach (var (start, _unit) in startAndUnits)
             {
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
                 if (shakeRadMax > 0)
                 {
@@ -1310,7 +1310,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, 0)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, color, new Vector3(1, 1, 0)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1351,7 +1351,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
                 }
                 RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-                var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+                var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
@@ -1360,14 +1360,14 @@ namespace LogSpiralLibrary.CodeLibrary
                 Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
                 Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
                 effect.CurrentTechnique.Passes[0].Apply();
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
                 Vector2 unit2 = new Vector2(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, endLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, color, new Vector3(1, 1, endLight)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1414,14 +1414,14 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.CurrentTechnique.Passes[0].Apply();
             foreach (var (start, _unit) in startAndUnits)
             {
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
                 Vector2 unit2 = new Vector2(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, endLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width + length * unit, color, new Vector3(1, 1, endLight)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1461,7 +1461,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.PointWrap;
             effect.CurrentTechnique.Passes[1].Apply();
-            List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars1 = [];
             var unit = Vector2.Normalize(end - start);
             //unit.Normalize();
             Vector2 unit2 = new Vector2(-unit.Y, unit.X);
@@ -1469,7 +1469,7 @@ namespace LogSpiralLibrary.CodeLibrary
             bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
             bars1.Add(new CustomVertexInfo(end + unit2 * width, color, new Vector3(1, 0, endLight)));
             bars1.Add(new CustomVertexInfo(end - unit2 * width, color, new Vector3(1, 1, endLight)));
-            List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList1 = [];
             if (bars1.Count > 2)
             {
                 for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1510,7 +1510,7 @@ namespace LogSpiralLibrary.CodeLibrary
             effect.CurrentTechnique.Passes[1].Apply();
             foreach (var (start, end) in startAndEnds)
             {
-                List<CustomVertexInfo> bars1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> bars1 = [];
                 var unit = Vector2.Normalize(end - start);
                 //unit.Normalize();
                 Vector2 unit2 = new Vector2(-unit.Y, unit.X);
@@ -1518,7 +1518,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(end + unit2 * width, color, new Vector3(1, 0, endLight)));
                 bars1.Add(new CustomVertexInfo(end - unit2 * width, color, new Vector3(1, 1, endLight)));
-                List<CustomVertexInfo> triangleList1 = new List<CustomVertexInfo>();
+                List<CustomVertexInfo> triangleList1 = [];
                 if (bars1.Count > 2)
                 {
                     for (int i = 0; i < bars1.Count - 2; i += 2)
@@ -1632,7 +1632,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars[2 * i] = (new CustomVertexInfo(vectorFunc[i] + normalDir * w, color, new Vector3(factor * kOfX, 1, l)));
                 bars[2 * i + 1] = (new CustomVertexInfo(vectorFunc[i] + normalDir * -w, color, new Vector3(factor * kOfX, 0, l)));
             }
-            List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList = [];
             for (int i = 0; i < bars.Length - 2; i += 2)
             {
                 triangleList.Add(bars[i]);
@@ -1720,7 +1720,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars[2 * i] = (new CustomVertexInfo(positions[i] + normalDir * w, color, new Vector3(factor * kOfX, 1, l)));
                 bars[2 * i + 1] = (new CustomVertexInfo(positions[i] + normalDir * -w, color, new Vector3(factor * kOfX, 0, l)));
             }
-            List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList = [];
             for (int i = 0; i < bars.Length - 2; i += 2)
             {
                 if (skipPoint != null && skipPoint.Contains(i)) i += 2;
@@ -1901,7 +1901,6 @@ namespace LogSpiralLibrary.CodeLibrary
             var ani = Main.itemAnimations[item.type];
             var texCoordStart = new Vector2(0);
             var texCoordEnd = new Vector2(1);
-
             if (ani != null)
             {
                 var frame = ani.GetFrame(texture);
@@ -1910,14 +1909,17 @@ namespace LogSpiralLibrary.CodeLibrary
                 scale = frame.Size();
             }
             scale *= 0.5f;
-            var center = item.Center;//item.position + scale
+            Vector2 vector2 = new ((float)(item.width / 2) - scale.X, item.height - scale.Y * 2.0f);
+
+            var center = item.position + scale +vector2;//item.position + scale
             triangleArry[0] = new CustomVertexInfo(center - scale.RotatedBy(rotation), c, new Vector3(texCoordStart, light));
             triangleArry[1] = new CustomVertexInfo(center + new Vector2(scale.X, -scale.Y).RotatedBy(rotation), c, new Vector3(new Vector2(texCoordEnd.X, texCoordStart.Y), light));
             triangleArry[2] = new CustomVertexInfo(center + scale.RotatedBy(rotation), c, new Vector3(texCoordEnd, light));
             triangleArry[3] = triangleArry[2];
             triangleArry[4] = new CustomVertexInfo(center - new Vector2(scale.X, -scale.Y).RotatedBy(rotation), c, new Vector3(new Vector2(texCoordStart.X, texCoordEnd.Y), light));
             triangleArry[5] = triangleArry[0];
-            var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
+            
+            var projection = Matrix.CreateOrthographicOffCenter(0,Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             ItemEffect.Parameters["uTime"].SetValue((float)ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
@@ -2347,7 +2349,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <returns></returns>
         public static CustomVertexInfo[] TailVertexFromProj(this Projectile projectile, Vector2 Offset = default, float Width = 30, float alpha = 1, bool VeloTri = false, Color? mainColor = null)
         {
-            List<CustomVertexInfo> bars = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars = [];
             int indexMax = -1;
             for (int n = 0; n < projectile.oldPos.Length; n++) if (projectile.oldPos[n] == Vector2.Zero) { indexMax = n; break; }
             //if(!Main.gamePaused)
@@ -2368,7 +2370,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha * .6f)));//w * 
                 bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha * .6f)));//w * 
             }
-            List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList = [];
             if (bars.Count > 2)
             {
                 if (VeloTri)
@@ -2405,7 +2407,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <returns></returns>
         public static CustomVertexInfo[] TailVertexFromProj(this Projectile projectile, Vector2 Offset = default, Func<float, float> widthFunc = null, Func<float, Color> colorFunc = null, float alpha = 1)
         {
-            List<CustomVertexInfo> bars = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> bars = [];
             int indexMax = -1;
             for (int n = 0; n < projectile.oldPos.Length; n++) if (projectile.oldPos[n] == Vector2.Zero) { indexMax = n; break; }
             //if(!Main.gamePaused)
@@ -2427,7 +2429,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha)));//w * 
                 bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha)));//w * 
             }
-            List<CustomVertexInfo> triangleList = new List<CustomVertexInfo>();
+            List<CustomVertexInfo> triangleList = [];
             if (bars.Count > 2)
             {
                 //if (VeloTri)
@@ -2967,7 +2969,7 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             var vec = vecs[index];
             left = vec;
-            List<Vector2> result = new List<Vector2>() { vec };
+            List<Vector2> result = [vec];
             do
             {
                 Vector2 dir = new Vector2(0, -1);
@@ -3016,7 +3018,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     //index = n;
                 }
                 var vec = vecs[index];
-                List<Vector2> result = new List<Vector2>() { vec };
+                List<Vector2> result = [vec];
                 int count = 0;
                 do
                 {
@@ -3544,7 +3546,7 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             else if (t == 1)
             {
-                return new List<int>() { 0, 1, 2 };
+                return [0, 1, 2];
             }
             else
             {
@@ -4133,8 +4135,8 @@ namespace LogSpiralLibrary.CodeLibrary
             Rectangle value2 = new Rectangle(0, 0, Main.maxTilesX, Main.maxTilesY);
             value2.Inflate(-40, -40);
             value = Rectangle.Intersect(value, value2);
-            List<Point> list = new List<Point>();
-            List<Point> list2 = new List<Point>();
+            List<Point> list = [];
+            List<Point> list2 = [];
             for (int j = value.Left; j <= value.Right; j++)
             {
                 for (int k = value.Top; k <= value.Bottom; k++)
@@ -4286,7 +4288,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
             }
             result[0] = vectors[index];
-            Dictionary<float, Vector2> myDic = new Dictionary<float, Vector2>();
+            Dictionary<float, Vector2> myDic = [];
             for (int n = 0; n < vectors.Length; n++)
             {
                 if (n != index)
@@ -4305,7 +4307,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public static T[] DifferenceSet<T>(this T[] A, IEnumerable<T> B)
         {
-            List<T> result = new List<T>();
+            List<T> result = [];
             for (int n = 0; n < A.Length; n++)
             {
                 T item = A[n];
@@ -4322,7 +4324,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public static List<Vector2> CalcConvexHull(this List<Vector2> list)
         {
-            List<Vector2> resPoint = new List<Vector2>();
+            List<Vector2> resPoint = [];
             //查找最小坐标点
             int minIndex = 0;
             for (int i = 1; i < list.Count; i++)

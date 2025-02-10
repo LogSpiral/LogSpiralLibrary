@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -13,9 +14,13 @@ using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 {
-    public class SwooshInfo : MeleeAction
+    public abstract class LSLMelee : MeleeAction
     {
-
+        public override string Category => "LsLibrary";
+    }
+    public class SwooshInfo : LSLMelee
+    {
+        int hitCounter;
         public enum SwooshMode
         {
             Chop,
@@ -52,7 +57,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
             float max = timerMax;
             var fac = t / max;
-            if (max > cutTime)
+            if (max > cutTime * 1.5f)
             {
                 float tier2 = (max - cutTime) * k;
                 float tier1 = tier2 + cutTime;
@@ -62,11 +67,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     fac = 0;
                 else
                     fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
+
             }
             else
-            {
-                fac = MathHelper.SmoothStep(0, 1.125f, fac);
-            }
+                fac = MathHelper.SmoothStep(-.125f, 1.25f, fac);
+
             fac = flip ? 1 - fac : fac;
             float start = -.75f;
             float end = .625f;
@@ -81,7 +86,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         float k => 0.25f;
         public override float offsetRotation => TimeToAngle(fTimer);
         public override float offsetSize => base.offsetSize;
-
+        public override float offsetDamage => MathF.Pow(.75f, hitCounter);
         public override bool Attacktive
         {
             get
@@ -95,7 +100,43 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                SequencePlayer seqPlayer = plr.GetModPlayer<SequencePlayer>();
+
+                int dmg = CurrentDamage;
+                if (standardInfo.standardShotCooldown > 0)
+                {
+                    float delta = standardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / Cycle;
+                    seqPlayer.cachedTime += delta + 1;
+                    int count = (int)(seqPlayer.cachedTime / standardInfo.standardShotCooldown);
+                    seqPlayer.cachedTime -= standardInfo.standardShotCooldown * count;
+                    if (count > 0)
+                    {
+                        count--;
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                    }
+                    Vector2 orig = Main.MouseWorld;
+                    Vector2 unit = (orig - plr.Center);//.SafeNormalize(default) * 32f;
+                    float angleMax = MathHelper.Pi / 6;
+                    if (count % 2 == 1)
+                    {
+                        count--;
+                        Vector2 target = plr.Center + unit.RotatedBy(angleMax * Main.rand.NextFloat(-.5f, .5f));
+                        Main.mouseX = (int)(target.X - Main.screenPosition.X);
+                        Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                    }
+                    for (int i = 0; i < count; i++)
+                    {
+                        Vector2 target = plr.Center + unit.RotatedBy(angleMax * 4 / count / count * MathF.Pow(i / 2 + 1, 2) * (i % 2 == 0 ? 1 : -1));
+                        Main.mouseX = (int)(target.X - Main.screenPosition.X);
+                        Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                    }
+                    Main.mouseX = (int)(orig.X - Main.screenPosition.X);
+                    Main.mouseY = (int)(orig.Y - Main.screenPosition.Y);
+                }
+                else
+                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
 
             }
             base.OnStartAttack();
@@ -103,6 +144,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         public override void OnStartSingle()
         {
             base.OnStartSingle();
+
+            hitCounter = 0;
             Rotation += Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6);
             KValue = Main.rand.NextFloat(1, 2);
             //if (Projectile.owner == Main.myPlayer)
@@ -115,17 +158,26 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 flip ^= true;
             NewSwoosh();
         }
+        public override void OnEndSingle()
+        {
+            hitCounter = 0;
+            base.OnEndSingle();
+        }
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
+        {
+            hitCounter++;
+            base.OnHitEntity(victim, damageDone, context);
+        }
         public override void OnDeactive()
         {
             if (mode == SwooshMode.Slash)
                 flip ^= true;
+
             base.OnDeactive();
         }
         public override void OnActive()
         {
-            //flip = Main.rand.NextBool();
             flip = Owner.direction == -1;
-
             base.OnActive();
         }
         UltraSwoosh swoosh;
@@ -152,9 +204,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 var pair = standardInfo.vertexStandard.swooshTexIndex;
                 if (standardInfo.itemType == ItemID.TrueExcalibur)
                 {
-                    u = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
-                    subSwoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
+                    var eVec = verS.colorVec with { Y = 0 };
+                    if (eVec.X == 0 && eVec.Z == 0)
+                        eVec = new(.5f, 0, .5f);
+                    u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
+                    subSwoosh = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, eVec);
                     subSwoosh.ApplyStdValueToVtxEffect(standardInfo);
+                    subSwoosh.heatRotation = 0;
+                    subSwoosh.weaponTex = null;
                 }
                 else
                 {
@@ -168,6 +225,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 }
                 swoosh = u;
                 u.ApplyStdValueToVtxEffect(standardInfo);
+                u.weaponTex = null;
             }
             //return null;
         }
@@ -195,24 +253,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             //            break;
             //        }
             //}
-            var fac = cutTime > timerMax ? 1 : Utils.GetLerpValue(MathHelper.Lerp(cutTime, timerMax, 1 - k), MathHelper.Lerp(cutTime, timerMax, k), timer, true);
-            swoosh.timeLeft = (int)MathHelper.Lerp(1, standardInfo.vertexStandard.timeLeft, MathHelper.SmoothStep(0, 1, fac));
+
+            //var fac = cutTime * 1.5f >= timerMax ? 1 : Utils.GetLerpValue(MathHelper.Lerp(cutTime, timerMax, 1 - k), MathHelper.Lerp(cutTime, timerMax, k), timer, true);
+            ////Main.NewText((cutTime * 2>= timerMax, MathHelper.SmoothStep((1 - Factor) * 4f / 3f, 0, 1), fac));
+            //if(mode == SwooshMode.Slash)
+            //    fac = MathHelper.SmoothStep(0, 1, (1 - Factor) * 4 / 3f);
+            //swoosh.timeLeft = (int)MathHelper.Lerp(1, standardInfo.vertexStandard.timeLeft, MathHelper.SmoothStep(0, 1, fac)) + 1;// 
+            //swoosh.timeLeft = swoosh.timeLeftMax + 1;
             swoosh.center = Owner.Center;
             swoosh.rotation = Rotation;
             swoosh.negativeDir = flip;
             swoosh.angleRange = range;
             if (flip)
                 swoosh.angleRange = (swoosh.angleRange.from, -swoosh.angleRange.to);
+            swoosh.timeLeft = (int)(MathHelper.Clamp(MathF.Abs(swoosh.angleRange.Item1 - swoosh.angleRange.Item2), 0, 1) * swoosh.timeLeftMax) + 1;
         }
         public override void Update(bool triggered)
         {
+
             if (timer > (timerMax - cutTime) * k)
             {
                 //UpdateSwoosh(swoosh, (offsetRotation / MathF.PI, mode == SwooshMode.Chop ? 0.625f : -0.75f));
                 //UpdateSwoosh(subSwoosh, (offsetRotation / MathF.PI, mode == SwooshMode.Chop ? 0.75f : -0.875f));
                 timer--;
-                UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -0.75f, offsetRotation / MathF.PI));
-                UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -0.75f, offsetRotation / MathF.PI));
+                UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : (-1.25f + .5f * Factor), offsetRotation / MathF.PI));
+                UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : (-1.25f + .5f * Factor), offsetRotation / MathF.PI));
                 timer++;
             }
             else
@@ -227,6 +292,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
             base.Draw(spriteBatch, texture);
         }
+        public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
+        {
+            return base.GetWeaponVertex(texture, alpha);
+            //float origf = fTimer;
+            //IEnumerable<CustomVertexInfo> result = [];
+            //fTimer += 2.0f;
+            //for (int i = 9; i >= 0; i--)
+            //{
+            //    fTimer -= .2f;
+            //    result = result.Concat(base.GetWeaponVertex(texture, (1f - i / 10f) * (i == 0 ? 1f : .5f)));
+            //}
+            //fTimer = origf;
+            //return result.ToArray();
+        }
         public override void OnAttack()
         {
             for (int n = 0; n < 30 * (1 - Factor) * standardInfo.dustAmount; n++)
@@ -234,14 +313,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 var Center = Owner.Center + offsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
                 var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
                 OtherMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, standardInfo.standardColor);
-
-
             }
             base.OnAttack();
         }
+
     }
-    public class StabInfo : MeleeAction
+    public class StabInfo : LSLMelee
     {
+        int hitCounter;
         public override void NetReceive(BinaryReader reader)
         {
             Rotation = reader.ReadSingle();
@@ -254,6 +333,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             writer.Write(KValue);
             base.NetSend(writer);
         }
+        public override float offsetDamage => MathF.Pow(.75f, hitCounter);
         public override Vector2 offsetCenter => default;//new Vector2(64 * Factor, 0).RotatedBy(Rotation);
         public override Vector2 offsetOrigin => new Vector2(Factor * .4f, 0).RotatedBy(standardInfo.standardRotation);
         public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
@@ -262,7 +342,36 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                SequencePlayer seqPlr = plr.GetModPlayer<SequencePlayer>();
+                int dmg = CurrentDamage;
+                if (standardInfo.standardShotCooldown > 0)
+                {
+                    float delta = standardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / Cycle;
+                    seqPlr.cachedTime += delta + 1;
+                    int count = (int)(seqPlr.cachedTime / standardInfo.standardShotCooldown);
+                    seqPlr.cachedTime -= count * standardInfo.standardShotCooldown;
+                    if (count > 0)
+                    {
+                        count--;
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                    }
+                    Vector2 orig = plr.Center;
+                    Vector2 unit = (Main.MouseWorld - orig).SafeNormalize(default) * 64;
+                    for (int i = 0; i < count; i++)
+                    {
+                        plr.Center += unit.RotatedBy(MathHelper.Pi / count * (i - (count - 1) * .5f));
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                        plr.Center = orig;
+
+                    }
+                    if (count > 0)
+                        if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
+                        {
+                            SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
+                        }
+                }
+                else
+                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
                 for (int n = 0; n < 30; n++)
                 {
                     if (Main.rand.NextFloat(0, 1) < standardInfo.dustAmount)
@@ -283,6 +392,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         public override void OnStartSingle()
         {
             base.OnStartSingle();
+            hitCounter = 0;
             KValue = Main.rand.NextFloat(1f, 2.4f);
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
             //if (Projectile.owner == Main.myPlayer)
@@ -293,6 +403,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             //}
 
             flip ^= true;
+        }
+        public override void OnEndSingle()
+        {
+            hitCounter = 0;
+            base.OnEndSingle();
+        }
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
+        {
+            hitCounter++;
+            base.OnHitEntity(victim, damageDone, context);
         }
         public virtual UltraStab NewStab()
         {
@@ -308,7 +428,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, 2, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
                     var su = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
                     Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, 2, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
-                    su.weaponTex = TextureAssets.Item[standardInfo.itemType].Value;
                     su.ApplyStdValueToVtxEffect(standardInfo);
                 }
                 else
@@ -357,6 +476,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 fac *= fac;
                 return fac.CosFactor();
             }
+        }
+        public override void Update(bool triggered)
+        {
+            base.Update(triggered);
         }
     }
     public class RapidlyStabInfo : StabInfo
@@ -440,7 +563,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             base.OnActive();
         }
     }
-    public class ConvoluteInfo : MeleeAction
+    public class ConvoluteInfo : LSLMelee
     {
         public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
         public Vector2 unit;
@@ -465,7 +588,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             if (Owner is Player plr)
             {
                 plr.Center += offsetCenter;
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
                 plr.Center -= offsetCenter;
             }
             base.OnStartAttack();

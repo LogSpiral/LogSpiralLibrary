@@ -1,4 +1,5 @@
 ﻿using Humanizer;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,26 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
                 Recalculate();
             }
             base.Update(gameTime);
+        }
+        public float glowFactor;
+        public override void DrawSelf(SpriteBatch spriteBatch)
+        {
+            var dimensions = GetDimensions();
+            glowFactor = MathHelper.Lerp(glowFactor, IsMouseHovering ? 1f : 0f, 0.05f);
+            ComplexPanelInfo panel = new ComplexPanelInfo
+            {
+                destination = new Rectangle((int)dimensions.X, (int)dimensions.Y, (int)dimensions.Width + 1, (int)dimensions.Height),
+                StyleTexture = ModContent.Request<Texture2D>($"LogSpiralLibrary/Images/ComplexPanel/panel_0").Value,
+                glowEffectColor = Color.Lerp(default, Color.MediumPurple with { A = 0 } * .125f, glowFactor),
+                glowShakingStrength = 1f,
+                glowHueOffsetRange = 0.2f,
+                backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value,
+                backgroundFrame = new Rectangle(4, 4, 28, 28),
+                backgroundUnitSize = new Vector2(28, 28) * 2f,
+                backgroundColor = BackgroundColor with { A = 51 }
+            };
+            panel.DrawComplexPanel(spriteBatch);
+            //base.DrawSelf(spriteBatch);
         }
     }
 }

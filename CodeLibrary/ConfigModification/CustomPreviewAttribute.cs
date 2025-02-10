@@ -15,6 +15,7 @@ using Terraria.Graphics.Effects;
 using Terraria.ModLoader.UI;
 using log4net.Filter;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {
@@ -29,7 +30,8 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 
         public void Draw(SpriteBatch spriteBatch, ConfigElement element)
         {
-            Vector2 topLeft = element.GetDimensions().ToRectangle().TopRight() + new Vector2(60, 0);
+            var dimension = element.GetDimensions();
+            Vector2 topLeft = new Vector2(60 + dimension.X + dimension.Width, Main.mouseY);
             Rectangle targetRectanle = new Rectangle((int)topLeft.X, (int)topLeft.Y, Math.Min(480, (int)(Main.screenWidth - topLeft.X) - 20), 240);
 
             ComplexPanelInfo panel = new ComplexPanelInfo
@@ -47,9 +49,9 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             panel.DrawComplexPanel(spriteBatch);
             ConfigPreviewSystem.GetModConfigFromElement(element, out ModConfig modConfig);
             if (element.GetObject() is T instance)
-                Draw(spriteBatch, targetRectanle, instance, modConfig);
+                Draw(spriteBatch, targetRectanle, instance, modConfig, element);
         }
-        public abstract void Draw(SpriteBatch spriteBatch, Rectangle drawRange, T data, ModConfig pendingConfig);
+        public abstract void Draw(SpriteBatch spriteBatch, Rectangle drawRange, T data, ModConfig pendingConfig, ConfigElement configElement);
     }
     public class CustomPreviewAttribute : Attribute
     {
@@ -68,9 +70,9 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
     public class ConfigPreviewSystem : ModSystem
     {
         public delegate void CustomConfigPreviewDelegate(UIElement element, out ModConfig modConfig);
-        static List<CustomConfigPreviewDelegate> delegates = new List<CustomConfigPreviewDelegate>();
-        static List<Func<bool>> useRenderDelegate = new List<Func<bool>>();
-        static HashSet<string> registeredDelegateName = new HashSet<string>();
+        static List<CustomConfigPreviewDelegate> delegates = [];
+        static List<Func<bool>> useRenderDelegate = [];
+        static HashSet<string> registeredDelegateName = [];
         public static void ConfigSettingRegister(CustomConfigPreviewDelegate func, Func<bool> useRender, string funcName)
         {
             if (registeredDelegateName.Contains(funcName))
@@ -115,7 +117,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             Filters.Scene.OnPostDraw += () => { };
 
             var previewDrawingMethod = typeof(ConfigElement).GetMethod(nameof(ConfigElement.DrawSelf), BindingFlags.NonPublic | BindingFlags.Instance);
-            MonoModHooks.Add(previewDrawingMethod, PreviewDrawing);
+            MonoModHooks.Add(previewDrawingMethod, PreviewDrawing_Hook);
             On_UIElement.GetClippingRectangle += UIElement_GetClippingRectangle;
             IL_Main.DoDraw += AddPreviewRenderOn;
             base.Load();
@@ -152,9 +154,18 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
                     Filters.Scene.EndCapture(null, Main.screenTarget, Main.screenTargetSwap, Color.Black);
             });
         }
-        private static void PreviewDrawing(Action<ConfigElement, SpriteBatch> orig, ConfigElement self, SpriteBatch spriteBatch)
+        private static void PreviewDrawing_Hook(Action<ConfigElement, SpriteBatch> orig, ConfigElement self, SpriteBatch spriteBatch)
         {
             orig.Invoke(self, spriteBatch);
+            PreviewDrawing(self);
+
+        }
+        public static void PreviewDrawing(ConfigElement self)
+        {
+            var spriteBatch = Main.spriteBatch;
+            var rect = Main.instance.GraphicsDevice.ScissorRectangle;
+            Main.spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
             var pvAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomPreviewAttribute>(self.MemberInfo, self.Item, self.List);
             if (pvAttribute != null && self.IsMouseHovering)
             {
@@ -162,10 +173,15 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
                 if (drawer.usePreview)
                     drawer.Draw(spriteBatch, self);
             }
+            Main.spriteBatch.End();
+            Main.instance.GraphicsDevice.ScissorRectangle = rect;
+            Main.instance.GraphicsDevice.RasterizerState = UIElement.OverflowHiddenRasterizerState;
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, UIElement.OverflowHiddenRasterizerState, null, Main.UIScaleMatrix);
         }
         private Rectangle UIElement_GetClippingRectangle(On_UIElement.orig_GetClippingRectangle orig, UIElement self, SpriteBatch spriteBatch)
         {
             var origin = orig.Invoke(self, spriteBatch);
+            return origin;
             //UIElement element = self;//mainConfigList
             //for (int n = 0; n < 3; n++)
             //    if (element.Parent != null)
@@ -184,6 +200,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             if (attribute != null)
             {
                 var rect = Main.instance.GraphicsDevice.ScissorRectangle;
+
                 return rect with { Y = origin.Y, Height = origin.Height };
             }
 

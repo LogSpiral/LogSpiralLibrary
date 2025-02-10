@@ -552,6 +552,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         /// 是否具有攻击性
         /// </summary>
         public virtual bool Attacktive { get; }
+
+        /// <summary>
+        /// 伤害
+        /// </summary>
+        public virtual float offsetDamage => 1f;
         #endregion
         #endregion
         #region 函数
@@ -774,7 +779,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     if (Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), c[0].Position,
                         c[4].Position, 48f, ref point))
                     {
-                         fTimer = t;
+                        fTimer = t;
                         return true;
                     }
                 }
@@ -783,18 +788,32 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             }
             return false;
         }
+        public virtual void OnHitEntity(Entity victim, int damageDone, object[] context)
+        {
+            if (Owner is Player player)
+                damageDone /= MathHelper.Clamp(player.GetWeaponDamage(player.HeldItem), 1, int.MaxValue);
+            float delta = Main.rand.NextFloat(0.85f, 1.15f) * MathF.Log(damageDone + 1);
+            if (Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake < 4f)
+                Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake += delta;//
+
+            for (int n = 0; n < 30 * delta * (standardInfo.dustAmount + .2f); n++)
+                OtherMethods.FastDust(victim.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(Main.rand.NextFloat(0, 8), 16), standardInfo.standardColor);
+
+
+        }
         #endregion
         #region 吃闲饭的
         public Entity Owner { get; set; }
         public Projectile Projectile { get; set; }
         public StandardInfo standardInfo { get; set; }
-
+        public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.actionOffsetDamage * offsetDamage) : Projectile.damage;
         public string LocalizationCategory => nameof(MeleeAction);
         public sealed override void Register()
         {
             ModTypeLookup<MeleeAction>.Register(this);
         }
         public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
+        public abstract string Category { get; }
         #endregion
     }
 

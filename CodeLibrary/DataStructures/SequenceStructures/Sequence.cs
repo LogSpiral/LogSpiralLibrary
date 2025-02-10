@@ -35,7 +35,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public float scaler;
         public float heatRotation;
         public float alphaFactor;
-        public VertexDrawInfo.IRenderDrawInfo[][] renderInfos;
+        public IRenderDrawInfo[][] renderInfos;
         /// <summary>
         /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
         /// </summary>
@@ -62,6 +62,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// 标准持续时长
         /// </summary>
         public int standardTimer;
+
+        /// <summary>
+        /// 标准射击冷却
+        /// </summary>
+        public int standardShotCooldown;
         /// <summary>
         /// 标准颜色
         /// </summary>
@@ -90,25 +95,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         //TODO 改成弹幕序列独有
     }
-    public struct ActionModifyData
+    public struct ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1)
     {
 
-        public float actionOffsetSize = 1;
-        public float actionOffsetTimeScaler = 1;
-        public float actionOffsetKnockBack = 1;
-        public float actionOffsetDamage = 1;
-        public int actionOffsetCritAdder = 0;
-        public float actionOffsetCritMultiplyer = 1;
+        public float actionOffsetSize = size;
+        public float actionOffsetTimeScaler = timeScaler;
+        public float actionOffsetKnockBack = knockBack;
+        public float actionOffsetDamage = damage;
+        public int actionOffsetCritAdder = critAdder;
+        public float actionOffsetCritMultiplyer = critMultiplyer;
 
-        public ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1)
-        {
-            actionOffsetSize = size;
-            actionOffsetTimeScaler = timeScaler;
-            actionOffsetKnockBack = knockBack;
-            actionOffsetDamage = damage;
-            actionOffsetCritAdder = critAdder;
-            actionOffsetCritMultiplyer = critMultiplyer;
-        }
         /// <summary>
         /// 将除了速度以外的值赋给目标
         /// </summary>
@@ -145,7 +141,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// 使用数据修改
         /// </summary>
         [ElementCustomData]
-        ActionModifyData ModifyData => new ActionModifyData();
+        ActionModifyData ModifyData => new ();
         /// <summary>
         /// 执行次数
         /// </summary>
@@ -264,7 +260,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         Projectile Projectile { get; set; }
         StandardInfo standardInfo { get; set; }
 
-
+        string Category { get; }
         #endregion
     }
     /// <summary>
@@ -304,6 +300,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             public abstract ISequenceElement Element { get; }
             public abstract bool IsElement { get; }
+            public string LoadFailedMetaName = "";
+            public bool LoadFailedMetaSequence = false;
+            public Dictionary<string, string> LoadFailedMetaAttributes;
             public abstract string Name { get; }
             public abstract Sequence SequenceInfo { get; }
             //public abstract void SetConfigPanel(UIList uIList);
@@ -313,9 +312,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
             public Entity owner;
             public Condition Condition => SequenceSystem.ToEntityCondition(
-                conditionDefinition.Name, 
-                $"mods.{conditionDefinition.Mod}.Condition.{conditionDefinition.Name}", 
-                owner) ?? 
+                conditionDefinition.Name,
+                $"mods.{conditionDefinition.Mod}.Condition.{conditionDefinition.Name}",
+                owner) ??
                 SequenceSystem.conditions[conditionDefinition.Name == "None" ? "Always" : conditionDefinition.Name];
 
             //public Condition condition = new Condition("Always", () => true);
@@ -361,45 +360,53 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override string DisplayName => SequenceSystem.sequenceInfos[KeyName]?.DisplayName ?? sequenceName;
         public override Sequence Clone()
         {
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.Encoding = new UTF8Encoding(false);
-            settings.NewLineChars = Environment.NewLine;
-            MemoryStream stream = new MemoryStream();
-            XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
-            WriteContent(xmlWriter);
-            xmlWriter.Dispose();
-            byte[] data = stream.ToArray();
-            stream.Dispose();
+            const bool useTempPath = true;
+            if (!useTempPath)
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.Encoding = new UTF8Encoding(false);
+                settings.NewLineChars = Environment.NewLine;
+                MemoryStream stream = new MemoryStream();
+                XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
+                WriteContent(xmlWriter);
+                xmlWriter.Dispose();
+                byte[] data = stream.ToArray();
+                stream.Dispose();
 
-            stream = new MemoryStream(data);
-            XmlReader xmlReader = XmlReader.Create(stream);
-            xmlReader.Read();//读取声明
-            xmlReader.Read();//读取空格
-            ReadSequence(xmlReader, mod.Name, out var result);
-            result.mod = mod;
-            xmlReader.Dispose();
-            stream.Dispose();
-            return result;
-            /*XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.Encoding = new UTF8Encoding(false);
-            settings.NewLineChars = Environment.NewLine;
-            string dire = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}";
-            string tempPath = $"{dire}/{SequenceBase.SequenceDefaultName}.xml";
-            if (!Directory.Exists(dire)) Directory.CreateDirectory(dire);
-            using XmlWriter xmlWriter = XmlWriter.Create(tempPath, settings);
-            WriteContent(xmlWriter);
-            xmlWriter.Dispose();
-            //TextReader reader = new StringReader(tempPath);
-            using XmlReader xmlReader = XmlReader.Create(tempPath);
-            xmlReader.Read();//读取声明
-            xmlReader.Read();//读取空格
-            ReadSequence(xmlReader, mod.Name, out var result);
-            result.mod = mod;
-            xmlReader.Dispose();
-            File.Delete(tempPath);
-            return result;*/
+                stream = new MemoryStream(data);
+                XmlReader xmlReader = XmlReader.Create(stream);
+                xmlReader.Read();//读取声明
+                xmlReader.Read();//读取空格
+                ReadSequence(xmlReader, mod.Name, out var result);
+                result.mod = mod;
+                xmlReader.Dispose();
+                stream.Dispose();
+                return result;
+            }
+            else 
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.Indent = true;
+                settings.Encoding = new UTF8Encoding(false);
+                settings.NewLineChars = Environment.NewLine;
+                string dire = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}";
+                string tempPath = $"{dire}/{SequenceDefaultName}.xml";
+                if (!Directory.Exists(dire)) Directory.CreateDirectory(dire);
+                using XmlWriter xmlWriter = XmlWriter.Create(tempPath, settings);
+                WriteContent(xmlWriter);
+                xmlWriter.Dispose();
+                //TextReader reader = new StringReader(tempPath);
+                using XmlReader xmlReader = XmlReader.Create(tempPath);
+                xmlReader.Read();//读取声明
+                xmlReader.Read();//读取空格
+                ReadSequence(xmlReader, mod.Name, out var result);
+                result.mod = mod;
+                xmlReader.Dispose();
+                File.Delete(tempPath);
+                return result;
+            }
+
         }
         //public void ReconstructCondition(Entity owner)
         //{
@@ -420,48 +427,77 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
         public override void WriteContent(XmlWriter xmlWriter)
         {
-            xmlWriter.WriteStartElement("Sequence");
-            if (FileName != SequenceDefaultName)
+            try
             {
-                xmlWriter.WriteAttributeString("name", FileName);
-                SequenceSystem.sequenceInfos[$"{Mod.Name}/{FileName}"].Save(xmlWriter);
-            }
-            for (int i = 0; i < Groups.Count; i++)
-            {
-                xmlWriter.WriteStartElement("Group");
-                Group group = Groups[i];
-                for (int j = 0; j < group.wrapers.Count; j++)
+                xmlWriter.WriteStartElement("Sequence");
+                if (FileName != SequenceDefaultName)
                 {
-                    Wraper wraper = group.wrapers[j];
-                    xmlWriter.WriteStartElement("Wraper");
-                    if (wraper.conditionDefinition.Name != "Always" && wraper.conditionDefinition.Name != "None")
-                        xmlWriter.WriteAttributeString("condition", wraper.Condition.Description.Key.Split('.')[^1]);
-                    //xmlWriter.WriteValue(wraper.Name);
-                    if (wraper.IsSequence)
+                    xmlWriter.WriteAttributeString("name", FileName);
+                    SequenceSystem.sequenceInfos[$"{Mod.Name}/{FileName}"].Save(xmlWriter);
+                }
+                for (int i = 0; i < Groups.Count; i++)
+                {
+                    xmlWriter.WriteStartElement("Group");
+                    Group group = Groups[i];
+                    for (int j = 0; j < group.wrapers.Count; j++)
                     {
-                        xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
-                        if (wraper.Name == SequenceDefaultName)
-                            ((Sequence<T>)wraper.SequenceInfo).WriteContent(xmlWriter);
+                        Wraper wraper = group.wrapers[j];
+                        xmlWriter.WriteStartElement("Wraper");
+                        if (wraper.conditionDefinition.Name != "Always" && wraper.conditionDefinition.Name != "None")
+                            xmlWriter.WriteAttributeString("condition", wraper.Condition.Description.Key.Split('.')[^1]);
+                        //xmlWriter.WriteValue(wraper.Name);
+                        if (!wraper.Available)
+                        {
+                            if (wraper.LoadFailedMetaSequence)
+                            {
+                                xmlWriter.WriteAttributeString("IsSequence", "True");
+                                var metaName = wraper.LoadFailedMetaName;
+                                var subs = metaName.Split("/");
+                                var name = "";
+                                foreach (var sub in subs[1..])
+                                    name += sub;
+                                //if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
+                                xmlWriter.WriteAttributeString("Mod", subs[0]);
+                                xmlWriter.WriteValue(name);
+                            }
+                            else
+                            {
+                                xmlWriter.WriteStartElement("Action");
+                                foreach(var pair in wraper.LoadFailedMetaAttributes)
+                                    xmlWriter.WriteAttributeString(pair.Key, pair.Value);
+                                xmlWriter.WriteAttributeString("name", wraper.LoadFailedMetaName);
+                                xmlWriter.WriteEndElement();
+                            }
+                        }
+                        else if (wraper.IsSequence)
+                        {
+                            xmlWriter.WriteAttributeString("IsSequence", wraper.IsSequence.ToString());
+                            if (wraper.Name == SequenceDefaultName)
+                                ((Sequence<T>)wraper.SequenceInfo).WriteContent(xmlWriter);
+                            else
+                            {
+                                //if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
+                                xmlWriter.WriteAttributeString("Mod", wraper.SequenceInfo.Mod.Name);
+                                xmlWriter.WriteValue(wraper.sequenceInfo.sequenceName);
+                            }
+                        }
                         else
                         {
-                            if (wraper.SequenceInfo.Mod == null) Main.NewText(wraper.Name);
-                            xmlWriter.WriteAttributeString("Mod", wraper.SequenceInfo.Mod.Name);
-                            xmlWriter.WriteValue(wraper.sequenceInfo.sequenceName);
+                            xmlWriter.WriteStartElement("Action");
+                            wraper.elementInfo.SaveAttribute(xmlWriter);
+                            xmlWriter.WriteAttributeString("name", wraper.elementInfo.FullName);
+                            xmlWriter.WriteEndElement();
                         }
-                    }
-                    else
-                    {
-                        xmlWriter.WriteStartElement("Action");
-                        wraper.elementInfo.SaveAttribute(xmlWriter);
-                        xmlWriter.WriteAttributeString("name", wraper.elementInfo.FullName);
                         xmlWriter.WriteEndElement();
-
                     }
                     xmlWriter.WriteEndElement();
                 }
                 xmlWriter.WriteEndElement();
             }
-            xmlWriter.WriteEndElement();
+            catch(Exception e)
+            {
+                var str = e.Message;
+            }
         }
         public override void Save() => Save($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}/{FileName}.xml");
         public void Save(string path)
@@ -542,26 +578,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public static bool ReadSequence(XmlReader xmlReader, string modName, out Sequence<T> result)
         {
-            xmlReader.Read();//读取序列节点开始部分
-            if (xmlReader.Name != "Sequence")
+            result = new Sequence<T>();
+            if (!ReadSequence(xmlReader, modName, result))
             {
-                xmlReader.Read();
                 result = null;
                 return false;
             }
-            else
-            {
-                result = new Sequence<T>();
-                var fileName = result.sequenceName = xmlReader["name"] ?? SequenceDefaultName;
-                if (fileName != SequenceDefaultName)
-                    SequenceSystem.sequenceInfos[$"{modName}/{fileName}"] = new SequenceBasicInfo().Load(xmlReader);
-                xmlReader.Read();//读取空格
-                while (Group.ReadGroup(xmlReader, out var groupResult))
-                {
-                    result.Add(groupResult);
-                }
-                return true;
-            }
+            return true;
         }
         public class Group : GroupBase
         {
@@ -602,7 +625,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             /// TODO 改为ReadOnly
             /// </summary>
             public override IReadOnlyList<WraperBase> Wrapers => (from w in wrapers select (WraperBase)w).ToList();
-            public List<Wraper> wrapers = new List<Wraper>();
+            public List<Wraper> wrapers = [];
             public override int Index => index;
             public int index;
             public Wraper GetCurrentWraper()
@@ -610,7 +633,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 int counter = 0;
                 foreach (var wraper in wrapers)
                 {
-                    if (wraper.Condition.IsMet())
+                    if (wraper.Available&&wraper.Condition.IsMet())
                     {
                         index = counter;
                         return wraper;
@@ -663,7 +686,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     if (xmlReader["IsSequence"] == "True")
                     {
                         xmlReader.Read();
-                        if (xmlReader.Value.Contains("\n"))
+                        if (xmlReader.Value.Contains('\n'))
                         {
                             ReadSequence(xmlReader, ModName, out Sequence<T> resultSequence);
                             result = new Wraper(resultSequence);
@@ -685,12 +708,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                                 }
                                 else
                                 {
-                                    Mod mod = ModLoader.GetMod(ModName);
+                                    /*
+
+                                    //Mod mod = ModLoader.GetMod(ModName);
                                     sequence = new Sequence<T>();
                                     //Load($"PresetSequences/{typeof(T).Name}/{xmlReader.Value}.xml",mod, sequence);
                                     SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
                                     result = new Wraper(sequence);
+                                    */
 
+                                    result = new Wraper($"{ModName}/{xmlReader.Value}", true);
                                 }
 
                             }
@@ -702,9 +729,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     {
                         xmlReader.Read();//空白
                         xmlReader.Read();//Action
-                        var elem = (T)Activator.CreateInstance(ModContent.Find<T>(xmlReader["name"]).GetType());//获取元素实例
-                        result = new Wraper(elem);
-                        elem.LoadAttribute(xmlReader);
+                        if (ModContent.TryFind(xmlReader["name"], out T instance))
+                        {
+                            var elem = (T)Activator.CreateInstance(instance.GetType());//获取元素实例
+                            result = new Wraper(elem);
+                            elem.LoadAttribute(xmlReader);
+                        }
+                        else
+                        {
+                            result = new Wraper(xmlReader["name"], false);
+                            var str = xmlReader.ToString();
+                            if (xmlReader.HasAttributes)
+                                while (xmlReader.MoveToNextAttribute())
+                                    if (xmlReader.Name != "name")
+                                        result.LoadFailedMetaAttributes[xmlReader.Name] = xmlReader.Value;
+                        }
+                        //throw new Exception($"Could not find {xmlReader["name"]}, please check your enabled mods");
+
                         xmlReader.Read();//空白
                         xmlReader.Read();//节点结束
                         xmlReader.Read();//空白
@@ -720,7 +761,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public override Sequence SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
-            public override string Name => sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString();//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
+            public override string Name => Available ? sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString() : (Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.{(LoadFailedMetaSequence ? "Sequence":"Action")}Failed") + LoadFailedMetaName);//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
             public Wraper(T sequenceELement)
             {
                 elementInfo = sequenceELement;
@@ -728,6 +769,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public Wraper(Sequence<T> sequence)
             {
                 sequenceInfo = sequence;
+            }
+            public Wraper(string metaName, bool isSequence)
+            {
+                LoadFailedMetaName = metaName;
+                LoadFailedMetaSequence = isSequence;
+                LoadFailedMetaAttributes = [];
             }
             public static implicit operator Wraper(Sequence<T> sequence) => new Wraper(sequence);
             public bool ContainsSequence(Sequence<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
@@ -937,7 +984,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override int Counter => counter;
         public Wraper currentWrapper;
         public T currentData;
-        public List<Group> groups = new List<Group>();
+        public List<Group> groups = [];
         public IReadOnlyList<Group> Groups => groups;
         public override string FileName => sequenceName;
         public override IReadOnlyList<GroupBase> GroupBases => (from g in groups select (GroupBase)g).ToList();
@@ -990,6 +1037,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 foreach (var w in g.wrapers)
                 {
+                    if (!w.Available) continue;
                     if (w.IsSequence)
                         w.sequenceInfo.ResetCounter();
                     else

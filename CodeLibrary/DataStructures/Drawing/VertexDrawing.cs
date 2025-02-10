@@ -9,44 +9,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
     /// </summary>  
     public abstract class VertexDrawInfo : ModType
     {
-        /// <summary>
-        /// 需要搭配<see cref="VertexDrawInfo"/>使用
-        /// </summary>
-        public interface IRenderDrawInfo
-        {
-            void Reset();
-            /// <summary>
-            /// 绘制前做些手脚(切换rendertarget还有参数准备之类
-            /// </summary>
-            void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
-            /// <summary>
-            /// rendertarget上现在有图了，整活开始
-            /// </summary>
-            void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
-
-            /// <summary>
-            /// 最后将处理结果画到屏幕上的实现程序
-            /// </summary>
-            /// <param name="spriteBatch"></param>
-            /// <param name="graphicsDevice"></param>
-            /// <param name="render"></param>
-            /// <param name="renderSwap"></param>
-            void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap);
-            bool Active { get; }
-            /// <summary>
-            /// 是否独立绘制
-            /// <br>请将独立绘制的特效都往前塞——</br>
-            /// <br><see cref="VertexDrawInfo.PreDraw"/></br>
-            /// <br><see cref="PreDraw"/></br>
-            /// <br><see cref="Draw"/></br>
-            /// </summary>
-            //bool StandAlone { get; }
-
-            /// <summary>
-            /// 是否绘制实体(?)
-            /// </summary>
-            bool DoRealDraw { get; }
-        }
         public sealed override void Register()
         {
             ModTypeLookup<VertexDrawInfo>.Register(this);
@@ -96,7 +58,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             if (!LogSpiralLibrarySystem.vertexDrawInfoInstance.TryGetValue(type, out var instance)) return;
             var newInfos = from info in infos where info != null && info.Active select info;
             if (!newInfos.Any()) return;
-            List<List<IRenderDrawInfo>> renderPipeLines = new List<List<IRenderDrawInfo>>();
+            List<List<IRenderDrawInfo>> renderPipeLines = [];
             foreach (var pipe in instance.RenderDrawInfos)
             {
                 var list = new List<IRenderDrawInfo>();
@@ -687,6 +649,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         #region 绘制和更新，主体
         public override void Draw(SpriteBatch spriteBatch)
         {
+            var uls = this;
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex_Swoosh[baseTexIndex].Value;
             Main.graphics.GraphicsDevice.Textures[1] = AniTex_Swoosh[aniTexIndex].Value;
             base.Draw(spriteBatch);

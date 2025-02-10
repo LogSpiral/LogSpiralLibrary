@@ -34,7 +34,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
         }
 
         //TML: Made public instead of protected.
-        public List<UIElement> _items = new List<UIElement>();
+        public List<UIElement> _items = [];
         protected UIScrollbarByRow _scrollbar;
         //TML: Made internal instead of private.
         internal UIElement _innerList = new UIInnerList();
@@ -152,7 +152,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
 
         public override List<SnapPoint> GetSnapPoints()
         {
-            List<SnapPoint> list = new List<SnapPoint>();
+            List<SnapPoint> list = [];
             if (GetSnapPoint(out var point))
                 list.Add(point);
 

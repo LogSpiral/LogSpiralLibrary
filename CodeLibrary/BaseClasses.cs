@@ -1662,7 +1662,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     expanded = expandAttribute.ExpandListElements.Value;
             }
 
-            dataList = new NestedUIList();
+            dataList = [];
             dataList.Width.Set(-14, 1f);
             dataList.Left.Set(14, 0f);
             dataList.Height.Set(-30, 1f);
@@ -1994,7 +1994,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     expanded = expandAttribute.ExpandListElements.Value;
             }
 
-            dataList = new NestedUIList();
+            dataList = [];
             dataList.Width.Set(-14, 1f);
             dataList.Left.Set(14, 0f);
             dataList.Height.Set(-30, 1f);

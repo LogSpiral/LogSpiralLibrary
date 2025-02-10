@@ -40,6 +40,8 @@ SequenceUI: {
 		'''
 	resetSequence: RESET this Sequence to Preset value
 	deleteSequence: DELETE this Sequence
+	SequenceFailed: SequenceNotFound:
+	ActionFailed: ActionNotFound:
 }
 
 Items: {
@@ -77,9 +79,19 @@ Items: {
 		DisplayName: Hyper Cube
 		Tooltip: ""
 	}
+
+	BCurveTestItem: {
+		DisplayName: B Curve Test Item
+		Tooltip: ""
+	}
 }
 
 MeleeAction: {
+	Category: {
+		LsLibrary: LgSplLib
+		Vanilla: Vanilla-Like
+	}
+
 	ArkhalisInfo.DisplayName: Arkhalis
 	BoardSwordInfo.DisplayName: BoardSword
 	BoomerangInfo.DisplayName: Boomerang
@@ -229,6 +241,18 @@ Configs: {
 		}
 
 		Tooltip: ""
+	}
+
+	DyeConfigs: {
+		dye: {
+			Label: Dye
+			Tooltip: ""
+		}
+
+		Available: {
+			Label: Active
+			Tooltip: Armor Dye, Active!
+		}
 	}
 
 	RapidlyStabInfo: {
@@ -452,6 +476,31 @@ Configs: {
 				This actually comes from a beta version that forgot to delete the debugging code
 				Some friends thought it was fun, so I kept it
 				'''
+		}
+
+		TestArray: {
+			Label: Test Array
+			Tooltip: ""
+		}
+
+		TestColors: {
+			Label: Test Colors
+			Tooltip: ""
+		}
+
+		TestColorSet: {
+			Label: Test Color Set
+			Tooltip: ""
+		}
+
+		testDict: {
+			Label: test Dict
+			Tooltip: ""
+		}
+
+		testDict2: {
+			Label: test Dict2
+			Tooltip: ""
 		}
 	}
 

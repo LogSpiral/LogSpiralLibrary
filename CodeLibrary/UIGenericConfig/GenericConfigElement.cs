@@ -26,6 +26,7 @@ using LogSpiralLibrary.CodeLibrary.ConfigModification;
 
 namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 {
+    //TODO 想办法在原版ConfigElement上套壳，就像在隔壁Qot那边干的一样
     public abstract class GenericConfigElement<T> : GenericConfigElement
     {
         public virtual T Value
@@ -356,13 +357,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, text, position, baseColor, 0f, Vector2.Zero, baseScale, num);
             }
-            var pvAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomPreviewAttribute>(MemberInfo, Item, List);
-            if (pvAttribute != null && IsMouseHovering)
-            {
-                var drawer = (ICustomConfigPreview)Activator.CreateInstance(pvAttribute.pvType);
-                if (drawer.usePreview)
-                    drawer.Draw(spriteBatch, this);
-            }
+            ConfigPreviewSystem.PreviewDrawing(this);
             //if (base.IsMouseHovering && TooltipFunction != null)
             //{
             //    string text2 = TooltipFunction();
@@ -1066,8 +1061,8 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
             //[LabelKey("时长系数")]
             [LabelKey($"{key}timeScaler.Label")]
-            [Range(0.01f, 4f)]
-            [Increment(0.05f)]
+            [Range(0.01f, 12f)]
+            [Increment(0.1f)]
             public float actionOffsetTimeScaler
             {
                 get => current.actionOffsetTimeScaler;
@@ -1403,7 +1398,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
                     expanded = expandAttribute.ExpandListElements.Value;
             }
 
-            dataList = new NestedUIList();
+            dataList = [];
             dataList.Width.Set(-14, 1f);
             dataList.Left.Set(14, 0f);
             dataList.Height.Set(-30, 1f);
@@ -1831,7 +1826,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
             DataListElement.OverflowHidden = true;
 
-            DataList = new NestedUIList();
+            DataList = [];
             DataList.Width.Set(-20, 1f);
             DataList.Left.Set(0, 0f);
             DataList.Height.Set(0, 1f);

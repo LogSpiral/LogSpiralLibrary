@@ -6,11 +6,15 @@ using System.Linq;
 using Terraria.Audio;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 {
+    public abstract class VanillaMelee : MeleeAction
+    {
+        public override string Category => "Vanilla";
+    }
     //原版手持弹幕近战复刻总集篇！！
     /// <summary>
     /// 经典宽剑
     /// </summary>
-    public class BoardSwordInfo : MeleeAction
+    public class BoardSwordInfo : VanillaMelee
     {
         public override float offsetRotation => MathHelper.SmoothStep(0.15f, -0.75f, Factor * Factor) * MathHelper.Pi * Owner.direction;
         public override bool Attacktive => Factor < .75f;
@@ -24,7 +28,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
 
             }
             base.OnStartAttack();
@@ -46,7 +50,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 经典短剑
     /// </summary>
-    public class ShortSwordInfo : MeleeAction
+    public class ShortSwordInfo : VanillaMelee
     {
         public override float Factor => base.Factor;//  * 2 % 1
         public override bool Attacktive => Factor <= 0.5f;
@@ -62,7 +66,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
 
             }
             base.OnStartAttack();
@@ -71,7 +75,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 转啊转
     /// </summary>
-    public class BoomerangInfo : MeleeAction
+    public class BoomerangInfo : VanillaMelee
     {
         public override bool Attacktive => true;
         public override Vector2 offsetCenter => realCenter - Owner.Center;
@@ -97,25 +101,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 
             base.OnStartAttack();
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (flag)
+            base.OnHitEntity(victim, damageDone, context);
+            back = true;
+            if (Owner is Player plr && Main.rand.NextBool(3))
             {
-                back = true;
-                if (Owner is Player plr && Main.rand.NextBool(3))
+                Vector2 orig = plr.Center;
+                plr.Center = realCenter;
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Vector2 orig = plr.Center;
-                    plr.Center = realCenter;
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                    plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
         public override void Update(bool triggered)
         {
@@ -169,7 +169,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// 链球，说实话这个不是很适合用这个实现，这个结构更适合制作插值动画式的动作
     /// <para>原版的AI解析参考这个<see cref="VanillaCodeRef.AI_015_Flails(Projectile)"/></para>
     /// </summary>
-    public class FlailInfo : MeleeAction
+    public class FlailInfo : VanillaMelee
     {
         public override bool Attacktive => true;
         public override float offsetRotation => state switch
@@ -295,24 +295,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 
             }
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (flag)
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(5))
             {
-                if (Owner is Player plr && Main.rand.NextBool(5))
+                Vector2 orig = plr.Center;
+                plr.Center = Projectile.Center;
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Vector2 orig = plr.Center;
-                    plr.Center = Projectile.Center;
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                    plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
         public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
         {
@@ -342,7 +338,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 长枪
     /// </summary>
-    public class SpearInfo : MeleeAction
+    public class SpearInfo : VanillaMelee
     {
         public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi) * .25f;
         public override Vector2 offsetCenter
@@ -366,7 +362,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
 
             }
             base.OnStartAttack();
@@ -376,7 +372,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 石巨人之拳！！
     /// </summary>
-    public class FistInfo : MeleeAction
+    public class FistInfo : VanillaMelee
     {
         public override bool Attacktive => Factor < .65f;
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2) * 512;
@@ -386,7 +382,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             if (Owner is Player plr)
             {
                 plr.Center += offsetCenter;
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
                 plr.Center -= offsetCenter;
                 if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
@@ -422,7 +418,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 圣骑士会个🔨
     /// </summary>
-    public class HammerInfo : MeleeAction
+    public class HammerInfo : VanillaMelee
     {
         public override float offsetRotation => Factor * MathHelper.TwoPi + (float)LogSpiralLibraryMod.ModTime2 * .025f;
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
@@ -434,20 +430,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 SoundEngine.PlaySound(MySoundID.BoomerangRotating, Owner?.Center);
 
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (Owner is Player plr && flag && Main.rand.NextBool(3))
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(3))
             {
                 plr.Center += offsetCenter;
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
                 plr.Center -= offsetCenter;
                 if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
                     SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
         public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
         {
@@ -466,7 +461,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// ─━╋ ─━╋ ─━╋
     /// </summary>
-    public class KnivesInfo : MeleeAction
+    public class KnivesInfo : VanillaMelee
     {
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 1024 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 256);
         public override bool Attacktive => true;
@@ -475,24 +470,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
             timer--;
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (flag)
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(10))
             {
-                if (Owner is Player plr && Main.rand.NextBool(10))
+                Vector2 orig = plr.Center;
+                plr.Center = offsetCenter + Owner.Center;
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Vector2 orig = plr.Center;
-                    plr.Center = offsetCenter + Owner.Center;
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                    plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
         public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
         {
@@ -512,7 +503,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// 白云一片去悠悠
     /// <para>原版AI参考<see cref="VanillaCodeRef."/></para>
     /// </summary>
-    public class YoyoInfo : MeleeAction
+    public class YoyoInfo : VanillaMelee
     {
         public override Vector2 offsetCenter => realCenter - Owner.Center;
         public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
@@ -553,24 +544,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             Main.instance.DrawProj_DrawYoyoString(Projectile, Owner.Center);
             Projectile.aiStyle = -1;
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (flag)
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(5))
             {
-                if (Owner is Player plr && Main.rand.NextBool(5))
+                Vector2 orig = plr.Center;
+                plr.Center = realCenter;
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Vector2 orig = plr.Center;
-                    plr.Center = realCenter;
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                    plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
         public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
         {
@@ -589,7 +576,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 我没拿到真空刀
     /// </summary>
-    public class ArkhalisInfo : MeleeAction
+    public class ArkhalisInfo : VanillaMelee
     {
         public override float Factor => base.Factor * 2 % 1;
         public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.PiOver2;
@@ -599,7 +586,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             }
             flip ^= true;
             var verS = standardInfo.vertexStandard;
@@ -642,7 +629,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 请不要再冕了...什么不是烈冕号啊
     /// </summary>
-    public class EruptionInfo : MeleeAction
+    public class EruptionInfo : VanillaMelee
     {
         //public override float offsetSize => (-MathF.Pow(0.5f - Factor, 2) * 28 + 8) * .75f;
         //public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi / 3;
@@ -743,30 +730,26 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             }
             return result.ToArray();
         }
-        public override bool Collide(Rectangle rectangle)
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
-            bool flag = base.Collide(rectangle);
-            if (flag)
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(5))
             {
-                if (Owner is Player plr && Main.rand.NextBool(5))
+                Vector2 orig = plr.Center;
+                plr.Center = victim.Hitbox.Center();
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                 {
-                    Vector2 orig = plr.Center;
-                    plr.Center = rectangle.Center();
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                    plr.Center = orig;
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
                 }
             }
-            return flag;
         }
     }
     /// <summary>
     /// 其实是天龙之怒
     /// </summary>
-    public class RotatingInfo : MeleeAction
+    public class RotatingInfo : VanillaMelee
     {
         public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (flip ? -1 : 1);
         public override Vector2 offsetOrigin => base.offsetOrigin;
@@ -776,7 +759,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             flip = Owner.direction != 1;
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             }
             SoundEngine.PlaySound(standardInfo.soundStyle);
             base.OnStartSingle();
@@ -807,14 +790,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// Lancer!!♠
     /// </summary>
-    public class LanceInfo : MeleeAction
+    public class LanceInfo : VanillaMelee
     {
         public override Vector2 offsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, 1 - MathHelper.Clamp(MathHelper.SmoothStep(1, 0, Factor) * 4, 0, 1));
         public override void OnStartAttack()
         {
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             }
             SoundEngine.PlaySound(standardInfo.soundStyle);
             base.OnStartAttack();
@@ -834,7 +817,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 银色战车！！
     /// </summary>
-    public class StarlightInfo : MeleeAction
+    public class StarlightInfo : VanillaMelee
     {
         public override bool Attacktive => true;
         public override Vector2 offsetCenter => (Main.rand.NextVector2Unit() * new Vector2(16, 4) + 16 * Vector2.UnitX).RotatedBy(Rotation);
@@ -859,7 +842,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             flip = Owner.direction != 1;
             if (Owner is Player plr)
             {
-                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             }
             base.OnStartSingle();
         }
@@ -897,7 +880,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 天顶
     /// </summary>
-    public class ZenithInfo : MeleeAction
+    public class ZenithInfo : VanillaMelee
     {
         public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist * .5f, 100 / KValue)).RotatedBy(Rotation);
         public override float offsetRotation => MathHelper.SmoothStep(1f, -1f, MathHelper.Clamp((1 - Factor) * 2, 0, 1)) * (flip ? 1 : -1) * MathHelper.Pi;
@@ -973,7 +956,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             {
                 var origf_s = fTimer;
                 fTimer += timerMax / 4f * n;
-                float alphaG = 1 - MathF.Pow(n / 3f,4);
+                float alphaG = 1 - MathF.Pow(n / 3f, 4);
                 UltraSwoosh u = ultras[n];
                 u.timeLeft--;
                 u.center = Owner.Center + Rotation.ToRotationVector2() * dist * .5f;
@@ -1005,23 +988,28 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 {
                     fTimer = origf_s;
                     Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 6, 1, 514);
-                    if (Owner is Player plr && Main.rand.NextBool(5))
-                    {
-                        Vector2 orig = plr.Center;
-                        plr.Center += offsetCenter;
-                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, (int)(ModifyData.actionOffsetDamage * plr.GetWeaponDamage(plr.HeldItem)));
-                        plr.Center = orig;
-                        if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                        {
-                            SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                        }
-                    }
+
                     return true;
                 }
                 fTimer += timerMax / 4f;
             }
             fTimer = origf_s;
             return false;
+        }
+        public override void OnHitEntity(Entity victim, int damageDone, object[] context)
+        {
+            base.OnHitEntity(victim, damageDone, context);
+            if (Owner is Player plr && Main.rand.NextBool(5))
+            {
+                Vector2 orig = plr.Center;
+                plr.Center += offsetCenter;
+                plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+                plr.Center = orig;
+                if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
+                {
+                    SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
+                }
+            }
         }
         public override void OnDeactive()
         {
@@ -1036,7 +1024,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
     /// <summary>
     /// 泰拉棱镜???!!!
     /// </summary>
-    public class TerraprismaInfo : MeleeAction
+    public class TerraprismaInfo : VanillaMelee
     {
         public override Vector2 offsetCenter => realCenter - Owner.Center;
         public override float offsetRotation => realRotation;
@@ -1059,7 +1047,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     {
                         Vector2 orig = player.Center;
                         player.Center = realCenter;
-                        player.ItemCheck_Shoot(player.whoAmI, player.HeldItem, (int)(ModifyData.actionOffsetDamage * player.GetWeaponDamage(player.HeldItem)));
+                        player.ItemCheck_Shoot(player.whoAmI, player.HeldItem, CurrentDamage);
                         player.Center = orig;
                         if (Main.myPlayer == player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
                         {
@@ -1202,8 +1190,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 oldRotations[0] = realRotation;
             }
             ultra.timeLeftMax = timerMax;
-            ultra.timeLeft = (int)(timerMax * Math.Pow(Factor,0.25));
-            ultra.center = Owner.Center;;
+            ultra.timeLeft = (int)(timerMax * Math.Pow(Factor, 0.25));
+            ultra.center = Owner.Center; ;
 
             var vertex = ultra.VertexInfos;
             for (int i = 0; i < 45; i++)

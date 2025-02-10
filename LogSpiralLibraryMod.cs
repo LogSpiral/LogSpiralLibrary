@@ -139,7 +139,7 @@ namespace LogSpiralLibrary
         //public const int tinyScalerInvert = 4;
         RenderTarget2D DirectCreateNewRender(int level = 0)
         {
-            
+
             var r1 = Main.screenTarget;
             var r2 = Main.screenTargetSwap;
             int invert = 1 << level;
@@ -326,7 +326,7 @@ namespace LogSpiralLibrary
         private void LoadTextures(string textureName, out List<Asset<Texture2D>> assets)
         {
             string basePath = $"Images/{textureName}/{textureName}_";
-            assets = new();
+            assets = [];
             for (int i = 0; ; i++)
             {
                 string path = $"{basePath}{i}";
@@ -340,7 +340,7 @@ namespace LogSpiralLibrary
         private void LoadTextures(string folderName, string textureName, out List<Asset<Texture2D>> assets)
         {
             string basePath = $"Images/{folderName}/{textureName}_";
-            assets = new();
+            assets = [];
             for (int i = 0; ; i++)
             {
                 string path = $"{basePath}{i}";
@@ -536,8 +536,8 @@ namespace LogSpiralLibrary
         {
             base.PostSetupContent();
         }
-        public static List<RenderBasedDrawing> renderBasedDrawings = new List<RenderBasedDrawing>();
-        public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = new Dictionary<Type, VertexDrawInfo>();
+        public static List<RenderBasedDrawing> renderBasedDrawings = [];
+        public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = [];
         public override void OnModLoad()
         {
             //if (Main.chatMonitor is RemadeChatMonitor remade)
@@ -618,10 +618,10 @@ namespace LogSpiralLibrary
     {
         static void DrawVertexEffects(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            Dictionary<Type, List<VertexDrawInfo>> dict = new();
+            Dictionary<Type, List<VertexDrawInfo>> dict = [];
             foreach (var instance in LogSpiralLibrarySystem.vertexDrawInfoInstance.Values)
             {
-                dict.Add(instance.GetType(), new List<VertexDrawInfo>());
+                dict.Add(instance.GetType(), []);
             }
             foreach (var vertexDraw in LogSpiralLibrarySystem.vertexEffects)
             {
@@ -774,5 +774,17 @@ namespace LogSpiralLibrary
 
         [DefaultValue(false)]
         public bool WTHConfig = false;
+
+        //当年测试Qot配置中心用的
+        /*
+        public int[] TestArray = new int[30];
+
+        public Color[] TestColors = new Color[9];
+
+        public HashSet<Color> TestColorSet = [];
+
+        public Dictionary<int, Color> testDict = [];
+        public Dictionary<Color,int> testDict2 = [];
+        */
     }
 }

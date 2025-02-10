@@ -9,11 +9,46 @@ using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 {
+    public abstract class MeleeSequenceItem<T> : ModItem where T : MeleeSequenceProj
+    {
+        public override void SetStaticDefaults()
+        {
+            ItemID.Sets.SkipsInitialUseSound[Type] = true;
+            base.SetStaticDefaults();
+        }
+        public override bool AltFunctionUse(Player player) => EnableRightClick;
+        public override void SetDefaults()
+        {
+            Item.width = 62;
+            Item.height = 62;
+            Item.useTime = 24;
+            Item.useAnimation = 24;
+            Item.rare = ItemRarityID.Red;
+            Item.UseSound = SoundID.Item1;
+            Item.knockBack = 4.95f;
+            Item.damage = 514;
+
+            //上面的是一些默认的属性，一般需要在重写那边另外赋值
+            //下面是必要的，重写那边不用再写
+
+            Item.useStyle = ItemUseStyleID.Shoot;
+            Item.DamageType = DamageClass.Melee;
+            Item.shoot = ModContent.ProjectileType<T>();
+            Item.shootSpeed = 1f;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.channel = true;
+        }
+        public override bool CanShoot(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<T>()] == 0;
+        public virtual bool EnableRightClick => false;
+    }
+
     /// <summary>
     /// 来把基剑
     /// </summary>
     public abstract class MeleeSequenceProj : ModProjectile
     {
+
         //初始化-加载序列数据
         /// <summary>
         /// 是否是本地序列的弹幕
@@ -23,7 +58,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         /// 标记为完工，设置为true后将读取与文件同目录下同类名的xml文件(参考Texture默认读取
         /// </summary>
         public virtual bool LabeledAsCompleted => false;
-        public static MeleeSequence LocalMeleeSequence;
+        public static Dictionary<int, MeleeSequence> LocalMeleeSequence = [];
         protected MeleeSequence meleeSequence = null;
         public MeleeSequence MeleeSequenceData
         {
@@ -36,12 +71,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
             if (LabeledAsCompleted)
             {
-                if (LocalMeleeSequence == null)
+                if (!LocalMeleeSequence.TryGetValue(Type, out MeleeSequence localSeq))
                 {
-                    LocalMeleeSequence = new MeleeSequence();
-                    MeleeSequence.Load((GetType().Namespace.Replace(Mod.Name + ".", "") + "." + Name).Replace('.', '/') + ".xml", Mod, LocalMeleeSequence);
+                    localSeq = new MeleeSequence();
+                    MeleeSequence.Load((GetType().Namespace.Replace(Mod.Name + ".", "") + "." + Name).Replace('.', '/') + ".xml", Mod, localSeq);
+                    LocalMeleeSequence[Type] = localSeq;
                 }
-                meleeSequence = (MeleeSequence)LocalMeleeSequence.Clone();
+                meleeSequence = (MeleeSequence)localSeq.Clone();
                 //meleeSequence = new MeleeSequence() { groups = ((MeleeSequence)LocalMeleeSequence.Clone()).groups };
                 return;
             }
@@ -71,6 +107,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     sequence.Save();
                 }
                 SequenceManager<MeleeAction>.sequences[sequence.KeyName] = sequence;
+                meleeSequence = sequence;
             }
             else
             {
@@ -121,8 +158,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 8;
             Projectile.ownerHitCheck = true;
-            if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
-            if (!SequenceManager<MeleeAction>.loaded) SequenceManager<MeleeAction>.Load();
+            //if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
+            //if (!SequenceManager<MeleeAction>.loaded) SequenceManager<MeleeAction>.Load();
             //InitializeSequence(Mod.Name, Name);
 
             base.SetDefaults();
@@ -152,7 +189,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         //目前执行组件
         //更新函数
         public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
-        public MeleeAction currentData => meleeSequence.currentData;
+        public MeleeAction currentData => meleeSequence?.currentData;
         public override void AI()
         {
             //这里是手持弹幕的一些常规检测和赋值
@@ -210,14 +247,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         //下面这里实现手持弹幕的一些比较细枝末节的东西，像是绘制 攻击到目标的伤害修正之类
         public override bool PreDraw(ref Color lightColor)
         {
-            var spb = Main.spriteBatch;
-            //spb.Draw(LogSpiralLibraryMod.AniTex[8].Value, new Rectangle(0, 0, Main.screenWidth, Main.screenHeight), Color.Red);
             if (currentData != null)
             {
                 meleeSequence.active = true;
                 currentData.Draw(Main.spriteBatch, TextureAssets.Projectile[Type].Value);
             }
-            //spb.PushSprite(LogSpiralLibraryMod.AniTex[8].Value, 0, 0, 1, 1, 400, 400, 800, 800, Color.Red, Color.Green, Color.Blue, Color.White, 162.5f, 162.5f, 0, 1, 0, 0);
             return false;
         }
         public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
@@ -230,7 +264,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             if (currentData == null) return;
             //target.life = target.lifeMax;
             var data = currentData.ModifyData;
-            modifiers.SourceDamage *= data.actionOffsetDamage;
+            modifiers.SourceDamage *= data.actionOffsetDamage * currentData.offsetDamage;
             modifiers.Knockback *= data.actionOffsetKnockBack;
             var _crit = player.GetWeaponCrit(player.HeldItem);
             _crit += data.actionOffsetCritAdder;
@@ -250,18 +284,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
             if (currentData == null) return;
             var data = currentData.ModifyData;
-            modifiers.SourceDamage *= data.actionOffsetDamage;
+            modifiers.SourceDamage *= data.actionOffsetDamage * currentData.offsetDamage;
             modifiers.Knockback *= data.actionOffsetKnockBack;
             base.ModifyHitPlayer(target, ref modifiers);
         }
         public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f) * (damageDone / MathHelper.Clamp(player.HeldItem.damage, 1, int.MaxValue));//
+            currentData?.OnHitEntity(target, hit.Damage, [hit, damageDone]);
+
             base.OnHitNPC(target, hit, damageDone);
         }
         public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f);
+            currentData?.OnHitEntity(target, info.Damage, [info]);
+            //player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f);
 
             base.OnHitPlayer(target, info);
         }

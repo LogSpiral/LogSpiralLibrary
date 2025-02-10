@@ -32,8 +32,8 @@ namespace LogSpiralLibrary.CodeLibrary
     public class SurroundStatePlayer : ModPlayer
     {
         public SurroundState state;
-        public List<Entity> frontTargets = new List<Entity>();
-        public List<Entity> otherTargets = new List<Entity>();
+        public List<Entity> frontTargets = [];
+        public List<Entity> otherTargets = [];
         public Vector2 targetFront;
         public void UpdateData()
         {

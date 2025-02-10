@@ -27,6 +27,8 @@ using NetSimplified;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
+using Microsoft.CodeAnalysis.CSharp;
+using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 {
@@ -41,7 +43,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public bool ShowSequenceBox = false;
         [DefaultValue(typeof(Vector2), "32, 16")]
         [Range(0f, 64f)]
-        public Vector2 Step = new Vector2(32, 16);
+        public Vector2 Step = new(32, 16);
 
 
         public static SequenceConfig Instance => ModContent.GetInstance<SequenceConfig>();
@@ -93,6 +95,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }*/
     public class SequencePlayer : ModPlayer
     {
+        /// <summary>
+        /// 挥砍等组件的缓存时间
+        /// </summary>
+        public double cachedTime;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (SequenceSystem.ShowSequenceKeybind.JustPressed)
@@ -105,21 +111,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             base.ProcessTriggers(triggersSet);
         }
         public Dictionary<Type, Dictionary<string, Sequence>> plrLocSeq = null;
-        public override void OnEnterWorld()
-        {
-            //if (Main.netMode == NetmodeID.MultiplayerClient && Main.myPlayer == Player.whoAmI)
-            //{
-
-            //}
-            base.OnEnterWorld();
-        }
         public void InitPlrLocSeq()
         {
-            plrLocSeq = new();
+            plrLocSeq = [];
             foreach (var type in SequenceSystem.AvailableElementBaseTypes)
-            {
-                plrLocSeq[type] = new();
-            }
+                plrLocSeq[type] = [];
         }
         public SequencePlayer()
         {
@@ -137,7 +133,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                     int bCount = reader.ReadInt32();
                     string keyName = reader.ReadString();
                     byte[] bytes = reader.ReadBytes(bCount);
-                    using MemoryStream memoryStream = new MemoryStream(bytes);
+                    using MemoryStream memoryStream = new(bytes);
                     using XmlReader xmlReader = XmlReader.Create(memoryStream);
                     var seq = method.Invoke(null, [xmlReader, keyName.Split('/')[0]]);
                     dict[keyName] = (Sequence)seq;
@@ -255,18 +251,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
     }
     public static class SequenceManager<T> where T : ISequenceElement
     {
-        public static Dictionary<string, Sequence<T>> sequences = new Dictionary<string, Sequence<T>>();//{ { "LogSpiralLibrary/None", new SequenceBase<T>() { od = LogSpiralLibraryMod.Instance} } };
+        public static Dictionary<string, Sequence<T>> sequences = [];//{ { "LogSpiralLibrary/None", new SequenceBase<T>() { od = LogSpiralLibraryMod.Instance} } };
         public static bool loaded;
         public static void Load()
         {
             if (loaded) return;
             loaded = true;
 
-            List<string> keys = new List<string>() { nameof(LogSpiralLibrary) };
+            List<string> keys = [nameof(LogSpiralLibrary)];
             foreach (var localMod in ModDefinitionElement.locals)
             {
                 var refMods = from refMod in localMod.properties.modReferences where refMod.mod == nameof(LogSpiralLibrary) select refMod;
-                if (refMods.Count() != 0)
+                if (refMods.Any())
                 {
                     keys.Add(localMod.Name);
                 }
@@ -282,8 +278,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             var keyName = $"{key}/{Path.GetFileNameWithoutExtension(name)}";
                             if (!sequences.TryGetValue(keyName, out var seq))
                                 seq = new Sequence<T>();
-                            Sequence<T>.Load(name, mod, seq);
-                            sequences[seq.KeyName] = seq;
+
+                            try
+                            {
+                                Sequence<T>.Load(name, mod, seq);
+                                sequences[seq.KeyName] = seq;
+                            }
+                            catch 
+                            {
+                                mod.Logger.Error("Couldn't load sequence: "+ name);
+                            }
                         }
                     }
 
@@ -308,12 +312,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             foreach (FileInfo file in list)
             {
                 var modName = file.FullName.Split('\\', '/')[^2];
-                bool flag = ModLoader.TryGetMod(modName, out _);
+                bool flag = ModLoader.TryGetMod(modName, out var mod);
                 if (flag)
                 {
                     string key = $"{modName}/{Path.GetFileNameWithoutExtension(file.Name)}";
-                    Sequence<T> instance = Sequence<T>.Load(file.FullName);
-                    sequences[key] = instance;
+                    try
+                    {
+                        Sequence<T> instance = Sequence<T>.Load(file.FullName);
+                        sequences[key] = instance;
+                    }
+                    catch
+                    {
+                        mod.Logger.Error("Couldn't load sequence: " + file.Name);
+                    }
                 }
             }
         }
@@ -343,20 +354,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public static Condition ToEntityCondition(string key, string LocalizationKey, Entity entity)
         {
             if (entityConditions.TryGetValue(key, out var func))
-            {
                 return new Condition(Language.GetOrRegister(LocalizationKey), () => func(entity));
-            }
             return null;
         }
-        static void FastAddStandardEntityCondition(string LocalizationKey)
+        public static void FastAddStandardEntityCondition(string LocalizationKey)
         {
             string key = LocalizationKey.Split('.')[^1];
             conditions.Add(key, ToEntityCondition(key, LocalizationKey, Main.LocalPlayer));
         }
-        public static Dictionary<string, Func<Entity, bool>> entityConditions = new();
-        public static Dictionary<Type, MethodInfo> seqLoadMethods = new Dictionary<Type, MethodInfo>();
-        public static Dictionary<Type, MethodInfo> seqWriteAllMethods = new Dictionary<Type, MethodInfo>();
-        public static Dictionary<Type, MethodInfo> seqWriteMethods = new Dictionary<Type, MethodInfo>();
+        public static Dictionary<string, Func<Entity, bool>> entityConditions = [];
+        public static Dictionary<Type, MethodInfo> seqLoadMethods = [];
+        public static Dictionary<Type, MethodInfo> seqWriteAllMethods = [];
+        public static Dictionary<Type, MethodInfo> seqWriteMethods = [];
         public static MethodInfo GetLoad(Type type)
         {
             if (!seqLoadMethods.TryGetValue(type, out var method))
@@ -389,15 +398,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             instance.sequenceUI.PendingModify = flag;
         }
         //TODO 可以给其它类型的序列用
-        public static Dictionary<string, Action<ISequenceElement>> elementDelegates = new Dictionary<string, Action<ISequenceElement>>();
-        public static Dictionary<Type, Dictionary<string, Sequence>> sequenceBases = new();
-        public static Dictionary<string, SequenceBasicInfo> sequenceInfos = new Dictionary<string, SequenceBasicInfo>();
+        public static Dictionary<string, Action<ISequenceElement>> elementDelegates = [];
+        public static Dictionary<Type, Dictionary<string, Sequence>> sequenceBases = [];
+        public static Dictionary<string, SequenceBasicInfo> sequenceInfos = [];
         public SequenceUI sequenceUI;
         public UserInterface userInterfaceSequence;
         public static ModKeybind ShowSequenceKeybind { get; private set; }
         public static SequenceSystem instance;
-        public static Dictionary<string, Condition> conditions = new Dictionary<string, Condition>();
-        public static List<Type> AvailableElementBaseTypes = new List<Type>();
+        public static Dictionary<string, Condition> conditions = [];
+        public static List<Type> AvailableElementBaseTypes = [];
         public const string NoneDelegateKey = $"{nameof(LogSpiralLibrary)}/None";
         public const string AlwaysConditionKey = "Mods.LogSpiralLibrary.Condition.Always";
         public static bool loaded = false;
@@ -457,11 +466,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 LoadSequenceWithType(type);
             base.PostSetupContent();
         }
-        private void On_UIElement_DrawSelf(On_UIElement.orig_DrawSelf orig, UIElement self, SpriteBatch spriteBatch)
-        {
-            orig(self, spriteBatch);
-            spriteBatch.DrawString(FontAssets.MouseText.Value, self.GetHashCode().ToString(), self.GetDimensions().Position(), Color.White);
-        }
+        //private void On_UIElement_DrawSelf(On_UIElement.orig_DrawSelf orig, UIElement self, SpriteBatch spriteBatch)
+        //{
+        //    orig(self, spriteBatch);
+        //    spriteBatch.DrawString(FontAssets.MouseText.Value, self.GetHashCode().ToString(), self.GetDimensions().Position(), Color.White);
+        //}
         /// <summary>
         /// 获得指定目录下的所有文件
         /// </summary>
@@ -469,13 +478,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <returns></returns>
         public static List<FileInfo> GetFilesByDir(string path)
         {
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new(path);
 
             //找到该目录下的文件
             FileInfo[] fi = di.GetFiles();
 
             //把FileInfo[]数组转换为List
-            List<FileInfo> list = fi.ToList<FileInfo>();
+            List<FileInfo> list = [.. fi];
             return list;
         }
         /// <summary>
@@ -485,13 +494,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <returns></returns>
         public static List<FileInfo> GetAllFilesByDir(string path)
         {
-            DirectoryInfo dir = new DirectoryInfo(path);
+            DirectoryInfo dir = new(path);
 
             //找到该目录下的文件
             FileInfo[] fi = dir.GetFiles();
 
             //把FileInfo[]数组转换为List
-            List<FileInfo> list = fi.ToList();
+            List<FileInfo> list = [.. fi];
 
             //找到该目录下的所有目录里的文件
             DirectoryInfo[] subDir = dir.GetDirectories();
@@ -507,8 +516,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public static void LoadSequences<T>() where T : ISequenceElement
         {
-            SequenceManager<MeleeAction>.Load();
-            var seq = SequenceManager<MeleeAction>.sequences;
+            SequenceManager<T>.Load();
+            var seq = SequenceManager<T>.sequences;
             sequenceBases[typeof(T)] = (from s in seq select new KeyValuePair<string, Sequence>(s.Key, s.Value)).ToDictionary();
         }
         public static void LoadSequenceWithType(Type type) => typeof(SequenceSystem).GetMethod("LoadSequences", BindingFlags.Static | BindingFlags.Public).MakeGenericMethod(type).Invoke(null, []);
@@ -599,6 +608,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             IDictionary dict = (IDictionary)type.GetField("dict", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
             type = typeof(Sequence<>.Wraper);
             type = type.MakeGenericType(elemBaseType);
+
+            Dictionary<string, (UIDownList list, Dictionary<string, UIDownList> dict)> Categories = [];
+            List<WraperBox> NoCategoryWrapers = [];
             foreach (var v in dict.Values)
             {
                 var e = (ISequenceElement)Activator.CreateInstance(v.GetType());
@@ -606,16 +618,78 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 wraperBox.WrapperSize();
                 //wraperBox.HAlign = 0.5f;
                 wraperBox.IsClone = true;
-                actionLib.Add(wraperBox);
 
+                string modName = e.Mod.DisplayName;
+                string categoryName = e.Category;
+
+                if (!Categories.TryGetValue(modName, out var singleModCategory)) //如果当前mod没添加过
+                {
+                    UIDownList singleModList = new(modName)
+                    {
+                        Width = new(0, 1)
+                    };
+                    actionLib.Add(singleModList);
+                    singleModList.OnInitialize();
+                    singleModCategory = Categories[modName] = (singleModList, []);
+                }
+                if (categoryName != "")
+                {
+                    if (!singleModCategory.dict.TryGetValue(categoryName, out var categoriedList)) //如果当前分类没添加过
+                    {
+                        string titleName = categoryName;
+                        string key = $"Mods.{e.Mod.Name}.{CurrentSelectedType.Name}.Category.{categoryName}";
+                        if (Language.Exists(key))
+                            titleName = Language.GetTextValue(key);
+                        UIDownList list = new(titleName)
+                        {
+                            Width = new(0, 1)
+                        };
+                        singleModCategory.list.Add(list);
+                        list.OnInitialize();
+                        categoriedList = singleModCategory.dict[categoryName] = list;
+                    }
+                    categoriedList.Add(wraperBox);
+                }
+                else
+                    NoCategoryWrapers.Add(wraperBox);
             }
+            foreach (var box in NoCategoryWrapers)
+                Categories[box.wraper.Element.Mod.DisplayName].list.Add(box);
+            Categories = [];
             foreach (var s in currentSequences.Values)
             {
                 WraperBox wraperBox = new WraperBox((Sequence.WraperBase)Activator.CreateInstance(type, [s]));
                 wraperBox.sequenceBox.Expand = false;
                 wraperBox.WrapperSize();
                 wraperBox.IsClone = true;
-                sequenceLib.Add(wraperBox);
+
+
+                string modName = s.Mod.DisplayName;
+                string categoryName = SequenceSystem.sequenceInfos[s.KeyName].Finished ? "Finished" : "Library";
+
+                if (!Categories.TryGetValue(modName, out var singleModCategory)) //如果当前mod没添加过
+                {
+                    UIDownList singleModList = new(modName)
+                    {
+                        Width = new(0, 1)
+                    };
+                    sequenceLib.Add(singleModList);
+                    singleModList.OnInitialize();
+                    singleModCategory = Categories[modName] = (singleModList, []);
+                }
+                if (!singleModCategory.dict.TryGetValue(categoryName, out var categoriedList)) //如果当前分类没添加过
+                {
+                    
+                    UIDownList list = new(Language.GetOrRegister(localizationPath + (categoryName == "Finished" ? ".FinishedSequences" : ".LibrarySequences")).Value)
+                    {
+                        Width = new(0, 1)
+                    };
+                    singleModCategory.list.Add(list);
+                    list.OnInitialize();
+                    categoriedList = singleModCategory.dict[categoryName] = list;
+                }
+                categoriedList.Add(wraperBox);
+                //sequenceLib.Add(wraperBox);
             }
         }
         public void ResetPage()
@@ -662,12 +736,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //"成品序列指适于直接给武器使用的完成序列\n" +
             //"库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
             //"二者没有硬性区别，根据自己感觉进行标记即可。"
-            info.IsWrapped = true;
-            info.SetSize(new Vector2(-40, 1), 1, 1);
+            var d = info.GetDimensions().Height;
+            info.SetSize(new Vector2(-10, 1), 1, 0);
             infoList.Add(info);
-            UIPanel finishedSequencePanel = new UIPanel();
+            info.IsWrapped = true;
+            UIPanel finishedSequencePanel = new LogSpiralLibraryPanel();
             finishedSequencePanel.SetSize(default, 0.5f, 1f);
-            UIPanel libSequencePanel = new UIPanel();
+            UIPanel libSequencePanel = new LogSpiralLibraryPanel();
             libSequencePanel.SetSize(default, 0.5f, 1f);
             libSequencePanel.Left.Set(0, 0.5f);
             WorkingPlacePanel.Append(libSequencePanel);
@@ -678,7 +753,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             lTitle.SetSize(new Vector2(0, 20), 1, 0);
             finishedSequencePanel.Append(fTitle);
             libSequencePanel.Append(lTitle);
-            UIList fList = new UIList();
+            UIList fList = [];
             fList.SetSize(0, -20, 1, 1);
             fList.Top.Set(20, 0);
             UIScrollbar fScrollbar = new UIScrollbar();
@@ -687,7 +762,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             fScrollbar.SetView(100, 1000);
             fList.SetScrollbar(fScrollbar);
             finishedSequencePanel.Append(fScrollbar);
-            UIList lList = new UIList();
+            UIList lList = [];
             lList.SetSize(0, -20, 1, 1);
             lList.Top.Set(20, 0);
             UIScrollbar lScrollbar = new UIScrollbar();
@@ -700,7 +775,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             libSequencePanel.Append(lList);
             foreach (var s in currentSequences.Values)
             {
-                var dic = SequenceSystem.sequenceInfos.Values;
+                //var dic = SequenceSystem.sequenceInfos.Values;
                 (SequenceSystem.sequenceInfos[s.KeyName].Finished ? fList : lList).Add(SequenceToButton(s.Clone()));
 
             }
@@ -931,7 +1006,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             BasePanel.Left.Set(Main.screenWidth * .05f, 0);
 
             Append(BasePanel);
-            UIPanel BottonPanel = new UIPanel();
+            UIPanel BottonPanel = new LogSpiralLibraryPanel();
             BottonPanel.SetSize(default, 1.0f, 0.05f);
             UIImageButton roseButton = new UIImageButton(ModAsset.Rose);
             roseButton.OnLeftClick += (evt, elem) =>
@@ -967,11 +1042,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             BasePanel.Append(BottonPanel);
 
 
-            UIPanel PagePanel = new UIPanel();
+            UIPanel PagePanel = new LogSpiralLibraryPanel();
             PagePanel.SetSize(default, 0.85f, 0.05f);
             PagePanel.Top.Set(0, 0.05f);
             PagePanel.Left.Set(0, 0.15f);
-            pageList = new UIListByRow();
+            pageList = [];
             pageList.SetSize(default, 1, 1);
             PagePanel.Append(pageList);
             PagePanel.PaddingTop = PagePanel.PaddingBottom = PagePanel.PaddingLeft = PagePanel.PaddingRight = 6;
@@ -983,10 +1058,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //PagePanel.Append(pageScrollbar);
             //pageList.SetScrollbar(pageScrollbar);
             BasePanel.Append(PagePanel);
-            UIPanel InfoPanel = new UIPanel();
+            UIPanel InfoPanel = new LogSpiralLibraryPanel();
             InfoPanel.SetSize(default, 0.15f, 0.35f);
             InfoPanel.Top.Set(0, 0.05f);
-            infoList = new UIList();
+            infoList = [];
             infoList.SetSize(-20, -20, 1f, 1f);
             infoList.Top.Set(20, 0);
             UIScrollbar infoScrollBar = new UIScrollbar();
@@ -1000,14 +1075,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             UIText infoTitle = new UIText(Language.GetOrRegister(localizationPath + ".InfoTitle").Value);
             infoTitle.SetSize(0, 20, 1, 0);
             InfoPanel.Append(infoTitle);
-            UIPanel PropertyPanel = new UIPanel();
+            UIPanel PropertyPanel = new LogSpiralLibraryPanel();
             PropertyPanel.SetSize(default, 0.15f, 0.6f);
             PropertyPanel.Top.Set(0, 0.4f);
             BasePanel.Append(PropertyPanel);
             UIText propTitle = new UIText(Language.GetOrRegister(localizationPath + ".PropTitle").Value);
             propTitle.SetSize(0, 20, 1, 0);
             PropertyPanel.Append(propTitle);
-            propList = new UIList();
+            propList = [];
             propList.SetSize(-20, -20, 1, 1);
             propList.Top.Set(20, 0);
             PropertyPanel.Append(propList);
@@ -1019,13 +1094,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
 
             InfoPanel.MinWidth = PropertyPanel.MinWidth = new StyleDimension(300, 0);
             propList.SetScrollbar(propScrollbar);
-            OuterWorkingPanel = new UIPanel();
+            OuterWorkingPanel = new LogSpiralLibraryPanel();
             OuterWorkingPanel.SetSize(default, 0.85f, 0.9f);
             OuterWorkingPanel.Top.Set(0, 0.1f);
             OuterWorkingPanel.Left.Set(0, 0.15f);
             OuterWorkingPanel.OverflowHidden = true;
             BasePanel.Append(OuterWorkingPanel);
-            WorkingPlacePanel = new UIPanel();
+            WorkingPlacePanel = new LogSpiralLibraryPanel();
             WorkingPlacePanel.SetSize(default, 0.65f / 0.85f, 1f);
             WorkingPlacePanel.OverflowHidden = true;
             WorkingPlacePanel.OnLeftMouseDown +=
@@ -1052,11 +1127,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 };
 
             OuterWorkingPanel.Append(WorkingPlacePanel);
-            UIPanel ActionLibraryPanel = new UIPanel();
+            UIPanel ActionLibraryPanel = new LogSpiralLibraryPanel();
             ActionLibraryPanel.SetSize(default, 0.2f / 0.85f, 0.4f);
             ActionLibraryPanel.Left.Set(0, 0.65f / 0.85f);
             OuterWorkingPanel.Append(ActionLibraryPanel);
-            actionLib = new UIList();
+            actionLib = [];
             actionLib.SetSize(new Vector2(0, -20), 1, 1);
             actionLib.Top.Set(20, 0);
             actionLib.ListPadding = 16;
@@ -1070,11 +1145,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             actionTitle.SetSize(0, 20, 1, 0);
             ActionLibraryPanel.Append(actionTitle);
             actionLib.SetScrollbar(actionScrollbar);
-            UIPanel SequenceLibraryPanel = new UIPanel();
+            UIPanel SequenceLibraryPanel = new LogSpiralLibraryPanel();
             SequenceLibraryPanel.SetSize(default, 0.2f / 0.85f, 0.6f);
             SequenceLibraryPanel.Left.Set(0, 0.65f / 0.85f);
             SequenceLibraryPanel.Top.Set(0, 0.4f);
-            sequenceLib = new UIList();
+            sequenceLib = [];
             sequenceLib.SetSize(new Vector2(0, -20), 1, 1);
             sequenceLib.ListPadding = 16;
             SequenceLibraryPanel.Append(sequenceLib);
@@ -1096,13 +1171,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //ResetPage();
 
             /*
-            UIPanel panel = UIPanel = new UIPanel();
+            UIPanel panel = UIPanel = new LogSpiralLibraryPanel();
             panel.SetSize(new Vector2(240, 300));
             panel.Top.Set(80, 0);
             panel.Left.Set(20, 0);
             Append(panel);
 
-            UIPanel container = UIConfigSetterContainer = new UIPanel();
+            UIPanel container = UIConfigSetterContainer = new LogSpiralLibraryPanel();
             container.SetSize(new Vector2(540, 400));
             container.Top.Set(400, 0);
             container.Left.Set(20, 0);
@@ -1124,10 +1199,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public void SetUpBasicInfoPanel()
         {
-            BasicInfoPanel = new UIPanel();
+            BasicInfoPanel = new LogSpiralLibraryPanel();
             BasicInfoPanel.SetSize(default, 0.5f, 0.5f);
             BasicInfoPanel.HAlign = BasicInfoPanel.VAlign = 0.5f;
-            UIList infoList = new UIList();
+            UIList infoList = [];
             infoList.Top.Set(32, 0);
             infoList.SetSize(new Vector2(-40, -64), 1, 1);
 
@@ -1600,6 +1675,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public override void RightClick(UIMouseEvent evt)
         {
+            if (!wraper.Available)
+                return;
+
             if (IsClone)
             {
                 Main.NewText(Language.GetOrRegister(SequenceUI.localizationPath + ".CantEditHere").Value);
@@ -1775,7 +1853,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void OnInitialize()
         {
             Vector2 size = this.GetSize();
-            panel = new UIPanel();
+            panel = new LogSpiralLibraryPanel();
             panel.SetSize(size);
             if (wraper.IsSequence && (sequenceBox.Expand && wraper.SequenceInfo.FileName == Sequence.SequenceDefaultName))
             {
@@ -1840,7 +1918,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 ComplexPanelInfo panel = new ComplexPanelInfo();
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
-                if (wraper.IsSequence)
+                if (!wraper.Available)
+                    panel.glowEffectColor = Color.Gray;
+                else if (wraper.IsSequence)
                     panel.glowEffectColor = chosen ? Color.Lerp(Color.Blue, Color.Purple, 0.5f) with { A = 0 } : Color.MediumPurple with { A = 102 };
                 else
                     panel.glowEffectColor = (chosen ? Color.Red : Color.Cyan) with { A = 0 };
@@ -1886,7 +1966,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public UIPanel panel;
         public Sequence.GroupBase group;
-        public List<WraperBox> wraperBoxes = new List<WraperBox>();
+        public List<WraperBox> wraperBoxes = [];
         public bool CacheRefresh;
         //public void Add(WraperBox wraperBox)
         //{
@@ -1899,7 +1979,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             //this.IgnoresMouseInteraction = true;
             Vector2 size = this.GetSize();
-            panel = new UIPanel();
+            panel = new LogSpiralLibraryPanel();
             panel.SetSize(size);
             Elements.Clear();
             float offset = SequenceConfig.Instance.Step.Y * .5f;
@@ -1975,7 +2055,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 seq = value;
             }
         }
-        public List<GroupBox> groupBoxes = new List<GroupBox>();
+        public List<GroupBox> groupBoxes = [];
         public bool CacheRefresh;
         public float offY;
         //public bool startSequence;
@@ -2095,7 +2175,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             //this.IgnoresMouseInteraction = true;
             Vector2 size = this.SequenceSize(true);
-            panel = new UIPanel();
+            panel = new LogSpiralLibraryPanel();
             panel.SetSize(size);
             float offset = SequenceConfig.Instance.Step.X * .5f + 16;
             //if (!startSequence)
@@ -2197,7 +2277,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Vector2 result = default;
                 foreach (var wrapper in groupBox.wraperBoxes)
                 {
-                    if (!wrapper.wraper.Available) continue;
+                    //if (!wrapper.wraper.Available) continue;
                     Vector2 delta = WrapperSize(wrapper);
                     result.Y += delta.Y + SequenceConfig.Instance.Step.Y;
                     if (delta.X > result.X) result.X = delta.X;

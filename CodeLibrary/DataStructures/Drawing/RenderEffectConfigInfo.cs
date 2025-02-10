@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -71,5 +72,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public MaskEffectInfo maskEffectInfo => !Available ? default :
             new MaskEffectInfo(LogSpiralLibraryMod.Mask[SkyStyle].Value, glowColor, tier1, tier2, default, true, false);
 
+    }
+    public class DyeConfigs : IAvailabilityChangableConfig 
+    {
+        public bool Available { get; set; } = false;
+
+        [CustomModConfigItem(typeof(DyeDefinitionElement))]
+        [CustomGenericConfigItem<GenericDyeDefinitionElement>]
+        public ItemDefinition dye = new ();
+
+        [JsonIgnore]
+        public AromrDyeInfo dyeInfo => !Available ? default : new AromrDyeInfo(dye.Type);
     }
 }

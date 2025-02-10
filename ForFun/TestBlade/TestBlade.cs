@@ -25,7 +25,6 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.Swing;
-
             Item.rare = ItemRarityID.Red;
             base.SetDefaults();
         }

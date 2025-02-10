@@ -11,12 +11,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
     /// </summary>
     public struct CustomVertexInfo : IVertexType
     {
-        private static VertexDeclaration _vertexDeclaration = new VertexDeclaration(new VertexElement[3]
-        {
-                new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
-                new VertexElement(8, VertexElementFormat.Color, VertexElementUsage.Color, 0),
-                new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0)
-        });
+        private static VertexDeclaration _vertexDeclaration = new(
+        [
+                new (0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
+                new (8, VertexElementFormat.Color, VertexElementUsage.Color, 0),
+                new (12, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0)
+        ]);
         public Vector2 Position;
         public Color Color;
         public Vector3 TexCoord;
@@ -40,25 +40,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             TexCoord = texCoord;
         }
 
-        public VertexDeclaration VertexDeclaration
-        {
-            get
-            {
-                return _vertexDeclaration;
-            }
-        }
+        public VertexDeclaration VertexDeclaration => _vertexDeclaration;
     }
     /// <summary>
     /// 支持空间顶点，非常酷齐次坐标
     /// </summary>
     public struct CustomVertexInfoEX : IVertexType
     {
-        private static VertexDeclaration _vertexDeclaration = new VertexDeclaration(new VertexElement[3]
-        {
-                new VertexElement(0, VertexElementFormat.Vector4, VertexElementUsage.Position, 0),
-                new VertexElement(16, VertexElementFormat.Color, VertexElementUsage.Color, 0),
-                new VertexElement(20, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0)
-        });
+        private static VertexDeclaration _vertexDeclaration = new(
+        [
+                new (0, VertexElementFormat.Vector4, VertexElementUsage.Position, 0),
+                new (16, VertexElementFormat.Color, VertexElementUsage.Color, 0),
+                new (20, VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 0)
+        ]);
         /// <summary>
         /// 使用齐次坐标！！
         /// </summary>
@@ -96,12 +90,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public CustomVertexInfoEX(Vector2 position, Vector3 texCoord) : this(new Vector4(position, 0, 1), texCoord)
         {
         }
-        public VertexDeclaration VertexDeclaration
-        {
-            get
-            {
-                return _vertexDeclaration;
-            }
-        }
+        public VertexDeclaration VertexDeclaration => _vertexDeclaration;
     }
 }

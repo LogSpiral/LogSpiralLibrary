@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace LogSpiralLibrary.CodeLibrary
 {
+    //螺线于2023年初做的非常没软用的东西
+
 
     /// <summary>
     /// 还在用这么麻烦的手段实现向量吗？介绍......dynamic!!
@@ -21,15 +23,15 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         TSelf Add(TSelf Another);
         TSelf Subtract(TSelf Another) => Add(Another.Multiply(-1));
-        TSelf Multiply(float scaler);
-        TSelf Divide(float divider) => Multiply(1 / divider);
+        TSelf Multiply(double scaler);
+        TSelf Divide(double divider) => Multiply(1 / divider);
     }
     public interface IMatrix<TSelf, TValue> : IVector<TSelf, TValue> where TSelf : IMatrix<TSelf, TValue>
     {
         TSelf Multiply(TSelf Another);
         int Width { get; }
         int Height { get; }
-        float[,] Elements { get; }
+        double[,] Elements { get; }
     }
     public struct FloatArrayVector : IVector<FloatArrayVector, float[]>
     {
@@ -54,12 +56,12 @@ namespace LogSpiralLibrary.CodeLibrary
             }
             return result;
         }
-        public FloatArrayVector Multiply(float scaler)
+        public FloatArrayVector Multiply(double scaler)
         {
             var result = new FloatArrayVector(new float[Value.Length]);
             for (int n = 0; n < Value.Length; n++)
             {
-                result.Value[n] = Value[n] * scaler;
+                result.Value[n] = Value[n] * (float)scaler;
             }
             return result;
         }
@@ -83,9 +85,9 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return new FloatVector1(Value + Another.Value);
         }
-        public FloatVector1 Multiply(float scaler)
+        public FloatVector1 Multiply(double scaler)
         {
-            return new FloatVector1(Value * scaler);
+            return new FloatVector1(Value * (float)scaler);
         }
     }
     public struct FloatVector2 : IVector<FloatVector2, Vector2>
@@ -111,9 +113,9 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return new FloatVector2(Value + Another.Value);
         }
-        public FloatVector2 Multiply(float scaler)
+        public FloatVector2 Multiply(double scaler)
         {
-            return new FloatVector2(Value * scaler);
+            return new FloatVector2(Value * (float)scaler);
         }
     }
     public struct FloatVector3 : IVector<FloatVector3, Vector3>
@@ -140,9 +142,9 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return new FloatVector3(Value + Another.Value);
         }
-        public FloatVector3 Multiply(float scaler)
+        public FloatVector3 Multiply(double scaler)
         {
-            return new FloatVector3(Value * scaler);
+            return new FloatVector3(Value * (float)scaler);
         }
     }
     public struct FloatVector4 : IVector<FloatVector4, Vector4>
@@ -170,9 +172,9 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return new FloatVector4(Value + Another.Value);
         }
-        public FloatVector4 Multiply(float scaler)
+        public FloatVector4 Multiply(double scaler)
         {
-            return new FloatVector4(Value * scaler);
+            return new FloatVector4(Value * (float)scaler);
         }
     }
     public struct ColorVector : IVector<ColorVector, Color>
@@ -203,9 +205,9 @@ namespace LogSpiralLibrary.CodeLibrary
             var vector = c1.ToVector4() + c2.ToVector4();
             return new ColorVector(new Color(vector));
         }
-        public ColorVector Multiply(float scaler)
+        public ColorVector Multiply(double scaler)
         {
-            return new ColorVector(Value * scaler);
+            return new ColorVector(Value * (float)scaler);
         }
     }
     public struct Matrix4X4 : IMatrix<Matrix4X4, Matrix>
@@ -221,11 +223,11 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <summary>
         /// 只读，不要从这里写入数据
         /// </summary>
-        public float[,] Elements
+        public double[,] Elements
         {
             get
             {
-                var result = new float[4, 4];
+                var result = new double[4, 4];
                 for (int i = 0; i < 4; i++)
                 {
                     for (int j = 0; j < 4; j++)
@@ -281,9 +283,9 @@ namespace LogSpiralLibrary.CodeLibrary
             return new Matrix4X4(Another.Value * Value);
         }
 
-        public Matrix4X4 Multiply(float scaler)
+        public Matrix4X4 Multiply(double scaler)
         {
-            return new Matrix4X4(Value * scaler);
+            return new Matrix4X4(Value * (float)scaler);
         }
     }
     /// <summary>
@@ -307,7 +309,7 @@ namespace LogSpiralLibrary.CodeLibrary
             str += ")";
             return str;
         }
-        public float[,] Elements => elements;
+        public double[,] Elements => elements;
         /// <summary>
         /// 这个是为其它实现了这个接口的类服务的，请忽视
         /// </summary>
@@ -315,7 +317,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <summary>
         /// 矩阵的元素们！
         /// </summary>
-        public float[,] elements;
+        public double[,] elements;
         /// <summary>
         /// 矩阵的宽度，或者说列的数量
         /// </summary>
@@ -328,7 +330,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// 最暴力的直接把二维数组打包成矩阵的构造函数！
         /// </summary>
         /// <param name="value">矩阵的元素们</param>
-        public MatrixEX(float[,] value)
+        public MatrixEX(double[,] value)
         {
             elements = value;
         }
@@ -339,7 +341,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="width">宽</param>
         public MatrixEX(int height, int width)
         {
-            elements = new float[height, width];
+            elements = new double[height, width];
         }
         /// <summary>
         /// 指定阶然后空矩阵
@@ -354,9 +356,9 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="height">高</param>
         /// <param name="width">宽</param>
         /// <param name="func">喜欢我二维数列吗</param>
-        public MatrixEX(int height, int width, Func<int, int, float> func)
+        public MatrixEX(int height, int width, Func<int, int, double> func)
         {
-            elements = new float[height, width];
+            elements = new double[height, width];
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
                     elements[i, j] = func(i, j);
@@ -366,7 +368,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         /// <param name="tier">阶</param>
         /// <param name="func">喜欢我二维数列吗</param>
-        public MatrixEX(int tier, Func<int, int, float> func) : this(tier, tier, func)
+        public MatrixEX(int tier, Func<int, int, double> func) : this(tier, tier, func)
         {
         }
         /// <summary>
@@ -375,7 +377,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <param name="i">列标</param>
         /// <param name="j">行标</param>
         /// <returns>返回m_ij</returns>
-        public float this[int i, int j]
+        public double this[int i, int j]
         {
             get
             {
@@ -419,7 +421,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         /// <param name="scaler">倍率</param>
         /// <returns>每个元素都乘上了scaler，几乎没什么好注意的很普通的函数</returns>
-        public MatrixEX Multiply(float scaler)
+        public MatrixEX Multiply(double scaler)
         {
             for (int i = 0; i < Height; i++)
             {
@@ -484,12 +486,12 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public float Determinant()
+        public double Determinant()
         {
             if (Width != Height) throw new ArgumentException($"只有方阵能求行列式，当前高宽分别为{Height}和{Width}");
             if (Width == 1) return this[0, 0];
             if (Width == 2) return this[0, 0] * this[1, 1] - this[1, 0] * this[0, 1];
-            var result = 0f;
+            var result = 0.0;
             for (int n = 0; n < Height; n++)
             {
                 result += (n % 2 == 0 ? 1 : -1) * this[n, 0] * Cofactor(n, 0).Determinant();
@@ -596,11 +598,11 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return right.Multiply(left);
         }
-        public static MatrixEX operator *(MatrixEX matrix, float scaler)
+        public static MatrixEX operator *(MatrixEX matrix, double scaler)
         {
             return matrix.Multiply(scaler);
         }
-        public static MatrixEX operator *(float scaler, MatrixEX matrix)
+        public static MatrixEX operator *(double scaler, MatrixEX matrix)
         {
             return matrix.Multiply(scaler);
         }
@@ -618,7 +620,7 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             return left.Add(-right);
         }
-        public static MatrixEX operator /(MatrixEX matrix, float scaler)
+        public static MatrixEX operator /(MatrixEX matrix, double scaler)
         {
             return matrix.Multiply(1 / scaler);
         }
@@ -638,7 +640,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     else result[i] = result[i].Add(array[j].Multiply(this[i, j]));
             return result;
         }
-
+        /*
         public IVector<TSelf, TValue>[,] Apply<TSelf, TValue>(IVector<TSelf, TValue>[,] array) where TSelf : IVector<TSelf, TValue>
         {
             var length = array.GetLength(0);
@@ -654,15 +656,15 @@ namespace LogSpiralLibrary.CodeLibrary
             return result;
         }
 
-        public float[] Apply(float[] array1, params float[] array2)
+        public double[] Apply(double[] array1, params double[] array2)
         {
-            var array = new float[array1.Length + array2.Length];
+            var array = new double[array1.Length + array2.Length];
             if (array.Length != Width) throw new ArgumentException($"向量的维数必须和矩阵的宽度相等，目前分别为{array.Length}和{Width}");
             for (int n = 0; n < array1.Length; n++)
                 array[n] = array1[n];
             for (int n = 0; n < array2.Length; n++)
                 array[n + array1.Length] = array2[n];
-            var result = new float[Height];
+            var result = new double[Height];
             for (int i = 0; i < Height; i++)
                 for (int j = 0; j < Width; j++)
                     if (j == 0) result[i] = array[0] * this[i, 0];
@@ -717,14 +719,14 @@ namespace LogSpiralLibrary.CodeLibrary
                     else result[i] = result[i] + array[j] * this[i, j];
             return result;
         }
-
-        public float[,] Apply(float[,] array)
+        */
+        public double[,] Apply(double[,] array)
         {
             var length = array.GetLength(0);
             if (length != Width) throw new ArgumentException($"右矩阵的行数必须和左矩阵的列数相等，目前分别为{length}和{Width}");
             int width = array.GetLength(1);
             int height = Height;
-            var result = new float[height, width];
+            var result = new double[height, width];
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
                     for (int m = 0; m < length; m++)
@@ -732,6 +734,9 @@ namespace LogSpiralLibrary.CodeLibrary
                         else result[i, j] = result[i, j] + array[m, j] * this[i, m];
             return result;
         }
+        /*
+
+
         public Vector2[,] Apply(Vector2[,] array)
         {
             var length = array.GetLength(0);
@@ -774,75 +779,29 @@ namespace LogSpiralLibrary.CodeLibrary
                         else result[i, j] = result[i, j] + array[m, j] * this[i, m];
             return result;
         }
-    }
 
-    /// <summary>
-    /// <param>贝塞尔曲线类！！</param>
-    /// <param>我知道两个类型参数很蠢，明明一个就够的，但是没办法呜呜</param>
-    /// </summary>
-    /// <typeparam name="TSelf">对应的向量类型</typeparam>
-    /// <typeparam name="TValue">原类型</typeparam>
-    public class BezierCurve<TSelf, TValue> where TSelf : IVector<TSelf, TValue>
+        */
+    }
+    public static class BezierCurveHelper
     {
         /// <summary>
         /// 系数向量，只在第一次使用的时候生成，是固定值   ps:不要自己赋值————
         /// </summary>
-        public static List<float[]> c_Vectors = new List<float[]>();
+        static List<double[]> c_Vectors = [];
         /// <summary>
         /// 求点矩阵(M^-1*[I -T])，只在第一次使用的时候生成，是固定值   ps:不要自己赋值————
         /// </summary>
-        public static List<MatrixEX> c_Matrixes = new List<MatrixEX>();
+        static List<MatrixEX> c_Matrixes = [];
         /// <summary>
         /// 是否可用
         /// </summary>
-        public static List<bool> active = new List<bool>();
-        /// <summary>
-        /// 控制点
-        /// </summary>
-        public IVector<TSelf, TValue>[] vectors;
-        /// <summary>
-        /// 平滑结果，数量或者控制点变了的时候才变
-        /// </summary>
-        public IVector<TSelf, TValue>[] results;
-        public static MatrixEX GetMatrix(int n)
+        static List<bool> active = [];
+
+        public static void ConstCheck(int n)
         {
-            MatrixEX M = new MatrixEX(n + 1,
-                (i, j) =>
-                {
-                    float t = (1 + i) / (n + 2f);
-                    return MathF.Pow(1 - t, n - j + 1) * MathF.Pow(t, j + 1) * c_Vectors[n][j + 1];
-                }
-                );
-            MatrixEX T = new MatrixEX(n + 1, 2,
-                (i, j) =>
-                {
-                    float t = (1 + i) / (n + 2f);
-                    if (j == 0)
-                    {
-                        t = 1 - t;
-                    }
-                    return MathF.Pow(t, n + 2);
-                }
-                );
-            M = M.Inverse();
-            return MatrixEX.AppendByRow(M, -M * T);
-        }
-        public static float[] GetVectors(int n)
-        {
-            n += 3;
-            var result = new float[n];
-            for (int k = 0; k < n; k++)
-            {
-                result[k] = MathMethods.Combination(n - 1, k);
-            }
-            return result;
-        }
-        public BezierCurve(IVector<TSelf, TValue>[] input)
-        {
-            int n = input.Length;
-            if (n < 3) vectors = input;
-            n -= 2;
             int hasValueCount = active.Count;
+            if (hasValueCount >= n && active[n - 1])
+                return;
             for (int m = 0; m < n; m++)
             {
                 if (m >= hasValueCount)
@@ -867,10 +826,73 @@ namespace LogSpiralLibrary.CodeLibrary
                     active[m] = true;
                 }
             }
+        }
+
+        public static MatrixEX GetMatrix(int n)
+        {
+            if (c_Matrixes.Count > n) return c_Matrixes[n];
+            MatrixEX M = new MatrixEX(n + 1,
+                (i, j) =>
+                {
+                    double t = (1 + i) / (n + 2f);
+                    return Math.Pow(1 - t, n - j + 1) * Math.Pow(t, j + 1) * c_Vectors[n][j + 1];
+                }
+                );
+            MatrixEX T = new MatrixEX(n + 1, 2,
+                (i, j) =>
+                {
+                    double t = (1 + i) / (n + 2f);
+                    if (j == 0)
+                    {
+                        t = 1 - t;
+                    }
+                    return Math.Pow(t, n + 2);
+                }
+                );
+            M = M.Inverse();
+            return MatrixEX.AppendByRow(M, -M * T);
+        }
+        public static double[] GetVectors(int n)
+        {
+            if (c_Vectors.Count > n) return c_Vectors[n];
+            n += 3;
+            var result = new double[n];
+            for (int k = 0; k < n; k++)
+            {
+                int r = MathMethods.Combination(n - 1, k);
+                result[k] = r;
+            }
+            return result;
+        }
+    }
+    /// <summary>
+    /// <param>贝塞尔曲线类！！</param>
+    /// <param>我知道两个类型参数很蠢，明明一个就够的，但是没办法呜呜</param>
+    /// </summary>
+    /// <typeparam name="TSelf">对应的向量类型</typeparam>
+    /// <typeparam name="TValue">原类型</typeparam>
+    public class BezierCurve<TSelf, TValue> where TSelf : IVector<TSelf, TValue>
+    {
+
+        /// <summary>
+        /// 控制点
+        /// </summary>
+        public IVector<TSelf, TValue>[] vectors;
+        /// <summary>
+        /// 平滑结果，数量或者控制点变了的时候才变
+        /// </summary>
+        public IVector<TSelf, TValue>[] results;
+
+        public BezierCurve(IVector<TSelf, TValue>[] input)
+        {
+            int n = input.Length;
+            if (n < 3) vectors = input;
+            n -= 2;
+            BezierCurveHelper.ConstCheck(n);
             vectors = new IVector<TSelf, TValue>[n + 2];
             vectors[0] = input[0];
             vectors[^1] = input[^1];
-            IVector<TSelf, TValue>[] array = c_Matrixes[n - 1].Apply(input[1..^1], input[0], input[^1]);
+            IVector<TSelf, TValue>[] array = BezierCurveHelper.GetMatrix(n - 1).Apply(input[1..^1], input[0], input[^1]);
             for (int m = 0; m < n; m++)
                 vectors[m + 1] = array[m];
         }
@@ -903,7 +925,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 for (int i = 0; i < tier; i++)
                 {
                     if (i == 0) results[n] = vectors[0].Multiply(MathF.Pow(1 - t, tier - 1));
-                    else results[n] = results[n].Add(vectors[i].Multiply(MathF.Pow(1 - t, tier - i - 1) * MathF.Pow(t, i) * c_Vectors[tier - 3][i]));
+                    else results[n] = results[n].Add(vectors[i].Multiply(MathF.Pow(1 - t, tier - i - 1) * MathF.Pow(t, i) * BezierCurveHelper.GetVectors(tier - 3)[i]));
                 }
             }
         }

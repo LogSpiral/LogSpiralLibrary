@@ -1,10 +1,52 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using Terraria.Graphics.Effects;
+using Terraria.Graphics.Shaders;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
+using static Terraria.GameContent.Bestiary.IL_BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 {
-    public struct AirDistortEffectInfo : VertexDrawInfo.IRenderDrawInfo
+    /// <summary>
+    /// 一般需要搭配<see cref="VertexDrawInfo"/>使用
+    /// </summary>
+    public interface IRenderDrawInfo
     {
-        public void Reset() => this = new AirDistortEffectInfo();
+        void Reset();
+        /// <summary>
+        /// 绘制前做些手脚(切换rendertarget还有参数准备之类
+        /// </summary>
+        void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
+        /// <summary>
+        /// rendertarget上现在有图了，整活开始
+        /// </summary>
+        void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
+
+        /// <summary>
+        /// 最后将处理结果画到屏幕上的实现程序
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="graphicsDevice"></param>
+        /// <param name="render"></param>
+        /// <param name="renderSwap"></param>
+        void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap);
+        bool Active { get; }
+        /// <summary>
+        /// 是否独立绘制
+        /// <br>请将独立绘制的特效都往前塞——</br>
+        /// <br><see cref="VertexDrawInfo.PreDraw"/></br>
+        /// <br><see cref="PreDraw"/></br>
+        /// <br><see cref="Draw"/></br>
+        /// </summary>
+        //bool StandAlone { get; }
+
+        /// <summary>
+        /// 是否绘制实体(?)
+        /// </summary>
+        bool DoRealDraw { get; }
+    }
+    public struct AirDistortEffectInfo(float Range, float Director = 0f, float ColorOffset = 0f, int tier = 1) : IRenderDrawInfo
+    {
+        public void Reset() => this = new();
         //int tier;
         //public int Tier
         //{
@@ -18,7 +60,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         /// <summary>
         /// 步长系数
         /// </summary>
-        public float distortScaler;
+        public float distortScaler = Range;
         ///// <summary>
         ///// 不是导演是方向
         ///// </summary>
@@ -26,11 +68,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         /// <summary>
         /// 偏移方向偏移量
         /// </summary>
-        public float director;
+        public float director = Director;
         /// <summary>
         /// 色差距离
         /// </summary>
-        public float colorOffset;
+        public float colorOffset = ColorOffset;
         public bool DoRealDraw => false;
 
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
@@ -66,37 +108,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             spriteBatch.End();
         }
         public bool Active => distortScaler > 0;
-        public AirDistortEffectInfo(float Range, float Director = 0f, float ColorOffset = 0f, int tier = 1)
-        {
-            distortScaler = Range;
-            director = Director;
-            colorOffset = ColorOffset;
-        }
     }
-    public struct MaskEffectInfo : VertexDrawInfo.IRenderDrawInfo
+    public struct MaskEffectInfo(Texture2D FillTex, Color GlowColor, float Tier1, float Tier2, Vector2 Offset, bool LightAsAlpha, bool Inverse) : IRenderDrawInfo
     {
-        public void Reset() => this = new MaskEffectInfo();
+        public void Reset() => this = new();
 
         /// <summary>
         /// 到达阈值之后替换的贴图
         /// </summary>
-        public Texture2D fillTex;
+        public Texture2D fillTex = FillTex;
         public Vector2 TexSize => fillTex.Size();
         /// <summary>
         /// 低于阈值的颜色
         /// </summary>
-        public Color glowColor;
-        public float tier1;
-        public float tier2;
-        public Vector2 offset;
+        public Color glowColor = GlowColor;
+        public float tier1 = Tier1;
+        public float tier2 = Tier2;
+        public Vector2 offset = Offset;
         /// <summary>
         /// 是否让亮度参与透明度的决定
         /// </summary>
-        public bool lightAsAlpha;
+        public bool lightAsAlpha = LightAsAlpha;
         /// <summary>
         /// 翻转亮度决定值
         /// </summary>
-        public bool inverse;
+        public bool inverse = Inverse;
         public bool DoRealDraw => true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -152,41 +188,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         }
 
         public bool Active => fillTex != null;
-        public MaskEffectInfo(Texture2D FillTex, Color GlowColor, float Tier1, float Tier2, Vector2 Offset, bool LightAsAlpha, bool Inverse)
-        {
-            fillTex = FillTex;
-            glowColor = GlowColor;
-            tier1 = Tier1;
-            tier2 = Tier2;
-            offset = Offset;
-            lightAsAlpha = LightAsAlpha;
-            inverse = Inverse;
-        }
     }
-    public struct BloomEffectInfo : VertexDrawInfo.IRenderDrawInfo
+    public struct BloomEffectInfo(float Threshold, float Intensity, float Range, int Times, bool Additive) : IRenderDrawInfo
     {
-        public void Reset() => this = new BloomEffectInfo();
+        public void Reset() => this = new();
 
         /// <summary>
         /// 阈值
         /// </summary>
-        public float threshold;
+        public float threshold = Threshold;
         /// <summary>
         /// 亮度
         /// </summary>
-        public float intensity;
+        public float intensity = Intensity;
         /// <summary>
         /// 范围
         /// </summary>
-        public float range;
+        public float range = Range;
         /// <summary>
         /// 迭代次数
         /// </summary>
-        public int times;
+        public int times = Times;
         /// <summary>
         /// 是否启动加法模式
         /// </summary>
-        public bool additive;
+        public bool additive = Additive;
         public bool DoRealDraw => true;
         public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -323,13 +349,61 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         }
 
         public bool Active => range > 0 && intensity > 0 && times > 0;
-        public BloomEffectInfo(float Threshold, float Intensity, float Range, int Times, bool Additive)
+    }
+    public struct AromrDyeInfo(int itemType) : IRenderDrawInfo
+    {
+        public int type = itemType;
+
+        public void Reset() => this = new();
+
+        public bool Active => GameShaders.Armor._shaderLookupDictionary.ContainsKey(type);
+
+        public bool DoRealDraw => true;
+
+        public void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
-            threshold = Threshold;
-            intensity = Intensity;
-            range = Range;
-            times = Times;
-            additive = Additive;
+            graphicsDevice.SetRenderTarget(render);
+            graphicsDevice.Clear(Color.Transparent);
+        }
+        public void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            graphicsDevice.SetRenderTarget(renderSwap);
+            graphicsDevice.Clear(Color.Transparent);
+
+            var shaderData = GameShaders.Armor.GetShaderFromItemId(type);
+            if (shaderData != null)
+            {
+                shaderData.Apply(null);
+                Vector4 value3 = new (0f, 0f, render.Width, render.Height);
+                shaderData.Shader.Parameters["uSourceRect"]?.SetValue(value3);
+                shaderData.Shader.Parameters["uLegacyArmorSourceRect"]?.SetValue(value3);
+                shaderData.Shader.Parameters["uLegacyArmorSheetSize"]?.SetValue(new Vector2(render.Width, render.Height));
+                shaderData.Apply();
+            }
+
+
+            spriteBatch.Draw(render, Vector2.Zero, Color.White);
+
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            graphicsDevice.SetRenderTarget(render);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
+            spriteBatch.End();
+        }
+        public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
+        {
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+            graphicsDevice.SetRenderTarget(Main.screenTarget);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+            spriteBatch.Draw(renderSwap, Vector2.Zero, Color.White);
+            spriteBatch.End();
         }
     }
 }

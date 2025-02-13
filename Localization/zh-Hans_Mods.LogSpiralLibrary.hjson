@@ -540,6 +540,7 @@ Projectiles: {
 	// TestBlade2Proj.DisplayName: Test Blade2 Proj
 	// TestBlade3Proj.DisplayName: Test Blade3 Proj
 	// TestBlade3ProjV2.DisplayName: Test Blade3 Proj V2
+	// StabProj.DisplayName: Stab Proj
 }
 
 Keybinds: {

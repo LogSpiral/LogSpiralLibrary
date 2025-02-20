@@ -2091,9 +2091,12 @@ namespace LogSpiralLibrary.CodeLibrary
         {
             foreach (var info in infos)
             {
-                if (info != null && info.Active && info.autoUpdate)
+                if (info != null && info.Active)
                 {
-                    info.Uptate();
+                    if (info.autoUpdate)
+                        info.Uptate();
+                    else
+                        info.autoUpdate = true;
                 }
             }
         }

@@ -125,9 +125,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                         plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
                     }
+                    count /= 2;
                     for (int i = 0; i < count; i++)
                     {
-                        Vector2 target = plr.Center + unit.RotatedBy(angleMax * 4 / count / count * MathF.Pow(i / 2 + 1, 2) * (i % 2 == 0 ? 1 : -1));
+                        float angle = angleMax * MathF.Pow((i + 1f) / count, 2);
+
+                        Vector2 target = plr.Center + unit.RotatedBy(angle);
+                        Main.mouseX = (int)(target.X - Main.screenPosition.X);
+                        Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
+                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+
+                        target = plr.Center + unit.RotatedBy(-angle);
                         Main.mouseX = (int)(target.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                         plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);

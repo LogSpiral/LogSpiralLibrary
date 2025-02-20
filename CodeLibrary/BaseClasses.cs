@@ -77,7 +77,16 @@ namespace LogSpiralLibrary.CodeLibrary
         /// </summary>
         public byte controlState;
         public Texture2D projTex => TextureAssets.Projectile[Projectile.type].Value;
-
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            writer.Write(controlState);
+            base.SendExtraAI(writer);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            controlState = reader.ReadByte();   
+            base.ReceiveExtraAI(reader);
+        }
     }
     public abstract class RangedHeldProjectile : HeldProjectile
     {
@@ -293,15 +302,35 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual float MaxTime => 15;
         public override float Factor => timeCount / MaxTime;
         public virtual Vector2 CollidingSize => new Vector2(32);
-        public virtual Vector2 CollidingCenter => new Vector2(projTex.Size().X / FrameMax.X - 16, 16);
-        public virtual Vector2 DrawOrigin => new Vector2(16, projTex.Size().Y / FrameMax.Y - 16);
+        public virtual Vector2 CollidingCenter => new Vector2(size.X / FrameMax.X - 16, 16);
+        public virtual Vector2 DrawOrigin => new Vector2(16, size.Y / FrameMax.Y - 16);
+        public Vector2 size;
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Main.netMode != NetmodeID.Server)
+                size = projTex.Size();
 
+            base.OnSpawn(source);
+        }
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                writer.WriteVector2(size);
+            base.SendExtraAI(writer);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            if (Main.netMode == NetmodeID.Server)
+                size = reader.ReadVector2();
+            base.ReceiveExtraAI(reader);
+        }
         public virtual Color color => /*projectile.GetAlpha(Color.White);*/Lighting.GetColor((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16, Color.White);
         public virtual float MaxTimeLeft => 5;
         public override bool Charging => base.Charging && projectile.ai[1] == 0;
         public override void AI()
         {
             //Projectiles.KluexEnergyCrystal.KluexEnergyZone
+            Player.lastVisualizedSelectedItem = new();
             if (Player.dead) projectile.Kill();
             if (Charging && projectile.ai[1] == 0)
             {
@@ -333,6 +362,8 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override bool PreDraw(ref Color lightColor)
         {
+            if (size == default)
+                size = projTex.Size();
             if (GlowEffect != null)
             {
                 Main.spriteBatch.DrawHammer(this, GlowEffect, GlowColor, frame);
@@ -1099,11 +1130,12 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void OnKill(int timeLeft)
         {
-            if (Charged)
+            if (Charged && Main.netMode != NetmodeID.Server)
             {
                 var length = ((projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());//
                 var u = UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, 0, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
                 u.ModityAllRenderInfo([useDistort], [useMask, useBloom]);
+                u.weaponTex = TextureAssets.Item[Player.HeldItem.type].Value;
             }
         }
     }
@@ -1291,9 +1323,27 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual float MaxTime => 15;
         public virtual float factor => timeCount / MaxTime;
         public virtual Vector2 CollidingSize => new Vector2(32);
-        public virtual Vector2 CollidingCenter => new Vector2(projTex.Size().X / FrameMax.X - 16, 16);
-        public virtual Vector2 DrawOrigin => new Vector2(16, projTex.Size().Y / FrameMax.Y - 16);
-
+        public virtual Vector2 CollidingCenter => new Vector2(size.X / FrameMax.X - 16, 16);
+        public virtual Vector2 DrawOrigin => new Vector2(16, size.Y / FrameMax.Y - 16);
+        public Vector2 size;
+        public override void SendExtraAI(BinaryWriter writer)
+        {
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                writer.WriteVector2(size);
+            base.SendExtraAI(writer);
+        }
+        public override void ReceiveExtraAI(BinaryReader reader)
+        {
+            if (Main.netMode == NetmodeID.Server) 
+                size = reader.ReadVector2();
+            base.ReceiveExtraAI(reader);
+        }
+        public override void OnSpawn(IEntitySource source)
+        {
+            if (Main.netMode != NetmodeID.Server)
+                size = projTex.Size();
+            base.OnSpawn(source);
+        }
         public virtual Color color => /*projectile.GetAlpha(Color.White);*/Lighting.GetColor((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16, Color.White);
         public virtual float MaxTimeLeft => 5;
         public virtual bool UseLeft => true;
@@ -1301,6 +1351,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual bool Charging => (UseLeft && Player.controlUseItem) || (UseRight && Player.controlUseTile) && projectile.ai[1] == 0;
         public override void AI()
         {
+
             //Projectiles.KluexEnergyCrystal.KluexEnergyZone
             if (Player.dead) projectile.Kill();
             if (Charging && projectile.ai[1] == 0)
@@ -1334,6 +1385,8 @@ namespace LogSpiralLibrary.CodeLibrary
         public byte controlTier;
         public override bool PreDraw(ref Color lightColor)
         {
+            if (size == default)
+                size = projTex.Size();
             Main.spriteBatch.DrawHammer(this);
             //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, projCenter - Main.screenPosition, new Rectangle(0, 0, 1, 1), Color.Red, 0, new Vector2(.5f), 4f, 0, 0);
             //Main.spriteBatch.DrawLine(Player.Center, MathHelper.PiOver4.ToRotationVector2() * 32, Color.Purple, 4, true, -Main.screenPosition);

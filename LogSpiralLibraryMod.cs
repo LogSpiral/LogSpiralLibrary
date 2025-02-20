@@ -273,7 +273,6 @@ namespace LogSpiralLibrary
             //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
             base.Load();
         }
-
         //private void On_Main_SetDisplayMode(On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
         //{
         //    int nw = width / 4 * 4;
@@ -557,7 +556,7 @@ namespace LogSpiralLibrary
             //Main.NewText(vertexDrawInfoInstance.Count);
             //Main.NewText(Filters.Scene["CoolerItemVisualEffect:InvertGlass"].GetShader().CombinedOpacity);
         }
-        public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[100];
+        public static VertexDrawInfo[] vertexEffects = new VertexDrawInfo[1000];
         public override void PostUpdateEverything()
         {
             UpdateVertexInfo();

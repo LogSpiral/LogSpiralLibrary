@@ -16,27 +16,48 @@ using Terraria.ModLoader.UI;
 using log4net.Filter;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections;
 
 namespace LogSpiralLibrary.CodeLibrary.ConfigModification
 {
+    public class PreviewAssistConfigElement : ConfigElement { }
+    public struct OptionMetaData(PropertyFieldWrapper varibleInfo, object item, IList list, int index, object config)
+    {
+        public PropertyFieldWrapper varibleInfo = varibleInfo;
+        public object item = item;
+        public IList list = list;
+        public int index = index;
+        public object config = config;
+        public readonly object Value
+        {
+            get => list != null ? list[index] : varibleInfo.GetValue(item);
+            set
+
+            {
+                if (list != null)
+                    list[index] = value;
+                else
+                    varibleInfo.SetValue(item, value);
+            }
+        }
+        public readonly T GetAttribute<T>() where T : Attribute => ConfigManager.GetCustomAttributeFromMemberThenMemberType<T>(varibleInfo, item, list);
+    }
     public interface ICustomConfigPreview
     {
-        bool usePreview { get; }
-        void Draw(SpriteBatch spriteBatch, ConfigElement element);
+        bool UsePreview { get; }
+        void Draw(SpriteBatch spriteBatch, CalculatedStyle dimension, OptionMetaData metaData);
     }
     public abstract class SimplePreview<T> : ICustomConfigPreview
     {
-        public virtual bool usePreview => true;
+        public virtual bool UsePreview => true;
 
-        public void Draw(SpriteBatch spriteBatch, ConfigElement element)
+        public void Draw(SpriteBatch spriteBatch, CalculatedStyle dimension, OptionMetaData metaData)
         {
-            var dimension = element.GetDimensions();
-            Vector2 topLeft = new Vector2(60 + dimension.X + dimension.Width, Main.mouseY);
-            Rectangle targetRectanle = new Rectangle((int)topLeft.X, (int)topLeft.Y, Math.Min(480, (int)(Main.screenWidth - topLeft.X) - 20), 240);
 
-            ComplexPanelInfo panel = new ComplexPanelInfo
+
+            ComplexPanelInfo panel = new()
             {
-                destination = targetRectanle,
+                destination = dimension.ToRectangle(),
                 StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value,
                 glowEffectColor = Color.MediumPurple with { A = 102 },
                 glowShakingStrength = .1f,
@@ -47,11 +68,11 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
                 backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f
             };
             panel.DrawComplexPanel(spriteBatch);
-            ConfigPreviewSystem.GetModConfigFromElement(element, out ModConfig modConfig);
-            if (element.GetObject() is T instance)
-                Draw(spriteBatch, targetRectanle, instance, modConfig, element);
+            //SDFGraphics.HasBorderRoundedBox(dimension.Position(), default, new Vector2(dimension.Width, dimension.Height), new Vector4(12f), UICommon.DefaultUIBlue * .5f, 4, Color.Black, SDFGraphics.GetMatrix(true));
+            if (metaData.Value is T instance)
+                Draw(spriteBatch, dimension, instance, metaData);
         }
-        public abstract void Draw(SpriteBatch spriteBatch, Rectangle drawRange, T data, ModConfig pendingConfig, ConfigElement configElement);
+        public abstract void Draw(SpriteBatch spriteBatch, CalculatedStyle dimension, T data, OptionMetaData metaData);
     }
     public class CustomPreviewAttribute : Attribute
     {
@@ -119,34 +140,131 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             var previewDrawingMethod = typeof(ConfigElement).GetMethod(nameof(ConfigElement.DrawSelf), BindingFlags.NonPublic | BindingFlags.Instance);
             MonoModHooks.Add(previewDrawingMethod, PreviewDrawing_Hook);
             On_UIElement.GetClippingRectangle += UIElement_GetClippingRectangle;
+            //if (ModLoader.TryGetMod("ImproveGame", out var qot))
+            //    qot.Call("AddRenderOnCondition", () => PVRenderUsing);
+            //else
             IL_Main.DoDraw += AddPreviewRenderOn;
             base.Load();
         }
+        public override void PostSetupContent()
+        {
+            if (ModLoader.TryGetMod("ImproveGame", out var qot))
+            {
+                var assembly = qot.GetType().Assembly;
+                /*var panelType = assembly.GetType("ImproveGame.UI.ModernConfig.CategorySidePanel");
+                IDictionary dict = panelType.GetField("ModdedCards", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary;
+                var crossCardType = assembly.GetType("ImproveGame.UI.ModernConfig.Categories.CrossModCategoryCard");
+                var optionsFld = crossCardType.GetField("options", BindingFlags.NonPublic | BindingFlags.Instance);
+                var KeyProp = typeof(KeyValuePair<,>).MakeGenericType([typeof(PropertyFieldWrapper), typeof(ModConfig)]).GetProperty("Key", BindingFlags.Instance | BindingFlags.Public);
+                foreach (var list in dict.Values)
+                        foreach (var cards in list as IList) 
+                        {
+                            if (cards.GetType() == crossCardType || cards.GetType().IsSubclassOf(crossCardType)) 
+                            {
+                                var options = optionsFld.GetValue(cards);
+                                foreach (var pair in options as IList) 
+                                {
+                                    var propFldWrapper = KeyProp.GetValue(pair) as PropertyFieldWrapper;
+                                    qot.Call("RegisterPreview", propFldWrapper, (UIElement element, ModConfig currentConfig, PropertyFieldWrapper varibleInfo, object item, IList list, int index) =>
+                                    {
+                                        OptionMetaData metaData = new(varibleInfo, item, list, index, currentConfig);
+                                        var pvAttribute = metaData.GetAttribute<CustomPreviewAttribute>();
+                                        if (pvAttribute != null)
+                                            ConfigPreviewSystem.PreviewDrawing(pvAttribute, element.GetDimensions(), metaData);
+                                    });
+                                }
+                            }
+                        }
+                */
+
+
+                ImproveGame_ModernConfigCrossModHelper.OnGlobalConfigPreview(qot, (UIElement element, ModConfig currentConfig, PropertyFieldWrapper varibleInfo, object item, IList list, int index) =>
+                {
+                    OptionMetaData metaData = new(varibleInfo, item, list, index, currentConfig);
+                    var pvAttribute = metaData.GetAttribute<CustomPreviewAttribute>();
+                    if (pvAttribute != null)
+                        ConfigPreviewSystem.PreviewDrawing(pvAttribute, element.GetDimensions(), metaData);
+                });
+                var tooltipPanelType = assembly.GetType("ImproveGame.UI.ModernConfig.TooltipPanel");
+                var tooltipPanelInstanceFld = tooltipPanelType.GetField("Instance", BindingFlags.NonPublic | BindingFlags.Static);
+                var currentOptionFld = tooltipPanelType.GetField("currentOption", BindingFlags.Public | BindingFlags.Instance);
+                var mainUIType = assembly.GetType("ImproveGame.UI.ModernConfig.ModernConfigUI");
+                var mainUIInstanceProp = mainUIType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+                var enabledFld = mainUIType.GetProperty("Enabled", BindingFlags.Public | BindingFlags.Instance);
+                var modernConfigOptionType = assembly.GetType("ImproveGame.UI.ModernConfig.OptionElements.ModernConfigOption");
+                var configProp = modernConfigOptionType.GetProperty("Config", BindingFlags.Public | BindingFlags.Instance);
+                useRenderDelegate.Add(() =>
+                {
+                    var mainUIInstance = mainUIInstanceProp?.GetValue(null);
+                    if (mainUIInstance == null)
+                        return false;
+
+                    var enableFlag = enabledFld?.GetValue(mainUIInstance);
+                    if (enableFlag is not true)
+                        return false;
+
+                    var panelInstance = tooltipPanelInstanceFld?.GetValue(null);
+                    if (panelInstance == null)
+                        return false;
+
+                    var option = currentOptionFld?.GetValue(panelInstance);
+                    if (option == null)
+                        return false;
+
+                    var config = configProp?.GetValue(option);
+                    if (config == null || config.GetType().GetCustomAttribute<RenderDrawingPreviewNeededAttribute>() == null)
+                        return false;
+
+                    return true;
+                });
+
+            }
+            base.PostSetupContent();
+        }
         private void AddPreviewRenderOn(ILContext il)
         {
+            //这部分代码负责在主页面开启screenTarget捕获
             ILCursor cursor = new ILCursor(il);
+            //"Sepia"是饥荒世界的滤镜，这里世界生成的时候也会开启，这里用for查找到最后一个
             for (int n = 0; n < 5; n++)
                 if (!cursor.TryGotoNext(i => i.MatchLdstr("Sepia")))
                     return;
+            //神人螺线直接Index+=14了，这里是导航到or指令前面
+            //具体说来是drawToScreen || netMode == 2 || flag
+            //这里只要有一个成立就不会开启screenTarget
+            //其中flag表示  不启用饥荒滤镜
             cursor.Index += 14;
             cursor.EmitDelegate(() =>
             {
                 return !PVRenderUsing;
             });
             cursor.EmitAnd();
+            //↑这里我加入了一个 *不启用设置预览的Render绘制*然后取与
+            //也就是说如果既不要饥荒滤镜也不要螺线光污染就不开screenTarget捕获，很合理
+            
+
+            //下面这部分代码负责在游戏内时等UI绘制完毕再结束屏幕捕获
+
+            //这里是先找寻到游戏内结束捕获的函数
+            //找寻两次是因为第一次是主页面内结束捕获
             for (int n = 0; n < 2; n++)
                 if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(typeof(FilterManager).GetMethod(nameof(FilterManager.EndCapture), BindingFlags.Public | BindingFlags.Instance))))
                     return;
+            //调用函数前会压一堆值到栈里面，所以得往前找一段距离
             cursor.Index -= 6;
+            
+            //会判定在屏幕捕获状态时才结束捕获，这里我加了个条件来取消结束捕获
             cursor.EmitDelegate<Func<bool, bool>>(flag =>
             {
                 return flag && (!PVRenderUsing || Main.hideUI);
             });
 
+            //两次是因为有一次写在try里面有一次写在catch里面
             for (int n = 0; n < 2; n++)
                 if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(typeof(Main).GetMethod(nameof(Main.DrawInterface), BindingFlags.NonPublic | BindingFlags.Instance))))
                     return;
 
+            //保证DrawInterface已经执行完了，而后EndCapture
             cursor.Index += 3;
             cursor.EmitDelegate(() =>
             {
@@ -157,22 +275,30 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         private static void PreviewDrawing_Hook(Action<ConfigElement, SpriteBatch> orig, ConfigElement self, SpriteBatch spriteBatch)
         {
             orig.Invoke(self, spriteBatch);
-            PreviewDrawing(self);
+            GetModConfigFromElement(self, out var modConfig);
+            PreviewDrawing(self, modConfig);
 
         }
-        public static void PreviewDrawing(ConfigElement self)
+        public static void PreviewDrawing(ConfigElement self, ModConfig pendingConfig, bool forcedDrawing = false)
+        {
+            var pvAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomPreviewAttribute>(self.MemberInfo, self.Item, self.List);
+            if (pvAttribute == null || !(forcedDrawing || self.IsMouseHovering)) return;
+
+            var dimension = self.GetDimensions();
+            Vector2 topLeft = new(60 + dimension.X + dimension.Width, Main.mouseY);
+            dimension = new(topLeft.X, topLeft.Y, Math.Min(480, Main.screenWidth - topLeft.X - 20), 240);
+            PreviewDrawing(pvAttribute, dimension, new(self.MemberInfo, self.Item, self.List, self.Index, pendingConfig));
+
+        }
+        public static void PreviewDrawing(CustomPreviewAttribute previewAttribute, CalculatedStyle dimension, OptionMetaData metaData)
         {
             var spriteBatch = Main.spriteBatch;
             var rect = Main.instance.GraphicsDevice.ScissorRectangle;
             Main.spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-            var pvAttribute = ConfigManager.GetCustomAttributeFromMemberThenMemberType<CustomPreviewAttribute>(self.MemberInfo, self.Item, self.List);
-            if (pvAttribute != null && self.IsMouseHovering)
-            {
-                var drawer = (ICustomConfigPreview)Activator.CreateInstance(pvAttribute.pvType);
-                if (drawer.usePreview)
-                    drawer.Draw(spriteBatch, self);
-            }
+            var drawer = (ICustomConfigPreview)Activator.CreateInstance(previewAttribute.pvType);
+            if (drawer.UsePreview)
+                drawer.Draw(spriteBatch, dimension, metaData);
             Main.spriteBatch.End();
             Main.instance.GraphicsDevice.ScissorRectangle = rect;
             Main.instance.GraphicsDevice.RasterizerState = UIElement.OverflowHiddenRasterizerState;

@@ -357,7 +357,8 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
                 ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, text, position, baseColor, 0f, Vector2.Zero, baseScale, num);
             }
-            ConfigPreviewSystem.PreviewDrawing(this);
+            ConfigPreviewSystem.GetModConfigFromElement(this, out var modConfig);
+            ConfigPreviewSystem.PreviewDrawing(this, modConfig);
             //if (base.IsMouseHovering && TooltipFunction != null)
             //{
             //    string text2 = TooltipFunction();

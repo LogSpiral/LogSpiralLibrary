@@ -702,6 +702,7 @@ namespace LogSpiralLibrary
         public override void ResetEffects()
         {
             ultraFallEnable = false;
+
             base.ResetEffects();
         }
         public override void PreUpdate()

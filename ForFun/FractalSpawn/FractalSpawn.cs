@@ -48,7 +48,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
     public class FractalSpawnItem : ModItem
     {
         public static Vector2 mouseScreen;
-        public override string Texture => "Terraria/Images/Item_1";
+        public override string Texture => $"Terraria/Images/Item_{ItemID.WireKite}";
         public override void SetDefaults()
         {
             Item.width = Item.height = 10;

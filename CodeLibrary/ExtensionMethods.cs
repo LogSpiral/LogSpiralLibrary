@@ -82,7 +82,7 @@ namespace LogSpiralLibrary.CodeLibrary
             sb.Begin(0, sb.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0],
                 sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, effect, matrix);
         }
-        public static void ApplyStdValueToVtxEffect(this MeleeVertexInfo info, StandardInfo std) 
+        public static void ApplyStdValueToVtxEffect(this MeleeVertexInfo info, StandardInfo std)
         {
             info.frame = std.frame;
             info.heatRotation = std.vertexStandard.heatRotation;
@@ -1302,7 +1302,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList1.Add(bars1[i + 3]);
                 }
                 RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-                var projection = Matrix.CreateOrthographicOffCenter(0,Main.gameMenu ? Main.instance.Window.ClientBounds.Width: Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+                var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
                 var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
                 effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
                 effect.Parameters["maxFactor"].SetValue(maxFactor);
@@ -1929,6 +1929,15 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void ShaderItemEffectInWorld(this Item item, SpriteBatch spriteBatch, Texture2D effectTex, Color c, float rotation, float light = 2)
         {
             if (ItemEffect == null) return;
+
+            var samplerState = spriteBatch.GraphicsDevice.SamplerStates[0];
+            var depthStencilState = spriteBatch.GraphicsDevice.DepthStencilState;
+            var rasterizerState = spriteBatch.GraphicsDevice.RasterizerState;
+
+            var matrix = spriteBatch.transformMatrix;
+            var effect = spriteBatch.customEffect;
+
+
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null);
             CustomVertexInfo[] triangleArry = new CustomVertexInfo[6];
@@ -1953,17 +1962,17 @@ namespace LogSpiralLibrary.CodeLibrary
                 scale = frame.Size();
             }
             scale *= 0.5f;
-            Vector2 vector2 = new ((float)(item.width / 2) - scale.X, item.height - scale.Y * 2.0f);
+            Vector2 vector2 = new((float)(item.width / 2) - scale.X, item.height - scale.Y * 2.0f);
 
-            var center = item.position + scale +vector2;//item.position + scale
+            var center = item.position + scale + vector2;//item.position + scale
             triangleArry[0] = new CustomVertexInfo(center - scale.RotatedBy(rotation), c, new Vector3(texCoordStart, light));
             triangleArry[1] = new CustomVertexInfo(center + new Vector2(scale.X, -scale.Y).RotatedBy(rotation), c, new Vector3(new Vector2(texCoordEnd.X, texCoordStart.Y), light));
             triangleArry[2] = new CustomVertexInfo(center + scale.RotatedBy(rotation), c, new Vector3(texCoordEnd, light));
             triangleArry[3] = triangleArry[2];
             triangleArry[4] = new CustomVertexInfo(center - new Vector2(scale.X, -scale.Y).RotatedBy(rotation), c, new Vector3(new Vector2(texCoordStart.X, texCoordEnd.Y), light));
             triangleArry[5] = triangleArry[0];
-            
-            var projection = Matrix.CreateOrthographicOffCenter(0,Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+
+            var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
             ItemEffect.Parameters["uTime"].SetValue((float)ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
@@ -1975,7 +1984,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleArry, 0, 2);
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, samplerState, depthStencilState, rasterizerState, effect, matrix);
         }
         /// <summary>
         /// 给物品上fumo光泽，但是这次是在包包
@@ -1991,8 +2000,16 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void ShaderItemEffectInventory(this Item item, SpriteBatch spriteBatch, Vector2 position, Vector2 origin, Texture2D effectTex, Color c, float Scale, float light = 2)
         {
             if (ItemEffect == null) return;
+
+            var samplerState = spriteBatch.GraphicsDevice.SamplerStates[0];
+            var depthStencilState = spriteBatch.GraphicsDevice.DepthStencilState;
+            var rasterizerState = spriteBatch.GraphicsDevice.RasterizerState;
+
+            var matrix = spriteBatch.transformMatrix;
+            var effect = spriteBatch.customEffect;
+
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.UIScaleMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, UIElement.OverflowHiddenRasterizerState, null, Main.UIScaleMatrix);
             var ani = Main.itemAnimations[item.type];
             CustomVertexInfo[] triangleArry = new CustomVertexInfo[6];
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
@@ -2047,7 +2064,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleArry, 0, 2);
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.UIScaleMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, samplerState, depthStencilState, rasterizerState, effect, matrix);
         }
         #endregion
 

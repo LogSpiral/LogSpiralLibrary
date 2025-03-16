@@ -674,8 +674,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             float finalRotation = offsetRotation + standardInfo.standardRotation;
             Vector2 drawCen = offsetCenter + Owner.Center;
             float sc = 1;
-            if (Owner is Player plr)
+            if (Owner is Player plr) 
+            {
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
+                drawCen += plr.gfxOffY * Vector2.UnitY;
+            }
             return DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
         }
 

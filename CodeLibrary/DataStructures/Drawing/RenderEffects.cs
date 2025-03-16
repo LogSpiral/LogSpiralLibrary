@@ -350,7 +350,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 
         public bool Active => range > 0 && intensity > 0 && times > 0;
     }
-    public struct AromrDyeInfo(int itemType) : IRenderDrawInfo
+    public struct ArmorDyeInfo(int itemType) : IRenderDrawInfo
     {
         public int type = itemType;
 

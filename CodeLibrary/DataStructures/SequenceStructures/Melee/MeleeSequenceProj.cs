@@ -212,6 +212,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             //这里就是由弹幕检测玩家是否符合执行条件，符合就更新状态
             if (meleeSequence.Groups.Count < 1) return;
             bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
+            if (player.GetModPlayer<SequencePlayer>().PendingForcedNext)
+            {
+                flag1 = true;
+                player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
+            }    
+
             bool flag2 = false;//次要-持续条件
             if (currentData != null)
             {
@@ -232,7 +238,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             if (currentData == null) return;
 
             //依旧是常规赋值，但是要中间那段执行正常才应当执行
-            Projectile.Center = player.Center + currentData.offsetCenter;
+            Projectile.Center = player.Center + currentData.offsetCenter + player.gfxOffY * Vector2.UnitY;
             if (player.itemAnimation < 2)
                 player.itemAnimation = 2;
             if (player.itemTime < 2)

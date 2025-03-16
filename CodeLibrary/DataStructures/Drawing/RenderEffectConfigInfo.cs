@@ -82,6 +82,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public ItemDefinition dye = new ();
 
         [JsonIgnore]
-        public AromrDyeInfo dyeInfo => !Available ? default : new AromrDyeInfo(dye.Type);
+        public ArmorDyeInfo dyeInfo => !Available ? default : new ArmorDyeInfo(dye.Type);
     }
 }

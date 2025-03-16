@@ -99,6 +99,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// 挥砍等组件的缓存时间
         /// </summary>
         public double cachedTime;
+
+        /// <summary>
+        /// 挂起强制执行下一个组
+        /// </summary>
+        public bool PendingForcedNext;
+
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (SequenceSystem.ShowSequenceKeybind.JustPressed)

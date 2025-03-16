@@ -3179,17 +3179,18 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public static class OtherMethods
     {
-        public static void FastDust(Vector2 Center, Vector2 velocity, Color color)
+        public static void FastDust(Vector2 Center, Vector2 velocity, Color color,float scaler)
         {
             var hsl = Main.rgbToHsl(color);//Color.MediumPurple
             var dustColor = Color.Lerp(Main.hslToRgb(Vector3.Clamp(hsl * new Vector3(1, 2, Main.rand.NextFloat(0.85f, 1.15f)), default, Vector3.One)), Color.White, Main.rand.NextFloat(0, 0.3f));
             Dust dust = Dust.NewDustPerfect(Center, 278, velocity, 0, dustColor, 1f);
             dust.scale = 0.4f + Main.rand.NextFloat(-1, 1) * 0.1f;
-            dust.scale *= Main.rand.NextFloat(1, 2f);
+            dust.scale *= Main.rand.NextFloat(1, 2f) * scaler;
             dust.fadeIn = 0.4f + Main.rand.NextFloat() * 0.3f;
             dust.fadeIn *= .5f;
             dust.noGravity = true;
         }
+        public static void FastDust(Vector2 Center, Vector2 velocity, Color color) => FastDust(Center, velocity, color, 1f);
         public static T HardmodeValue<T>(T normalValue, T expertValue, T masterValue)
         {
             return Main.expertMode ? (Main.masterMode ? masterValue : expertValue) : normalValue;

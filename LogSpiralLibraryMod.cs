@@ -27,6 +27,11 @@ using NetSimplified.Syncing;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualBasic;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using Terraria.Localization;
+using Terraria.ModLoader.UI;
+using Terraria.Graphics.Renderers;
+using Terraria.Graphics;
+using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary
 {
@@ -68,6 +73,9 @@ namespace LogSpiralLibrary
         public static Effect AirDistortEffect => airDistortEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/AirDistortEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect FadeEffect => fadeEffect ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/FadeEffect", AssetRequestMode.ImmediateLoad).Value;
         public static Effect MagicRing => magicRing ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/MagicRing", AssetRequestMode.ImmediateLoad).Value;
+
+        static Effect vanillaPixelShader;
+        public static Effect VanillaPixelShader => vanillaPixelShader ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Xnbs/PixelShader", AssetRequestMode.ImmediateLoad).Value;
         #endregion
 
         #region Textures
@@ -271,17 +279,11 @@ namespace LogSpiralLibrary
             Terraria.Graphics.Effects.On_FilterManager.EndCapture += FilterManager_EndCapture_LSLib;
             On_Main.DrawProjectiles += Main_DrawProjectiles_LSLib;
             //On_MP3AudioTrack.ReadAheadPutAChunkIntoTheBuffer += MP3AudioTrack_ReadAheadPutAChunkIntoTheBuffer;
+            //var method = typeof(Mod).GetMethod("get_SourceFolder", BindingFlags.Public | BindingFlags.Instance);
+            //MonoModHooks.Add(method, ModSourceFolderOldStyle);
+            UIModSources.dotnetSDKFound = true;
             base.Load();
         }
-        //private void On_Main_SetDisplayMode(On_Main.orig_SetDisplayMode orig, int width, int height, bool fullscreen)
-        //{
-        //    int nw = width / 4 * 4;
-        //    if (nw < width) nw += 4;
-        //    int nh = height / 4 * 4;
-        //    if (nh < height) nh += 4;
-        //    orig.Invoke(nw, nh, fullscreen);
-        //}
-
         private void FilterManager_EndCapture_LSLib(Terraria.Graphics.Effects.On_FilterManager.orig_EndCapture orig, Terraria.Graphics.Effects.FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
         {
             if (!CanUseRender) goto label;
@@ -721,7 +723,8 @@ namespace LogSpiralLibrary
                 //    modPacket.WriteVector2(targetedMousePosition);
                 //    modPacket.Send(-1, Player.whoAmI);
                 //}
-                SyncMousePosition.Get(Player.whoAmI, targetedMousePosition).Send();
+                if ((int)Main.time % 10 == 0)
+                    SyncMousePosition.Get(Player.whoAmI, targetedMousePosition).Send();
             }
 
 

@@ -857,6 +857,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                             var result = (int)(standardInfo.standardTimer * elementInfo.ModifyData.actionOffsetTimeScaler / elementInfo.Cycle);
                             TimerMax = Timer = result;
                             elementInfo.counter++;
+                            if (elementInfo.Attacktive)
+                                elementInfo.OnStartAttack();
                         }
                         //迁移至下方
                         else

@@ -104,24 +104,25 @@ MeleeAction: {
 		Vanilla: 原版低仿
 	}
 
+	StabInfo.DisplayName: 突刺
+	SwooshInfo.DisplayName: 挥砍
+	RapidlyStabInfo.DisplayName: 高频突刺
+	ConvoluteInfo.DisplayName: 回旋
+	ChargingInfo.DisplayName: 蓄力
 	ArkhalisInfo.DisplayName: 真空剑
 	BoardSwordInfo.DisplayName: 宽剑
 	BoomerangInfo.DisplayName: 回旋镖
-	ConvoluteInfo.DisplayName: 回旋
 	EruptionInfo.DisplayName: 爆发
 	FistInfo.DisplayName: 拳击
 	FlailInfo.DisplayName: 链球
 	HammerInfo.DisplayName: 飞锤
 	KnivesInfo.DisplayName: 飞刀
 	LanceInfo.DisplayName: 骑枪
-	RapidlyStabInfo.DisplayName: 高频突刺
 	RotatingInfo.DisplayName: 旋转
 	ShockingDashInfo.DisplayName: 猛冲
 	ShortSwordInfo.DisplayName: 短剑
 	SpearInfo.DisplayName: 长枪
-	StabInfo.DisplayName: 突刺
 	StarlightInfo.DisplayName: 星光
-	SwooshInfo.DisplayName: 挥砍
 	TerraprismaInfo.DisplayName: 泰拉棱镜
 	YoyoInfo.DisplayName: 悠悠
 	ZenithInfo.DisplayName: 天顶
@@ -280,6 +281,18 @@ Configs: {
 
 		givenCycle: {
 			Label: 执行次数基值
+			Tooltip: _
+		}
+	}
+
+	ChargingInfo: {
+		AutoNext: {
+			Label: 自动切换到下一个
+			Tooltip: _
+		}
+
+		ChargingRotation: {
+			Label: 蓄力角度偏移
 			Tooltip: _
 		}
 	}

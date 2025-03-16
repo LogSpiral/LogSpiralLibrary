@@ -92,24 +92,25 @@ MeleeAction: {
 		Vanilla: Vanilla-Like
 	}
 
+	StabInfo.DisplayName: Stab
+	SwooshInfo.DisplayName: Swoosh
+	RapidlyStabInfo.DisplayName: RapidlyStab
+	ConvoluteInfo.DisplayName: Convolute
+	ChargingInfo.DisplayName: Charging
 	ArkhalisInfo.DisplayName: Arkhalis
 	BoardSwordInfo.DisplayName: BoardSword
 	BoomerangInfo.DisplayName: Boomerang
-	ConvoluteInfo.DisplayName: Convolute
 	EruptionInfo.DisplayName: Eruption
 	FistInfo.DisplayName: Fist
 	FlailInfo.DisplayName: Flail
 	HammerInfo.DisplayName: Hammer
 	KnivesInfo.DisplayName: Knives
 	LanceInfo.DisplayName: Lance
-	RapidlyStabInfo.DisplayName: RapidlyStab
 	RotatingInfo.DisplayName: Rotating
 	ShockingDashInfo.DisplayName: ShockingDash
 	ShortSwordInfo.DisplayName: ShortSword
 	SpearInfo.DisplayName: Spear
-	StabInfo.DisplayName: Stab
 	StarlightInfo.DisplayName: Starlight
-	SwooshInfo.DisplayName: Swoosh
 	TerraprismaInfo.DisplayName: Terraprisma
 	YoyoInfo.DisplayName: Yoyo
 	ZenithInfo.DisplayName: Zenith
@@ -268,6 +269,18 @@ Configs: {
 
 		givenCycle: {
 			Label: Executions count basic value
+			Tooltip: _
+		}
+	}
+
+	ChargingInfo: {
+		AutoNext: {
+			Label: Auto switch to Next
+			Tooltip: _
+		}
+
+		ChargingRotation: {
+			Label: Offset rotation when Charging
 			Tooltip: _
 		}
 	}

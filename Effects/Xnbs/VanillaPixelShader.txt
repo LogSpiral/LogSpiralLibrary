@@ -1,0 +1,2946 @@
+Effect
+{
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage0
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage1
+    }
+    Parameter
+    {
+        Class object, Type sampler
+        {
+        }
+        Name: uImage2
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uColor
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uSecondaryColor
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uOpacity
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uSaturation
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uRotation
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uTime
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uSourceRect
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uWorldPosition
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uTargetPosition
+    }
+    Parameter
+    {
+        Class scalar, Type float
+        {
+        }
+        Name: uDirection
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uLightSource
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uImageSize0
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uImageSize1
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uImageSize2
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uLegacyArmorSourceRect
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uLegacyArmorSheetSize
+    }
+    Parameter
+    {
+        Class vector, Type float
+        {
+        }
+        Name: uShaderSpecificData
+    }
+    Parameter
+    {
+        Class matrix rows, Type float
+        {
+        }
+        Name: MatrixTransform
+    }
+    Technique Technique1
+    {
+        Pass Default
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ColorOnly
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorMartian
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColored
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredAndBlack
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredAndSilverTrim
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorSilverTrim
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorBrightnessColored
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredGradient
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredAndBlackGradient
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorBrightnessGradient
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredRainbow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorBrightnessRainbow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorLivingRainbow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorInvert
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorLivingOcean
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorLivingFlame
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorWisp
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorHighContrastGlow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorPlaid
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorDev
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorPlaid
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorReflectiveColor
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorBasicColor
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorHades
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorTwilight
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorAcid
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorMushroom
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorPhase
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorReflective
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorSolar
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorNebula
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorVortex
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorStardust
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorVoid
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorShiftingSands
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorShiftingPearlsands
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorFog
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorHallowBoss
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorMirage
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorMidnightRainbow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorColoredAndSilverTrimGradient
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorPolarized
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorGel
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorFlow
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorForceField
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ArmorLoki
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass ForceField
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass WaterProcessor
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass WaterDistortionObject
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass HallowBoss
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass TitaniumStorm
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass QueenSlime
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass MagicMissile
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass FinalFractal
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass FinalFractalVertex
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass MaskedFade
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+        Pass RainbowTownSlime
+        {
+            Class object, Type pixelshader
+            {
+            }
+        }
+    }
+    Resource for Technique Technique1 Pass RainbowTownSlime
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c3 = -0.500000, 0.330000, 1.000000, -1.000000
+        def c4 = 3.333333, 6.000000, -3.000000, -2.000000
+        def c5 = 6.000000, -4.000000, 0.650000, 0.250000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r1.xy, t, -c
+        mov r2.w, c3.x
+        mad r1.xy, r1, c1, r2.w
+        mul r1.y, r1.y, c3.y
+        mad r1.x, r1.x, c3.y, r1.y
+        add r1.x, r1.x, c2.x
+        cmp r1.y, r1.x, c3.z, c3.w
+        mul r1.x, r1.x, r1.y
+        frc r1.x, r1.x
+        mad r1.x, r1.y, -r1.x, c3.z
+        mad r1.y, r1.x, c4.y, c4.z
+        abs r1.y, r1.y
+        add_sat r2.x, r1.y, c3.w
+        mad r1.y, r1.x, c4.y, c4.w
+        mad r1.x, r1.x, c5.x, c5.y
+        abs r1.x, r1.x
+        add_sat r2.z, -r1.x, -c4.w
+        abs r1.x, r1.y
+        add_sat r2.y, -r1.x, -c4.w
+        mov r2.w, c3.z
+        lrp r1, c5.z, r, r2
+        mad r1, r, c5.w, r1
+        mul_sat r2.x, r.x, c4.x
+        lrp r3, r2.x, r1, r
+        mul r1, r3, v
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass MaskedFade
+    {
+        // "CTAB\x1c\x00\x00\x00\xc3\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xbc\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00x\x00\x00\x00\x00\x00\x00\x00\x88\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        mov r.x, t.x
+        mad r.y, t.y, c.x, c.y
+        add r1.x, t.x, c.z
+        add r1.y, t.y, c.w
+        texld r, r, s1
+        texld r1, r1, s
+        mul r1, r1, v
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass FinalFractalVertex
+    {
+        // "CTAB\x1c\x00\x00\x00\xf3\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xec\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x00\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff'\x00CTAB\x1c\x00\x00\x00g\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 d\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00D\x00\x00\x00T\x00\x00\x00uShaderSpecificData\x00\x01\x00\x03\x00\x01\x00\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 1.500000, -0.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        mad r.w, t.x, c3.x, c3.y
+        mad r.x, t.x, c1.x, c1.y
+        abs r.y, r.x
+        frc r.y, r.y
+        cmp r1.x, r.x, r.y, -r.y
+        mov r.z, c3.z
+        mad r.x, r.x, -c2.x, r.z
+        mov r1.y, t.y
+        texld r2, r1, s1
+        texld r1, r1, s
+        mul r1, r1.x, v
+        mul r1, r1, c.x
+        add r.y, -r.w, r2.x
+        add_sat r.y, r.y, r.y
+        mul r1, r1, r.y
+        mul r, r.x, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass FinalFractal
+    {
+        // "CTAB\x1c\x00\x00\x00\x93\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x8c\x00\x00\x00D\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00L\x00\x00\x00\x00\x00\x00\x00\\\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00l\x00\x00\x00|\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff&\x00CTAB\x1c\x00\x00\x00c\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 `\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00@\x00\x00\x00P\x00\x00\x00uSecondaryColor\x00\x01\x00\x03\x00\x01\x00\x03\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c2 = -0.500000, 0.000000, 0.020835, -0.085133
+        def c3 = 0.180141, -0.330299, 0.999866, 1.000000
+        def c4 = 0.000000, 1.000000, -2.000000, 1.570796
+        def c5 = -0.000000, -3.141593, 0.318310, 1.000000
+        dcl t.xy
+        dcl_2d s
+        add r.xy, t, c2.x
+        abs r.z, r.y
+        abs r.w, r.x
+        max r1.w, r.z, r.w
+        rcp r1.x, r1.w
+        min r1.y, r.w, r.z
+        add r.z, -r.z, r.w
+        cmp r.z, r.z, c4.x, c4.y
+        mul r.w, r1.x, r1.y
+        mul r1.x, r.w, r.w
+        mad r1.y, r1.x, c2.z, c2.w
+        mad r1.y, r1.x, r1.y, c3.x
+        mad r1.y, r1.x, r1.y, c3.y
+        mad r1.x, r1.x, r1.y, c3.z
+        mul r.w, r.w, r1.x
+        mad r1.x, r.w, c4.z, c4.w
+        mad r.z, r1.x, r.z, r.w
+        cmp r.w, r.x, c5.x, c5.y
+        add r.z, r.z, r.w
+        add r.w, r.z, r.z
+        max r1.x, r.y, r.x
+        cmp r1.x, r1.x, c4.y, c4.x
+        min r1.y, r.x, r.y
+        dp2add r.x, r, r, c2.y
+        rsq r.x, r.x
+        rcp r.x, r.x
+        add r.x, r.x, -c.y
+        mov r1.w, c3.w
+        mad r.x, r.x, -c1.x, r1.w
+        cmp r.y, r1.y, c2.y, r1.x
+        mad r.y, r.y, -r.w, r.z
+        mad r.y, r.y, c5.z, c5.w
+        mul r.y, r.y, c.x
+        mov r1.x, c2.x
+        mad r.y, r.y, -r1.x, c.z
+        abs r.z, r.y
+        frc r.z, r.z
+        cmp r1.x, r.y, r.z, -r.z
+        mov r1.y, r.x
+        texld r2, r1, s
+        add r.x, -r.x, c3.w
+        cmp r.y, r1.y, c4.x, c4.y
+        cmp r.x, r.x, c4.x, c4.y
+        add r.x, r.y, r.x
+        cmp r, -r.x, r2, c2.y
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass MagicMissile
+    {
+        // "CTAB\x1c\x00\x00\x00\xe7\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe0\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\x8c\x00\x00\x00\x00\x00\x00\x00\x9c\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uSaturation\x00\x00\x00\x03"...
+        def c2 = 1.500000, -0.500000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        mad r.w, t.x, c2.x, c2.y
+        add r.x, t.x, c1.x
+        mov r.y, t.y
+        texld r1, r, s2
+        texld r2, r, s1
+        texld r3, t, s
+        add r.x, -r.w, r1.x
+        add_sat r.x, r.x, r.x
+        mul r.x, r2.x, r.x
+        mul r, r3, r.x
+        mul r, r, v
+        mul r, r, c.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass QueenSlime
+    {
+        // "CTAB\x1c\x00\x00\x00C\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 <\x01\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00\xb4\x00\x00\x00\x00\x00\x00\x00\xc4\x00\x00\x00\x03\x00\x02\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uSourceRect\x00\x01\x00\x03"...
+        def c8 = 1.000000, -1.000000, 0.000000, 0.000000
+        def c9 = 0.400000, 0.300000, 0.200000, 1.000000
+        def c10 = -2.000000, 3.000000, 0.241916, 0.500000
+        def c11 = 6.283185, -3.141593, 0.377197, 0.500000
+        def c12 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c13 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        dcl_2d s2
+        mov r.xy, c7
+        mad r.y, t.y, r.y, -c6.y
+        mul_sat r.y, r.y, c1.x
+        mad r.z, r.y, c10.x, c10.y
+        mul r.y, r.y, r.y
+        mul r.w, r.z, r.y
+        mad r.w, r.w, c11.z, c11.w
+        frc r.w, r.w
+        mad r.w, r.w, c11.x, c11.y
+        sincos r1.y, r.w, c12, c13
+        mov r2.xy, c9
+        mad r.w, r1.y, r2.x, c3.x
+        mad r1.y, r.z, r.y, r.w
+        mad r.x, t.x, r.x, -c6.x
+        mul_sat r.x, r.x, c.x
+        mad r.y, r.x, c10.x, c10.y
+        mul r.x, r.x, r.x
+        mul r.x, r.y, r.x
+        mad r.z, r.x, c10.z, c10.w
+        frc r.z, r.z
+        mad r.z, r.z, c11.x, c11.y
+        sincos r3.x, r.z, c12, c13
+        mad r1.x, r3.x, r2.y, c4.x
+        mov r.y, c9.z
+        add r.xy, r1, r
+        mul r.xy, r, c10.w
+        texld r, r, s2
+        texld r1, t, s
+        add r.y, r1.x, c5.x
+        add r.x, -r.x, r.y
+        add r.x, r.x, c9.w
+        cmp r.y, r.x, c8.x, c8.y
+        mul r.x, r.x, r.y
+        frc r.x, r.x
+        mul r.x, r.y, r.x
+        mov r.y, c8.z
+        texld r, r, s1
+        mov r2.w, c9.w
+        mov r2.xyz, r1.x
+        add r3.xyz, r, -r2.z
+        add r3.w, r.w, -r2.w
+        mad r, r1.y, r3, r2
+        mul r.w, r1.w, r.w
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass TitaniumStorm
+    {
+        // "CTAB\x1c\x00\x00\x00\xe7\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe0\x00\x00\x00l\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff/\x00CTAB\x1c\x00\x00\x00\x87\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x84\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00t\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c4 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        mad r1.w, r.x, c2.y, t.x
+        add r1.x, r1.w, c.x
+        add r1.x, r1.x, c3.x
+        abs r1.y, r1.x
+        frc r1.y, r1.y
+        cmp r1.x, r1.x, r1.y, -r1.y
+        mov r1.y, c4.x
+        texld r1, r1, s1
+        mul r2, r, c1.x
+        mad r1, r1, c2.z, r2
+        mul r1, r1, v
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass HallowBoss
+    {
+        // "CTAB\x1c\x00\x00\x00\xb7\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb0\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00x\x00\x00\x00\x00\x00\x00\x00\x88\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        def c1 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        add r.x, r.x, c.x
+        abs r.y, r.x
+        frc r.y, r.y
+        cmp r.x, r.x, r.y, -r.y
+        mov r.y, c1.x
+        texld r1, r, s1
+        mul r1, r1, v
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass WaterDistortionObject
+    {
+        // "CTAB\x1c\x00\x00\x00#\x00\x00\x00\x00\x02\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 \x1c\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler 9.26.952.2844\x00"
+        def c0 = -0.500000, 0.000000, -0.200000, 25.120001
+        def c1 = 6.280000, -12.560000, 0.159155, 0.500000
+        def c2 = 6.283185, -3.141593, -0.006371, 0.000000
+        def c3 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c4 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v.xyz
+        dcl t.xy
+        add r.xy, v, c.x
+        dp2add r.z, r, r, c.y
+        rsq r.z, r.z
+        mul r.xy, r, r.z
+        add r1.xy, t, c.x
+        dp2add r.z, r1, r1, c.y
+        rsq r.z, r.z
+        mul r1.xy, r1, r.z
+        rcp r.z, r.z
+        mul r.z, r.z, c.w
+        max r1.z, r.z, c1.x
+        dp2add r.x, -r, r1, c.z
+        max r1.x, r.x, c.y
+        mad r.x, r1.z, c1.z, c1.w
+        add r.y, r1.z, c1.y
+        frc r.x, r.x
+        mad r.x, r.x, c2.x, c2.y
+        cmp r.x, r.y, c2.z, r.x
+        sincos r2.x, r.x, c3, c4
+        cmp r.x, r2.x, c.y, -r2.x
+        mul r.x, r1.x, r.x
+        mul r.xw, r.x, v.z
+        mov r.yz, c.y
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass WaterProcessor
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uImageSize0\x00\x01\x00\x03\x00\x01\x00\x02\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c2 = -0.055142, 0.250000, 0.050000, 1.000000
+        def c3 = 2.000000, -1.000000, 3.333333, -1.666667
+        def c4 = 0.300000, 0.500000, 512.000000, 0.001953
+        def c5 = 0.000000, 1.000000, -0.000000, -1.000000
+        dcl t.xy
+        dcl_2d s
+        mov r.x, -c1.x
+        mov r.y, c5.z
+        add r.xy, r, t
+        add r1.x, t.x, c1.x
+        mov r1.y, t.y
+        mov r2.x, c5.z
+        mov r2.y, -c.x
+        add r2.xy, r2, t
+        mov r3.x, t.x
+        add r3.y, t.y, c.x
+        texld r, r, s
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r3, r3, s
+        texld r4, t, s
+        mad r4.w, r.x, c3.x, c3.y
+        mad r4.w, r1.x, c3.x, r4.w
+        mad r.x, r2.x, c3.x, c3.y
+        add r4.w, r4.w, r.x
+        mad r.x, r3.x, c3.x, c3.y
+        add r4.w, r4.w, r.x
+        add r4.w, r4.w, c3.y
+        mad r.x, r4.x, c3.x, c3.y
+        mad r.y, r4.w, c2.y, -r.x
+        add r.z, -r4.z, -c3.y
+        mad r.w, r4.y, c3.z, c3.w
+        mul r.y, r.y, r.z
+        add r.y, r.y, r.y
+        cmp r1.x, -r.w, c5.x, c5.y
+        cmp r1.y, r.w, c5.z, c5.w
+        mul r.w, r.w, r.w
+        add r1.x, r1.x, r1.y
+        mad r.y, r.w, r1.x, r.y
+        add r.y, r.x, r.y
+        mul r.w, r.z, c2.x
+        add r.z, -r.z, -c3.y
+        mad r.z, r.z, -c2.z, c2.w
+        exp r.w, r.w
+        mad r.x, r.y, r.w, -r.x
+        mul r.y, r.y, r.w
+        mad r.y, r.y, c4.y, c4.y
+        mad r.y, r.y, c4.z, c4.y
+        mul r.x, r.z, r.x
+        cmp r.z, -r.x, c5.x, c5.y
+        cmp r.w, r.x, c5.z, c5.w
+        abs r.x, r.x
+        rsq r.x, r.x
+        rcp r.x, r.x
+        add r.z, r.z, r.w
+        mul r.x, r.x, r.z
+        mad r1.y, r.x, c4.x, c4.y
+        frc r.x, r.y
+        add r.x, r.y, -r.x
+        mul r1.x, r.x, c4.w
+        mov r1.zw, -c5
+        mov oC, r1
+    }
+    Resource for Technique Technique1 Pass ForceField
+    {
+        // "CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x84\x00\x00\x00D\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00uColor\x00\xab\x01\x00\x03\x00\x01\x00\x03"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c5 = -0.500000, 1.500000, 1.000000, 0.000000
+        def c6 = 2.800000, -1.000000, 20.000000, 30.000000
+        def c7 = -0.300000, 0.750000, 0.000000, 0.000000
+        def c8 = 12.566368, -6.283184, 2.000000, 0.500000
+        def c9 = -2.000000, 3.000000, 0.079577, -0.000001
+        def c10 = 6.283185, -3.141593, -0.500000, 0.500000
+        def c11 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c12 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        add r.xy, t, -c
+        mov r1.w, c5.x
+        mad r.xy, r, c1, r1.w
+        mov r.w, c6.w
+        mad r.z, r.y, r.w, c3.x
+        mul r.xy, r, c5.yzxw
+        dp2add r.x, r, r, c5.w
+        rsq r.x, r.x
+        rcp r.x, r.x
+        mul r.y, r.z, c9.z
+        abs r.y, r.y
+        frc r.y, r.y
+        cmp r.y, r.z, r.y, -r.y
+        mad r.z, r.y, c8.z, c8.w
+        mad r.y, r.y, c8.x, c8.y
+        frc r.z, r.z
+        mad r.z, r.z, c10.x, c10.y
+        cmp r.y, r.y, c9.w, r.z
+        sincos r1.x, r.y, c11, c12
+        mad r.y, r1.x, c10.z, c10.w
+        mul r.z, r.x, c6.x
+        mad r.x, r.x, c6.x, c6.y
+        mul_sat r.x, r.x, c6.z
+        rsq r.w, r.z
+        rcp r.w, r.w
+        add r1.xy, t, -c2
+        mad r1.xy, r1, r.w, -c5.x
+        texld r1, r1, s
+        mad r.w, r1.x, r.y, c7.x
+        mul_sat r.w, r.w, c6.z
+        mad r1.y, r.w, c9.x, c9.y
+        mul r.w, r.w, r.w
+        mul r.w, r1.y, r.w
+        rcp r1.y, r1.x
+        mul r1.x, r1.x, r1.x
+        lrp r2.w, r.w, r1.y, c5.z
+        mul r.w, r1.x, r2.w
+        mad r1.x, r.x, c9.x, c9.y
+        mul r.x, r.x, r.x
+        mad r.x, r1.x, -r.x, c5.z
+        mul r.y, r.y, r.x
+        mul r1.w, r.w, r.y
+        mul r1.xyz, r1.w, c4
+        mul r.y, r.z, r.z
+        mul r.x, r.x, r.y
+        mul r.w, r.z, r.x
+        mul r.xyz, r.w, c4
+        mad r, r, c7.y, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorLoki
+    {
+        // "CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe4\x00\x00\x00l\x00\x00\x00\x02\x00\x07\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x02\x00\t\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xffH\x00CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xe8\x00\x00\x00l\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00x\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\xa4\x00\x00\x00\x88\x00\x00\x00\xb4\x00\x00\x00"...
+        def c10 = 0.159155, 0.500000, 6.283185, -3.141593
+        def c11 = 1.000000, 1.666667, 0.000000, 0.100000
+        def c12 = 2.100000, 0.000000, 0.000000, 0.000000
+        def c13 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c14 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.xy, c9
+        mad r.xy, t, r, -c8
+        add r.xy, r, -c3
+        mul r.z, r.y, c5.x
+        mad r1.x, r.x, c4.x, -r.z
+        mul r.y, r.y, c4.x
+        mad r1.y, r.x, c5.x, r.y
+        add r.xy, r1, c3
+        add r.y, r.y, c6.x
+        mad r.x, r.x, c10.x, c10.y
+        frc r.x, r.x
+        mad r.x, r.x, c10.z, c10.w
+        sincos r1.y, r.x, c13, c14
+        mad r.x, r.y, c10.x, c10.y
+        frc r.x, r.x
+        mad r.x, r.x, c10.z, c10.w
+        sincos r2.y, r.x, c13, c14
+        add r.xy, t, c2
+        min r3.y, c1.x, r.y
+        mov r3.x, r.x
+        add r.xy, t, c
+        min r4.y, c1.x, r.y
+        mov r4.x, r.x
+        texld r, r3, s
+        texld r3, r4, s
+        texld r4, t, s
+        mad r.x, r1.y, r2.y, r.w
+        min r1.w, r.x, c11.x
+        mul r1.xyz, r1.w, c7
+        max r2.x, r3.w, r.w
+        add r.x, r4.y, r4.x
+        add r.x, r4.z, r.x
+        mad r.x, r.x, -c11.y, r2.x
+        mul r1, r1, r.x
+        cmp r, r.x, r1, c11.z
+        mad r1.x, r4.w, -c11.w, c11.x
+        mul r1, r, r1.x
+        mul r1, r1, c12.x
+        cmp r, r, r1, c11.z
+        add r, r4, r
+        min r1, r, c11.x
+        max r.xyz, v, v.w
+        lrp r2.xyz, c10.y, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorForceField
+    {
+        // "CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe4\x00\x00\x00l\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x02\x00\x05\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c6 = 0.159155, 0.500000, 6.283185, -3.141593
+        def c7 = 1.000000, 0.333333, 2.500000, 0.166667
+        def c8 = 0.000000, 0.000000, 0.000000, 0.000000
+        def c9 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c10 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.x, t.x
+        add r.y, t.y, c1.x
+        mov r1.x, t.x
+        add r1.y, t.y, c.x
+        texld r, r, s
+        texld r1, r1, s
+        texld r2, t, s
+        mov r.xy, c5
+        mad r.xy, t, r, -c4
+        add r.z, r.y, -c2.x
+        mad r.z, r.z, c6.x, c6.y
+        frc r.z, r.z
+        mad r.z, r.z, c6.z, c6.w
+        sincos r3.y, r.z, c9, c10
+        mul r.z, r.w, r3.y
+        add r.y, r.y, c2.x
+        mad r.x, r.x, c6.x, c6.y
+        frc r.x, r.x
+        mad r.x, r.x, c6.z, c6.w
+        sincos r3.y, r.x, c9, c10
+        mad r.x, r.y, c6.x, c6.y
+        frc r.x, r.x
+        mad r.x, r.x, c6.z, c6.w
+        sincos r4.y, r.x, c9, c10
+        mad r.x, r3.y, r4.y, r.z
+        min r3.w, r.x, c7.x
+        mul r3.xyz, r3.w, c3
+        mul r, r3, c7.z
+        min r3, r, c7.x
+        add r.x, r2.y, r2.x
+        add r.x, r2.z, r.x
+        mad r.y, r.x, -c7.w, r1.w
+        mul r.x, r.x, c7.y
+        mul r1.xyz, r.x, c3
+        mul r3, r3, r.y
+        cmp_sat r, r.y, r3, c8.x
+        mov r1.w, c7.x
+        mul r1, r2.w, r1
+        mul r1, r1, v
+        mad r, r, c6.y, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorFlow
+    {
+        // "CTAB\x1c\x00\x00\x00\xb7\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb0\x00\x00\x00X\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x01\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c3 = 0.333333, 4.000000, 0.159155, 0.500000
+        def c4 = 6.283185, -3.141593, 0.000000, 0.000000
+        def c5 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c6 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r1.w, r.y, r.x
+        add r1.x, r.z, r1.w
+        mov r1.y, c3.y
+        mad r1.y, r1.x, r1.y, c1.x
+        mul r1.x, r1.x, c3.x
+        mad r1.y, r1.y, c3.z, c3.w
+        frc r1.y, r1.y
+        mad r1.y, r1.y, c4.x, c4.y
+        sincos r2.y, r1.y, c5, c6
+        mad r1.y, r2.y, c3.w, c3.w
+        mov r2.xyz, c2
+        mad r1.yzw, r1.y, r2.wzyx, c.wzyx
+        mul r.xyz, r1.x, r1.wzyx
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorGel
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\n\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff`\x00CTAB\x1c\x00\x00\x00K\x01\x00\x00\x01\x02XF\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 H\x01\x00\x00\x94\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x02\x00\x05\x00\x01\x00\x00\x00\xc8\x00\x00\x00\xac\x00\x00\x00\xd8\x00\x00\x00"...
+        def c14 = -0.000000, 0.002500, 0.333333, 4.000000
+        def c15 = 0.500000, 0.250000, 1.500000, 2.000000
+        def c16 = 10.000000, -2.000000, 3.000000, 0.750000
+        def c17 = -0.450000, 1.000000, 0.700000, -0.200000
+        def c18 = 0.187500, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        add r1.xy, t, c5
+        max r2.xy, c6, r1
+        add r1.xy, t, c7
+        max r3.xy, c6, r1
+        add r1.xy, t, c8
+        max r4.xy, c6, r1
+        mov r1.xy, c13
+        mad r1.xy, t, r1, -c12
+        add r1.xy, r1, -c
+        mul r1.z, r1.y, c2.x
+        mad r5.x, r1.x, c1.x, -r1.z
+        mul r1.y, r1.y, c1.x
+        mad r5.y, r1.x, c2.x, r1.y
+        add r1.xy, r5, c
+        mov r5.x, c14.x
+        mov r5.y, -c3.x
+        mad r1.xy, r1, c14.y, r5
+        mov r5.y, -c14.x
+        add r1.z, r.y, r.x
+        add r1.z, r.z, r1.z
+        mul r1.w, r1.z, c14.z
+        mul r2.z, r1.w, c4.x
+        mul r5.x, r2.z, c14.w
+        add r1.xy, r1, r5
+        texld r2, r2, s
+        texld r3, r3, s
+        texld r4, r4, s
+        texld r5, r1, s1
+        max r1.x, r4.w, r.w
+        max r2.x, r3.w, r1.x
+        max r1.y, r2.x, r3.w
+        max r3.x, r2.w, r1.y
+        mul r1.y, r1.y, c15.x
+        mad r1.y, r3.x, c15.y, r1.y
+        max r2.x, r.w, r3.x
+        mad r1.y, r3.w, c15.z, r1.y
+        mad r1.x, r1.x, c15.w, r1.y
+        mul r.xyz, r1.w, c10
+        mul r1.x, r5.x, r1.x
+        mad r1.y, r1.x, c15.x, r.w
+        mul r1.x, r1.x, c15.x
+        mad r1.x, r.w, c15.x, r1.x
+        add r1.x, r1.x, c17.w
+        mul_sat r1.x, r1.x, c16.x
+        add r1.y, r1.y, c17.x
+        cmp r1.y, r1.y, c17.y, c17.z
+        mul r1.y, r5.x, r1.y
+        mov r3.xyz, c9
+        mad r3.xyz, r1.y, r3, c11
+        mad r1.y, r1.x, c16.y, c16.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mov r3.w, c17.y
+        mul r3, r3, r1.x
+        mul r2, r2.x, r3
+        mul r1.x, r2.w, c16.w
+        mad r1.x, r1.z, -c18.x, r1.x
+        mad r2, r2, c16.w, -r
+        mad r3, r1.x, r2, r
+        mul r.x, r1.x, r2.w
+        cmp r3.w, r.x, r3.w, r.w
+        mul r, r3, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorPolarized
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        def c0 = 0.333333, 0.600000, 0.166667, 0.500000
+        def c1 = 1.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r.x, r.y, r.x
+        add r.x, r.z, r.x
+        mad r.y, r.x, -c.x, c.y
+        mul r.z, r.x, c.z
+        mad r.x, r.x, c.z, c.w
+        cmp r1.xyz, r.y, r.z, r.x
+        mov r1.w, c1.x
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredAndSilverTrimGradient
+    {
+        // "CTAB\x1c\x00\x00\x00\x1b\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x14\x01\x00\x00\x80\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x02\x00\x07"...
+        // "PRES\x01\x02XF\xfe\xffI\x00CTAB\x1c\x00\x00\x00\xef\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xec\x00\x00\x00l\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00\xa0\x00\x00\x00\x84\x00\x00\x00\xb0\x00\x00\x00"...
+        def c8 = -2.000000, 3.000000, 1.800000, -0.400000
+        def c9 = 0.500000, 1.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        add r1.y, r2.w, -r2.x
+        mul r1.y, r1.y, c5.x
+        mov r2.x, c2.x
+        mad r1.y, r1.y, r2.x, c3.x
+        mul r1.x, r1.x, c9.x
+        mul r1.x, r1.y, r1.x
+        mul r1.x, r.w, r1.x
+        mov r2.x, c7.x
+        mad r1.z, t.x, r2.x, -c6.x
+        mul_sat r1.z, r1.z, c.x
+        mad r1.w, r1.z, c8.x, c8.y
+        mul r1.z, r1.z, r1.z
+        mul r1.z, r1.w, r1.z
+        mad r1.z, r1.z, c8.z, c8.w
+        mov r2.xyz, c1
+        mad r2.xyz, r1.z, r2, c4
+        mul r2.xyz, r, r2
+        mad r3.xyz, r1.x, c9.y, -r2
+        mad r.xyz, r1.y, r3, r2
+        min r1, r, c9.z
+        mul r, r1, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorMidnightRainbow
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x05\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x04\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c6 = 0.000000, 0.333333, 4.000000, 0.400000
+        def c7 = -2.000000, 3.000000, 0.066667, -1.000000
+        def c8 = 0.000000, 0.666000, 0.333000, 0.900000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.x, -c1.x
+        mov r.y, c6.x
+        add r.xy, r, t
+        mov r1.x, t.x
+        add r1.y, t.y, -c.x
+        mov r2.x, t.x
+        add r2.y, t.y, c.x
+        add r3.x, t.x, c1.x
+        mov r3.y, t.y
+        texld r, r, s
+        texld r4, t, s
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r3, r3, s
+        add r.xyz, r, -r4
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        add r.xyz, -r4, r1
+        add r2.w, r.y, r.x
+        add r2.w, r.z, r2.w
+        mul r2.w, r2.w, c6.y
+        mad r2.w, r1.w, c6.y, r2.w
+        add r.xyz, -r4, r2
+        add r3.w, r.y, r.x
+        add r3.w, r.z, r3.w
+        mad r3.w, r3.w, c6.y, r2.w
+        add r.xyz, -r4, r3
+        add r.x, r.y, r.x
+        add r.x, r.z, r.x
+        mad r.x, r.x, c6.y, r3.w
+        add r.y, r4.y, r4.x
+        add r.y, r4.z, r.y
+        mul r.z, r.y, c6.y
+        mul r.x, r.x, r.z
+        mul r.x, r.x, c6.z
+        mov r1.x, c5.x
+        mad r.z, t.x, r1.x, -c4.x
+        mul_sat r.z, r.z, c2.x
+        mad r.w, r.z, c7.x, c7.y
+        mul r.z, r.z, r.z
+        mul r.z, r.w, r.z
+        mov r.w, c6.w
+        mad r.z, r.z, r.w, c3.x
+        mad r.y, r.y, c7.z, r.z
+        add r.yzw, r.y, c8.wzyx
+        abs r1.xyz, r.wzyx
+        frc r1.xyz, r1
+        cmp r.yzw, r, r1.wzyx, -r1.wzyx
+        mad r.yzw, r, c7.y, c7.w
+        abs r.yzw, r
+        add r.yzw, -r, c8.w
+        mul r.xyz, r.x, r.wzyx
+        mov r.w, -c7.w
+        mul r, r4.w, r
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorMirage
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x03\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c5 = -0.500000, 30.000000, 0.159155, 0.500000
+        def c6 = 6.283185, -3.141593, 0.000000, 1.000000
+        def c7 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c8 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.w, c4.y
+        mad r.x, t.y, r.w, -c3.y
+        mov r1.xy, c5
+        mad r.x, r.x, c.x, r1.x
+        mad r.x, r.x, r1.y, c1.x
+        mad r.x, r.x, c5.z, c5.w
+        frc r.x, r.x
+        mad r.x, r.x, c6.x, c6.y
+        sincos r1.y, r.x, c7, c8
+        mul r.x, r1.y, c2.x
+        mov r1.x, -r.x
+        mov r1.y, c6.z
+        add r1.xy, r1, t
+        mov r.y, c6.z
+        add r.xy, r, t
+        texld r1, r1, s
+        texld r, r, s
+        texld r2, t, s
+        mov r.x, r1.x
+        mov r.w, c6.w
+        mov r.y, r2.y
+        mul r, r2.w, r
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorHallowBoss
+    {
+        // "CTAB\x1c\x00\x00\x00{\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 t\x00\x00\x00D\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00L\x00\x00\x00\x00\x00\x00\x00\\\x00\x00\x00\x03\x00\x01\x00\x01\x00\x06\x00d\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff$\x00CTAB\x1c\x00\x00\x00[\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 X\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x008\x00\x00\x00H\x00\x00\x00uTime\x00\xab\xab\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c1 = 0.500000, 0.800000, 0.200000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        mov r2.x, c1.x
+        mad r1.x, r1.x, r2.x, c.x
+        abs r1.y, r1.x
+        frc r1.y, r1.y
+        cmp r1.x, r1.x, r1.y, -r1.y
+        mov r1.y, c1.x
+        texld r1, r1, s1
+        mul r1, r1, c1.y
+        mad r1, r, c1.z, r1
+        mul r1, r1, v
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorFog
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c8 = 10.000000, 0.159155, 0.500000, 0.013333
+        def c9 = 6.283185, -3.141593, 0.066667, 0.800000
+        def c10 = 0.004000, 1.800000, 0.183333, 0.300000
+        def c11 = -0.100000, 1.250000, -2.000000, 3.000000
+        def c12 = -0.200000, 1.666667, 0.850000, 0.150000
+        def c13 = 0.900000, 0.000000, 0.000000, 0.000000
+        def c14 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c15 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        mov r1.xy, c7
+        mad r1.z, t.y, r1.y, -c6.y
+        mul r1.z, r1.z, c.x
+        mov r1.w, c8.x
+        mad r1.z, r1.z, r1.w, c1.x
+        mad r1.z, r1.z, c8.y, c8.z
+        frc r1.z, r1.z
+        mad r1.z, r1.z, c9.x, c9.y
+        sincos r2.y, r1.z, c14, c15
+        mad r1.z, r2.y, c8.z, c8.z
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        mul r2.x, r1.w, c8.w
+        mad r1.z, r1.z, c10.x, r2.x
+        mad r1.xy, t, r1, -c6
+        mul r1.xy, r1, c10.y
+        mad r2.y, r1.y, c2.y, r1.z
+        mov r3.w, c2.x
+        mad r2.x, r1.x, r3.w, c3.x
+        texld r2, r2, s1
+        mul r1.x, r1.w, c10.z
+        mad r1.y, r1.w, c9.z, c9.w
+        mul r1.yzw, r1.y, c5.wzyx
+        mul r1.yzw, r1, v.wzyx
+        mad r1.x, r2.x, c10.w, r1.x
+        add r2.x, r1.x, c11.x
+        add r1.x, r1.x, c12.x
+        mul_sat r1.x, r1.x, c12.y
+        mul_sat r2.x, r2.x, c11.y
+        mad r2.y, r2.x, c11.z, c11.w
+        mul r2.x, r2.x, r2.x
+        mul r2.x, r2.y, r2.x
+        mul r2.yzw, v.wzyx, c12.z
+        mad r2.yzw, v.w, c12.w, r2
+        mad r2.yzw, c4.wzyx, r2, -r1
+        mad r1.yzw, r2.x, r2, r1
+        mul r2.xyz, v, c8.z
+        mad r2.xyz, v.w, c8.z, r2
+        mul r3.xyz, r, r2
+        mul r3.xyz, r3, -c11.x
+        mad r1.yzw, r1, c13.x, r3.wzyx
+        mad r.xyz, r, r2, -r1.wzyx
+        mad r2.x, r1.x, c11.z, c11.w
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r2.x, r1.x
+        mad r1.xyz, r1.x, r, r1.wzyx
+        mov r1.w, v.w
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorShiftingPearlsands
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c8 = 1.000000, 0.400000, 0.850000, 0.000000
+        def c9 = 10.000000, 0.159155, 0.500000, 0.013333
+        def c10 = 6.283185, -3.141593, 0.066667, 0.800000
+        def c11 = 0.020000, 0.183333, 0.300000, -0.300000
+        def c12 = 2.500000, -2.000000, 3.000000, 0.133333
+        def c13 = -0.700000, 0.850000, 0.150000, -0.200000
+        def c14 = 33.333332, 0.150000, 0.100000, -0.500000
+        def c15 = 0.700000, 0.750000, 0.000000, 0.000000
+        def c16 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c17 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        mov r1.xy, c7
+        mad r1.z, t.y, r1.y, -c6.y
+        mul r1.z, r1.z, c.x
+        mov r1.w, c9.x
+        mad r1.z, r1.z, r1.w, c1.x
+        mad r1.z, r1.z, c9.y, c9.z
+        frc r1.z, r1.z
+        mad r1.z, r1.z, c10.x, c10.y
+        sincos r2.y, r1.z, c16, c17
+        mad r1.z, r2.y, c9.z, c9.z
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        mul r.x, r1.w, c9.w
+        mad r.x, r1.z, c11.x, r.x
+        mad r.yz, t.zxyw, r1.zxyw, -c6.zxyw
+        add r.yz, r, r
+        mad r.x, r.y, c2.x, r.x
+        mov r1.y, c2.y
+        mad r.y, r.z, r1.y, c3.x
+        mul r1.xy, r, c10.w
+        texld r2, r, s1
+        texld r3, r1, s1
+        mul r3.w, r1.w, c11.y
+        mad r3.w, r2.x, c11.z, r3.w
+        add r3.w, r3.w, c11.w
+        mul_sat r3.w, r3.w, c12.x
+        mad r.x, r3.w, c12.y, c12.z
+        mul r3.w, r3.w, r3.w
+        mul r3.w, r.x, r3.w
+        mul r.xyz, v, c13.y
+        mad r.xyz, v.w, c13.z, r
+        mad r1.x, r1.w, c10.z, c10.w
+        mad r1.y, r1.w, c12.w, r3.x
+        add r1.y, r1.y, c13.x
+        mul_sat r1.y, r1.y, c9.x
+        mul r2.xyz, r1.x, c5
+        mul r2.xyz, r2, v
+        mad r.xyz, c4, r, -r2
+        mad r.xyz, r3.w, r, r2
+        add r1.x, r3.y, c13.w
+        mad r1.z, r3.z, c15.x, c15.y
+        mul_sat r1.x, r1.x, c14.x
+        mad r1.w, r1.x, c12.y, c12.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.w, r1.x
+        mov r2.yzw, c14
+        mad r2.xyz, r1.x, r2.wzyx, c8
+        mul r2.xyz, r1.z, r2
+        mul r3.xyz, v, -c13.x
+        mad r3.xyz, v.w, c11.z, r3
+        mad r2.xyz, r2, r3, -r
+        mad r2.w, r1.y, c12.y, c12.z
+        mul r1.x, r1.y, r1.y
+        mul r2.w, r2.w, r1.x
+        mad r1.xyz, r2.w, r2, r
+        mov r1.w, v.w
+        mul r, r.w, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorShiftingSands
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff<\x00CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xb8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00d\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00t\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c8 = 10.000000, 0.159155, 0.500000, 0.013333
+        def c9 = 6.283185, -3.141593, 0.066667, 0.800000
+        def c10 = 0.040000, 0.183333, 0.300000, -0.300000
+        def c11 = 2.500000, -2.000000, 3.000000, 0.133333
+        def c12 = 0.850000, 0.150000, 0.700000, 0.000000
+        def c13 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c14 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        mov r1.xy, c7
+        mad r1.z, t.y, r1.y, -c6.y
+        mul r1.z, r1.z, c.x
+        mov r1.w, c8.x
+        mad r1.z, r1.z, r1.w, c1.x
+        mad r1.z, r1.z, c8.y, c8.z
+        frc r1.z, r1.z
+        mad r1.z, r1.z, c9.x, c9.y
+        sincos r2.y, r1.z, c13, c14
+        mad r1.z, r2.y, c8.z, c8.z
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        mul r.x, r1.w, c8.w
+        mad r.x, r1.z, c10.x, r.x
+        mad r.yz, t.zxyw, r1.zxyw, -c6.zxyw
+        add r.yz, r, r
+        mad r.x, r.y, c2.x, r.x
+        mov r1.y, c2.y
+        mad r.y, r.z, r1.y, c3.x
+        texld r2, r, s1
+        mul r.x, r1.w, c10.y
+        mad r.x, r2.x, c10.z, r.x
+        mad r.y, r1.w, c11.w, r2.x
+        mad r.z, r1.w, c9.z, c9.w
+        mul r1.xyz, r.z, c5
+        mul r1.xyz, r1, v
+        add r1.w, r.y, -c9.w
+        mul_sat r1.w, r1.w, c8.x
+        add r.x, r.x, c10.w
+        mul_sat r.x, r.x, c11.x
+        mad r.y, r.x, c11.y, c11.z
+        mul r.x, r.x, r.x
+        mul r.x, r.y, r.x
+        mul r2.xyz, v, c12.x
+        mad r2.xyz, v.w, c12.y, r2
+        mad r2.xyz, c4, r2, -r1
+        mad r.xyz, r.x, r2, r1
+        mad r1.x, r1.w, c11.y, c11.z
+        mul r1.y, r1.w, r1.w
+        mul r1.x, r1.x, r1.y
+        mul r1.yzw, v.wzyx, c12.z
+        mad r1.yzw, v.w, c10.z, r1
+        lrp r2.xyz, r1.x, r1.wzyx, r
+        mov r2.w, v.w
+        mul r, r.w, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorVoid
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c1 = -0.000000, 0.250000, 0.500000, 0.300000
+        def c2 = 3.000000, 0.350000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        add r.x, t.x, c.x
+        mov r.y, t.y
+        mov r1.x, -c.x
+        mov r1.y, c1.x
+        add r1.xy, r1, t
+        texld r, r, s
+        texld r2, t, s
+        texld r1, r1, s
+        mul r, r, c1.y
+        mad r, r2, c1.z, r
+        mad r, r1, c1.y, r
+        add r1.xyz, r, c1.w
+        mul r1.w, r.z, c2.x
+        mul r1.xyz, r1, r1.w
+        mul r.xyz, r1, v
+        mov r1.xyz, c2.y
+        mov r1.w, v.w
+        mul r, r, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorStardust
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c7 = 0.007812, 0.333000, 0.666000, 0.000000
+        def c8 = 3.000000, -1.000000, 1.000000, 0.666667
+        def c9 = 0.500000, -0.100000, 8.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        mul r.xy, t, c
+        frc r.zw, r.wzyx
+        add r.xy, r, -r.wzyx
+        mul r.xy, r, c1
+        mov r1.xy, c6
+        mad r.xy, r, r1, -c5
+        mov r1.x, c7.x
+        mad r.z, r.x, r1.x, c2.x
+        mad r.z, r.y, c7.x, r.z
+        mul r.xy, r, c7.x
+        texld r1, r, s1
+        texld r2, t, s
+        add r.xyz, r.z, c7.wzyx
+        abs r3.xyz, r
+        frc r3.xyz, r3
+        cmp r.xyz, r, r3, -r3
+        mad r.xyz, r, c8.x, c8.y
+        abs r.xyz, r
+        add r.xyz, -r, c8.z
+        mul r.xyz, r1, r
+        mul r.xy, r, r
+        add r.x, r.y, r.x
+        mad r.x, r.z, r.z, r.x
+        mad_sat r.x, r.x, c9.x, c9.y
+        mul r.xyz, r.x, c4
+        mul r.xyz, r2.w, r
+        mul r.xyz, r, c9.z
+        add r.w, r2.y, r2.x
+        add r.w, r2.z, r.w
+        mul r.w, r.w, c8.w
+        mul r1.xyz, r.w, c3
+        mad r2.xyz, r1, r2.w, r
+        mul r, r2, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorVortex
+    {
+        // "CTAB\x1c\x00\x00\x00\x07\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x00\x01\x00\x00\x80\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x03\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00|\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c7 = -0.500000, 0.020835, -0.085133, 0.180141
+        def c8 = -0.330299, 0.999866, 0.000000, 1.000000
+        def c9 = -2.000000, 1.570796, -0.000000, -3.141593
+        def c10 = 0.100000, -0.100000, 0.333333, 5.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        mul r.xy, t, c
+        frc r.zw, r.wzyx
+        add r.xy, r, -r.wzyx
+        mov r1.xy, c1
+        mad r.xy, r, r1, -c2
+        mov r1.x, c7.x
+        mad r.xy, r, c3, r1.x
+        abs r.z, r.x
+        abs r.w, r.y
+        max r1.x, r.z, r.w
+        rcp r1.x, r1.x
+        min r1.y, r.w, r.z
+        add r.z, -r.z, r.w
+        cmp r.z, r.z, c8.z, c8.w
+        mul r.w, r1.x, r1.y
+        mul r1.x, r.w, r.w
+        mad r1.y, r1.x, c7.y, c7.z
+        mad r1.y, r1.x, r1.y, c7.w
+        mad r1.y, r1.x, r1.y, c8.x
+        mad r1.x, r1.x, r1.y, c8.y
+        mul r.w, r.w, r1.x
+        mad r1.x, r.w, c9.x, c9.y
+        mad r.z, r1.x, r.z, r.w
+        cmp r.w, r.y, c9.z, c9.w
+        add r.z, r.z, r.w
+        add r.w, r.z, r.z
+        max r1.x, r.x, r.y
+        cmp r1.x, r1.x, c8.w, c8.z
+        min r1.y, r.y, r.x
+        cmp r1.x, r1.y, c8.z, r1.x
+        mad r1.x, r1.x, -r.w, r.z
+        mul r.y, r.y, r.y
+        mad r.x, r.x, r.x, r.y
+        rsq r.x, r.x
+        rcp r.x, r.x
+        add r1.y, r.x, c6.x
+        add r.x, r.x, c10.x
+        min r1.z, r.x, c8.w
+        mul r.xy, r1, c10.x
+        texld r, r, s1
+        texld r2, t, s
+        mad r.x, r.x, r1.z, c10.y
+        add r.y, r2.y, r2.x
+        add r.y, r2.z, r.y
+        mul r.y, r.y, c10.z
+        mul r.z, r.x, r.y
+        mul r.z, r.z, c10.w
+        mul r1.xyz, r.z, c5
+        cmp r1.xyz, r.x, r1, c8.z
+        mad r.xyz, c4, r.y, r1
+        mov r.w, c8.w
+        mul r, r2.w, r
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorNebula
+    {
+        // "CTAB\x1c\x00\x00\x00%\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x1e\x01\x00\x00\x94\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00|\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c8 = 0.333333, 0.100000, -0.400000, 5.000000
+        def c9 = 0.000000, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        mul r1.xy, t, c
+        frc r1.zw, r1.wzyx
+        add r1.xy, r1, -r1.wzyx
+        mov r2.xy, c1
+        mad r1.xy, r1, r2, -c2
+        mov r2.y, c3.y
+        mad r1.y, r1.y, r2.y, c7.x
+        mul r1.x, r1.x, c3.x
+        add r1.x, r1.x, r1.x
+        mul r2.y, r1.y, c8.y
+        add r1.y, r.y, r.x
+        add r1.y, r.z, r1.y
+        mul r1.y, r1.y, c8.x
+        mad r2.x, r1.y, c1.x, r1.x
+        texld r2, r2, s1
+        add r1.x, r2.x, c8.z
+        mul r1.z, r1.y, r1.x
+        mad r2.xyz, c4, r1.y, -r
+        mad r.xyz, c6.x, r2, r
+        mul r1.y, r1.z, c8.w
+        mul r1.yzw, r1.y, c5.wzyx
+        cmp r1.xyz, r1.x, r1.wzyx, c9.x
+        add r1.xyz, r, r1
+        mov r1.w, c9.y
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorSolar
+    {
+        // "CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x84\x00\x00\x00D\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00uColor\x00\xab\x01\x00\x03\x00\x01\x00\x03"...
+        // "PRES\x01\x02XF\xfe\xffH\x00CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xe8\x00\x00\x00l\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00\xa0\x00\x00\x00\x84\x00\x00\x00\xb0\x00\x00\x00"...
+        def c5 = -0.050000, -0.560000, 0.500000, 1.538462
+        def c6 = 0.000000, 0.333333, 1.000000, -0.300000
+        def c7 = -0.461538, -2.000000, 3.000000, 0.769231
+        def c8 = -1.300000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.x, -c1.x
+        mov r.y, c6.x
+        add r.xy, r, t
+        add r1.x, t.x, c1.x
+        mov r1.y, t.y
+        mov r2.x, t.x
+        add r2.y, t.y, c.x
+        mov r3.x, t.x
+        add r3.y, t.y, -c.x
+        texld r, r, s
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r3, r3, s
+        texld r4, t, s
+        add r.xyz, r, -r1
+        add r2.w, r.y, r.x
+        add r2.w, r.z, r2.w
+        mul r.x, r2.w, c6.y
+        add r1.xyz, -r2, r3
+        add r.w, r1.y, r1.x
+        add r.w, r1.z, r.w
+        mul r.y, r.w, c6.y
+        mul r.w, r.y, r.y
+        mad r.w, r.x, r.x, r.w
+        add r.w, -r.w, c6.z
+        rsq r1.x, r.w
+        rcp r1.x, r1.x
+        cmp r.z, r.w, r1.x, c6.x
+        dp3 r.x, r, c5
+        add r.y, r.x, c6.w
+        mul r.y, r.y, c5.w
+        cmp_sat r.x, r.x, r.y, c7.x
+        mad r.y, r.x, c7.y, c7.z
+        mul r.x, r.x, r.x
+        mul r.x, r.y, r.x
+        add r.x, r.x, r.x
+        mul r.y, r.x, c2.x
+        mov r1.x, c2.x
+        mad r.x, r.x, r1.x, c8.x
+        add_sat r.x, r.x, r.x
+        mul r.z, r.y, -c6.w
+        max r1.xyz, v, v.w
+        lrp r2.xyz, r.z, r1, v
+        mad r.z, r.x, c7.y, c7.z
+        mul r.x, r.x, r.x
+        mul r.x, r.z, r.x
+        mul_sat r.z, r.y, c7.w
+        mad r.w, r.z, c7.y, c7.z
+        mul r.z, r.z, r.z
+        mul r.z, r.w, r.z
+        mov r1.xyz, c4
+        mad r1.xyz, r.z, c3, r1
+        lrp r3.xyz, r.x, c6.z, r1
+        mul r3.w, r4.w, r.y
+        mul r.xyz, r3, r3.w
+        mov r.w, r4.w
+        min r1, r, c6.z
+        mov r2.w, v.w
+        mul r, r2, r1
+        add r1.x, r4.y, r4.x
+        add r1.x, r4.z, r1.x
+        mul r1.x, r1.x, c6.y
+        mul r1.xyz, r1.x, c4
+        mul r1.xyz, r1, c5.z
+        mad r4.xyz, r4, c5.z, r1
+        mad r, r4, v, r
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorReflective
+    {
+        // "CTAB\x1c\x00\x00\x00\x93\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x8c\x00\x00\x00D\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00L\x00\x00\x00\x00\x00\x00\x00\\\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00l\x00\x00\x00|\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uImageSize0\x00\x01\x00\x03\x00\x01\x00\x02\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 0.000000, 0.333333, 1.000000, -0.300000
+        def c4 = 1.538462, -0.461538, -2.000000, 3.000000
+        def c5 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.x, -c1.x
+        mov r.y, c3.x
+        add r.xy, r, t
+        add r1.x, t.x, c1.x
+        mov r1.y, t.y
+        mov r2.x, t.x
+        add r2.y, t.y, c.x
+        mov r3.x, t.x
+        add r3.y, t.y, -c.x
+        texld r, r, s
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r3, r3, s
+        texld r4, t, s
+        add r.xyz, r, -r1
+        add r2.w, r.y, r.x
+        add r2.w, r.z, r2.w
+        mul r.x, r2.w, c3.y
+        add r1.xyz, -r2, r3
+        add r.w, r1.y, r1.x
+        add r.w, r1.z, r.w
+        mul r.y, r.w, c3.y
+        mul r.w, r.y, r.y
+        mad r.w, r.x, r.x, r.w
+        add r.w, -r.w, c3.z
+        rsq r1.x, r.w
+        rcp r1.x, r1.x
+        cmp r.z, r.w, r1.x, c3.x
+        dp3 r.x, r, c2
+        add r.y, r.x, c3.w
+        mul r.y, r.y, c4.x
+        cmp_sat r.x, r.x, r.y, c4.y
+        mad r.y, r.x, c4.z, c4.w
+        mul r.x, r.x, r.x
+        mul r.x, r.y, r.x
+        add r.x, r.x, r.x
+        mul r.x, r.x, r.x
+        mul r.x, r4.w, r.x
+        mul r.yzw, r4.wzyx, c5.x
+        mad r4.xyz, r.x, r4, r.wzyx
+        mul r, r4, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorPhase
+    {
+        // "CTAB\x1c\x00\x00\x00G\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 @\x01\x00\x00\x94\x00\x00\x00\x02\x00\t\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x03\x00\x01\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff_\x00CTAB\x1c\x00\x00\x00G\x01\x00\x00\x01\x02XF\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 D\x01\x00\x00\x94\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\xc8\x00\x00\x00\xac\x00\x00\x00\xd8\x00\x00\x00"...
+        def c13 = 0.500000, 2.000000, 0.100000, 0.833333
+        def c14 = 0.909091, -0.200000, 1.250000, 5.000000
+        def c15 = -2.000000, 3.000000, 0.333333, 0.000000
+        def c16 = 0.500000, 1.500000, 1.000000, 0.000000
+        def c17 = 0.660000, 0.330000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        add r1.y, r2.w, -r2.x
+        mad r1.z, r1.x, -c16.x, c16.y
+        mov r1.w, c16.z
+        mad r2.xyz, r1.z, -c6, r1.w
+        mad r2.w, r1.x, -c13.x, c13.x
+        mul r3.xyz, r1.x, c5
+        cmp r2.xyz, r2.w, r3, r2
+        mad r2.xyz, r1.x, -c13.x, r2
+        mul r2.w, r1.x, c13.x
+        mul r1.x, r1.y, c10.x
+        mad r1.y, r1.y, c17.x, c17.y
+        mov r3.x, c7.x
+        mad r1.x, r1.x, r3.x, c8.x
+        mad r2.xyz, r1.x, r2, r2.w
+        mad r2.xyz, r2, -r.w, c16.z
+        mul r2.xyz, r.w, r2
+        mul r1.xyz, r1.y, r2
+        mov r2.xy, c12
+        mad r2.xy, t, r2, -c11
+        mul r2.xy, r2, c13.x
+        frc r2.zw, r2.wzyx
+        add r2.xy, r2, -r2.wzyx
+        add r2.xy, r2, r2
+        mul r2.xy, r2, c2
+        mul r3.x, r2.x, c13.y
+        mov r2.z, c13.z
+        mad r3.y, r2.y, r2.z, c3.x
+        mul r2.xy, t, c
+        frc r2.zw, r2.wzyx
+        add r2.xy, r2, -r2.wzyx
+        mov r4.xy, c4
+        mad r2.xy, r2, c1, -r4
+        mul r4.x, r2.x, c13.w
+        mov r2.x, c14.x
+        mad r4.y, r2.y, r2.x, c1.y
+        add r2.xy, r4, c4
+        texld r3, r3, s1
+        texld r2, r2, s
+        add r2.x, r3.x, c14.y
+        mul_sat r2.x, r2.x, c14.z
+        mad r2.y, r2.x, c15.x, c15.y
+        mul r2.x, r2.x, r2.x
+        mul r3.w, r2.y, r2.x
+        mul r3.xyz, r3.w, c9
+        mul r3, r3, c14.w
+        add r.x, r.y, r.x
+        add r.x, r.z, r.x
+        mov r1.w, r.w
+        mad r.x, r.x, -c15.z, r2.w
+        mul r2, r3, r.x
+        cmp r, r.x, r2, c15.w
+        add r, r1, r
+        mul r, r, v.w
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorMushroom
+    {
+        // "CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x84\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00uColor\x00\xab\x01\x00\x03\x00\x01\x00\x03"...
+        def c1 = 0.333333, -0.300000, 1.666667, 1.000000
+        def c2 = -2.000000, 3.000000, 0.250000, 0.000000
+        def c3 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r1.w, r.y, r.x
+        add r1.x, r.z, r1.w
+        mad r1.x, r1.x, c1.x, c1.y
+        mul_sat r1.y, r1.x, c1.z
+        mad r1.z, r1.y, c2.x, c2.y
+        mul r1.y, r1.y, r1.y
+        mad r1.y, r1.z, -r1.y, c1.w
+        mul r.xyz, r, c2.z
+        mad r2.xyz, c, r1.y, -r
+        mad r.xyz, r1.y, r2, r
+        cmp r1.xyz, r1.x, r, c2.w
+        mov r1.w, c1.w
+        mul r, r.w, r1
+        min r1, r, c1.w
+        max r.xyz, v, v.w
+        lrp r2.xyz, c3.x, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorAcid
+    {
+        // "CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe4\x00\x00\x00l\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x02\x00\x04\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uSourceRect\x00\x01\x00\x03"...
+        def c5 = 0.333333, 0.000000, -0.500000, 0.100000
+        def c6 = 5.000000, 20.000000, 0.318310, 3.141592
+        def c7 = 1.500000, 1.000000, 2.000000, 0.100000
+        def c8 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c9 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.xy, c4
+        mad r1.xy, t, r1, -c3
+        mov r2.yz, c5
+        mad r1.xy, r1, c, r2.yzxw
+        add r2.x, r1.x, c5.z
+        add r.x, r.y, r.x
+        add r.x, r.z, r.x
+        mul r.x, r.x, c5.x
+        rsq r.x, r.x
+        rcp r.x, r.x
+        mad r2.y, r.x, c5.w, r1.y
+        dp2add r.y, r2, r2, c5.y
+        rsq r.y, r.y
+        rcp r.y, r.y
+        mul r.z, r.x, c6.x
+        mad r.y, r.y, c6.y, -r.z
+        add r.y, r.y, -c1.x
+        mul r.z, r.y, c6.z
+        abs r.z, r.z
+        frc r.z, r.z
+        cmp r.y, r.y, r.z, -r.z
+        mul r.y, r.y, c6.w
+        sincos r1.y, r.y, c8, c9
+        add r.y, r1.y, c7.x
+        mul r.z, r.x, r.x
+        mad r.z, r.z, -r.x, c7.y
+        mul r1.xyz, r.x, c2
+        mad r1.w, r.y, -r.z, c7.y
+        mul r1.xyz, r1, r1.w
+        mov r1.w, c7.y
+        mul r, r.w, r1
+        mad r1.x, v.w, c7.z, c7.w
+        min r2, r1.x, r
+        min r, r2, c7.y
+        max r1.xyz, v, v.w
+        lrp r2.xyz, -c5.z, r1, v
+        mov r2.w, v.w
+        mul r, r, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorTwilight
+    {
+        // "CTAB\x1c\x00\x00\x00\x17\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x10\x01\x00\x00\x80\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x03\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xffJ\x00CTAB\x1c\x00\x00\x00\xf3\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xf0\x00\x00\x00l\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00x\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00\xa4\x00\x00\x00\x88\x00\x00\x00\xb4\x00\x00\x00"...
+        def c6 = 0.125000, -0.600000, 5.000000, 20.000000
+        def c7 = 0.250000, -0.700000, 0.350000, 0.050000
+        def c8 = -2.000000, 3.000000, -0.400000, 2.500000
+        def c9 = 0.033333, 1.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        dcl_2d s1
+        mov r.xy, c5
+        mad r.xy, t, r, -c4
+        mul r.zw, r.wzyx, c.wzyx
+        mov r1.xy, c
+        mad r.xy, r, r1, c2
+        mov r1.x, c6.x
+        mad r1.xy, r.wzyx, r1.x, c1
+        texld r, r, s1
+        texld r1, r1, s1
+        texld r2, t, s
+        add r.x, r.x, c6.y
+        mul_sat r.x, r.x, c6.z
+        mad r.w, r.x, c8.x, c8.y
+        mul r.x, r.x, r.x
+        mul r.x, r.w, r.x
+        mul r.x, r.x, c6.w
+        mad r.x, r1.x, c7.z, r.x
+        add r.x, r.x, c7.w
+        add r.y, r.y, c8.z
+        add r.z, r.z, c7.y
+        mul_sat r.z, r.z, c6.z
+        mul_sat r.y, r.y, c8.w
+        mad r.w, r.y, c8.x, c8.y
+        mul r.y, r.y, r.y
+        mul r.y, r.w, r.y
+        mul r.y, r.y, c7.x
+        mad r1.xyz, r.x, c3, r.y
+        mad r1.w, r.z, c8.x, c8.y
+        mul r.x, r.z, r.z
+        mul r1.w, r1.w, r.x
+        mad r.xyz, r1.w, -c8.x, r1
+        add r.w, r2.y, r2.x
+        add r.w, r2.z, r.w
+        mad r.xyz, r.w, c9.x, r
+        mov r.w, c9.y
+        mul r, r2.w, r
+        mul r, r, v.w
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorHades
+    {
+        // "CTAB\x1c\x00\x00\x00\x0f\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x08\x01\x00\x00\x80\x00\x00\x00\x02\x00\x07\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x02\x00\n\x00"...
+        // "PRES\x01\x02XF\xfe\xffH\x00CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xe8\x00\x00\x00l\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00x\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\xa4\x00\x00\x00\x88\x00\x00\x00\xb4\x00\x00\x00"...
+        def c11 = 0.159155, 0.500000, 6.283185, -3.141593
+        def c12 = 1.000000, 0.333333, 1.666667, 0.000000
+        def c13 = 0.100000, 1.000000, 1.500000, 1.400000
+        def c14 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c15 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.xy, c10
+        mad r.xy, t, r, -c9
+        add r.xy, r, -c3
+        mul r.z, r.y, c5.x
+        mad r1.x, r.x, c4.x, -r.z
+        mul r.y, r.y, c4.x
+        mad r1.y, r.x, c5.x, r.y
+        add r.xy, r1, c3
+        add r.y, r.y, c6.x
+        mad r.x, r.x, c11.x, c11.y
+        frc r.x, r.x
+        mad r.x, r.x, c11.z, c11.w
+        sincos r1.y, r.x, c14, c15
+        mad r.x, r.y, c11.x, c11.y
+        frc r.x, r.x
+        mad r.x, r.x, c11.z, c11.w
+        sincos r2.y, r.x, c14, c15
+        add r.xy, t, c2
+        min r3.y, c1.x, r.y
+        mov r3.x, r.x
+        add r.xy, t, c
+        min r4.y, c1.x, r.y
+        mov r4.x, r.x
+        texld r, r3, s
+        texld r3, r4, s
+        texld r4, t, s
+        mad r.x, r1.y, r2.y, r.w
+        min r1.w, r.x, c12.x
+        mul r1.xyz, r1.w, c7
+        max r2.x, r3.w, r.w
+        add r.x, r4.y, r4.x
+        add r.x, r4.z, r.x
+        mad r.y, r.x, -c12.z, r2.x
+        mul r.x, r.x, c12.y
+        mul r2.xyz, r.x, c8
+        mul r1, r1, r.y
+        cmp r, r.y, r1, c12.w
+        mad r1.x, r4.w, -c13.x, c13.y
+        mul r1, r, r1.x
+        mul r1, r1, c13.z
+        cmp r, r, r1, c12.w
+        mov r2.w, c12.x
+        mad r, r2, r4.w, r
+        mul r, r, c13.w
+        min r1, r, c12.x
+        max r.xyz, v, v.w
+        lrp r2.xyz, c11.y, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorBasicColor
+    {
+        // "CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb4\x00\x00\x00X\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x01\x00\x01\x00"...
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mul r.xyz, r, c
+        mul r, r, v
+        mul r, r, c1.x
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorReflectiveColor
+    {
+        // "CTAB\x1c\x00\x00\x00\xac\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xa5\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x03\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uImageSize0\x00\x01\x00\x03\x00\x01\x00\x02\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c4 = 0.000000, 0.333333, 1.000000, -0.300000
+        def c5 = 1.538462, -0.461538, -2.000000, 3.000000
+        def c6 = 0.500000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        mov r.x, -c1.x
+        mov r.y, c4.x
+        add r.xy, r, t
+        add r1.x, t.x, c1.x
+        mov r1.y, t.y
+        mov r2.x, t.x
+        add r2.y, t.y, c.x
+        mov r3.x, t.x
+        add r3.y, t.y, -c.x
+        texld r, r, s
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r3, r3, s
+        texld r4, t, s
+        add r.xyz, r, -r1
+        add r2.w, r.y, r.x
+        add r2.w, r.z, r2.w
+        mul r.x, r2.w, c4.y
+        add r1.xyz, -r2, r3
+        add r.w, r1.y, r1.x
+        add r.w, r1.z, r.w
+        mul r.y, r.w, c4.y
+        mul r.w, r.y, r.y
+        mad r.w, r.x, r.x, r.w
+        add r.w, -r.w, c4.z
+        rsq r1.x, r.w
+        rcp r1.x, r1.x
+        cmp r.z, r.w, r1.x, c4.x
+        dp3 r.x, r, c3
+        add r.y, r.x, c4.w
+        mul r.y, r.y, c5.x
+        cmp_sat r.x, r.x, r.y, c5.y
+        mad r.y, r.x, c5.z, c5.w
+        mul r.x, r.x, r.x
+        mul r.x, r.y, r.x
+        add r.x, r.x, r.x
+        mul r.x, r.x, r.x
+        mul r.x, r4.w, r.x
+        add r.y, r4.y, r4.x
+        add r.y, r4.z, r.y
+        mul r.y, r.y, c4.y
+        mul r.yzw, r.y, c2.wzyx
+        mul r1.xyz, r.wzyx, c6.x
+        mad r4.xyz, r.x, r.wzyx, r1
+        mul r, r4, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorPlaid
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSourceRect\x00\x01\x00\x03\x00\x01\x00\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = -2.000000, 3.000000, 0.500000, 0.100000
+        def c4 = 10.000000, 0.127324, 0.500000, -0.200000
+        def c5 = 6.283185, -3.141593, 0.333333, 1.000000
+        def c6 = 0.000000, 0.000000, 0.000000, 0.000000
+        def c7 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c8 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.xy, c1
+        mad r1.yz, t.zxyw, r1.zxyw, -c.zxyw
+        mad r1.z, r1.z, c4.y, c4.z
+        mad r1.x, r1.y, r1.x, -c.x
+        mul_sat r1.x, r1.x, c2.x
+        frc r1.y, r1.z
+        mad r1.y, r1.y, c5.x, c5.y
+        sincos r2.x, r1.y, c7, c8
+        mad r1.y, r2.x, c4.z, c4.w
+        mul_sat r1.y, r1.y, c4.x
+        mad r1.z, r1.y, c3.x, c3.y
+        mul r1.y, r1.y, r1.y
+        mul r1.y, r1.z, r1.y
+        mul r2.y, r1.y, c3.z
+        mad r1.y, r1.x, c3.x, c3.y
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        sincos r3.y, r1.x, c7, c8
+        mad r1.x, r3.y, c3.z, c3.w
+        mul_sat r1.x, r1.x, c4.x
+        mad r1.y, r1.x, c3.x, c3.y
+        mul r1.x, r1.x, r1.x
+        mad r2.x, r1.y, r1.x, -r2.y
+        rcp r1.x, r.w
+        mul r.xy, r, r1.x
+        add r.x, r.y, r.x
+        mad r.x, r.z, r1.x, r.x
+        mul r.xy, r.x, c5.z
+        mul r1.xy, r2, r
+        mov r1.w, c5.w
+        mov r.xy, v
+        mov r.z, v.w
+        mul r1.xy, r1, r
+        mul r1.z, r1.w, r.z
+        mul r2.xy, r.w, r1
+        mul r2.w, r.w, r1.z
+        mov r2.z, c6.x
+        mov oC, r2
+    }
+    Resource for Technique Technique1 Pass ArmorDev
+    {
+        // "CTAB\x1c\x00\x00\x00\t\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x02\x01\x00\x00\x80\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb4\x00\x00\x00\x00\x00\x00\x00\xc4\x00\x00\x00\x02\x00\x05\x00"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00|\x00\x00\x00`\x00\x00\x00uImageSize0\x00\x01\x00\x03"...
+        def c6 = 0.000000, 6.000000, 1.000000, 0.000000
+        def c7 = 0.159155, 0.500000, 6.283185, -3.141593
+        def c8 = 43758.546875, -2.000000, 3.000000, 4.000000
+        def c9 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c10 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        add r.w, t.y, c2.x
+        mad r.x, r.w, c7.x, c7.y
+        frc r.x, r.x
+        mad r.x, r.x, c7.z, c7.w
+        sincos r1.y, r.x, c9, c10
+        mul r.x, r1.y, c8.x
+        frc r.x, r.x
+        mul r.x, r.x, c.x
+        mul r.x, r.x, c4.x
+        add r.y, r.x, r.x
+        mov r1.x, c5.x
+        mad r.z, t.x, r1.x, -c3.x
+        mul_sat r.z, r.z, c1.x
+        mad r.w, r.z, c8.y, c8.z
+        mul r.z, r.z, r.z
+        mad r.y, r.w, r.z, r.y
+        add r1.x, r.y, -c.x
+        mov r1.y, t.y
+        mov r.w, c8.w
+        mad r2.x, r.x, r.w, -c.x
+        mov r.y, c6.y
+        mad r.x, r.x, r.y, -c.x
+        mov r2.y, c6.x
+        add r2.xy, r2, t
+        mov r.y, c6.x
+        add r.xy, r, t
+        texld r1, r1, s
+        texld r2, r2, s
+        texld r, r, s
+        mov r.x, r1.x
+        mov r.y, r2.y
+        mov r.w, c6.z
+        mul r, r1.w, r
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorPlaid
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSourceRect\x00\x01\x00\x03\x00\x01\x00\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = -2.000000, 3.000000, 0.500000, 0.100000
+        def c4 = 10.000000, 0.127324, 0.500000, -0.200000
+        def c5 = 6.283185, -3.141593, 0.333333, 1.000000
+        def c6 = 0.000000, 0.000000, 0.000000, 0.000000
+        def c7 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c8 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.xy, c1
+        mad r1.yz, t.zxyw, r1.zxyw, -c.zxyw
+        mad r1.z, r1.z, c4.y, c4.z
+        mad r1.x, r1.y, r1.x, -c.x
+        mul_sat r1.x, r1.x, c2.x
+        frc r1.y, r1.z
+        mad r1.y, r1.y, c5.x, c5.y
+        sincos r2.x, r1.y, c7, c8
+        mad r1.y, r2.x, c4.z, c4.w
+        mul_sat r1.y, r1.y, c4.x
+        mad r1.z, r1.y, c3.x, c3.y
+        mul r1.y, r1.y, r1.y
+        mul r1.y, r1.z, r1.y
+        mul r2.y, r1.y, c3.z
+        mad r1.y, r1.x, c3.x, c3.y
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        sincos r3.y, r1.x, c7, c8
+        mad r1.x, r3.y, c3.z, c3.w
+        mul_sat r1.x, r1.x, c4.x
+        mad r1.y, r1.x, c3.x, c3.y
+        mul r1.x, r1.x, r1.x
+        mad r2.x, r1.y, r1.x, -r2.y
+        rcp r1.x, r.w
+        mul r.xy, r, r1.x
+        add r.x, r.y, r.x
+        mad r.x, r.z, r1.x, r.x
+        mul r.xy, r.x, c5.z
+        mul r1.xy, r2, r
+        mov r1.w, c5.w
+        mov r.xy, v
+        mov r.z, v.w
+        mul r1.xy, r1, r
+        mul r1.z, r1.w, r.z
+        mul r2.xy, r.w, r1
+        mul r2.w, r.w, r1.z
+        mov r2.z, c6.x
+        mov oC, r2
+    }
+    Resource for Technique Technique1 Pass ArmorHighContrastGlow
+    {
+        // "CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb4\x00\x00\x00X\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x04\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00x\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c5 = 0.500000, 1.500000, 1.000000, 0.050000
+        def c6 = -0.150000, 0.200000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r.x, r2.w, r2.x
+        add r.y, r2.w, -r2.x
+        mad r.z, r.x, -c5.x, c5.y
+        mov r1.z, c5.z
+        mad r1.xyz, r.z, -c, r1.z
+        mad r1.w, r.x, -c5.x, c5.x
+        mul r2.xyz, r.x, c3
+        cmp r1.xyz, r1.w, r2, r1
+        mad r1.xyz, r.x, -c5.x, r1
+        mul r1.w, r.x, c5.x
+        mul r.x, r.y, c4.x
+        mov r2.x, c6.x
+        mad r.y, r.y, c4.x, r2.x
+        add r.y, r.y, r.y
+        mov r2.x, c1.x
+        mad r.x, r.x, r2.x, c2.x
+        mad r1.xyz, r.x, r1, r1.w
+        mul r1.w, v.x, c5.w
+        mad r.x, v.x, -c5.w, c5.y
+        mad r1.w, r.y, r.x, r1.w
+        mul r1.xyz, r1, r1.w
+        mov r1.w, c5.z
+        mul r, r.w, r1
+        min r1, r, c5.z
+        max r.xyz, v, v.w
+        lrp r2.xyz, c6.y, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorWisp
+    {
+        // "CTAB\x1c\x00\x00\x00\xaf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xa8\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x03\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c4 = 0.333333, -0.200000, -0.400000, 5.000000
+        def c5 = 1.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r.x, r.y, r.x
+        add r.x, r.z, r.x
+        mad r.y, r.x, c4.x, c4.z
+        mad r.x, r.x, c4.x, c4.y
+        mul r.z, r.y, c4.w
+        min r1.w, r.z, c5.x
+        mov r1.xyz, c1
+        mad r1.xyz, r1.w, r1, c2
+        mul r1.w, r.x, c4.w
+        mov r2.xyz, c3
+        mad r2.xyz, r1.w, c, r2
+        cmp r1.xyz, r.y, r1, r2
+        cmp r1.xyz, r.x, r1, c3
+        mov r1.w, c5.x
+        mul r, r.w, r1
+        min r1, r, c5.x
+        max r.xyz, v, v.w
+        lrp r2.xyz, -c4.y, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorLivingFlame
+    {
+        // "CTAB\x1c\x00\x00\x00;\x01\x00\x00\x00\x02\xff\xff\x06\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 4\x01\x00\x00\x94\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x9c\x00\x00\x00\xac\x00\x00\x00\xbc\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xc4\x00\x00\x00\x00\x00\x00\x00\xd4\x00\x00\x00\x02\x00\x04\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSourceRect\x00\x01\x00\x03\x00\x01\x00\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c6 = 0.333333, -2.000000, 3.000000, 0.666667
+        def c7 = 0.795775, 0.500000, 6.283185, -3.141593
+        def c8 = 0.400000, 0.600000, 0.000000, 0.000000
+        def c9 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c10 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c4.x
+        mad r1.x, t.x, r1.w, -c3.x
+        mul_sat r1.x, r1.x, c5.x
+        mad r1.y, r1.x, c6.y, c6.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        add r1.y, r.y, r.x
+        add r1.y, r.z, r1.y
+        mad r1.x, r1.y, c6.w, r1.x
+        mul r1.y, r1.y, c6.x
+        add r1.x, r1.x, c2.x
+        abs r1.z, r1.x
+        frc r1.z, r1.z
+        cmp r1.x, r1.x, r1.z, -r1.z
+        mad r1.x, r1.x, c7.x, c7.y
+        frc r1.x, r1.x
+        mad r1.x, r1.x, c7.z, c7.w
+        sincos r2.x, r1.x, c9, c10
+        mad r1.x, r2.x, -c7.y, c7.y
+        mad r2.xyz, v, c8.x, c8.y
+        mov r3.xyz, c
+        mad r2.xyz, c1, r2, -r3
+        mad r2.xyz, r1.x, r2, c
+        mul r.xyz, r1.y, r2
+        mul r, r, v.w
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorLivingOcean
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x02\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uSourceRect\x00\x01\x00\x03"...
+        def c4 = 0.333333, -2.000000, 3.000000, -0.500000
+        def c5 = 5.000000, 0.999493, 0.500000, 0.000000
+        def c6 = 0.000000, 1.000000, 1.000000, 0.000000
+        def c7 = 6.283185, -3.141593, 0.200000, 0.600000
+        def c8 = 0.000000, -0.900000, 0.000000, 0.000000
+        def c9 = -0.000002, -0.000022, 0.002604, 0.000260
+        def c10 = -0.020833, -0.125000, 1.000000, 0.500000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c3.x
+        mad r1.x, t.x, r1.w, -c2.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c4.y, c4.z
+        mul r1.x, r1.x, r1.x
+        mad r1.x, r1.y, r1.x, c4.w
+        add r1.y, r.y, r.x
+        add r1.y, r.z, r1.y
+        mul r1.y, r1.y, c4.x
+        mul r1.x, r1.x, r1.y
+        mov r1.w, c4.w
+        mad r1.x, r1.x, -r1.w, c1.x
+        mul r1.z, r1.x, c5.x
+        abs r1.z, r1.z
+        frc r1.z, r1.z
+        cmp r1.x, r1.x, r1.z, -r1.z
+        mad r1.x, r1.x, c5.y, c5.z
+        frc r1.x, r1.x
+        mad r1.x, r1.x, c7.x, c7.y
+        sincos r2.x, r1.x, c9, c10
+        mad r1.x, r2.x, -c7.z, c7.w
+        mov r2.xyz, c8
+        mad r2.xyz, r1.x, r2, c6
+        mul r1.xyz, r1.y, r2
+        mul r.xyz, r.w, r1
+        mul r, r, v.w
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorInvert
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        def c0 = 1.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c.x
+        add r1.xyz, -r, c.x
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorLivingRainbow
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x02\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00x\x00\x00\x00`\x00\x00\x00uSourceRect\x00\x01\x00\x03"...
+        def c4 = 0.150000, 0.333000, 0.666000, 0.000000
+        def c5 = 0.500000, -2.000000, 3.000000, 0.400000
+        def c6 = 3.000000, -1.000000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c3.x
+        mad r1.x, t.x, r1.w, -c2.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c5.y, c5.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mov r1.w, c5.w
+        mad r1.x, r1.x, r1.w, c1.x
+        add r1.y, r.y, r.x
+        add r1.y, r.z, r1.y
+        mad r1.x, r1.y, c4.x, r1.x
+        mul r1.y, r1.y, c5.x
+        add r2.xyz, r1.x, c4.wzyx
+        abs r3.xyz, r2
+        frc r3.xyz, r3
+        cmp r2.xyz, r2, r3, -r3
+        mad r2.xyz, r2, c6.x, c6.y
+        abs r2.xyz, r2
+        add r2.xyz, -r2, c6.z
+        mul r1.xyz, r1.y, r2
+        mul r.xyz, r.w, r1
+        min r1, r, c6.z
+        max r.xyz, v, v.w
+        lrp r2.xyz, c5.w, r, v
+        mov r2.w, v.w
+        mul r, r1, r2
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorBrightnessRainbow
+    {
+        // "CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb8\x00\x00\x00X\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00`\x00\x00\x00\x00\x00\x00\x00p\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00\x8c\x00\x00\x00\x9c\x00\x00\x00\x02\x00\x00\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSourceRect\x00\x01\x00\x03\x00\x01\x00\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 0.500000, -2.000000, 3.000000, -1.000000
+        def c4 = -0.400000, 0.266000, -0.067000, 1.800000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c1.x
+        mad r1.x, t.x, r1.w, -c.x
+        mul_sat r1.x, r1.x, c2.x
+        mad r1.y, r1.x, c3.y, c3.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mad r1.xyz, r1.x, c4.w, c4
+        abs r2.xyz, r1
+        frc r2.xyz, r2
+        cmp r1.xyz, r1, r2, -r2
+        mad r1.xyz, r1, c3.z, c3.w
+        abs r1.xyz, r1
+        add r1.xyz, -r1, -c3.w
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        mul r1.w, r1.w, c3.x
+        mul r1.xyz, r1, r1.w
+        mul r.xyz, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredRainbow
+    {
+        // "CTAB\x1c\x00\x00\x00\xef\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe8\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00\x84\x00\x00\x00\x02\x00\x05\x00\x01\x00\x00\x00\x90\x00\x00\x00\xa0\x00\x00\x00\xb0\x00\x00\x00\x02\x00\x03\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff1\x00CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x8c\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00P\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00|\x00\x00\x00`\x00\x00\x00uSaturation\x00\x00\x00\x03"...
+        def c6 = -2.000000, 3.000000, -1.000000, 1.000000
+        def c7 = -0.400000, 0.266000, -0.067000, 1.800000
+        def c8 = 0.500000, 1.500000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c5.x
+        mad r1.x, t.x, r1.w, -c4.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c6.x, c6.y
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mad r1.xyz, r1.x, c7.w, c7
+        abs r2.xyz, r1
+        frc r2.xyz, r2
+        cmp r1.xyz, r1, r2, -r2
+        mad r1.xyz, r1, c6.y, c6.z
+        abs r1.xyz, r1
+        add r1.xyz, -r1, c6.w
+        add r2.xyz, -r1, c6.w
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.w, r.z, r.y
+        min r3.w, r1.w, r.x
+        add r1.w, r2.w, r3.w
+        add r2.w, r2.w, -r3.w
+        mul r2.w, r2.w, c3.x
+        mov r.x, c1.x
+        mad r2.w, r2.w, r.x, c2.x
+        mad r.x, r1.w, -c8.x, c8.y
+        mad r.xyz, r.x, -r2, c6.w
+        mul r1.xyz, r1, r1.w
+        mad r2.x, r1.w, -c8.x, c8.x
+        cmp r.xyz, r2.x, r1, r
+        mad r.xyz, r1.w, -c8.x, r
+        mul r1.x, r1.w, c8.x
+        mad r1.xyz, r2.w, r, r1.x
+        mov r1.w, c6.w
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorBrightnessGradient
+    {
+        // "CTAB\x1c\x00\x00\x00\xeb\x00\x00\x00\x00\x02\xff\xff\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xe4\x00\x00\x00l\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x9c\x00\x00\x00\x00\x00\x00\x00\xac\x00\x00\x00\x02\x00\x04\x00\x01"...
+        // "PRES\x01\x02XF\xfe\xff=\x00CTAB\x1c\x00\x00\x00\xbf\x00\x00\x00\x01\x02XF\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xbc\x00\x00\x00X\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00\x90\x00\x00\x00p\x00\x00\x00\xa0\x00\x00\x00\x02"...
+        def c5 = 0.500000, -2.000000, 3.000000, 0.000000
+        def c6 = 1.800000, -0.400000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c4.x
+        mad r1.x, t.x, r1.w, -c3.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c5.y, c5.z
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mad r1.x, r1.x, c6.x, c6.y
+        mov r2.xyz, c1
+        mad r1.xyz, r1.x, r2, c2
+        add r1.w, r.y, r.x
+        add r1.w, r.z, r1.w
+        mul r1.w, r1.w, c5.x
+        mul r1.xyz, r1, r1.w
+        mul r.xyz, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredAndBlackGradient
+    {
+        // "CTAB\x1c\x00\x00\x00\x1b\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x14\x01\x00\x00\x80\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x02\x00\x07"...
+        // "PRES\x01\x02XF\xfe\xffI\x00CTAB\x1c\x00\x00\x00\xef\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xec\x00\x00\x00l\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00\xa0\x00\x00\x00\x84\x00\x00\x00\xb0\x00\x00\x00"...
+        def c8 = -2.000000, 3.000000, 1.800000, -0.400000
+        def c9 = 0.500000, 1.500000, 1.000000, 0.000000
+        def c10 = 0.660000, 0.330000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c7.x
+        mad r1.x, t.x, r1.w, -c6.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c8.x, c8.y
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mad r1.x, r1.x, c8.z, c8.w
+        mov r2.xyz, c1
+        mad r1.xyz, r1.x, r2, c4
+        add r2.xyz, -r1, c9.z
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.w, r.z, r.y
+        min r3.w, r1.w, r.x
+        add r1.w, r2.w, r3.w
+        add r2.w, r2.w, -r3.w
+        mad r3.x, r1.w, -c9.x, c9.y
+        mad r2.xyz, r3.x, -r2, c9.z
+        mul r1.xyz, r1, r1.w
+        mad r3.x, r1.w, -c9.x, c9.x
+        cmp r1.xyz, r3.x, r1, r2
+        mad r1.xyz, r1.w, -c9.x, r1
+        mul r1.w, r1.w, c9.x
+        mul r2.x, r2.w, c5.x
+        mad r2.y, r2.w, c10.x, c10.y
+        mov r3.x, c2.x
+        mad r2.x, r2.x, r3.x, c3.x
+        mad r1.xyz, r2.x, r1, r1.w
+        mul r1.xyz, r.w, r1
+        mul r.xyz, r2.y, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredGradient
+    {
+        // "CTAB\x1c\x00\x00\x00\x1b\x01\x00\x00\x00\x02\xff\xff\x05\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x14\x01\x00\x00\x80\x00\x00\x00\x02\x00\x04\x00\x01\x00\x00\x00\x88\x00\x00\x00\x98\x00\x00\x00\xa8\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\xb0\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x02\x00\x07"...
+        // "PRES\x01\x02XF\xfe\xffI\x00CTAB\x1c\x00\x00\x00\xef\x00\x00\x00\x01\x02XF\x04\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \xec\x00\x00\x00l\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00t\x00\x00\x00\x84\x00\x00\x00\x94\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00\xa0\x00\x00\x00\x84\x00\x00\x00\xb0\x00\x00\x00"...
+        def c8 = -2.000000, 3.000000, 1.800000, -0.400000
+        def c9 = 0.500000, 1.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mov r1.w, c7.x
+        mad r1.x, t.x, r1.w, -c6.x
+        mul_sat r1.x, r1.x, c.x
+        mad r1.y, r1.x, c8.x, c8.y
+        mul r1.x, r1.x, r1.x
+        mul r1.x, r1.y, r1.x
+        mad r1.x, r1.x, c8.z, c8.w
+        mov r2.xyz, c1
+        mad r1.xyz, r1.x, r2, c4
+        add r2.xyz, -r1, c9.z
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.w, r.z, r.y
+        min r3.w, r1.w, r.x
+        add r1.w, r2.w, r3.w
+        add r2.w, r2.w, -r3.w
+        mul r2.w, r2.w, c5.x
+        mov r.x, c2.x
+        mad r2.w, r2.w, r.x, c3.x
+        mad r.x, r1.w, -c9.x, c9.y
+        mad r.xyz, r.x, -r2, c9.z
+        mul r1.xyz, r1, r1.w
+        mad r2.x, r1.w, -c9.x, c9.x
+        cmp r.xyz, r2.x, r1, r
+        mad r.xyz, r1.w, -c9.x, r
+        mul r1.x, r1.w, c9.x
+        mad r1.xyz, r2.w, r, r1.x
+        mov r1.w, c9.z
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorBrightnessColored
+    {
+        // "CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x84\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00t\x00\x00\x00\x00\x00\x00\x00uColor\x00\xab\x01\x00\x03\x00\x01\x00\x03"...
+        def c1 = 0.333333, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r1.w, r.y, r.x
+        add r1.x, r.z, r1.w
+        mul r1.x, r1.x, c1.x
+        mul r1.xyz, r1.x, c
+        mul r.xyz, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorSilverTrim
+    {
+        // "CTAB\x1c\x00\x00\x00\x8f\x00\x00\x00\x00\x02\xff\xff\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \x88\x00\x00\x00D\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00L\x00\x00\x00\x00\x00\x00\x00\\\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00h\x00\x00\x00x\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSaturation\x00\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c3 = 0.500000, 1.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        add r1.y, r2.w, -r2.x
+        mul r1.y, r1.y, c2.x
+        mov r2.x, c.x
+        mad r1.y, r1.y, r2.x, c1.x
+        mul r1.x, r1.x, c3.x
+        mul r1.x, r1.y, r1.x
+        mul r1.x, r.w, r1.x
+        mul r2.xyz, r, r
+        mad r3.xyz, r1.x, c3.y, -r2
+        mad r.xyz, r1.y, r3, r2
+        min r1, r, c3.z
+        mul r, r1, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredAndSilverTrim
+    {
+        // "CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb4\x00\x00\x00X\x00\x00\x00\x02\x00\x02\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x03\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff%\x00CTAB\x1c\x00\x00\x00_\x00\x00\x00\x01\x02XF\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \\\x00\x00\x000\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00<\x00\x00\x00L\x00\x00\x00uSaturation\x00\x00\x00\x03\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"...
+        def c4 = 0.500000, 1.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        add r1.y, r2.w, -r2.x
+        mul r1.y, r1.y, c3.x
+        mov r2.x, c.x
+        mad r1.y, r1.y, r2.x, c1.x
+        mul r1.x, r1.x, c4.x
+        mul r1.x, r1.y, r1.x
+        mul r1.x, r.w, r1.x
+        mul r2.xyz, r, c2
+        mad r3.xyz, r1.x, c4.y, -r2
+        mad r.xyz, r1.y, r3, r2
+        min r1, r, c4.z
+        mul r, r1, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColoredAndBlack
+    {
+        // "CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb4\x00\x00\x00X\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x04\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00x\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c5 = 0.500000, 1.500000, 1.000000, 0.000000
+        def c6 = 0.660000, 0.330000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r1.x, r2.w, r2.x
+        add r1.y, r2.w, -r2.x
+        mad r1.z, r1.x, -c5.x, c5.y
+        mov r1.w, c5.z
+        mad r2.xyz, r1.z, -c, r1.w
+        mad r2.w, r1.x, -c5.x, c5.x
+        mul r3.xyz, r1.x, c3
+        cmp r2.xyz, r2.w, r3, r2
+        mad r2.xyz, r1.x, -c5.x, r2
+        mul r2.w, r1.x, c5.x
+        mul r1.x, r1.y, c4.x
+        mad r1.y, r1.y, c6.x, c6.y
+        mov r3.x, c1.x
+        mad r1.x, r1.x, r3.x, c2.x
+        mad r2.xyz, r1.x, r2, r2.w
+        mul r2.xyz, r.w, r2
+        mul r.xyz, r1.y, r2
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorColored
+    {
+        // "CTAB\x1c\x00\x00\x00\xbb\x00\x00\x00\x00\x02\xff\xff\x03\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 \xb4\x00\x00\x00X\x00\x00\x00\x02\x00\x03\x00\x01\x00\x00\x00`\x00\x00\x00p\x00\x00\x00\x80\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x00\x88\x00\x00\x00\x00\x00\x00\x00\x98\x00\x00\x00\x02\x00\x04\x00\x01\x00"...
+        // "PRES\x01\x02XF\xfe\xff0\x00CTAB\x1c\x00\x00\x00\x8b\x00\x00\x00\x01\x02XF\x02\x00\x00\x00\x1c\x00\x00\x00\x00\x01\x00 \x88\x00\x00\x00D\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00L\x00\x00\x00\\\x00\x00\x00l\x00\x00\x00\x02\x00\x01\x00\x01\x00\x00\x00x\x00\x00\x00\\\x00\x00\x00uColor\x00\xab\x01\x00\x03"...
+        def c5 = 0.500000, 1.500000, 1.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        max r1.w, r.y, r.z
+        max r2.w, r.x, r1.w
+        min r1.x, r.z, r.y
+        min r2.x, r1.x, r.x
+        add r.x, r2.w, r2.x
+        add r.y, r2.w, -r2.x
+        mul r.y, r.y, c4.x
+        mov r1.x, c1.x
+        mad r.y, r.y, r1.x, c2.x
+        mad r.z, r.x, -c5.x, c5.y
+        mov r1.z, c5.z
+        mad r1.xyz, r.z, -c, r1.z
+        mad r1.w, r.x, -c5.x, c5.x
+        mul r2.xyz, r.x, c3
+        cmp r1.xyz, r1.w, r2, r1
+        mad r1.xyz, r.x, -c5.x, r1
+        mul r1.w, r.x, c5.x
+        mad r1.xyz, r.y, r1, r1.w
+        mov r1.w, c5.z
+        mul r, r.w, r1
+        mul r, r, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ArmorMartian
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        def c0 = 0.000000, 2.000000, 3.000000, 0.500000
+        def c1 = 1.000000, 0.000000, 0.000000, 0.000000
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        add r1.w, r.y, r.x
+        add r1.x, r.z, r1.w
+        max r1.y, r.y, r.z
+        max r2.w, r.x, r1.y
+        mul r.w, r.w, v.w
+        add r1.x, r1.x, -r2.w
+        mad r1.y, r1.x, -c.w, r2.w
+        mul r1.x, r1.x, c.w
+        mul r2.xyz, r.w, c
+        mad r2.xyz, r1.y, r2, r1.x
+        add r2.w, -r1.y, c1.x
+        add r1.xyz, -v, c1.x
+        mad r1.xyz, r1, -r2.w, c1.x
+        mul r.xyz, r2, r1
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass ColorOnly
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mul r, r.w, v
+        mov oC, r
+    }
+    Resource for Technique Technique1 Pass Default
+    {
+        // "CTAB\x1c\x00\x00\x00O\x00\x00\x00\x00\x02\xff\xff\x01\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00 H\x00\x00\x000\x00\x00\x00\x03\x00\x00\x00\x01\x00\x02\x008\x00\x00\x00\x00\x00\x00\x00uImage0\x00\x04\x00\x0c\x00\x01\x00\x01\x00\x01\x00\x00\x00\x00\x00\x00\x00ps_2_0\x00Microsoft (R) HLSL Shader Compiler "...
+        dcl v
+        dcl t.xy
+        dcl_2d s
+        texld r, t, s
+        mul r, r, v
+        mov oC, r
+    }
+}

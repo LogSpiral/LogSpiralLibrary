@@ -39,17 +39,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             writer.Write(KValue);
             base.NetSend(writer);
         }
-        public override void LoadAttribute(XmlReader xmlReader)
-        {
-            mode = (SwooshMode)int.Parse(xmlReader["mode"] ?? "0");
-            base.LoadAttribute(xmlReader);
-        }
-        public override void SaveAttribute(XmlWriter xmlWriter)
-        {
-            xmlWriter.WriteAttributeString("mode", ((int)mode).ToString());
-            base.SaveAttribute(xmlWriter);
-        }
-
         public override float Factor => base.Factor;
 
         //public virtual bool useTransition => false;
@@ -530,21 +519,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         [Slider]
         //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
         public int rangeOffsetMax = 1;
-        public override void LoadAttribute(XmlReader xmlReader)
-        {
-            givenCycle = int.Parse(xmlReader["givenCycle"]);
-            ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
-            rangeOffsetMin = int.Parse(xmlReader["rangeOffsetMin"]);
-            rangeOffsetMax = int.Parse(xmlReader["rangeOffsetMax"]);
-        }
-        public override void SaveAttribute(XmlWriter xmlWriter)
-        {
-            xmlWriter.WriteAttributeString("givenCycle", givenCycle.ToString());
-            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
-            xmlWriter.WriteAttributeString("rangeOffsetMin", rangeOffsetMin.ToString());
-            xmlWriter.WriteAttributeString("rangeOffsetMax", rangeOffsetMax.ToString());
-
-        }
         [ElementCustomDataAbabdoned]
         public override int Cycle { get => realCycle; set => givenCycle = value; }
         public int realCycle;
@@ -625,6 +599,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         [Range(-MathF.PI, MathF.PI)]
         [Increment(0.1f)]
         public float ChargingRotation = 0;
+
+        [ElementCustomData]
+        [Range(-MathF.PI, MathF.PI)]
+        [Increment(0.1f)]
+        public float StartRotation = 0;
         [ElementCustomData]
         public bool AutoNext = false;
         public override void OnCharge()
@@ -701,19 +680,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         break;
                 }
             base.OnEndSingle();
-        }
-
-        public override void LoadAttribute(XmlReader xmlReader)
-        {
-            base.LoadAttribute(xmlReader);
-            ChargingRotation = float.Parse(xmlReader[nameof(ChargingRotation)]);
-            AutoNext = bool.Parse(xmlReader[nameof(AutoNext)]);
-        }
-        public override void SaveAttribute(XmlWriter xmlWriter)
-        {
-            base.SaveAttribute(xmlWriter);
-            xmlWriter.WriteAttributeString(nameof(ChargingRotation), ChargingRotation.ToString());
-            xmlWriter.WriteAttributeString(nameof(AutoNext), AutoNext.ToString());
         }
     }
     /*public class ShockingDashInfo : MeleeAction

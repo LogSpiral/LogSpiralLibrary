@@ -28,316 +28,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         {
         }
     }
-
-    //↓旧版代码
-    /*public interface IMeleeAttackData
-    {
-        //持续时间 角度 位移 修改数据
-        /// <summary>
-        /// 近战数据修改
-        /// </summary>
-        MeleeModifyData ModifyData => new MeleeModifyData();
-        /// <summary>
-        /// 执行次数
-        /// </summary>
-        int Cycle => 1;
-        /// <summary>
-        /// 中心偏移量，默认零向量
-        /// </summary>
-        Vector2 offsetCenter => default;
-        /// <summary>
-        /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
-        /// </summary>
-        Vector2 offsetOrigin => new Vector2(.1f, .9f);
-        /// <summary>
-        /// 当前周期的进度
-        /// </summary>
-        float Factor { get; set; }
-
-        /// <summary>
-        /// 旋转量
-        /// </summary>
-        float Rotation { get; }
-        /// <summary>
-        /// 大小
-        /// </summary>
-        float Size { get; }
-        /// <summary>
-        /// 是否具有攻击性
-        /// </summary>
-        bool Attacktive { get; }
-
-        /// <summary>
-        /// 被切换时调用,脉冲性
-        /// </summary>
-        void OnActive();
-
-        /// <summary>
-        /// 被换走时调用,脉冲性
-        /// </summary>
-        void OnDeactive();
-
-        /// <summary>
-        /// 结束时调用,脉冲性
-        /// </summary>
-        void OnEndAttack();
-
-        /// <summary>
-        /// 开始攻击时调用,脉冲性
-        /// </summary>
-        void OnStartAttack();
-
-        /// <summary>
-        /// 攻击期间调用,持续性
-        /// </summary>
-        void OnAttack();
-
-        /// <summary>
-        /// 攻击以外时间调用,持续性
-        /// </summary>
-        void OnCharge();
-        Condition Condition { get; }
-        void Update(ref int timer, int timerMax, ref bool canReduceTimer);
-        Player Player { get; set; }
-        Projectile Projectile { get; set; }
-    }
-    public class MeleeSequence
-    {
-        public class MeleeGroup
-        {
-            public List<IMeleeAttackData> meleeAttackDatas = new List<IMeleeAttackData>();
-            public IMeleeAttackData GetCurrentMeleeData()
-            {
-                IMeleeAttackData result = null;
-                if (meleeAttackDatas == null || meleeAttackDatas.Count == 0) goto Label;
-                foreach (var meleeAtack in meleeAttackDatas)
-                {
-                    if (meleeAtack.Condition.IsMet())
-                        result = meleeAtack;
-                }
-                result ??= meleeAttackDatas.FirstOrDefault();
-            Label:
-                return result;
-            }
-            public string GroupName = "My MeleeGroup";
-        }
-        /// <summary>
-        /// 把两个类打包在一个类的实用寄巧
-        /// </summary>
-        public class MeleeGSWraper
-        {
-            public readonly MeleeGroup groupInfo;
-            public readonly MeleeSequence sequenceInfo;
-
-            public bool IsGroup => groupInfo != null;
-            public bool IsSequence => sequenceInfo != null;
-            public string Name => groupInfo?.GroupName ?? sequenceInfo.SequenceName ?? "null";
-            public List<MeleeGroup> GetMeleeGroups()
-            {
-                var result = new List<MeleeGroup>();
-                if (IsGroup)
-                {
-                    result.Add(groupInfo);
-                }
-                else if (IsSequence)
-                {
-                    foreach (var wrap in sequenceInfo.meleeWraps)
-                        result.AddRange(wrap.GetMeleeGroups());
-                }
-                return result;
-            }
-            public MeleeGSWraper(MeleeGroup group)
-            {
-                groupInfo = group;
-            }
-
-            public MeleeGSWraper(MeleeSequence sequence)
-            {
-                sequenceInfo = sequence;
-            }
-            public static implicit operator MeleeGSWraper(MeleeGroup group) => new MeleeGSWraper(group);
-            public static implicit operator MeleeGSWraper(MeleeSequence sequence) => new MeleeGSWraper(sequence);
-
-            public bool ContainsSequence(MeleeSequence meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
-            public bool ContainsSequence(int hashCode)
-            {
-                if (IsGroup) return false;
-                if (IsSequence)
-                {
-                    if (sequenceInfo.GetHashCode() == hashCode) return true;
-                    foreach (var wraps in sequenceInfo.meleeWraps)
-                    {
-                        if (wraps.ContainsSequence(hashCode)) return true;
-                    }
-                }
-                return false;
-            }
-        }
-        /// <summary>
-        /// 重新导出动作序列
-        /// </summary>
-        public void Recalculate()
-        {
-            resultGroups.Clear();
-            foreach (var wrap in meleeWraps)
-                resultGroups.AddRange(wrap.GetMeleeGroups());
-            counter = 0;
-            timer = 0;
-            timerMax = 0;
-        }
-        public void Add(IMeleeAttackData meleeAttackData)
-        {
-            MeleeGroup groupStab = new MeleeGroup();
-            groupStab.meleeAttackDatas.Add(meleeAttackData);
-            Add(groupStab);
-        }
-        public void Add(MeleeGSWraper wraper)
-        {
-            if (wraper.ContainsSequence(this))
-            {
-                Main.NewText("不可调用自己");
-                return;
-            }
-            meleeWraps.Add(wraper);
-            Recalculate();
-        }
-        public void Insert(int index, MeleeGSWraper wraper)
-        {
-            if (wraper.ContainsSequence(this))
-            {
-                Main.NewText("不可调用自己");
-                return;
-            }
-            meleeWraps.Insert(index, wraper);
-            Recalculate();
-
-        }
-        public List<MeleeGroup> resultGroups = new List<MeleeGroup>();
-        /// <summary>
-        /// 请不要对这个列表直接add
-        /// </summary>
-        public List<MeleeGSWraper> meleeWraps = new List<MeleeGSWraper>();
-        public IMeleeAttackData currentData;
-        public string SequenceName = "My MeleeSequence";
-        public int counter;
-        public int timer;
-        public int timerMax;
-        public bool Attacktive;
-
-        public void Update(Player player, Projectile projectile)
-        {
-            if (timer <= 0 || currentData == null)
-            {
-                if (currentData != null) currentData.OnDeactive();
-                currentData = resultGroups[counter % resultGroups.Count].GetCurrentMeleeData();
-                currentData.OnActive();
-                currentData.Player = player;
-                currentData.Projectile = projectile;
-                timerMax = timer = (int)(player.itemAnimationMax * currentData.ModifyData.actionOffsetSpeed);
-                counter++;
-            }
-            if (currentData != null)
-            {
-                bool oldValue = Attacktive;
-                Attacktive = currentData.Attacktive;
-                if (!oldValue && Attacktive)
-                {
-                    currentData.OnStartAttack();
-                }
-                if (oldValue && !Attacktive)
-                    currentData.OnEndAttack();
-                if (Attacktive) currentData.OnAttack();
-                else currentData.OnCharge();
-                bool flag = true;
-                currentData.Update(ref timer, timerMax, ref flag);
-                if (flag)
-                    timer--;
-            }
-            player.itemTime = 2;
-        }
-    }
-
-    //public interface IMeleeAttackData
-    //{
-    //    //持续时间 角度 位移 修改数据
-    //    /// <summary>
-    //    /// 近战数据修改
-    //    /// </summary>
-    //    MeleeModifyData ModifyData => new MeleeModifyData();
-    //    /// <summary>
-    //    /// 执行次数
-    //    /// </summary>
-    //    int Cycle => 1;
-    //    /// <summary>
-    //    /// 中心偏移量，默认零向量
-    //    /// </summary>
-    //    Vector2 offsetCenter => default;
-    //    /// <summary>
-    //    /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
-    //    /// </summary>
-    //    Vector2 offsetOrigin => new Vector2(.1f, .9f);
-    //    /// <summary>
-    //    /// 当前周期的进度
-    //    /// </summary>
-    //    float Factor { get; set; }
-
-    //    /// <summary>
-    //    /// 旋转量
-    //    /// </summary>
-    //    float Rotation { get; }
-    //    /// <summary>
-    //    /// 大小
-    //    /// </summary>
-    //    float Size { get; }
-    //    /// <summary>
-    //    /// 是否具有攻击性
-    //    /// </summary>
-    //    bool Attacktive { get; }
-
-    //    /// <summary>
-    //    /// 被切换时调用,脉冲性
-    //    /// </summary>
-    //    void OnActive();
-
-    //    /// <summary>
-    //    /// 被换走时调用,脉冲性
-    //    /// </summary>
-    //    void OnDeactive();
-
-    //    /// <summary>
-    //    /// 结束时调用,脉冲性
-    //    /// </summary>
-    //    void OnEndAttack();
-
-    //    /// <summary>
-    //    /// 开始攻击时调用,脉冲性
-    //    /// </summary>
-    //    void OnStartAttack();
-
-    //    /// <summary>
-    //    /// 攻击期间调用,持续性
-    //    /// </summary>
-    //    void OnAttack();
-
-    //    /// <summary>
-    //    /// 攻击以外时间调用,持续性
-    //    /// </summary>
-    //    void OnCharge();
-    //    void Update(ref int timer, int timerMax, ref bool canReduceTimer);
-    //    //TODO 总有一天要去掉下面这两个b来获取更高的通用度(给npc用之类
-    //    Player Player { get; set; }
-    //    Projectile Projectile { get; set; }
-    //}
-    */
-    //public interface IMeleeAttackData : ISequenceElement
-    //{
-    //    bool Collide(Rectangle rectangle);
-
-    //}
-    //public class MeleeSequence : Sequence<MeleeAction>
-    //{
-    //    public IReadOnlyList<Group> MeleeGroups => Groups;
-    //}
     public abstract class MeleeAction : ModType, ISequenceElement
     {
         public virtual void NetSend(BinaryWriter writer)
@@ -385,10 +75,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         #region 加载 设置 写入
         public virtual void LoadAttribute(XmlReader xmlReader)
         {
-            Cycle = int.Parse(xmlReader["Cycle"]);
-            ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
-
-            var props = GetType().GetProperties();
+            //Cycle = int.Parse(xmlReader["Cycle"]);
+            //ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
+            var type = GetType();
+            var props = type.GetProperties();
             foreach (var prop in props)
             {
                 if (prop.PropertyType.IsAssignableTo(typeof(SeqDelegateDefinition)))
@@ -397,8 +87,46 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     if (str != null)
                         prop.SetValue(this, new SeqDelegateDefinition(str));
                 }
+                if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[prop.Name] is string content)
+                {
+                    object dummy = prop.GetValue(this);
+                    object value = dummy switch
+                    {
+                        int => int.Parse(content),
+                        float => float.Parse(content),
+                        double => double.Parse(content),
+                        bool => bool.Parse(content),
+                        byte => byte.Parse(content),
+                        ActionModifyData => ActionModifyData.LoadFromString(content),
+                        _ => null
+                    };
+                    if (value == null && prop.PropertyType.IsEnum)
+                        value = Enum.GetValues(prop.PropertyType).GetValue(int.Parse(content));
+                    if (value != null)
+                        prop.SetValue(this, value);
+                }
             }
-
+            foreach (var fld in type.GetFields())
+            {
+                if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[fld.Name] is string content)
+                {
+                    object dummy = fld.GetValue(this);
+                    object value = dummy switch
+                    {
+                        int => int.Parse(content),
+                        float => float.Parse(content),
+                        double => double.Parse(content),
+                        bool => bool.Parse(content),
+                        byte => byte.Parse(content),
+                        ActionModifyData => ActionModifyData.LoadFromString(content),
+                        _ => null
+                    };
+                    if (value == null && fld.FieldType.IsEnum)
+                        value = Enum.GetValues(fld.FieldType).GetValue(int.Parse(content));
+                    if (value != null)
+                        fld.SetValue(this, value);
+                }
+            }
             //var str = xmlReader["OnActiveDelegate"];
             //if (str != null) 
             //{
@@ -443,10 +171,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         }
         public virtual void SaveAttribute(XmlWriter xmlWriter)
         {
-            xmlWriter.WriteAttributeString("Cycle", Cycle.ToString());
-            xmlWriter.WriteAttributeString("ModifyData", ModifyData.ToString());
-
-
             var props = GetType().GetProperties();
             foreach (var prop in props)
             {
@@ -456,39 +180,38 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                     if (definition != null && definition.Key != SequenceSystem.NoneDelegateKey)
                         xmlWriter.WriteAttributeString(prop.Name, definition.Key);
                 }
+                if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
+                {
+                    object dummy = prop.GetValue(this);
+
+                    if (prop.PropertyType.IsEnum)
+                        dummy = (int)dummy;
+                    string content = dummy switch
+                    {
+                        float f => f.ToString("0.00"),
+                        double d => d.ToString("0.00"),
+                        _ => dummy.ToString()
+                    };
+                    xmlWriter.WriteAttributeString(prop.Name, content);
+                }
             }
-            //if (OnEndAttackDelegate != null && OnEndAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnEndAttackDelegate", OnEndAttackDelegate.Key);
-            //}
-            //if (OnStartAttackDelegate != null && OnStartAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnStartAttackDelegate", OnStartAttackDelegate.Key);
-            //}
-            //if (OnAttackDelegate != null && OnAttackDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnAttackDelegate", OnAttackDelegate.Key);
-            //}
-            //if (OnChargeDelegate != null && OnChargeDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnChargeDelegate", OnChargeDelegate.Key);
-            //}
-            //if (OnActiveDelegate != null && OnActiveDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnActiveDelegate", OnActiveDelegate.Key);
-            //}
-            //if (OnDeactiveDelegate != null && OnDeactiveDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnDeactiveDelegate", OnDeactiveDelegate.Key);
-            //}
-            //if (OnEndSingleDelegate != null && OnEndSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnEndSingleDelegate", OnEndSingleDelegate.Key);
-            //}
-            //if (OnStartSingleDelegate != null && OnStartSingleDelegate.Key != SequenceSystem.NoneDelegateKey)
-            //{
-            //    xmlWriter.WriteAttributeString("OnStartSingleDelegate", OnStartSingleDelegate.Key);
-            //}
+            foreach (var fld in GetType().GetFields())
+            {
+                if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
+                {
+                    object dummy = fld.GetValue(this);
+
+                    if (fld.FieldType.IsEnum)
+                        dummy = (int)dummy;
+                    string content = dummy switch
+                    {
+                        float f => f.ToString("0.00"),
+                        double d => d.ToString("0.00"),
+                        _ => dummy.ToString()
+                    };
+                    xmlWriter.WriteAttributeString(fld.Name, content);
+                }
+            }
         }
         #endregion
 
@@ -674,7 +397,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             float finalRotation = offsetRotation + standardInfo.standardRotation;
             Vector2 drawCen = offsetCenter + Owner.Center;
             float sc = 1;
-            if (Owner is Player plr) 
+            if (Owner is Player plr)
             {
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
                 drawCen += plr.gfxOffY * Vector2.UnitY;

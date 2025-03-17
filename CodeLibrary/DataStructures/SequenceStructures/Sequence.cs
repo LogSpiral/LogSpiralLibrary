@@ -360,7 +360,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override string DisplayName => SequenceSystem.sequenceInfos[KeyName]?.DisplayName ?? sequenceName;
         public override Sequence Clone()
         {
-            const bool useTempPath = true;
+            const bool useTempPath = false;
             if (!useTempPath)
             {
                 XmlWriterSettings settings = new XmlWriterSettings();

@@ -57,7 +57,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 物品手持中心
         /// </summary>
-        public Vector2 standardOrigin = new Vector2(.1f, .9f);
+        public Vector2 standardOrigin = new(.1f, .9f);
         /// <summary>
         /// 标准持续时长
         /// </summary>
@@ -177,7 +177,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         /// <summary>
         /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
         /// </summary>
-        Vector2 offsetOrigin => new Vector2(.1f, .9f);
+        Vector2 offsetOrigin => new(.1f, .9f);
         /// <summary>
         /// 旋转量
         /// </summary>
@@ -309,7 +309,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public bool IsSequence => SequenceInfo != null;
             public bool Available => IsSequence || IsElement;
             //[CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
-            public ConditionDefinition conditionDefinition = new ConditionDefinition("LogSpiralLibrary", "Always");
+            public ConditionDefinition conditionDefinition = new("LogSpiralLibrary", "Always");
             public Entity owner;
             public Condition Condition => SequenceSystem.ToEntityCondition(
                 conditionDefinition.Name,
@@ -363,11 +363,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             const bool useTempPath = false;
             if (!useTempPath)
             {
-                XmlWriterSettings settings = new XmlWriterSettings();
+                XmlWriterSettings settings = new();
                 settings.Indent = true;
                 settings.Encoding = new UTF8Encoding(false);
                 settings.NewLineChars = Environment.NewLine;
-                MemoryStream stream = new MemoryStream();
+                MemoryStream stream = new();
                 XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
                 WriteContent(xmlWriter);
                 xmlWriter.Dispose();
@@ -386,7 +386,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             }
             else 
             {
-                XmlWriterSettings settings = new XmlWriterSettings();
+                XmlWriterSettings settings = new();
                 settings.Indent = true;
                 settings.Encoding = new UTF8Encoding(false);
                 settings.NewLineChars = Environment.NewLine;
@@ -502,7 +502,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public override void Save() => Save($"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{Mod.Name}/{FileName}.xml");
         public void Save(string path)
         {
-            XmlWriterSettings settings = new XmlWriterSettings();
+            XmlWriterSettings settings = new();
             //要求缩进
             settings.Indent = true;
             //注意如果不设置encoding默认将输出utf-16
@@ -776,7 +776,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 LoadFailedMetaSequence = isSequence;
                 LoadFailedMetaAttributes = [];
             }
-            public static implicit operator Wraper(Sequence<T> sequence) => new Wraper(sequence);
+            public static implicit operator Wraper(Sequence<T> sequence) => new(sequence);
             public bool ContainsSequence(Sequence<T> meleeSequence) => ContainsSequence(meleeSequence.GetHashCode());
             public bool ContainsSequence(int hashCode)
             {
@@ -918,7 +918,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Main.NewText("不可调用自己");
                 return;
             }
-            Group group = new Group();
+            Group group = new();
             group.wrapers.Add(wraper);
             Add(group);
         }
@@ -931,7 +931,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 newGroup = null;
                 return;
             }
-            Group group = new Group();
+            Group group = new();
             group.wrapers.Add(wraper);
             newGroup = group;
             Add(group);
@@ -953,7 +953,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Main.NewText("不可调用自己");
                 return;
             }
-            Group group = new Group();
+            Group group = new();
             group.wrapers.Add(wraper);
             groups.Insert(index, group);
         }
@@ -976,7 +976,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 newGroup = null;
                 return;
             }
-            Group group = new Group();
+            Group group = new();
             group.wrapers.Add(wraper);
             newGroup = group;
             Insert(index, group);

@@ -71,10 +71,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public readonly Color[] colors;
         public static Vector2 offset = default;
         public static Vector2 Projectile(Vector3 vector) => height / (height - vector.Z) * (new Vector2(vector.X, vector.Y) + offset - Main.screenPosition - new Vector2(960, 560)) + Main.screenPosition + new Vector2(960, 560);
-        public CustomVertexInfo this[int index] => new CustomVertexInfo(Projectile(positions[index]), colors[index], vertexs[index]);
-        public CustomVertexInfo A => new CustomVertexInfo(Projectile(positions[0]), colors[0], vertexs[0]);
-        public CustomVertexInfo B => new CustomVertexInfo(Projectile(positions[1]), colors[1], vertexs[1]);
-        public CustomVertexInfo C => new CustomVertexInfo(Projectile(positions[2]), colors[2], vertexs[2]);
+        public CustomVertexInfo this[int index] => new(Projectile(positions[index]), colors[index], vertexs[index]);
+        public CustomVertexInfo A => new(Projectile(positions[0]), colors[0], vertexs[0]);
+        public CustomVertexInfo B => new(Projectile(positions[1]), colors[1], vertexs[1]);
+        public CustomVertexInfo C => new(Projectile(positions[2]), colors[2], vertexs[2]);
         public static CustomVertexInfo[] ToVertexInfo(VertexTriangle3[] tris)
         {
             var vis = new CustomVertexInfo[tris.Length * 3];
@@ -138,10 +138,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public readonly Color[] colors;
         public static Vector2 offset = default;
         public static Vector2 GetRealPosition(Vector2 vector) => vector + offset;
-        public CustomVertexInfo this[int index] => new CustomVertexInfo(GetRealPosition(positions[index]), colors[index], vertexs[index]);
-        public CustomVertexInfo A => new CustomVertexInfo(GetRealPosition(positions[0]), colors[0], vertexs[0]);
-        public CustomVertexInfo B => new CustomVertexInfo(GetRealPosition(positions[1]), colors[1], vertexs[1]);
-        public CustomVertexInfo C => new CustomVertexInfo(GetRealPosition(positions[2]), colors[2], vertexs[2]);
+        public CustomVertexInfo this[int index] => new(GetRealPosition(positions[index]), colors[index], vertexs[index]);
+        public CustomVertexInfo A => new(GetRealPosition(positions[0]), colors[0], vertexs[0]);
+        public CustomVertexInfo B => new(GetRealPosition(positions[1]), colors[1], vertexs[1]);
+        public CustomVertexInfo C => new(GetRealPosition(positions[2]), colors[2], vertexs[2]);
         public static CustomVertexInfo[] ToVertexInfo(VertexTriangle[] tris)
         {
             var vis = new CustomVertexInfo[tris.Length * 3];

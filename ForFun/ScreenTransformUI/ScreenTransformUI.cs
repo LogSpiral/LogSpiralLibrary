@@ -124,7 +124,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             float angle = (float)LogSpiralLibraryMod.ModTime / 60f;
             spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value, center, null, Color.White with { A = 0 } * .5f, angle, new Vector2(118), 64 / 118f, 0, 0);
             spriteBatch.Draw(LogSpiralLibraryMod.MagicZone[12].Value, center, null, Color.White with { A = 0 }, -angle, new Vector2(118), 48 / 118f, 0, 0);
-            Vector2 scale = new Vector2(1, 3);
+            Vector2 scale = new(1, 3);
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.Cyan with { A = 0 } * .5f, angle * 2, new Vector2(36), scale * .75f, 0, 0);
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.Cyan with { A = 0 } * .5f, angle * 2 + MathHelper.PiOver2, new Vector2(36), scale * .75f, 0, 0);
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.White with { A = 0 } * .5f, angle * -2, new Vector2(36), scale * .5f, 0, 0);
@@ -168,8 +168,8 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             Matrix m1 = Matrix.Identity with { M11 = i.X, M12 = i.Y, M21 = j.X, M22 = j.Y };
             m1 = Matrix.Invert(m1);
             pos = Vector2.Transform(pos, m1);
-            Vector3 X = new Vector3(vecs[1].X * (pos.X + 1) - vecs[0].X, vecs[2].X * (pos.Y + 1) - vecs[0].X, vecs[0].X);
-            Vector3 Y = new Vector3(vecs[1].Y * (pos.X + 1) - vecs[0].Y, vecs[2].Y * (pos.Y + 1) - vecs[0].Y, vecs[0].Y);
+            Vector3 X = new(vecs[1].X * (pos.X + 1) - vecs[0].X, vecs[2].X * (pos.Y + 1) - vecs[0].X, vecs[0].X);
+            Vector3 Y = new(vecs[1].Y * (pos.X + 1) - vecs[0].Y, vecs[2].Y * (pos.Y + 1) - vecs[0].Y, vecs[0].Y);
             Matrix result = Matrix.Identity with
             {
                 M11 = X.X,

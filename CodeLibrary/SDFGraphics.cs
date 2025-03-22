@@ -123,8 +123,8 @@ public static class SDFGraphics
         Color borderColor = Color.Black;
 
         #region 帽子
-        Color hatColor = new Color(38, 52, 89);
-        Color beltColor = new Color(244, 233, 167);
+        Color hatColor = new(38, 52, 89);
+        Color beltColor = new(244, 233, 167);
         HasBorderEllipse(position + new Vector2(20, -45), new Vector2(.5f), new Vector2(130, 100), hatColor, border, borderColor, matrix);
 
         HasBorderEllipse(position + new Vector2(100, -75), new(.5f), new Vector2(40, 20), beltColor, border, borderColor, matrix);
@@ -135,7 +135,7 @@ public static class SDFGraphics
         #endregion
 
         #region 裙子
-        Color clothColor = new Color(0, 132, 134);
+        Color clothColor = new(0, 132, 134);
 
         HasBorderQuadraticCircle(position + new Vector2(20, 260) + new Vector2(-50, -10), new Vector2(.5f), 30, new Color(252, 244, 241), border, borderColor, matrix);
         HasBorderQuadraticCircle(position + new Vector2(20, 260) + new Vector2(50, -10), new Vector2(.5f), 30, new Color(252, 244, 241), border, borderColor, matrix);
@@ -182,8 +182,8 @@ public static class SDFGraphics
         #endregion
 
         #region 头发
-        Color hairColor = new Color(218, 241, 235);
-        Color hairColor_Dark = new Color(177, 215, 226);
+        Color hairColor = new(218, 241, 235);
+        Color hairColor_Dark = new(177, 215, 226);
         //中
         HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-45, -60), new(-30, 0), new(5, 10), new(25, -50), new(10, -70)], hairColor, border, borderColor, matrix);
 

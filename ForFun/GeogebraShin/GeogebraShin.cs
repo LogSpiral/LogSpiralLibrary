@@ -158,8 +158,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             var scaler = MathHelper.Lerp(0, MathHelper.Pi * .45f, fac2);
             var (s, c) = MathF.SinCos(336.7f);
             var (s2, c2) = MathF.SinCos(scaler);
-            Matrix matrix = new Matrix
-                (
+            Matrix matrix = new                (
                 1, 0, 0, c * s2,
                 0, 1, 0, s * s2,
                 0, 0, 1, 0,

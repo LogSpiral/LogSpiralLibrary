@@ -16,7 +16,6 @@ using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.IO;
 using Terraria.WorldBuilding;
-using static Terraria.NPC.NPCNameFakeLanguageCategoryPassthrough;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 {
@@ -57,21 +56,33 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         public Action<MeleeAction> _OnStartAttack;
         public Action<MeleeAction> _OnStartSingle;
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnEndAttackDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnStartAttackDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnAttackDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnChargeDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnActiveDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnDeactiveDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnEndSingleDelegate { get; set; } = new SeqDelegateDefinition();
 
+        [ElementCustomData]
         public SeqDelegateDefinition OnStartSingleDelegate { get; set; } = new SeqDelegateDefinition();
+
+        [ElementCustomData]
+        public SeqDelegateDefinition OnHitTargetDelegate { get; set; } = new SeqDelegateDefinition();
+
         #region 加载 设置 写入
         public virtual void LoadAttribute(XmlReader xmlReader)
         {
@@ -81,13 +92,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             var props = type.GetProperties();
             foreach (var prop in props)
             {
-                if (prop.PropertyType.IsAssignableTo(typeof(SeqDelegateDefinition)))
-                {
-                    var str = xmlReader[prop.Name];
-                    if (str != null)
-                        prop.SetValue(this, new SeqDelegateDefinition(str));
-                }
-                if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[prop.Name] is string content)
+                if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[prop.Name] is string content && content.Length != 0)
                 {
                     object dummy = prop.GetValue(this);
                     object value = dummy switch
@@ -98,6 +103,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         bool => bool.Parse(content),
                         byte => byte.Parse(content),
                         ActionModifyData => ActionModifyData.LoadFromString(content),
+                        SeqDelegateDefinition => new SeqDelegateDefinition(content),
                         _ => null
                     };
                     if (value == null && prop.PropertyType.IsEnum)
@@ -108,9 +114,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             }
             foreach (var fld in type.GetFields())
             {
-                if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[fld.Name] is string content)
+                if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null && xmlReader[fld.Name] is string content && content.Length != 0)
                 {
                     object dummy = fld.GetValue(this);
+
                     object value = dummy switch
                     {
                         int => int.Parse(content),
@@ -119,6 +126,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         bool => bool.Parse(content),
                         byte => byte.Parse(content),
                         ActionModifyData => ActionModifyData.LoadFromString(content),
+                        SeqDelegateDefinition => new SeqDelegateDefinition(content),
                         _ => null
                     };
                     if (value == null && fld.FieldType.IsEnum)
@@ -127,59 +135,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         fld.SetValue(this, value);
                 }
             }
-            //var str = xmlReader["OnActiveDelegate"];
-            //if (str != null) 
-            //{
-            //    OnActiveDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnAttackDelegate"];
-            //if (str != null)
-            //{
-            //    OnAttackDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnChargeDelegate"];
-            //if (str != null)
-            //{
-            //    OnChargeDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnEndAttackDelegate"];
-            //if (str != null)
-            //{
-            //    OnEndAttackDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnEndSingleDelegate"];
-            //if (str != null)
-            //{
-            //    OnEndSingleDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnStartAttackDelegate"];
-            //if (str != null)
-            //{
-            //    OnStartAttackDelegate = new (str);
-            //}
-
-            //str = xmlReader["OnStartSingleDelegate"];
-            //if (str != null)
-            //{
-            //    OnStartSingleDelegate = new (str);
-            //}
         }
         public virtual void SaveAttribute(XmlWriter xmlWriter)
         {
             var props = GetType().GetProperties();
             foreach (var prop in props)
             {
-                if (prop.PropertyType.IsAssignableTo(typeof(SeqDelegateDefinition)))
-                {
-                    SeqDelegateDefinition definition = (SeqDelegateDefinition)prop.GetValue(this, null);
-                    if (definition != null && definition.Key != SequenceSystem.NoneDelegateKey)
-                        xmlWriter.WriteAttributeString(prop.Name, definition.Key);
-                }
                 if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
                 {
                     object dummy = prop.GetValue(this);
@@ -188,11 +149,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         dummy = (int)dummy;
                     string content = dummy switch
                     {
-                        float f => f.ToString("0.00"),
-                        double d => d.ToString("0.00"),
+                        float f => f != 0 ? f.ToString("0.00") : null,
+                        double d => d != 0 ? d.ToString("0.00") : null,
+                        SeqDelegateDefinition definition => definition.Key != SequenceSystem.NoneDelegateKey ? definition.Key : null,
                         _ => dummy.ToString()
                     };
-                    xmlWriter.WriteAttributeString(prop.Name, content);
+                    if (content != null)
+                        if (content.Length == 0)
+                        {
+                            int u = 0;
+                        }
+                        else
+                            xmlWriter.WriteAttributeString(prop.Name, content);
                 }
             }
             foreach (var fld in GetType().GetFields())
@@ -205,11 +173,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         dummy = (int)dummy;
                     string content = dummy switch
                     {
-                        float f => f.ToString("0.00"),
-                        double d => d.ToString("0.00"),
+                        float f => f != 0 ? f.ToString("0.00") : null,
+                        double d => d != 0 ? d.ToString("0.00") : null,
+                        SeqDelegateDefinition definition => definition.Key != SequenceSystem.NoneDelegateKey ? definition.Key : null,
                         _ => dummy.ToString()
                     };
-                    xmlWriter.WriteAttributeString(fld.Name, content);
+                    if (content != null)
+                        if (content.Length == 0)
+                        {
+                            int u = 0;
+                        }
+                        else
+                            xmlWriter.WriteAttributeString(fld.Name, content);
                 }
             }
         }
@@ -516,6 +491,10 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         }
         public virtual void OnHitEntity(Entity victim, int damageDone, object[] context)
         {
+            if (OnHitTargetDelegate != null && OnHitTargetDelegate.Key != SequenceSystem.NoneDelegateKey)
+            {
+                SequenceSystem.elementDelegates[OnHitTargetDelegate.Key].Invoke(this);
+            }
             if (Owner is Player player)
                 damageDone /= MathHelper.Clamp(player.GetWeaponDamage(player.HeldItem), 1, int.MaxValue);
             float delta = Main.rand.NextFloat(0.85f, 1.15f) * MathF.Log(damageDone + 1);

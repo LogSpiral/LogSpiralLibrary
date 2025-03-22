@@ -417,7 +417,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 {
                     float num3 = 400f;
                     Vector2 vector = projectile.velocity;
-                    Vector2 vector2 = new Vector2(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
+                    Vector2 vector2 = new(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
                     vector2.Normalize();
                     vector2 *= (float)Main.rand.Next(10, 41) * 0.1f;
                     if (Main.rand.Next(3) == 0)
@@ -923,7 +923,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
 
                 float factor = Utils.GetLerpValue(batTimerMax, 0f, projectile.ai[0], clamped: true);
-                Vector2 projCenter = new Vector2(projectile.localAI[0], projectile.localAI[1]);
+                Vector2 projCenter = new(projectile.localAI[0], projectile.localAI[1]);
                 if (factor >= 0.5f)
                     projCenter = Main.player[projectile.owner].Center;
 
@@ -1030,7 +1030,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //也许叫旋转模式更合适
                 if (mode == 0)
                 {
-                    Vector2 vector3 = new Vector2(projectile.localAI[0], projectile.localAI[1]);
+                    Vector2 vector3 = new(projectile.localAI[0], projectile.localAI[1]);
                     if (factor >= 0.5f)
                         vector3 = Vector2.Lerp(nPC2.Center, Main.player[projectile.owner].Center, 0.5f);
 
@@ -1056,7 +1056,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //处于这个模式时会以冲向目标的形式发起攻击
                 if (mode == 1)
                 {
-                    Vector2 vector5 = new Vector2(projectile.localAI[0], projectile.localAI[1]);
+                    Vector2 vector5 = new(projectile.localAI[0], projectile.localAI[1]);
                     vector5 += new Vector2(0f, Utils.GetLerpValue(0f, 0.4f, factor, clamped: true) * -100f);
                     Vector2 v = nPC2.Center - vector5;
                     Vector2 vector6 = v.SafeNormalize(Vector2.Zero) * MathHelper.Clamp(v.Length(), 60f, 150f);

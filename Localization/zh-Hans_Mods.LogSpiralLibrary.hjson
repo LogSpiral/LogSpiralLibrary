@@ -295,6 +295,11 @@ Configs: {
 			Label: 蓄力角度偏移
 			Tooltip: _
 		}
+
+		StartRotation: {
+			Label: 起始角度偏移
+			Tooltip: _
+		}
 	}
 
 	SwooshInfo: {
@@ -358,6 +363,11 @@ Configs: {
 
 		OnStartSingleDelegate: {
 			Label: 单次开始
+			Tooltip: _
+		}
+
+		OnHitTargetDelegate: {
+			Label: 命中目标时
 			Tooltip: _
 		}
 	}
@@ -564,6 +574,8 @@ Keybinds: {
 Condition: {
 	MouseLeft: 左键
 	MouseRight: 右键
+	ControlUp: 按住上
+	ControlDown: 按住下
 	FrontThreat: 正面胁迫!!
 	SurroundThreat: 四面楚歌!!
 	Always: 总是

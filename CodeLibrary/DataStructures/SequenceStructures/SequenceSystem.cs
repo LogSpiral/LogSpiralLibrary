@@ -185,8 +185,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         {
             p.Write((byte)plrIndex);
             p.Write((byte)ElementTypeIndex);
-            using MemoryStream memoryStream = new MemoryStream();
-            XmlWriterSettings settings = new XmlWriterSettings();
+            using MemoryStream memoryStream = new();
+            XmlWriterSettings settings = new();
             settings.Indent = true;
             settings.Encoding = new UTF8Encoding(false);
             settings.NewLineChars = Environment.NewLine;
@@ -207,7 +207,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             string keyName = r.ReadString();
             int bLength = r.ReadInt32();
             byte[] buffer = r.ReadBytes(bLength);
-            using MemoryStream memoryStream = new MemoryStream(buffer);
+            using MemoryStream memoryStream = new(buffer);
             using XmlReader xmlReader = XmlReader.Create(memoryStream);
             var seq = SequenceSystem.GetLoad(ElementType).Invoke(null, [xmlReader, keyName.Split('/')[0]]);
 
@@ -339,8 +339,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             packet.Write((byte)sequences.Count);
             foreach (var pair in sequences)
             {
-                using MemoryStream stream = new MemoryStream();
-                XmlWriterSettings settings = new XmlWriterSettings();
+                using MemoryStream stream = new();
+                XmlWriterSettings settings = new();
                 settings.Indent = true;
                 settings.Encoding = new UTF8Encoding(false);
                 settings.NewLineChars = Environment.NewLine;
@@ -444,11 +444,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //TODO 增加其它类型实体的判别条件
             entityConditions.Add("MouseLeft", entity => entity switch { Player plr => plr.controlUseItem, _ => false });
             entityConditions.Add("MouseRight", entity => entity switch { Player plr => plr.controlUseTile, _ => false });
+            entityConditions.Add("ControlUp", entity => entity switch { Player plr => plr.controlUp, _ => false });
+            entityConditions.Add("ControlDown", entity => entity switch { Player plr => plr.controlDown, _ => false });
             entityConditions.Add("SurroundThreat", entity => entity switch { Player plr => plr.GetModPlayer<SurroundStatePlayer>().state == SurroundState.SurroundThreat, _ => false });
             entityConditions.Add("FrontThreat", entity => entity switch { Player plr => plr.GetModPlayer<SurroundStatePlayer>().state == SurroundState.FrontThreat, _ => false });
 
+
+
             FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.MouseLeft");
             FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.MouseRight");
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.ControlUp");
+            FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.ControlDown");
             FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.SurroundThreat");
             FastAddStandardEntityCondition("Mods.LogSpiralLibrary.Condition.FrontThreat");
             var fieldInfos = typeof(Condition).GetFields(BindingFlags.Public | BindingFlags.Static);
@@ -620,7 +626,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             foreach (var v in dict.Values)
             {
                 var e = (ISequenceElement)Activator.CreateInstance(v.GetType());
-                WraperBox wraperBox = new WraperBox((Sequence.WraperBase)Activator.CreateInstance(type, [e]));
+                WraperBox wraperBox = new((Sequence.WraperBase)Activator.CreateInstance(type, [e]));
                 wraperBox.WrapperSize();
                 //wraperBox.HAlign = 0.5f;
                 wraperBox.IsClone = true;
@@ -664,7 +670,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Categories = [];
             foreach (var s in currentSequences.Values)
             {
-                WraperBox wraperBox = new WraperBox((Sequence.WraperBase)Activator.CreateInstance(type, [s]));
+                WraperBox wraperBox = new((Sequence.WraperBase)Activator.CreateInstance(type, [s]));
                 wraperBox.sequenceBox.Expand = false;
                 wraperBox.WrapperSize();
                 wraperBox.IsClone = true;
@@ -701,7 +707,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public void ResetPage()
         {
             pageList.Clear();
-            UIButton<string> defPage = new UIButton<string>(Language.GetOrRegister(localizationPath + ".DefaultPage").Value);//"默认页面"
+            UIButton<string> defPage = new(Language.GetOrRegister(localizationPath + ".DefaultPage").Value);//"默认页面"
             defPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Add(defPage);
             defPage.OnLeftClick += (e, evt) => { SwitchToDefaultPage(); };
@@ -709,7 +715,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             //defText.IgnoresMouseInteraction = true;
             //defText.SetSize(default, 1, 1);
             //defPage.Append(defText);
-            UIButton<string> newPage = new UIButton<string>("+");
+            UIButton<string> newPage = new("+");
             newPage.SetSize(new Vector2(32, 0), 0, 1);
 
             newPage.OnLeftClick += (e, evt) =>
@@ -737,7 +743,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             propList.Clear();
             infoList.Clear();
             currentInfo = null;
-            UIText info = new UIText(Language.GetOrRegister(localizationPath + ".DefaultPageHint").Value);
+            UIText info = new(Language.GetOrRegister(localizationPath + ".DefaultPageHint").Value);
             //            "你正处于默认页面，可以在这里选择一个序列以开始编辑。\n" +
             //"成品序列指适于直接给武器使用的完成序列\n" +
             //"库存序列指适于用来辅助组成成品序列可以反复调用的序列\n" +
@@ -753,16 +759,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             libSequencePanel.Left.Set(0, 0.5f);
             WorkingPlacePanel.Append(libSequencePanel);
             WorkingPlacePanel.Append(finishedSequencePanel);
-            UIText fTitle = new UIText(Language.GetOrRegister(localizationPath + ".FinishedSequences"));
+            UIText fTitle = new(Language.GetOrRegister(localizationPath + ".FinishedSequences"));
             fTitle.SetSize(new Vector2(0, 20), 1, 0);
-            UIText lTitle = new UIText(Language.GetOrRegister(localizationPath + ".LibrarySequences"));
+            UIText lTitle = new(Language.GetOrRegister(localizationPath + ".LibrarySequences"));
             lTitle.SetSize(new Vector2(0, 20), 1, 0);
             finishedSequencePanel.Append(fTitle);
             libSequencePanel.Append(lTitle);
             UIList fList = [];
             fList.SetSize(0, -20, 1, 1);
             fList.Top.Set(20, 0);
-            UIScrollbar fScrollbar = new UIScrollbar();
+            UIScrollbar fScrollbar = new();
             fScrollbar.Height.Set(0f, 1f);
             fScrollbar.HAlign = 1f;
             fScrollbar.SetView(100, 1000);
@@ -771,7 +777,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             UIList lList = [];
             lList.SetSize(0, -20, 1, 1);
             lList.Top.Set(20, 0);
-            UIScrollbar lScrollbar = new UIScrollbar();
+            UIScrollbar lScrollbar = new();
             lScrollbar.Height.Set(0f, 1f);
             lScrollbar.HAlign = 1f;
             lScrollbar.SetView(100, 1000);
@@ -901,7 +907,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         public void SequenceToPage(SequenceBox box)
         {
             SoundEngine.PlaySound(SoundID.Unlock);
-            UIButton<string> seqPage = new UIButton<string>(box.sequenceBase.DisplayName);
+            UIButton<string> seqPage = new(box.sequenceBase.DisplayName);
             seqPage.SetSize(new Vector2(128, 0), 0, 1);
             pageList.Insert(pageList.Count - 1, seqPage);
             string hint = Language.GetOrRegister(localizationPath + ".SaveOrRevertPlz").Value;
@@ -922,17 +928,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         }
         public UIButton<string> SequenceToButton(Sequence sequence)
         {
-            UIButton<string> panel = new UIButton<string>(sequence.DisplayName);
+            UIButton<string> panel = new(sequence.DisplayName);
             panel.SetSize(-20, 40, 1, 0);
             //UIText uIText = new UIText(sequence.SequenceNameBase);
-            SequenceBox box = new SequenceBox(sequence);
+            SequenceBox box = new(sequence);
             box.SequenceSize(true);
             //panel.Append(uIText);
             //panel.Append(box);
             //if (SequenceDrawer.box != null && SequenceDrawer.box.sequenceBase.SequenceNameBase == sequence.SequenceNameBase) SequenceDrawer.box = box;
             string filePath = $"PresetSequences/{sequence.ElementTypeName}/{sequence.FileName}.xml";
             bool resetable = sequence.Mod.GetFileNames().Contains(filePath);
-            UIImageButton delete = new UIImageButton(resetable ? Main.Assets.Request<Texture2D>("Images/UI/CharCreation/HairStyle_Arrow") : Main.Assets.Request<Texture2D>("Images/UI/ButtonDelete"));
+            UIImageButton delete = new(resetable ? Main.Assets.Request<Texture2D>("Images/UI/CharCreation/HairStyle_Arrow") : Main.Assets.Request<Texture2D>("Images/UI/ButtonDelete"));
             delete.OnLeftClick += (evt, elem) =>
             {
 
@@ -1014,7 +1020,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             Append(BasePanel);
             UIPanel BottonPanel = new LogSpiralLibraryPanel();
             BottonPanel.SetSize(default, 1.0f, 0.05f);
-            UIImageButton roseButton = new UIImageButton(ModAsset.Rose);
+            UIImageButton roseButton = new(ModAsset.Rose);
             roseButton.OnLeftClick += (evt, elem) =>
             {
                 Utils.OpenToURL("https://space.bilibili.com/259264134");
@@ -1028,7 +1034,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 //Main.instance.MouseText(Language.GetOrRegister(localizationPath + ".OpenHomePage").Value);
             };
             BottonPanel.Append(roseButton);
-            UIImageButton openFolderButton = new UIImageButton(ModAsset.Folder);
+            UIImageButton openFolderButton = new(ModAsset.Folder);
             openFolderButton.OnLeftClick += (evt, elem) =>
             {
                 string path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence";
@@ -1070,7 +1076,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             infoList = [];
             infoList.SetSize(-20, -20, 1f, 1f);
             infoList.Top.Set(20, 0);
-            UIScrollbar infoScrollBar = new UIScrollbar();
+            UIScrollbar infoScrollBar = new();
             infoScrollBar.SetView(100f, 1000f);
             infoScrollBar.Height.Set(0f, 1f);
             infoScrollBar.HAlign = 1f;
@@ -1078,14 +1084,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             InfoPanel.Append(infoScrollBar);
             infoList.SetScrollbar(infoScrollBar);
             BasePanel.Append(InfoPanel);
-            UIText infoTitle = new UIText(Language.GetOrRegister(localizationPath + ".InfoTitle").Value);
+            UIText infoTitle = new(Language.GetOrRegister(localizationPath + ".InfoTitle").Value);
             infoTitle.SetSize(0, 20, 1, 0);
             InfoPanel.Append(infoTitle);
             UIPanel PropertyPanel = new LogSpiralLibraryPanel();
             PropertyPanel.SetSize(default, 0.15f, 0.6f);
             PropertyPanel.Top.Set(0, 0.4f);
             BasePanel.Append(PropertyPanel);
-            UIText propTitle = new UIText(Language.GetOrRegister(localizationPath + ".PropTitle").Value);
+            UIText propTitle = new(Language.GetOrRegister(localizationPath + ".PropTitle").Value);
             propTitle.SetSize(0, 20, 1, 0);
             PropertyPanel.Append(propTitle);
             propList = [];
@@ -1147,7 +1153,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             actionScrollbar.Height.Set(0f, 1f);
             actionScrollbar.HAlign = 1f;
             ActionLibraryPanel.Append(actionScrollbar);
-            UIText actionTitle = new UIText(Language.GetOrRegister(localizationPath + ".ActionLibrary").Value);
+            UIText actionTitle = new(Language.GetOrRegister(localizationPath + ".ActionLibrary").Value);
             actionTitle.SetSize(0, 20, 1, 0);
             ActionLibraryPanel.Append(actionTitle);
             actionLib.SetScrollbar(actionScrollbar);
@@ -1166,7 +1172,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             SequenceLibraryPanel.Append(sequenceScrollbar);
             sequenceLib.SetScrollbar(sequenceScrollbar);
             sequenceLib.Top.Set(20, 0);
-            UIText sequenceTitle = new UIText(Language.GetOrRegister(localizationPath + ".SequenceLibrary").Value);
+            UIText sequenceTitle = new(Language.GetOrRegister(localizationPath + ".SequenceLibrary").Value);
             sequenceTitle.SetSize(0, 20, 1, 0);
             SequenceLibraryPanel.Append(sequenceTitle);
             SequenceLibraryPanel.MinWidth = ActionLibraryPanel.MinWidth = new StyleDimension(400, 0);
@@ -1215,7 +1221,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             BasicInfoPanel.Append(infoList);
 
             //UIButton<string> yesButton = new UIButton<string>("确定");
-            UIButton<string> noButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".Cancel").Value);
+            UIButton<string> noButton = new(Language.GetOrRegister(localizationPath + ".Cancel").Value);
             noButton.BackgroundColor = Color.Red * .7f;
             //yesButton.SetSize(64, 32, 0, 0);
             noButton.SetSize(64, 32, 0, 0);
@@ -1247,7 +1253,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, info, order++);
                 //elem.OnLeftClick += (_evt, uielem) => { };
             }
-            UIScrollbar uIScrollbar = new UIScrollbar();
+            UIScrollbar uIScrollbar = new();
             uIScrollbar.SetView(100f, 1000f);
             uIScrollbar.Height.Set(0f, 1f);
             uIScrollbar.HAlign = 1f;
@@ -1255,7 +1261,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (BasicInfoPanel.Elements.Count > 2 && BasicInfoPanel.Elements[2] is UIScrollbar oldBar)
                 oldBar.Remove();
             BasicInfoPanel.Append(uIScrollbar);
-            UIButton<string> yesButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".OK").Value);
+            UIButton<string> yesButton = new(Language.GetOrRegister(localizationPath + ".OK").Value);
             yesButton.SetSize(64, 32, 0, 0);
             yesButton.Top.Set(-32, 1);
             yesButton.HAlign = 0.125f;
@@ -1413,7 +1419,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
         //[CustomModConfigItem(typeof(SeqStringInputElement))]
         //public string ModName;
         //[CustomSeqConfigItem(typeof(ModDefinitionElement))]
-        public ModDefinition ModDefinition = new ModDefinition("LogSpiralLibrary");
+        public ModDefinition ModDefinition = new("LogSpiralLibrary");
         [JsonIgnore]
         public string ModName => ModDefinition?.Name ?? "UnknownMod";
         //[CustomSeqConfigItem(typeof(SeqDateTimeElement))]
@@ -1485,7 +1491,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             bool flag = wraperBox.wraper.Condition.Description.Key != SequenceSystem.AlwaysConditionKey;
             if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand)
             {
-                ComplexPanelInfo panel = new ComplexPanelInfo();
+                ComplexPanelInfo panel = new();
                 var boxSize = wraperBox.GetSize();
                 //if (flag)
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(0, 16), boxSize + new Vector2(32, 64));
@@ -1524,7 +1530,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Vector2 textSize = font.MeasureString(name);
                 Vector2 boxSize = wraperBox.GetSize();
                 #region 框框
-                ComplexPanelInfo panel = new ComplexPanelInfo();
+                ComplexPanelInfo panel = new();
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 panel.glowEffectColor = Color.Cyan with { A = 0 };
@@ -1710,7 +1716,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             {
                 if (!sequenceBox.Expand || sequenceBox.sequenceBase.FileName != Sequence.SequenceDefaultName)
                 {
-                    UIButton<string> TurnToButton = new UIButton<string>(Language.GetOrRegister(SequenceUI.localizationPath + ".SwitchToSequencePage").Value);
+                    UIButton<string> TurnToButton = new(Language.GetOrRegister(SequenceUI.localizationPath + ".SwitchToSequencePage").Value);
                     TurnToButton.SetSize(new Vector2(0, 32), 0.8f, 0f);
                     TurnToButton.HAlign = 0.5f;
                     list.Add(TurnToButton);
@@ -1729,16 +1735,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 {
                     if (!Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAttribute)) || Attribute.IsDefined(variable.MemberInfo, typeof(ElementCustomDataAbabdonedAttribute)))
                         continue;
+                    if (variable.Type == typeof(SeqDelegateDefinition))
+                        continue;
                     var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, wraper.Element, order++);
                 }
-
-                //TODO 委托挂载优化
-                //foreach (PropertyFieldWrapper variable in props)
-                //{
-                //    if (variable.Type != typeof(SeqDelegateDefinition))
-                //        continue;
-                //    var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, wraper.Element, order++);
-                //}
+                foreach (PropertyFieldWrapper variable in props)
+                {
+                    if (variable.Type != typeof(SeqDelegateDefinition))
+                        continue;
+                    var (container, elem) = SequenceSystem.WrapIt(list, ref top, variable, wraper.Element, order++);
+                }
             }
             base.RightClick(evt);
         }
@@ -1887,7 +1893,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             var position = this.GetDimensions().Position() + new Vector2(0, this.GetDimensions().Height * .5f);
             if (wraperBox.wraper.IsSequence && wraperBox.sequenceBox.Expand && wraperBox.wraper.SequenceInfo.FileName == Sequence.SequenceDefaultName)
             {
-                ComplexPanelInfo panel = new ComplexPanelInfo();
+                ComplexPanelInfo panel = new();
                 var boxSize = wraperBox.WrapperSize();
                 //if (flag)
                 //    panel.destination = Utils.CenteredRectangle(position + boxSize * .5f + new Vector2(0, 16), boxSize + new Vector2(32, 64));
@@ -1921,7 +1927,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
                 Vector2 textSize = font.MeasureString(name);
                 Vector2 boxSize = wraperBox.WrapperSize();
                 #region 框框
-                ComplexPanelInfo panel = new ComplexPanelInfo();
+                ComplexPanelInfo panel = new();
                 panel.destination = Utils.CenteredRectangle(position + new Vector2(boxSize.X, 0) * .5f, boxSize);
                 panel.StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value;
                 if (!wraper.Available)
@@ -2301,7 +2307,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             if (curr == default || sequencebox.CacheRefresh)
             {
                 sequencebox.CacheRefresh = false;
-                Vector2 result = new Vector2(start ? 32 : 0, 0);//sequencebox.startSequence // SequenceConfig.Instance.Step.X * .5f
+                Vector2 result = new(start ? 32 : 0, 0);//sequencebox.startSequence // SequenceConfig.Instance.Step.X * .5f
                 foreach (var group in sequencebox.groupBoxes)
                 {
                     Vector2 delta = GroupSize(group);

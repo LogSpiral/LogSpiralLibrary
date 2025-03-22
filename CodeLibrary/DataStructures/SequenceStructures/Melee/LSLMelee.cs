@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
+using Terraria.ID;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 {
@@ -84,9 +85,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 return fTimer > t && fTimer < t + cutTime;
             }
         }
+
+        static void ShootProjCall(Player plr, int dmg)
+        {
+            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+        }
         public override void OnStartAttack()
         {
-            SoundEngine.PlaySound((standardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1}, Owner?.Center);
+            SoundEngine.PlaySound((standardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1 }, Owner?.Center);
             if (Owner is Player plr)
             {
                 SequencePlayer seqPlayer = plr.GetModPlayer<SequencePlayer>();
@@ -95,14 +101,24 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 if (standardInfo.standardShotCooldown > 0)
                 {
                     float delta = standardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / Cycle;
-                    seqPlayer.cachedTime += delta + 1;
+                    bool canShoot = plr.HeldItem.shoot > ProjectileID.None;
+
+                    float m = Math.Max(standardInfo.standardShotCooldown, delta);
+                    if (canShoot || seqPlayer.cachedTime < m)
+                        seqPlayer.cachedTime += delta + 1;
+                    if (seqPlayer.cachedTime > m)
+                        seqPlayer.cachedTime = m;
                     int count = (int)(seqPlayer.cachedTime / standardInfo.standardShotCooldown);
-                    seqPlayer.cachedTime -= standardInfo.standardShotCooldown * count;
-                    if (count > 0)
+                    if (canShoot)
                     {
-                        count--;
-                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                        seqPlayer.cachedTime -= standardInfo.standardShotCooldown * count;
+                        if (count > 0)
+                        {
+                            count--;
+                            ShootProjCall(plr, dmg);
+                        }
                     }
+
                     Vector2 orig = Main.MouseWorld;
                     Vector2 unit = (orig - plr.Center);//.SafeNormalize(default) * 32f;
                     float angleMax = MathHelper.Pi / 6;
@@ -112,7 +128,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         Vector2 target = plr.Center + unit.RotatedBy(angleMax * Main.rand.NextFloat(-.5f, .5f));
                         Main.mouseX = (int)(target.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                        ShootProjCall(plr, dmg);
+
                     }
                     count /= 2;
                     for (int i = 0; i < count; i++)
@@ -122,18 +139,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                         Vector2 target = plr.Center + unit.RotatedBy(angle);
                         Main.mouseX = (int)(target.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                        ShootProjCall(plr, dmg);
+
 
                         target = plr.Center + unit.RotatedBy(-angle);
                         Main.mouseX = (int)(target.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                        plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                        ShootProjCall(plr, dmg);
+
                     }
                     Main.mouseX = (int)(orig.X - Main.screenPosition.X);
                     Main.mouseY = (int)(orig.Y - Main.screenPosition.Y);
                 }
                 else
-                    plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, dmg);
+                    ShootProjCall(plr, dmg);
+
 
             }
             base.OnStartAttack();
@@ -591,8 +611,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 
     public class ChargingInfo : LSLMelee
     {
-        public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + ChargingRotation * MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3)) * Owner.direction;
-        public override bool Attacktive => base.Attacktive;
+        public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
+        public override bool Attacktive => timer == 1;
         public override float offsetSize => base.offsetSize;
         public override float CompositeArmRotation => base.CompositeArmRotation;
         [ElementCustomData]
@@ -643,7 +663,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 for (int n = 0; n < 40; n++)
                 {
                     OtherMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), standardInfo.standardColor, Main.rand.NextFloat(1, 4));
-                    OtherMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0,64), standardInfo.standardColor, Main.rand.NextFloat(1, 2));
+                    OtherMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), standardInfo.standardColor, Main.rand.NextFloat(1, 2));
 
                 }
             }
@@ -681,6 +701,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 }
             base.OnEndSingle();
         }
+
+        public override bool Collide(Rectangle rectangle) => false;
     }
     /*public class ShockingDashInfo : MeleeAction
     {

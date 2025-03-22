@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input;
 using ReLogic.Content;
 using System;
 using System.Collections;
@@ -153,7 +153,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             {
                 e = new SeqActionModifyDataElement();
             }
-            else if (type == typeof(SeqDelegateDefinitionElement))
+            else if (type == typeof(SeqDelegateDefinition))
             {
                 e = new SeqDelegateDefinitionElement();
             }
@@ -315,8 +315,8 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             //return;
             CalculatedStyle dimensions = GetDimensions();
             float num = dimensions.Width + 1f;
-            Vector2 vector = new Vector2(dimensions.X, dimensions.Y);
-            Vector2 baseScale = new Vector2(0.8f);
+            Vector2 vector = new(dimensions.X, dimensions.Y);
+            Vector2 baseScale = new(0.8f);
             Color baseColor = (base.IsMouseHovering ? Color.White : Color.White);
             if (!MemberInfo.CanWrite)
             {
@@ -332,7 +332,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             //bkColor = new Vector3(MathF.Cos(T * MathHelper.TwoPi) + .5f, MathF.Cos((T + 1 / 3f) * MathHelper.TwoPi) * .5f + .5f, MathF.Cos((T + 2 / 3f) * MathHelper.TwoPi) * .5f + .5f).ToColor();
             if (IsMouseHovering)
                 bkColor = Color.Lerp(bkColor, Color.White with { A = 0 } * .5f, .5f);
-            ComplexPanelInfo panel = new ComplexPanelInfo
+            ComplexPanelInfo panel = new()
             {
                 destination = new Rectangle((int)position.X, (int)position.Y, (int)num, (int)dimensions.Height),
                 StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_1").Value,
@@ -359,6 +359,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             }
             ConfigPreviewSystem.GetModConfigFromElement(this, out var modConfig);
             ConfigPreviewSystem.PreviewDrawing(this, modConfig);
+
             //if (base.IsMouseHovering && TooltipFunction != null)
             //{
             //    string text2 = TooltipFunction();
@@ -390,8 +391,8 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             CalculatedStyle dimensions = base.GetDimensions();
             // "Yes" and "No" since no "True" and "False" translation available
             Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.ItemStack.Value, Value ? Lang.menu[126].Value : Lang.menu[124].Value, new Vector2(dimensions.X + dimensions.Width - 60, dimensions.Y + 8f), Color.White, 0f, Vector2.Zero, new Vector2(0.8f));
-            Rectangle sourceRectangle = new Rectangle(Value ? ((_toggleTexture.Width() - 2) / 2 + 2) : 0, 0, (_toggleTexture.Width() - 2) / 2, _toggleTexture.Height());
-            Vector2 drawPosition = new Vector2(dimensions.X + dimensions.Width - sourceRectangle.Width - 10f, dimensions.Y + 8f);
+            Rectangle sourceRectangle = new(Value ? ((_toggleTexture.Width() - 2) / 2 + 2) : 0, 0, (_toggleTexture.Width() - 2) / 2, _toggleTexture.Height());
+            Vector2 drawPosition = new(dimensions.X + dimensions.Width - sourceRectangle.Width - 10f, dimensions.Y + 8f);
             spriteBatch.Draw(_toggleTexture.Value, drawPosition, sourceRectangle, Color.White, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
         }
     }
@@ -445,9 +446,9 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
                 Increment = (int)IncrementAttribute.Increment;
             }
 
-            UIPanel textBoxBackground = new UIPanel();
+            UIPanel textBoxBackground = new();
             textBoxBackground.SetPadding(0);
-            UIFocusInputTextField uIInputTextField = new UIFocusInputTextField("Type here");
+            UIFocusInputTextField uIInputTextField = new("Type here");
             textBoxBackground.Top.Set(0f, 0f);
             textBoxBackground.Left.Set(-130, 1f);
             textBoxBackground.Width.Set(120, 0f);
@@ -472,7 +473,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             uIInputTextField.OnUnfocus += (a, b) => uIInputTextField.SetText(GetValue().ToString());
             textBoxBackground.Append(uIInputTextField);
 
-            UIModConfigHoverImageSplit upDownButton = new UIModConfigHoverImageSplit(UpDownTexture, "+" + Increment, "-" + Increment);
+            UIModConfigHoverImageSplit upDownButton = new(UpDownTexture, "+" + Increment, "-" + Increment);
             upDownButton.Recalculate();
             upDownButton.Top.Set(4f, 0f);
             upDownButton.Left.Set(-30, 1f);
@@ -590,7 +591,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
             public override void Update(GameTime gameTime)
             {
-                Vector2 point = new Vector2(Main.mouseX, Main.mouseY);
+                Vector2 point = new(Main.mouseX, Main.mouseY);
                 if (!ContainsPoint(point) && Main.mouseLeft)
                 {
                     Focused = false;
@@ -762,7 +763,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             Texture2D colorBarTexture = TextureAssets.ColorBar.Value;
             Vector2 vector = new Vector2((float)colorBarTexture.Width - 60, (float)colorBarTexture.Height) * scale;
             IngameOptions.valuePosition.X -= (float)((int)vector.X);
-            Rectangle rectangle = new Rectangle((int)IngameOptions.valuePosition.X, (int)IngameOptions.valuePosition.Y - (int)vector.Y / 2, (int)vector.X, (int)vector.Y);
+            Rectangle rectangle = new((int)IngameOptions.valuePosition.X, (int)IngameOptions.valuePosition.Y - (int)vector.Y / 2, (int)vector.X, (int)vector.Y);
             Rectangle destinationRectangle = rectangle;
             int num = 107 + (int)Math.Cos(LogSpiralLibraryMod.ModTime / 60) * 30;
             float num2 = rectangle.X + 5f * scale;
@@ -853,7 +854,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 
             CalculatedStyle dimensions = GetDimensions();
             float num3 = dimensions.Width + 1f;
-            Vector2 vector = new Vector2(dimensions.X, dimensions.Y);
+            Vector2 vector = new(dimensions.X, dimensions.Y);
             bool flag2 = IsMouseHovering;
 
             if (num2 == 1)
@@ -1834,7 +1835,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             DataList.ListPadding = 5f;
             DataListElement.Append(DataList);
 
-            UIScrollbar scrollbar = new UIScrollbar();
+            UIScrollbar scrollbar = new();
             scrollbar.SetView(100f, 1000f);
             scrollbar.Height.Set(-16f, 1f);
             scrollbar.Top.Set(6f, 0f);
@@ -2088,7 +2089,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
                     wrapped.Item2.Width.Pixels -= 30;
 
                     // Add delete button.
-                    UIModConfigHoverImage deleteButton = new UIModConfigHoverImage(DeleteTexture, Language.GetTextValue("tModLoader.ModConfigRemove"));
+                    UIModConfigHoverImage deleteButton = new(DeleteTexture, Language.GetTextValue("tModLoader.ModConfigRemove"));
                     deleteButton.VAlign = 0.5f;
                     deleteButton.OnLeftClick += (a, b) => { ((IList)Data).RemoveAt(index); SetupList(); InternalOnSetObject(); /*Interface.modConfig.SetPendingChanges();*/ };
                     wrapped.Item1.Append(deleteButton);

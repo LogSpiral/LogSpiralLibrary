@@ -58,14 +58,14 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             base.SetUpSequence(meleeSequence, modName, fileName);
             return;
             //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
-            SwooshInfo swooshInfo = new SwooshInfo()
+            SwooshInfo swooshInfo = new()
             {
                 Cycle = 4,
                 KValue = 3,
                 ModifyData = new(1, 4f)
             };
             meleeSequence.Add(swooshInfo);
-            RapidlyStabInfo stabInfo = new RapidlyStabInfo()
+            RapidlyStabInfo stabInfo = new()
             {
                 Cycle = 5,
                 CycleOffsetRange = (0, 1),
@@ -73,7 +73,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             };
             stabInfo.KValue = 3;
             meleeSequence.Add(stabInfo);
-            ConvoluteInfo convoluteInfo = new ConvoluteInfo() 
+            ConvoluteInfo convoluteInfo = new() 
             { 
                 Cycle = 4,
                 ModifyData = new (1,2f)

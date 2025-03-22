@@ -188,7 +188,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
         //分别是标准参数
         //目前执行组件
         //更新函数
-        public virtual StandardInfo StandardInfo => new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+        public virtual StandardInfo StandardInfo => new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
         public MeleeAction currentData => meleeSequence?.currentData;
         public override void AI()
         {
@@ -216,8 +216,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
             {
                 flag1 = true;
                 player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
-            }    
-
+            }
+            int prev = -1;
             bool flag2 = false;//次要-持续条件
             if (currentData != null)
             {
@@ -225,6 +225,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
                 flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
                                                                                             //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
                                                                                             //Main.NewText(currentData.Cycle);
+                prev = currentData.timer;
             }
             if (
                flag1 || flag2// 
@@ -239,6 +240,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee
 
             //依旧是常规赋值，但是要中间那段执行正常才应当执行
             Projectile.Center = player.Center + currentData.offsetCenter + player.gfxOffY * Vector2.UnitY;
+            //if (prev != currentData.timer - 1) 
+            //{
+            //    player.itemAnimation = currentData.timer;
+            //    player.itemTime = currentData.timer;
+
+            //    //player.itemAnimationMax = currentData.timerMax;
+            //    //player.itemTimeMax = currentData.timerMax;
+            //}
             if (player.itemAnimation < 2)
                 player.itemAnimation = 2;
             if (player.itemTime < 2)

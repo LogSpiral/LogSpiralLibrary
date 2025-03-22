@@ -831,14 +831,14 @@ namespace LogSpiralLibrary.CodeLibrary
         public static MatrixEX GetMatrix(int n)
         {
             if (c_Matrixes.Count > n) return c_Matrixes[n];
-            MatrixEX M = new MatrixEX(n + 1,
+            MatrixEX M = new(n + 1,
                 (i, j) =>
                 {
                     double t = (1 + i) / (n + 2f);
                     return Math.Pow(1 - t, n - j + 1) * Math.Pow(t, j + 1) * c_Vectors[n][j + 1];
                 }
                 );
-            MatrixEX T = new MatrixEX(n + 1, 2,
+            MatrixEX T = new(n + 1, 2,
                 (i, j) =>
                 {
                     double t = (1 + i) / (n + 2f);

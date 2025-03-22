@@ -61,7 +61,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         [Slider]
         [DrawTicks]
         public int SkyStyle = 1;
-        public Color glowColor = new Color(152, 74, 255);//166,17,240//255,55,225//255,153,240
+        public Color glowColor = new(152, 74, 255);//166,17,240//255,55,225//255,153,240
         [Range(0, 1f)]
         public float tier1 = 0.2f;
         [Range(0, 1f)]

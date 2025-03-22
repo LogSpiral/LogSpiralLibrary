@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.UI;
@@ -276,7 +276,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Vector2 vector50 = new Vector2(point6.X, num255) * 16f + new Vector2(8f);
             Vector2 vector51 = new Vector2(point6.X, num256) * 16f + new Vector2(8f);
             Vector2.Lerp(vector50, vector51, 0.5f);
-            Vector2 vector52 = new Vector2(0f, vector51.Y - vector50.Y);
+            Vector2 vector52 = new(0f, vector51.Y - vector50.Y);
             vector52.X = vector52.Y * num257;
             _ = new Vector2(vector50.X - vector52.X / 2f, vector50.Y);
             Texture2D texture2D29 = TextureAssets.Projectile[projectile.type].Value;
@@ -300,7 +300,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 double radians8 = (double)num263;
                 center = default;
                 Vector2 vector54 = spinningpoint5.RotatedBy(radians8, center);
-                Vector2 vector55 = new Vector2(0f, num262 + 1f);
+                Vector2 vector55 = new(0f, num262 + 1f);
                 vector55.X = vector55.Y * num257;
                 Color color49 = Color.Lerp(Color.Transparent, c1, num262 * 2f);
                 if (num262 > 0.5f)
@@ -328,7 +328,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Vector2 top = projectile.Top;
             Vector2 bottom = projectile.Bottom;
             Vector2.Lerp(top, bottom, 0.5f);
-            Vector2 vector56 = new Vector2(0f, bottom.Y - top.Y);
+            Vector2 vector56 = new(0f, bottom.Y - top.Y);
             vector56.X = vector56.Y * num267;
             _ = new Vector2(top.X - vector56.X / 2f, top.Y);
             Texture2D texture2D30 = TextureAssets.Projectile[projectile.type].Value;
@@ -372,7 +372,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 double radians10 = (double)num274;
                 center = default;
                 Vector2 vector58 = spinningpoint6.RotatedBy(radians10, center);
-                Vector2 vector59 = new Vector2(0f, num273 + 1f);
+                Vector2 vector59 = new(0f, num273 + 1f);
                 vector59.X = vector59.Y * num267;
                 Color color51 = Color.Lerp(Color.Transparent, c1, num273 * 2f);
                 if (num273 > 0.5f)
@@ -549,7 +549,7 @@ namespace LogSpiralLibrary.CodeLibrary
             Projectile.FillWhipControlPoints(proj, list);
             Texture2D value = TextureAssets.FishingLine.Value;
             Rectangle value2 = value.Frame();
-            Vector2 origin = new Vector2(value2.Width / 2, 2f);
+            Vector2 origin = new(value2.Width / 2, 2f);
             Color originalColor = Color.White;
             Vector2 value3 = list[0];
             for (int i = 0; i < list.Count - 1; i++)
@@ -558,7 +558,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 Vector2 vector2 = list[i + 1] - vector;
                 float rotation = vector2.ToRotation() - (float)Math.PI / 2f;
                 Color color = Lighting.GetColor(vector.ToTileCoordinates(), originalColor);
-                Vector2 scale = new Vector2(1f, (vector2.Length() + 2f) / (float)value2.Height);
+                Vector2 scale = new(1f, (vector2.Length() + 2f) / (float)value2.Height);
                 Main.spriteBatch.Draw(value, value3 - Main.screenPosition, value2, color, rotation, origin, scale, SpriteEffects.None, 0f);
                 value3 += vector2;
             }
@@ -855,10 +855,10 @@ namespace LogSpiralLibrary.CodeLibrary
         public static void DrawProjWithStarryTrail(this Projectile projectile, SpriteBatch spriteBatch, float drawColor, Color projectileColor)
         {
             //GameTime gameTime = new GameTime();
-            Color color = new Color(255, 255, 255, (int)projectileColor.A - projectile.alpha);
+            Color color = new(255, 255, 255, (int)projectileColor.A - projectile.alpha);
             Vector2 vector = projectile.velocity;
             Color value = Color.Blue * 0.1f;
-            Vector2 spinningpoint = new Vector2(0f, -4f);
+            Vector2 spinningpoint = new(0f, -4f);
             float num = 0f;
             float t = vector.Length();
             float scale = GetLerpValue(3f, 5f, t, true);
@@ -873,7 +873,7 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 vector *= 5f / num2;
             }
-            Vector2 origin = new Vector2(projectile.ai[0], projectile.ai[1]);
+            Vector2 origin = new(projectile.ai[0], projectile.ai[1]);
             Vector2 center = Main.player[projectile.owner].Center;
             float num3 = GetLerpValue(0f, 120f, Vector2.Distance(origin, center), true);
             float num4 = 90f;
@@ -897,9 +897,9 @@ namespace LogSpiralLibrary.CodeLibrary
             //new Microsoft.Xna.Framework.Rectangle(0, 0, value3.Width, value3.Height).Size() /= 2f;
             Texture2D value4 = Misc[14].Value;
             Rectangle rectangle = Utils.Frame(value4, 1, 1, 0, 0, 0, 0);
-            Vector2 origin2 = new Vector2((float)rectangle.Width / 2f, 10f);
+            Vector2 origin2 = new((float)rectangle.Width / 2f, 10f);
             //Microsoft.Xna.Framework.Color.Cyan * 0.5f * scale;
-            Vector2 value5 = new Vector2(0f, projectile.gfxOffY);
+            Vector2 value5 = new(0f, projectile.gfxOffY);
             float num7 = (float)Main.time / 60f;
             Vector2 value6 = value2 + vector * 0.5f;
             Color value7 = Color.White * 0.5f * scale;
@@ -1030,7 +1030,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
             }
 
-            Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+            Vector2 unit2 = new(-unit.Y, unit.X);
             if (texcoord == default) texcoord = (0, 0, 1, 1);
             bars1.Add(new CustomVertexInfo(start + unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y1, light)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y2, light)));
@@ -1116,7 +1116,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
                 }
 
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, alpha, new Vector3(0, 0, light)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(1, 0, 0)));
@@ -1157,7 +1157,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
             }
 
-            Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+            Vector2 unit2 = new(-unit.Y, unit.X);
             if (texcoord == default) texcoord = (0, 0, 1, 1);
             bars1.Add(new CustomVertexInfo(start + unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y1, light)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(texcoord.x1, texcoord.y2, light)));
@@ -1243,7 +1243,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
                 }
 
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, alpha, new Vector3(0, 0, light)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, alpha, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, alpha, new Vector3(1, 0, 0)));
@@ -1284,7 +1284,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
             }
 
-            Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+            Vector2 unit2 = new(-unit.Y, unit.X);
             bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, light)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, light)));
             bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, 0)));
@@ -1349,7 +1349,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     unit = unit.RotatedBy(Main.rand.NextFloat(-shakeRadMax, shakeRadMax));
                 }
 
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, light)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, light)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, 0)));
@@ -1406,7 +1406,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 effect.CurrentTechnique.Passes[0].Apply();
                 List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, endLight)));
@@ -1460,7 +1460,7 @@ namespace LogSpiralLibrary.CodeLibrary
             {
                 List<CustomVertexInfo> bars1 = [];
                 var unit = _unit;
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(start + unit2 * width + length * unit, color, new Vector3(1, 0, endLight)));
@@ -1508,7 +1508,7 @@ namespace LogSpiralLibrary.CodeLibrary
             List<CustomVertexInfo> bars1 = [];
             var unit = Vector2.Normalize(end - start);
             //unit.Normalize();
-            Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+            Vector2 unit2 = new(-unit.Y, unit.X);
             bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
             bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
             bars1.Add(new CustomVertexInfo(end + unit2 * width, color, new Vector3(1, 0, endLight)));
@@ -1557,7 +1557,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 List<CustomVertexInfo> bars1 = [];
                 var unit = Vector2.Normalize(end - start);
                 //unit.Normalize();
-                Vector2 unit2 = new Vector2(-unit.Y, unit.X);
+                Vector2 unit2 = new(-unit.Y, unit.X);
                 bars1.Add(new CustomVertexInfo(start + unit2 * width, color, new Vector3(0, 0, startLight)));
                 bars1.Add(new CustomVertexInfo(start - unit2 * width, color, new Vector3(0, 1, startLight)));
                 bars1.Add(new CustomVertexInfo(end + unit2 * width, color, new Vector3(1, 0, endLight)));
@@ -1695,7 +1695,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 //rasterizerState.CullMode = CullMode.None;
                 //rasterizerState.FillMode = FillMode.WireFrame;
                 //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
-                RasterizerState rasterizerState = new RasterizerState
+                RasterizerState rasterizerState = new()
                 {
                     CullMode = CullMode.None
                 };
@@ -1780,7 +1780,7 @@ namespace LogSpiralLibrary.CodeLibrary
             //rasterizerState.CullMode = CullMode.None;
             //rasterizerState.FillMode = FillMode.WireFrame;
             //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
-            RasterizerState rasterizerState = new RasterizerState
+            RasterizerState rasterizerState = new()
             {
                 CullMode = CullMode.None
             };
@@ -1821,7 +1821,7 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            RasterizerState rasterizerState = new RasterizerState
+            RasterizerState rasterizerState = new()
             {
                 CullMode = CullMode.None
             };
@@ -1846,7 +1846,7 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            RasterizerState rasterizerState = new RasterizerState
+            RasterizerState rasterizerState = new()
             {
                 CullMode = CullMode.None
             };
@@ -1871,7 +1871,7 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            RasterizerState rasterizerState = new RasterizerState
+            RasterizerState rasterizerState = new()
             {
                 CullMode = CullMode.None
             };
@@ -1896,7 +1896,7 @@ namespace LogSpiralLibrary.CodeLibrary
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            RasterizerState rasterizerState = new RasterizerState
+            RasterizerState rasterizerState = new()
             {
                 CullMode = CullMode.None
             };
@@ -2069,7 +2069,7 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 处理颜色的奇怪函数
-        public static Color ToColor(this Vector3 vector) => new Color(vector.X, vector.Y, vector.Z);
+        public static Color ToColor(this Vector3 vector) => new(vector.X, vector.Y, vector.Z);
         /// <summary>
         /// 获取颜色的亮度
         /// </summary>
@@ -2752,6 +2752,69 @@ namespace LogSpiralLibrary.CodeLibrary
     public static class VectorMethods
     {
         #region 向量
+        public static void GetClosestVectorsFromNPC(Vector2 center, int count, float maxDistance, out int[] indexs, out float[] Dists)
+            => GetClosestVectors(center, from target in Main.npc
+                                         where !target.friendly && target.CanBeChasedBy() && target.active
+                                         select (target.Center, target.whoAmI), count, maxDistance, out indexs, out Dists);
+
+        public static void GetClosestVectors(Vector2 center, IEnumerable<Vector2> vectors, int count, float maxDistance, out int[] indexs, out float[] Dists)
+        {
+            if (count < 1) throw new ArgumentException("count must be greater than zero.");
+            indexs = new int[count];
+            Dists = new float[count];
+            Array.Fill(indexs, -1);
+            Array.Fill(Dists, float.PositiveInfinity);
+            int counter = -1;
+            foreach (var target in vectors)
+            {
+                counter++;
+                float d = (target - center).Length();
+                if (d > maxDistance) continue;
+                for (int k = 0; k < count; k++)
+                {
+                    if (d < Dists[k])
+                    {
+                        for (int j = count - 1 - k; j > 0; j--)
+                        {
+                            indexs[j] = indexs[j - 1];
+                            Dists[j] = Dists[j - 1];
+                        }
+                        indexs[k] = counter;
+                        Dists[k] = d;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public static void GetClosestVectors(Vector2 center, IEnumerable<(Vector2 vec, int index)> vectors, int count, float maxDistance, out int[] indexs, out float[] Dists)
+        {
+            if (count < 1) throw new ArgumentException("count must be greater than zero.");
+            indexs = new int[count];
+            Dists = new float[count];
+            Array.Fill(indexs, -1);
+            Array.Fill(Dists, float.PositiveInfinity);
+            foreach (var (vec, index) in vectors)
+            {
+                float d = (vec - center).Length();
+                if (d > maxDistance) continue;
+                for (int k = 0; k < count; k++)
+                {
+                    if (d < Dists[k])
+                    {
+                        for (int j = count - 1 - k; j > 0; j--)
+                        {
+                            indexs[j] = indexs[j - 1];
+                            Dists[j] = Dists[j - 1];
+                        }
+                        indexs[k] = index;
+                        Dists[k] = d;
+                        break;
+                    }
+                }
+            }
+        }
+
         public static (Vector2, float) AvgStd(this IEnumerable<Vector2> vectors) => (vectors.Avg(), vectors.Std());
         /// <summary>
         /// 求向量的标准差
@@ -3036,7 +3099,7 @@ namespace LogSpiralLibrary.CodeLibrary
             List<Vector2> result = [vec];
             do
             {
-                Vector2 dir = new Vector2(0, -1);
+                Vector2 dir = new(0, -1);
                 float value = -20000;
                 foreach (var v in vecs)//.DifferenceSet(result)
                 {
@@ -3179,7 +3242,7 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public static class OtherMethods
     {
-        public static void FastDust(Vector2 Center, Vector2 velocity, Color color,float scaler)
+        public static void FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler)
         {
             var hsl = Main.rgbToHsl(color);//Color.MediumPurple
             var dustColor = Color.Lerp(Main.hslToRgb(Vector3.Clamp(hsl * new Vector3(1, 2, Main.rand.NextFloat(0.85f, 1.15f)), default, Vector3.One)), Color.White, Main.rand.NextFloat(0, 0.3f));
@@ -3844,12 +3907,12 @@ namespace LogSpiralLibrary.CodeLibrary
             Vector2 v = end - start;
             v.Normalize();
             v = new Vector2(v.Y, -v.X);
-            Triangle t1 = new Triangle(start + v * width, start - v * width, end + v * width);
-            Triangle t2 = new Triangle(end + v * width, end - v * width, start - v * width);
-            Triangle t3 = new Triangle(new Vector2(hitbox.X, hitbox.Y),
+            Triangle t1 = new(start + v * width, start - v * width, end + v * width);
+            Triangle t2 = new(end + v * width, end - v * width, start - v * width);
+            Triangle t3 = new(new Vector2(hitbox.X, hitbox.Y),
                 new Vector2(hitbox.X, hitbox.Y + hitbox.Height),
                 new Vector2(hitbox.X + hitbox.Width, hitbox.Y + hitbox.Width));
-            Triangle t4 = new Triangle(new Vector2(hitbox.X, hitbox.Y),
+            Triangle t4 = new(new Vector2(hitbox.X, hitbox.Y),
                 new Vector2(hitbox.X + hitbox.Width, hitbox.Y),
                 new Vector2(hitbox.X + hitbox.Width, hitbox.Y + hitbox.Width));
             if (Triangle.Intersect(t1, t3))
@@ -4119,7 +4182,7 @@ namespace LogSpiralLibrary.CodeLibrary
             if (new Rectangle((int)mountedCenter.X, (int)mountedCenter.Y, 0, 0).Intersects(new Rectangle((int)(X + Main.screenPosition.X), (int)(Y + Main.screenPosition.Y), Width, Hegiht)))
             {
                 string name = text;
-                Vector2 worldPos = new Vector2(mountedCenter.X + 15, mountedCenter.Y + 15);
+                Vector2 worldPos = new(mountedCenter.X + 15, mountedCenter.Y + 15);
                 Vector2 size = FontAssets.MouseText.Value.MeasureString(name);
                 Vector2 texPos = worldPos + new Vector2(-size.X * 0.5f, name.Length) - Main.screenPosition;
                 DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, name, texPos.X, texPos.Y, color1, color2, Vector2.Zero);
@@ -4195,9 +4258,9 @@ namespace LogSpiralLibrary.CodeLibrary
 
             targetSpot = center + vectorTowardsTarget.SafeNormalize(Vector2.Zero) * num;
             point = targetSpot.ToTileCoordinates();
-            Rectangle value = new Rectangle(point.X, point.Y, 1, 1);
+            Rectangle value = new(point.X, point.Y, 1, 1);
             value.Inflate(6, 16);
-            Rectangle value2 = new Rectangle(0, 0, Main.maxTilesX, Main.maxTilesY);
+            Rectangle value2 = new(0, 0, Main.maxTilesX, Main.maxTilesY);
             value2.Inflate(-40, -40);
             value = Rectangle.Intersect(value, value2);
             List<Point> list = [];
@@ -4209,7 +4272,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     if (!WorldGen.SolidTile(j, k))
                         continue;
 
-                    Vector2 value3 = new Vector2(j * 16 + 8, k * 16 + 8);
+                    Vector2 value3 = new(j * 16 + 8, k * 16 + 8);
                     if (!(Vector2.Distance(targetSpot, value3) > 200f))
                     {
                         if (FindSharpTearsOpening(j, k, j > point.X, j < point.X, k > point.Y, k < point.Y))

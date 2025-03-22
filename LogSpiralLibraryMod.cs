@@ -765,7 +765,7 @@ namespace LogSpiralLibrary
         public override ConfigScope Mode => ConfigScope.ClientSide;
         public static LogSpiralLibraryMiscConfig Instance => ModContent.GetInstance<LogSpiralLibraryMiscConfig>();
         [CustomModConfigItem(typeof(AvailableConfigElement))]
-        public ShakingSetting screenShakingSetting = new ShakingSetting();
+        public ShakingSetting screenShakingSetting = new();
         public class ShakingSetting : IAvailabilityChangableConfig
         {
             public bool Available { get; set; } = true;

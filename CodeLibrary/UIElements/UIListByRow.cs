@@ -20,11 +20,11 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
             public override void DrawChildren(SpriteBatch spriteBatch)
             {
                 Vector2 position = base.Parent.GetDimensions().Position();
-                Vector2 dimensions = new Vector2(base.Parent.GetDimensions().Width, base.Parent.GetDimensions().Height);
+                Vector2 dimensions = new(base.Parent.GetDimensions().Width, base.Parent.GetDimensions().Height);
                 foreach (UIElement element in Elements)
                 {
                     Vector2 position2 = element.GetDimensions().Position();
-                    Vector2 dimensions2 = new Vector2(element.GetDimensions().Width, element.GetDimensions().Height);
+                    Vector2 dimensions2 = new(element.GetDimensions().Width, element.GetDimensions().Height);
                     if (Collision.CheckAABBvAABBCollision(position, dimensions, position2, dimensions2))
                         element.Draw(spriteBatch);
                 }

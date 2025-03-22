@@ -122,6 +122,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         }
         static bool ExtraRenderUsingCondition()
         {
+            //return false;
             foreach (var func in useRenderDelegate)
                 if (func?.Invoke() == true)
                     return true;
@@ -143,7 +144,8 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             //if (ModLoader.TryGetMod("ImproveGame", out var qot))
             //    qot.Call("AddRenderOnCondition", () => PVRenderUsing);
             //else
-            IL_Main.DoDraw += AddPreviewRenderOn;
+            Main.QueueMainThreadAction(() => IL_Main.DoDraw += AddPreviewRenderOn);
+           
             base.Load();
         }
         public override void PostSetupContent()
@@ -151,33 +153,6 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             if (ModLoader.TryGetMod("ImproveGame", out var qot))
             {
                 var assembly = qot.GetType().Assembly;
-                /*var panelType = assembly.GetType("ImproveGame.UI.ModernConfig.CategorySidePanel");
-                IDictionary dict = panelType.GetField("ModdedCards", BindingFlags.Static | BindingFlags.Public).GetValue(null) as IDictionary;
-                var crossCardType = assembly.GetType("ImproveGame.UI.ModernConfig.Categories.CrossModCategoryCard");
-                var optionsFld = crossCardType.GetField("options", BindingFlags.NonPublic | BindingFlags.Instance);
-                var KeyProp = typeof(KeyValuePair<,>).MakeGenericType([typeof(PropertyFieldWrapper), typeof(ModConfig)]).GetProperty("Key", BindingFlags.Instance | BindingFlags.Public);
-                foreach (var list in dict.Values)
-                        foreach (var cards in list as IList) 
-                        {
-                            if (cards.GetType() == crossCardType || cards.GetType().IsSubclassOf(crossCardType)) 
-                            {
-                                var options = optionsFld.GetValue(cards);
-                                foreach (var pair in options as IList) 
-                                {
-                                    var propFldWrapper = KeyProp.GetValue(pair) as PropertyFieldWrapper;
-                                    qot.Call("RegisterPreview", propFldWrapper, (UIElement element, ModConfig currentConfig, PropertyFieldWrapper varibleInfo, object item, IList list, int index) =>
-                                    {
-                                        OptionMetaData metaData = new(varibleInfo, item, list, index, currentConfig);
-                                        var pvAttribute = metaData.GetAttribute<CustomPreviewAttribute>();
-                                        if (pvAttribute != null)
-                                            ConfigPreviewSystem.PreviewDrawing(pvAttribute, element.GetDimensions(), metaData);
-                                    });
-                                }
-                            }
-                        }
-                */
-
-
                 ImproveGame_ModernConfigCrossModHelper.OnGlobalConfigPreview(qot, (UIElement element, ModConfig currentConfig, PropertyFieldWrapper varibleInfo, object item, IList list, int index) =>
                 {
                     OptionMetaData metaData = new(varibleInfo, item, list, index, currentConfig);
@@ -224,7 +199,8 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
         private void AddPreviewRenderOn(ILContext il)
         {
             //这部分代码负责在主页面开启screenTarget捕获
-            ILCursor cursor = new ILCursor(il);
+            ILCursor cursor = new(il);
+
             //"Sepia"是饥荒世界的滤镜，这里世界生成的时候也会开启，这里用for查找到最后一个
             for (int n = 0; n < 5; n++)
                 if (!cursor.TryGotoNext(i => i.MatchLdstr("Sepia")))

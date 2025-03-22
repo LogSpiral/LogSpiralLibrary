@@ -65,7 +65,7 @@ namespace LogSpiralLibrary.CodeLibrary
             ChooserPanel.Width.Set(0, 1);
             ChooserPanel.BackgroundColor = Color.CornflowerBlue;
 
-            UIPanel textBoxBackgroundA = new UIPanel();
+            UIPanel textBoxBackgroundA = new();
             textBoxBackgroundA.Width.Set(160, 0f);
             textBoxBackgroundA.Height.Set(30, 0f);
             textBoxBackgroundA.Top.Set(-6, 0);
@@ -83,7 +83,7 @@ namespace LogSpiralLibrary.CodeLibrary
             textBoxBackgroundA.Append(ChooserFilter);
             ChooserPanel.Append(textBoxBackgroundA);
 
-            UIPanel textBoxBackgroundB = new UIPanel();
+            UIPanel textBoxBackgroundB = new();
             textBoxBackgroundB.CopyStyle(textBoxBackgroundA);
             textBoxBackgroundB.Left.Set(180, 0);
             ChooserFilterMod = new UIFocusInputTextField("Filter by Mod");
@@ -104,7 +104,7 @@ namespace LogSpiralLibrary.CodeLibrary
             ChooserGrid.Width.Set(-12, 1);
             ChooserPanel.Append(ChooserGrid);
 
-            UIScrollbar scrollbar = new UIScrollbar();
+            UIScrollbar scrollbar = new();
             scrollbar.SetView(100f, 1000f);
             scrollbar.Height.Set(-30f, 1f);
             scrollbar.Top.Set(30f, 0f);
@@ -114,7 +114,7 @@ namespace LogSpiralLibrary.CodeLibrary
             ChooserPanel.Append(scrollbar);
             //Append(chooserPanel);
 
-            UIModConfigHoverImageSplit upDownButton = new UIModConfigHoverImageSplit(UpDownTexture, Language.GetTextValue("LegacyMenu.168"), Language.GetTextValue("LegacyMenu.169")); // "Zoom in", "Zoom out"
+            UIModConfigHoverImageSplit upDownButton = new(UpDownTexture, Language.GetTextValue("LegacyMenu.168"), Language.GetTextValue("LegacyMenu.169")); // "Zoom in", "Zoom out"
             upDownButton.Recalculate();
             upDownButton.Top.Set(-4f, 0f);
             upDownButton.Left.Set(-18, 1f);

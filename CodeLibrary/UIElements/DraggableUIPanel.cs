@@ -1,4 +1,4 @@
-﻿using Humanizer;
+using Humanizer;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System;
 using System.Collections.Generic;
@@ -64,7 +64,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
         {
             var dimensions = GetDimensions();
             glowFactor = MathHelper.Lerp(glowFactor, IsMouseHovering ? 1f : 0f, 0.05f);
-            ComplexPanelInfo panel = new ComplexPanelInfo
+            ComplexPanelInfo panel = new()
             {
                 destination = new Rectangle((int)dimensions.X, (int)dimensions.Y, (int)dimensions.Width + 1, (int)dimensions.Height),
                 StyleTexture = ModContent.Request<Texture2D>($"LogSpiralLibrary/Images/ComplexPanel/panel_0").Value,

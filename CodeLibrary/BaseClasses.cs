@@ -194,7 +194,7 @@ namespace LogSpiralLibrary.CodeLibrary
     }
     public abstract class HammerProj : HeldProjectile, IHammerProj
     {
-        public virtual Vector2 scale => new Vector2(1);
+        public virtual Vector2 scale => new(1);
         public virtual Rectangle? frame => null;
         public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY);
         public Projectile projectile => Projectile;
@@ -301,9 +301,9 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual string HammerName => "做个锤子";
         public virtual float MaxTime => 15;
         public override float Factor => timeCount / MaxTime;
-        public virtual Vector2 CollidingSize => new Vector2(32);
-        public virtual Vector2 CollidingCenter => new Vector2(size.X / FrameMax.X - 16, 16);
-        public virtual Vector2 DrawOrigin => new Vector2(16, size.Y / FrameMax.Y - 16);
+        public virtual Vector2 CollidingSize => new(32);
+        public virtual Vector2 CollidingCenter => new(size.X / FrameMax.X - 16, 16);
+        public virtual Vector2 DrawOrigin => new(16, size.Y / FrameMax.Y - 16);
         public Vector2 size;
         public override void OnSpawn(IEntitySource source)
         {
@@ -1148,7 +1148,7 @@ namespace LogSpiralLibrary.CodeLibrary
     /// </summary>
     public abstract class HandMeleeProj : ModProjectile, IHammerProj
     {
-        public virtual Vector2 scale => new Vector2(1);
+        public virtual Vector2 scale => new(1);
         public virtual Rectangle? frame => null;
         public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY) + new Vector2(-8 * Player.direction, -3) + (Rotation - (Player.direction == -1 ? MathHelper.PiOver2 : 0)).ToRotationVector2() * 16;// 
         public Projectile projectile => Projectile;
@@ -1322,9 +1322,9 @@ namespace LogSpiralLibrary.CodeLibrary
         public virtual string ProjName => "做个弹幕";
         public virtual float MaxTime => 15;
         public virtual float factor => timeCount / MaxTime;
-        public virtual Vector2 CollidingSize => new Vector2(32);
-        public virtual Vector2 CollidingCenter => new Vector2(size.X / FrameMax.X - 16, 16);
-        public virtual Vector2 DrawOrigin => new Vector2(16, size.Y / FrameMax.Y - 16);
+        public virtual Vector2 CollidingSize => new(32);
+        public virtual Vector2 CollidingCenter => new(size.X / FrameMax.X - 16, 16);
+        public virtual Vector2 DrawOrigin => new(16, size.Y / FrameMax.Y - 16);
         public Vector2 size;
         public override void SendExtraAI(BinaryWriter writer)
         {
@@ -1865,7 +1865,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     int order = 0;
                     {
                         PropertyInfo propInfo = data.GetType().GetProperty(nameof(IAvailabilityChangableConfig.Available), BindingFlags.Public | BindingFlags.Instance);
-                        PropertyFieldWrapper availableProp = new PropertyFieldWrapper(propInfo);
+                        PropertyFieldWrapper availableProp = new(propInfo);
                         int top = 0;
                         UIModConfig.HandleHeader(dataList, ref top, ref order, availableProp);
                         var wrapped = UIModConfig.WrapIt(dataList, ref top, availableProp, data, order++);
@@ -2199,7 +2199,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     int order = 0;
                     {
                         PropertyInfo propInfo = data.GetType().GetProperty(nameof(IAvailabilityChangableConfig.Available), BindingFlags.Public | BindingFlags.Instance);
-                        PropertyFieldWrapper availableProp = new PropertyFieldWrapper(propInfo);
+                        PropertyFieldWrapper availableProp = new(propInfo);
                         int top = 0;
                         UIModConfig.HandleHeader(dataList, ref top, ref order, availableProp);
                         var wrapped = GenericConfigElement.WrapIt(dataList, ref top, availableProp, data, order++, onSetObj: OnSetObjectDelegate, owner: Owner);

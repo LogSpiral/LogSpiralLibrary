@@ -20,6 +20,7 @@ namespace LogSpiralLibrary.ForFun.StabProj
             Projectile.ownerHitCheck = true;
             base.SetDefaults();
         }
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override void AI()
         {
             base.AI();

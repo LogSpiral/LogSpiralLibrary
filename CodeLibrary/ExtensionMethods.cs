@@ -8,9 +8,9 @@ using static Terraria.Utils;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using Terraria.ObjectData;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using Microsoft.Xna.Framework.Graphics;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 //using CoolerItemVisualEffect;
 
 namespace LogSpiralLibrary.CodeLibrary
@@ -647,7 +647,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList.Add(vertexs[i + 2]);
                     triangleList.Add(vertexs[i + 3]);
                 }
-                vertexs = triangleList.ToArray();
+                vertexs = [.. triangleList];
             }
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
@@ -714,7 +714,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList.Add(vertexs[i + 2]);
                     triangleList.Add(vertexs[i + 3]);
                 }
-                vertexs = triangleList.ToArray();
+                vertexs = [.. triangleList];
             }
 
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
@@ -798,7 +798,7 @@ namespace LogSpiralLibrary.CodeLibrary
             swooshUL.Parameters["gather"].SetValue(false);
             swooshUL.Parameters["lightShift"].SetValue(0);
             swooshUL.Parameters["distortScaler"].SetValue(0);
-            swooshUL.Parameters["alphaFactor"].SetValue(1.5f);
+            swooshUL.Parameters["alphaFactor"].SetValue(3f);
             swooshUL.Parameters["heatMapAlpha"].SetValue(true);
             swooshUL.Parameters["AlphaVector"].SetValue(new Vector3(0, 0, 1));
             swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
@@ -812,11 +812,11 @@ namespace LogSpiralLibrary.CodeLibrary
             Main.graphics.GraphicsDevice.SamplerStates[2] = SamplerState.PointWrap;
             Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.PointClamp;
 
-            ShaderSwooshUL.CurrentTechnique.Passes[0].Apply();//启用shader
+            ShaderSwooshUL.CurrentTechnique.Passes[7].Apply();//启用shader
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);//传入绘制信息
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
 
         /// <summary>
@@ -2457,7 +2457,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList.Add(bars[i + 3]);
                 }
             }
-            return triangleList.ToArray();
+            return [.. triangleList];
         }
 
         /// <summary>
@@ -2516,7 +2516,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList.Add(bars[i + 3]);
                 }
             }
-            return triangleList.ToArray();
+            return [.. triangleList];
         }
 
 
@@ -3121,7 +3121,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
             }
             while (vec == result[0]);
-            return result.ToArray();
+            return [.. result];
         }
         public static Vector2[] EdgePoints(this Vector2[] vecs)
         {
@@ -3192,7 +3192,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     //    result.Add(vec);
                 }
                 while (vec != result[0]);
-                return result.ToArray();
+                return [.. result];
             }
             catch (Exception e)
             {
@@ -3437,7 +3437,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 float y = 2 * n + 1 == len ? 0 : v[2 * n + 1];
                 l.Add(new Vector2(v[2 * n], y));
             }
-            return l.ToArray();
+            return [.. l];
         }
         #region 判定
         public static bool PointHit(this Rectangle target, Func<float, Vector2> vectorFunc, int times = 25)
@@ -4444,11 +4444,11 @@ namespace LogSpiralLibrary.CodeLibrary
                     result.Add(item);
                 }
             }
-            return result.ToArray();
+            return [.. result];
         }
         public static T[] DelRepeatData<T>(this T[] array)
         {
-            return array.GroupBy(p => p).Select(p => p.Key).ToArray();
+            return [.. array.GroupBy(p => p).Select(p => p.Key)];
         }
         public static List<Vector2> CalcConvexHull(this List<Vector2> list)
         {

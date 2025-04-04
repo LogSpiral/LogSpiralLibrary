@@ -24,8 +24,8 @@ float4 PSFunction(PSInput input) : COLOR0
 	float2 coord = input.Texcoord.xy;
 	float4 cItem = tex2D(uImage0, coord);
 	float4 cItemGlow = tex2D(uImage3, coord);
-	if (!any(cItem) && !any(cItemGlow))
-		return 0;
+	//if (dot(cItem + cItemGlow, float4(1,1,1,1)) < 0.01)
+	//	return float4(0,0,0,0);
 	float2 lightCoord = (coord - uItemFrame.xy) / (uItemFrame.zw - uItemFrame.xy);
 	float4 c = tex2D(uImage1, lightCoord + float2(0,uTime));
 	c += tex2D(uImage2, lightCoord);
@@ -34,7 +34,7 @@ float4 PSFunction(PSInput input) : COLOR0
 	cItemGlow *= uItemGlowColor;
 	float4 result = cItem + cItemGlow + c;
 	result.a = input.Texcoord.z;
-	return result;
+	return result * sign((cItem + cItemGlow).x);//OpenGL下用if提前返回空白像素有时候会炸，不知道为什么-2025.3.28
 }
 
 PSInput VertexShaderFunction(VSInput input)

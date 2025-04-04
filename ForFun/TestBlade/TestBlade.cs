@@ -1,14 +1,16 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
 {
     public class TestBlade : ModItem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override void SetDefaults()
         {
             Item.height = Item.width = 69;
@@ -38,6 +40,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
     }
     public class TestBladeProj : MeleeSequenceProj
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
         {

@@ -6,6 +6,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
 {
     public class FractalSpawnSystem : ModSystem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         private static Effect fractal;
         public static Effect FractalEffect => fractal ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Fractal").Value;
         public static RenderTarget2D render;
@@ -47,6 +48,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
     }
     public class FractalSpawnItem : ModItem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public static Vector2 mouseScreen;
         public override string Texture => $"Terraria/Images/Item_{ItemID.WireKite}";
         public override void SetDefaults()

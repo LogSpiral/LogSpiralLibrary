@@ -1,3 +1,4 @@
+global using System;
 global using Microsoft.Xna.Framework;
 global using Microsoft.Xna.Framework.Graphics;
 global using Terraria.ModLoader;
@@ -5,11 +6,10 @@ global using Terraria;
 global using Terraria.ID;
 global using Terraria.DataStructures;
 global using Terraria.GameContent;
-global using MeleeSequence = LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Sequence<LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee.MeleeAction>;
+global using MeleeSequence = LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Sequence<LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.MeleeAction>;
 using ReLogic.Content;
 using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary;
-using System;
 using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
@@ -18,7 +18,6 @@ using Terraria.ModLoader.Config;
 using System.ComponentModel;
 using System.Reflection;
 using System.Linq;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using System.IO;
 using ReLogic.Graphics;
 using Terraria.ModLoader.Core;
@@ -777,17 +776,5 @@ namespace LogSpiralLibrary
 
         [DefaultValue(false)]
         public bool WTHConfig = false;
-
-        //当年测试Qot配置中心用的
-        /*
-        public int[] TestArray = new int[30];
-
-        public Color[] TestColors = new Color[9];
-
-        public HashSet<Color> TestColorSet = [];
-
-        public Dictionary<int, Color> testDict = [];
-        public Dictionary<Color,int> testDict2 = [];
-        */
     }
 }

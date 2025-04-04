@@ -2,14 +2,15 @@
 using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.ForFun.TestBlade3
 {
     public class TestBlade3 : ModItem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override void SetDefaults()
         {
             Item.height = 94;
@@ -35,6 +36,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
     }
     public class TestBlade3Proj : MeleeSequenceProj
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
         {
@@ -74,6 +76,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
 
     public class TestBlade3V2 : ModItem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("V2", "");
         public override void SetDefaults()
         {
@@ -100,6 +103,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
     }
     public class TestBlade3ProjV2 : MeleeSequenceProj
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("ProjV2", "");
         public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with
         {

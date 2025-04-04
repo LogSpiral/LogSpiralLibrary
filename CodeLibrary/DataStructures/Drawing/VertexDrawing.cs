@@ -193,7 +193,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             if (frame != null)
             {
                 Rectangle uframe = frame.Value;
-                Vector2 size = weaponTex.Size();
+                Vector2 size = (weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value).Size();
                 swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(uframe.TopLeft() / size, uframe.Width / size.X, uframe.Height / size.Y));
             }
             else

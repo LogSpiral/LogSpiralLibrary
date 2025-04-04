@@ -10,6 +10,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
 {
     public class GeogebraShin : ModItem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("圆神");
@@ -46,6 +47,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
     }
     public class GeogebraShinSystem : ModSystem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public static GeogebraShinData ScreenTransformData;
         public override void PostSetupContent()
         {

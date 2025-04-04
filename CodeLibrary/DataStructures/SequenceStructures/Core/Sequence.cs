@@ -7,262 +7,20 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Serialization;
-using LogSpiralLibrary.CodeLibrary.DataStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using Microsoft.Xna.Framework.Input;
 using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class ElementCustomDataAttribute : Attribute
-    {
-    }
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public sealed class ElementCustomDataAbabdonedAttribute : Attribute
-    {
-    }
-    /// <summary>
-    /// 物品相应顶点绘制特效的标准值
-    /// </summary>
-    public struct VertexDrawInfoStandardInfo
-    {
-        public bool active;
-        public Texture2D heatMap;
-        public int timeLeft;
-        public float scaler;
-        public float heatRotation;
-        public float alphaFactor;
-        public IRenderDrawInfo[][] renderInfos;
-        /// <summary>
-        /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
-        /// </summary>
-        public Vector3 colorVec;
 
-        public (int, int)? swooshTexIndex;
-        public (int, int)? stabTexIndex;
-    }
-    /// <summary>
-    /// 不同物品有自己独有的标准值
-    /// </summary>
-    public struct StandardInfo
-    {
 
-        /// <summary>
-        /// 物品贴图朝向
-        /// </summary>
-        public float standardRotation = MathHelper.PiOver4;
-        /// <summary>
-        /// 物品手持中心
-        /// </summary>
-        public Vector2 standardOrigin = new(.1f, .9f);
-        /// <summary>
-        /// 标准持续时长
-        /// </summary>
-        public int standardTimer;
 
-        /// <summary>
-        /// 标准射击冷却
-        /// </summary>
-        public int standardShotCooldown;
-        /// <summary>
-        /// 标准颜色
-        /// </summary>
-        public Color standardColor;
-        /// <summary>
-        /// 高亮贴图
-        /// </summary>
-        public Texture2D standardGlowTexture;
-        public VertexDrawInfoStandardInfo vertexStandard = default;
-        public int itemType;
-        public SoundStyle? soundStyle;
-        public float dustAmount;
-        public Rectangle? frame;
-        public float extraLight = 1f;
-        public StandardInfo()
-        {
-        }
-        public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow, int type)
-        {
-            standardRotation = rotation;
-            standardOrigin = origin;
-            standardTimer = timer;
-            standardColor = color;
-            standardGlowTexture = glow;
-            itemType = type;
-        }
-        //TODO 改成弹幕序列独有
-    }
-    public struct ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1)
-    {
+    
 
-        public float actionOffsetSize = size;
-        public float actionOffsetTimeScaler = timeScaler;
-        public float actionOffsetKnockBack = knockBack;
-        public float actionOffsetDamage = damage;
-        public int actionOffsetCritAdder = critAdder;
-        public float actionOffsetCritMultiplyer = critMultiplyer;
-
-        /// <summary>
-        /// 将除了速度以外的值赋给目标
-        /// </summary>
-        /// <param name="target"></param>
-        public void SetActionValue(ref ActionModifyData target)
-        {
-            float speed = target.actionOffsetTimeScaler;
-            target = this with { actionOffsetTimeScaler = speed };
-        }
-        public void SetActionSpeed(ref ActionModifyData target) => target.actionOffsetTimeScaler = actionOffsetTimeScaler;
-        public override string ToString()
-        {
-            //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
-            var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
-            var result = $"({actionOffsetSize.ToString("0.00", cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString(cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
-            return result;
-        }
-        public static ActionModifyData LoadFromString(string str)
-        {
-            var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
-            var content = str.Remove(0, 1).Remove(str.Length - 2).Split('|', ',');
-            var (size, timeScaler, knockBack, damage, critAdder, critMultiplyer) = (float.Parse(content[0], cultureInfo), float.Parse(content[1], cultureInfo), float.Parse(content[2], cultureInfo), float.Parse(content[3], cultureInfo), int.Parse(content[4], cultureInfo), float.Parse(content[5], cultureInfo));
-            var result = new ActionModifyData(size, timeScaler, knockBack, damage, critAdder, critMultiplyer);
-            return result;
-        }
-
-    }
-    public interface ISequenceElement : ILocalizedModType, ILoadable
-    {
-        #region 属性
-        #region 编排序列时调整
-        //持续时间 角度 位移 修改数据
-        /// <summary>
-        /// 使用数据修改
-        /// </summary>
-        [ElementCustomData]
-        ActionModifyData ModifyData => new ();
-        /// <summary>
-        /// 执行次数
-        /// </summary>
-        [ElementCustomData]
-        int Cycle => 1;
-        #endregion
-        #region 动态调整，每次执行时重设
-        bool flip { get; set; }
-        /// <summary>
-        /// 旋转角，非插值
-        /// </summary>
-        float Rotation { get; set; }
-        /// <summary>
-        /// 扁平程度？
-        /// </summary>
-        float KValue { get; set; }
-        /// <summary>
-        /// 执行第几次？
-        /// </summary>
-        int counter { get; set; }
-        int timer { get; set; }
-        int timerMax { get; set; }
-        #endregion
-        #region 插值生成，最主要的实现内容的地方
-        /// <summary>
-        /// 当前周期的进度
-        /// </summary>
-        float Factor { get; }
-        /// <summary>
-        /// 中心偏移量，默认零向量
-        /// </summary>
-        Vector2 offsetCenter => default;
-        /// <summary>
-        /// 原点偏移量，默认为贴图左下角(0.1f,0.9f),取值范围[0,1]
-        /// </summary>
-        Vector2 offsetOrigin => new(.1f, .9f);
-        /// <summary>
-        /// 旋转量
-        /// </summary>
-        float offsetRotation { get; }
-        /// <summary>
-        /// 大小
-        /// </summary>
-        float offsetSize { get; }
-        /// <summary>
-        /// 是否具有攻击性
-        /// </summary>
-        bool Attacktive { get; }
-        #endregion
-        #endregion
-        #region 函数
-        #region 切换
-        /// <summary>
-        /// 被切换时调用,脉冲性
-        /// </summary>
-        void OnActive();
-
-        /// <summary>
-        /// 被换走时调用,脉冲性
-        /// </summary>
-        void OnDeactive();
-        #endregion
-
-        #region 吟唱
-        /// <summary>
-        /// 攻击期间调用,持续性
-        /// </summary>
-        void OnAttack();
-
-        /// <summary>
-        /// 攻击以外时间调用,持续性
-        /// </summary>
-        void OnCharge();
-        #endregion
-
-        #region 每轮
-        void OnStartSingle();
-        void OnEndSingle();
-        #endregion
-
-        #region 每次攻击
-        /// <summary>
-        /// 结束时调用,脉冲性
-        /// </summary>
-        void OnEndAttack();
-
-        /// <summary>
-        /// 开始攻击时调用,脉冲性
-        /// </summary>
-        void OnStartAttack();
-        #endregion
-
-        #region 具体传入
-        void Update(bool triggered);
-
-        void Draw(SpriteBatch spriteBatch, Texture2D texture);
-
-        #endregion
-
-        #region SL
-        void SaveAttribute(XmlWriter xmlWriter);
-        void LoadAttribute(XmlReader xmlReader);
-        #endregion
-
-        #region UIConfig
-        //void SetConfigPanel(UIList parent);
-        #endregion
-
-        #region Net
-        void NetSend(BinaryWriter writer);
-        void NetReceive(BinaryReader reader);
-        #endregion
-        #endregion
-        #region 吃闲饭的
-        Entity Owner { get; set; }
-        Projectile Projectile { get; set; }
-        StandardInfo standardInfo { get; set; }
-
-        string Category { get; }
-        #endregion
-    }
     /// <summary>
     /// 去泛型化的序列基类
     /// </summary>
@@ -761,7 +519,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures
             public override Sequence SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
-            public override string Name => Available ? sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString() : (Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.{(LoadFailedMetaSequence ? "Sequence":"Action")}Failed") + LoadFailedMetaName);//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
+            public override string Name => Available ? sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString() : Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.{(LoadFailedMetaSequence ? "Sequence":"Action")}Failed") + LoadFailedMetaName;//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
             public Wraper(T sequenceELement)
             {
                 elementInfo = sequenceELement;

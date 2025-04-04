@@ -1751,7 +1751,7 @@ public static class SDFGraphics
 
     static void PolygonBase(IEnumerable<Vector2> vecs, Matrix matrix, string passName)
     {
-        Polygon(vecs.ToArray(), matrix, out Vector2 pos, out Vector2 size);
+        Polygon([.. vecs], matrix, out Vector2 pos, out Vector2 size);
         SDF_Effect.CurrentTechnique.Passes[passName].Apply();
         BaseDraw(pos, size);
     }
@@ -2227,7 +2227,7 @@ public static class SDFGraphics
     static void ChainedQuadraticBezierBase(IEnumerable<Vector2> vecs, Matrix matrix, string passName)
     {
         SetCommon(matrix);
-        ChainedQuadraticBezier(vecs.ToArray(), out Vector2 pos, out Vector2 size);
+        ChainedQuadraticBezier([.. vecs], out Vector2 pos, out Vector2 size);
         ApplyPass(passName);
         BaseDraw(pos, size);
     }

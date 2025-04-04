@@ -19,6 +19,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
 {
     public class ScreenTransformPlayer : ModPlayer
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (ScreenTransformSystem.ShowScreenProjectorKeybind.JustPressed)
@@ -33,6 +34,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
     }
     public class ScreenTransformSystem : ModSystem
     {
+        public override bool IsLoadingEnabled(Mod mod) => false;
         public static ScreenTransformData ScreenTransformData;
         public override void PostSetupContent()
         {

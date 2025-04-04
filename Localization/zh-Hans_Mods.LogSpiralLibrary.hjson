@@ -96,6 +96,15 @@ Items: {
 		// DisplayName: B Curve Test Item
 		// Tooltip: ""
 	}
+
+	ColorfulMushroom: {
+		DisplayName: 鲜艳菌子
+		Tooltip:
+			'''
+			菌子动口不动手
+			话说回来，吃第二口就能以毒攻毒来着
+			'''
+	}
 }
 
 MeleeAction: {
@@ -129,6 +138,7 @@ MeleeAction: {
 	TestBladeSwooshInfo.DisplayName: 测试挥砍
 	TestBladeGrayStabInfo.DisplayName: 测试突刺
 	TestBladeConvoluteInfo.DisplayName: 测试回旋
+	CutInfo.DisplayName: 横斩
 }
 
 Configs: {
@@ -283,6 +293,21 @@ Configs: {
 			Label: 执行次数基值
 			Tooltip: _
 		}
+
+		// minKValue.Label: minKValue
+		// KValueRange.Label: KValueRange
+		// visualCentered.Label: visualCentered
+		// randAngleRange.Label: randAngleRange
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
 	}
 
 	ChargingInfo: {
@@ -300,13 +325,77 @@ Configs: {
 			Label: 起始角度偏移
 			Tooltip: _
 		}
+
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
 	}
 
 	SwooshInfo: {
+		minKValue: {
+			Label: 最小扁平程度
+			Tooltip: _
+		}
+
+		KValueRange: {
+			Label: 扁平范围
+			Tooltip: _
+		}
+
 		mode: {
 			Label: 模式
 			Tooltip: _
 		}
+
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	StabInfo: {
+		minKValue: {
+			Label: 最小扁平程度
+			Tooltip: _
+		}
+
+		KValueRange: {
+			Label: 扁平范围
+			Tooltip: _
+		}
+
+		visualCentered: {
+			Label: 中心突刺
+			Tooltip: _
+		}
+
+		randAngleRange.Label: 角度偏移范围
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
 	}
 
 	SwooshMode: {
@@ -495,7 +584,7 @@ Configs: {
 		}
 
 		Step: {
-			Label: 步长
+			Label: 步长/间距
 			Tooltip: ""
 		}
 	}
@@ -555,6 +644,244 @@ Configs: {
 			Label: 启用
 			Tooltip: 震屏，启动！！
 		}
+	}
+
+	ArkhalisInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	BoardSwordInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	BoomerangInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	ConvoluteInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	EruptionInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	FistInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	FlailInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	HammerInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	KnivesInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	LanceInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	RotatingInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	ShortSwordInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	SpearInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	StarlightInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	TerraprismaInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	YoyoInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
+	}
+
+	ZenithInfo: {
+		// OnEndAttackDelegate.Label: OnEndAttackDelegate
+		// OnStartAttackDelegate.Label: OnStartAttackDelegate
+		// OnAttackDelegate.Label: OnAttackDelegate
+		// OnChargeDelegate.Label: OnChargeDelegate
+		// OnActiveDelegate.Label: OnActiveDelegate
+		// OnDeactiveDelegate.Label: OnDeactiveDelegate
+		// OnEndSingleDelegate.Label: OnEndSingleDelegate
+		// OnStartSingleDelegate.Label: OnStartSingleDelegate
+		// OnHitTargetDelegate.Label: OnHitTargetDelegate
+		// ModifyData.Label: ModifyData
+		// Cycle.Label: Cycle
 	}
 }
 

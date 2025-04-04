@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StickyWeapons", "..\StickyW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoneOfThePhilosophers", "..\StoneOfThePhilosophers\StoneOfThePhilosophers.csproj", "{C51F8FAA-2A4B-4503-A8BA-7E888114038C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubworldLibrary", "..\SubworldLibrary\SubworldLibrary.csproj", "{9302819B-1D8D-4120-B61D-D93E9572E5E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubworldLibrary", "..\SubworldLibrary\SubworldLibrary.csproj", "{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,10 +71,10 @@ Global
 		{C51F8FAA-2A4B-4503-A8BA-7E888114038C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C51F8FAA-2A4B-4503-A8BA-7E888114038C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C51F8FAA-2A4B-4503-A8BA-7E888114038C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9302819B-1D8D-4120-B61D-D93E9572E5E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9302819B-1D8D-4120-B61D-D93E9572E5E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9302819B-1D8D-4120-B61D-D93E9572E5E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9302819B-1D8D-4120-B61D-D93E9572E5E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

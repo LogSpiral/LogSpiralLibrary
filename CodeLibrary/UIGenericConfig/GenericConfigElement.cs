@@ -16,13 +16,14 @@ using Terraria.ModLoader.Config;
 using Terraria.ModLoader.UI;
 using Terraria.UI.Chat;
 using Terraria.UI;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using Newtonsoft.Json;
 using Terraria.Audio;
 using Terraria.GameContent.UI.States;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Runtime.CompilerServices;
 using LogSpiralLibrary.CodeLibrary.ConfigModification;
+using rail;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
 namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 {
@@ -372,6 +373,13 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             //    UIModConfig.Tooltip = text2;
             //}
         }
+        /*public override void OnBind()
+        {
+            string configKey = ConfigManager.GetConfigKey<LabelKeyAttribute>(MemberInfo.MemberInfo, "Label");
+            if (!Language.Exists(configKey))
+                Language.GetOrRegister(configKey, () => MemberInfo.Name);
+            base.OnBind();
+        }*/
     }
     public class GenericBooleanElement : GenericConfigElement<bool>
     {

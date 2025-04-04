@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
 using ReLogic.Content;
 using System;
@@ -1023,11 +1024,11 @@ namespace LogSpiralLibrary.CodeLibrary
     public class GenericDyeDefinitionElement : GenericItemDefinitionElement
     {
         public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
-            => (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem).ToList();
+            => [.. (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem)];
     }
     public class DyeDefinitionElement : ItemDefinitionElement
     {
         public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
-            => (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem).ToList();
+            => [.. (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem)];
     }
 }

@@ -84,7 +84,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            controlState = reader.ReadByte();   
+            controlState = reader.ReadByte();
             base.ReceiveExtraAI(reader);
         }
     }
@@ -438,44 +438,17 @@ namespace LogSpiralLibrary.CodeLibrary
                 predraw = base.PreDraw(ref lightColor);
             var swooshUL = ShaderSwooshUL;
 
-            if (!WhenVertexDraw || swooshUL == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylable; //
+            if (!WhenVertexDraw || swooshUL == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylabel; //
             var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
 
-
-            //Main.NewText("Passssssssssss");
-            //var airFactor = 1f;
-            //var itemTex = TextureAssets.Item[Player.HeldItem.type].Value;
-            //var w = itemTex.Width;
-            //var h = itemTex.Height;
-            //var cs = new Color[w * h];
-            //itemTex.GetData(cs);
-            //var target = default(Color);
-            //for (int n = 0; n < cs.Length; n++)
-            //{
-            //    Vector2 coord = new Vector2(n % w, n / w);
-            //    coord /= new Vector2(w, h);
-            //    if (Math.Abs(1 - coord.X - coord.Y) * 0.7071067811f < 0.05f && cs[n] != default && target == default)
-            //    {
-            //        target = cs[n];
-            //        airFactor = coord.X;
-            //    }
-            //}
             var trans = Main.GameViewMatrix != null ? Main.GameViewMatrix.TransformationMatrix : Matrix.Identity;
-            var _center = projCenter;// - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).RotatedBy(Rotation)
-
-            //var drawCen = Player.gravDir == -1 ? new Vector2(_center.X, (2 * (Main.screenPosition + new Vector2(960, 560)) - _center - new Vector2(0, 96)).Y) : _center;
+            var _center = projCenter;
             var drawCen = _center;
             float xScaler = 1f;
-            float scaler = (projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) / xScaler - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length();//(CollidingCenter - DrawOrigin).Length() * 1.414f
-            //Main.NewText(-(new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length());
+            float scaler = (projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) / xScaler - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length();
             var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            //originalState.FillMode = FillMode.WireFrame;
-            //RasterizerState rasterizerState = new();
-            //rasterizerState.CullMode = CullMode.None;
-            //rasterizerState.FillMode = FillMode.WireFrame;
-            //Main.graphics.GraphicsDevice.RasterizerState = rasterizerState;
             bool additive = false;
             int indexOfGreyTex = 7;
             float endAngle = Player.direction == -1 ? MathHelper.Pi / 8 : (-MathHelper.PiOver2 - MathHelper.Pi / 8);
@@ -485,10 +458,10 @@ namespace LogSpiralLibrary.CodeLibrary
             var passCount = 3;
             VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap, ref passCount);
             if (useHeatMap) passCount = 2;
-            int[] whenSkip = new int[0];
+            int[] whenSkip = [];
             endAngle = Player.gravDir == -1 ? MathHelper.PiOver2 - endAngle : endAngle;
             CustomVertexInfo[] bars = CreateVertexs(drawCen, scaler, Player.gravDir == -1 ? MathHelper.PiOver2 - Rotation : Rotation, endAngle, additive ? 0.5f : Lighting.GetColor((projCenter / 16).ToPoint().X, (projCenter / 16).ToPoint().Y).R / 255f * .5f, ref whenSkip);
-            if (bars.Length < 2) goto mylable;
+            if (bars.Length < 2) goto mylabel;
             SamplerState sampler = SamplerState.LinearWrap;
             CustomVertexInfo[] triangleList = new CustomVertexInfo[(bars.Length - 2) * 3];//
             for (int i = 0; i < bars.Length - 2; i += 2)
@@ -508,213 +481,25 @@ namespace LogSpiralLibrary.CodeLibrary
                     triangleList[6 * k + 5] = bars[i + 3];
                 }
             }
-
-            //var colors = new Color[300];
-            //for (int i = 0; i < 300; i++)
-            //{
-            //    var f = i / 299f;//分割成25次惹，f从1/25f到1//1 - 
-            //    f = f * f;// *f
-            //    //float h = (hsl.X + instance.hueOffsetValue + instance.hueOffsetRange * (2 * f - 1)) % 1;
-            //    //float s = MathHelper.Clamp(hsl.Y * instance.saturationScalar, 0, 1);
-            //    //float l = MathHelper.Clamp(f > 0.5f ? hsl.Z * (2 - f * 2) + (f * 2 - 1) * Math.Max(hsl.Z, 0.5f + instance.luminosityRange) : f * 2 * hsl.Z + (1 - f * 2) * Math.Min(hsl.Z, 0.5f - instance.luminosityRange), 0, 1);
-            //    //colors[i] = Main.hslToRgb(1 / 12f, 1, f * .5f + .5f);
-            //    colors[i] = f.GetLerpValue(Color.Red, Color.Orange, Color.White);
-            //}
-            //Texture2D tex = new Texture2D(Main.instance.GraphicsDevice, 300, 1);
-            //tex.SetData(colors);
             var sb = Main.spriteBatch;
-            #region Fail         
-            //if (useDistort)
-            //{
-            //    GraphicsDevice graphicsDevice = Main.instance.GraphicsDevice;
-            //    sb.End();
-            //    graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
-            //    graphicsDevice.Clear(Color.Transparent);
-            //    Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            //    Main.spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-            //    Main.spriteBatch.End();
-
-            //    //取样
-            //    graphicsDevice.SetRenderTarget(CoolerItemVisualEffect.Instance.render);
-            //    graphicsDevice.Clear(Color.Transparent);
-            //    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            //    sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
-            //    //CoolerItemVisualEffect.Bloom.CurrentTechnique.Passes[0].Apply();//取亮度超过m值的部分
-
-            //    //CoolerItemVisualEffect.Bloom.Parameters["m"].SetValue(0.9f);
-            //    //Main.spriteBatch.End();
-
-            //}
-            //else 
-            //{
-            //    sb.End();
-            //    sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
-            //}
-            #endregion
-            //CoolerItemVisualEffect.bloomValue += useBloom;
-            //switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
-            //{
-            //    case ConfigurationSwoosh.SwooshColorType.热度图: passCount = 2; break;
-            //    case ConfigurationSwoosh.SwooshColorType.武器贴图对角线: passCount = 1; break;
-            //    case ConfigurationSwoosh.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
-            //    case ConfigurationSwoosh.SwooshColorType.单向渐变: passCount = 4; break;
-            //}
             if ((useBloom.Active || useDistort.Active || useMask.Active) && LogSpiralLibraryMod.CanUseRender)
             {
-                #region 旧版
-
-
-                //GraphicsDevice gd = Main.instance.GraphicsDevice;
-                //RenderTarget2D render = CoolerItemVisualEffect.Instance.render;
-                //sb.End();
-                //gd.SetRenderTarget(render);
-                //gd.Clear(Color.Transparent);
-                //sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(0);//-(float)Main.time * 0.06f
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["checkAir"].SetValue(true);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(true);
-                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity with { M11 = _v.X, M12 = -_v.Y, M21 = _v.Y, M22 = _v.X });
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["distortScaler"].SetValue(scaler);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["alphaFactor"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor == 0);
-                //Main.graphics.GraphicsDevice.Textures[0] = GetTexture("BaseTex_" + indexOfGreyTex);
-                //Main.graphics.GraphicsDevice.Textures[1] = GetTexture($"AniTex_{ConfigurationSwoosh_Advanced.ConfigSwooshInstance.AnimateIndex}");
-                //Main.graphics.GraphicsDevice.Textures[2] = itemTex;
-                //if (HeatMap != null && useHeatMap)
-                //    Main.graphics.GraphicsDevice.Textures[3] = HeatMap;
-
-                //Main.graphics.GraphicsDevice.SamplerStates[0] = sampler;
-                //Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
-                //Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
-                //Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
-
-                //CoolerItemVisualEffect.ShaderSwooshEX.CurrentTechnique.Passes[HeatMap != null && useHeatMap ? 2 : 3].Apply();
-                //Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
-                //Main.graphics.GraphicsDevice.RasterizerState = originalState;
-                //sb.End();
-                ////然后在随便一个render里绘制屏幕，并把上面那个带弹幕的render传进shader里对屏幕进行处理
-                ////原版自带的screenTargetSwap就是一个可以使用的render，（原版用来连续上滤镜）
-                //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
-                ////Main.NewText(CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes.Count);
-
-                ////CoolerItemVisualEffect.DistortEffect.Parameters["offset"].SetValue(Rotation.ToRotationVector2() * -0.002f * useDistort);//* (1 - 2 * Math.Abs(0.5f - useDistort))
-                ////CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(0);
-
-
-                //CoolerItemVisualEffect.DistortEffect.Parameters["offset"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-                //CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
-                //if (useBloom.Range != 0)
-                //{
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(new Vector2(useBloom.M, useBloom.Range));
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useBloom.Intensity);
-                //    for (int n = 0; n < 3; n++)
-                //    {
-                //        gd.SetRenderTarget(Main.screenTargetSwap);
-                //        gd.Clear(Color.Transparent);
-                //        CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[7].Apply();
-                //        sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-
-
-                //        gd.SetRenderTarget(Main.screenTarget);
-                //        gd.Clear(Color.Transparent);
-                //        CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[6].Apply();
-                //        sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                //    }
-                //}
-                //if (useDistort.director != default)
-                //{
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(new Vector2(useDistort.M, useDistort.Range));
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useDistort.director);
-                //    for (int n = 0; n < 2; n++)
-                //    {
-                //        gd.SetRenderTarget(Main.screenTargetSwap);
-                //        gd.Clear(Color.Transparent);
-                //        CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[5].Apply();
-                //        sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-                //        gd.SetRenderTarget(Main.screenTarget);
-                //        gd.Clear(Color.Transparent);
-                //        CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[4].Apply();
-                //        sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                //    }
-                //    //Main.NewText(CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes.Count);
-                //}
-                //if (useMask.fillTex != null)
-                //{
-                //    #region MyRegion
-                //    //gd.SetRenderTarget(Main.screenTargetSwap);
-                //    //gd.Clear(Color.Transparent);
-                //    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                //    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                //    //CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[1].Apply();
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(useMask.offset);
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                //    //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                //    //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                //    //sb.End();
-                //    //gd.SetRenderTarget(Main.screenTarget);
-                //    //gd.Clear(Color.Transparent);
-                //    //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                //    //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                //    //sb.End();
-                //    #endregion
-
-                //    gd.SetRenderTarget(Main.screenTargetSwap);
-                //    gd.Clear(Color.Transparent);
-                //    Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(useMask.offset);
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                //    CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                //    CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[1].Apply();
-                //    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                //    gd.SetRenderTarget(Main.screenTarget);
-                //    gd.Clear(Color.Transparent);
-                //    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                //}
-
-
-                ////sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                ////sb.End();
-
-                //////最后在screenTarget上把刚刚的结果画上
-                ////gd.SetRenderTarget(Main.screenTarget);
-                ////gd.Clear(Color.Transparent);
-                ////sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                ////sb.Draw(render, Vector2.Zero, Color.White);
-                #endregion
+                // 如果任一特效存在，就走这边的流程
+                // 现在已经被VertexMeleeEffect全面取代了
                 GraphicsDevice gd = Main.instance.GraphicsDevice;
                 RenderTarget2D render = Instance.Render;
-                sb.End();
-                gd.SetRenderTarget(render);
+                sb.End(); // 之前的绘制内容存到Main.screenTarget上
+                gd.SetRenderTarget(render);// 新的画到自己的render上
                 gd.Clear(Color.Transparent);
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                 swooshUL.Parameters["uTransform"].SetValue(model * trans * projection);
                 swooshUL.Parameters["uLighter"].SetValue(0);
-                swooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
+                swooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
                 swooshUL.Parameters["checkAir"].SetValue(false);
-                swooshUL.Parameters["airFactor"].SetValue(1);
+                swooshUL.Parameters["airFactor"].SetValue(3);
                 swooshUL.Parameters["gather"].SetValue(true);
                 swooshUL.Parameters["lightShift"].SetValue(0);
-                swooshUL.Parameters["distortScaler"].SetValue(0);
+                swooshUL.Parameters["distortScaler"].SetValue(1);
                 if (frame != null)
                 {
                     Rectangle uframe = frame.Value;
@@ -723,10 +508,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
                 else
                     swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
-                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
                 swooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
-                swooshUL.Parameters["alphaFactor"].SetValue(1f);
                 swooshUL.Parameters["heatMapAlpha"].SetValue(true);
                 swooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
 
@@ -754,12 +536,6 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.SetRenderTarget(Instance.Render_Swap);
                     gd.Clear(Color.Transparent);
                     sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(-CoolerSystem.ModTime * 0.03f);//-(float)Main.time * 0.06f
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["checkAir"].SetValue(false);
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["airFactor"].SetValue(1);
-                                                                                                                                                                                                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(false);
                                                                                                                                                                                                 //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
                     swooshUL.Parameters["distortScaler"].SetValue(useDistort.distortScaler);
                     //sb.Draw(AniTex[8].Value, new Vector2(200, 200), Color.White);
@@ -773,14 +549,7 @@ namespace LogSpiralLibrary.CodeLibrary
                     Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
                     Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
                     Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.LinearClamp;
-                    //var passCount = 0;
-                    //switch (Player.GetModPlayer<CoolerItemVisualEffectPlayer>().ConfigurationSwoosh.swooshColorType)
-                    //{
-                    //    case ConfigurationSwoosh_Advanced.SwooshColorType.热度图: passCount = 2; break;
-                    //    case ConfigurationSwoosh_Advanced.SwooshColorType.武器贴图对角线: passCount = 1; break;
-                    //    case ConfigurationSwoosh_Advanced.SwooshColorType.单向渐变与对角线混合: passCount = 3; break;
-                    //    case ConfigurationSwoosh_Advanced.SwooshColorType.单向渐变: passCount = 4; break;
-                    //}
+
                     swooshUL.CurrentTechnique.Passes[7].Apply();
                     for (int n = 0; n < triangleList.Length; n++)
                     {
@@ -795,37 +564,10 @@ namespace LogSpiralLibrary.CodeLibrary
                 //原版自带的screenTargetSwap就是一个可以使用的render，（原版用来连续上滤镜）
                 Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-                //Main.NewText(CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes.Count);
-
-                //CoolerItemVisualEffect.DistortEffect.Parameters["offset"].SetValue(Rotation.ToRotationVector2() * -0.002f * useDistort);//* (1 - 2 * Math.Abs(0.5f - useDistort))
-                //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(0);
-
-
-                //DistortEffect.Parameters["tex0"].SetValue(render);
                 if (useDistort.Active)
                 {
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(new Vector2(useDistort.M, useDistort.Range));
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useDistort.director);
-                    //for (int n = 0; n < 1; n++)
-                    //{
-                    //    gd.SetRenderTarget(Main.screenTargetSwap);
-                    //    gd.Clear(Color.Transparent);
-                    //    CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[5].Apply();
-                    //    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-                    //    gd.SetRenderTarget(Main.screenTarget);
-                    //    gd.Clear(Color.Transparent);
-                    //    CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[4].Apply();
-                    //    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    //}
-                    //Main.NewText(CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes.Count);
                     gd.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个 
                     gd.Clear(Color.Transparent);//清空
-                                                //Vector2 direct = (instance.swooshFactorStyle == SwooshFactorStyle.每次开始时决定系数 ? modPlayer.kValue : ((modPlayer.kValue + modPlayer.kValueNext) * .5f)).ToRotationVector2() * -0.1f * fac.SymmetricalFactor2(0.5f, 0.2f) * instance.distortFactor;//(u + v)
-                                                //RenderEffect.Parameters["offset"].SetValue(useDistort.director);//设置参数时间
-                                                //RenderEffect.Parameters["invAlpha"].SetValue(0);
-                                                //RenderEffect.Parameters["tex0"].SetValue(Instance.Render_AirDistort);
-                                                //RenderEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
                     Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
                     AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
                     AirDistortEffect.Parameters["strength"].SetValue(5f);
@@ -839,70 +581,10 @@ namespace LogSpiralLibrary.CodeLibrary
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    //sb.End();
-
-                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, alphaBlend ? BlendState.NonPremultiplied : BlendState.Additive, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
-                    //Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
-                    //sb.End();
-                    //Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 }
                 if (useMask.Active)
                 {
-                    #region MyRegion
-                    //gd.SetRenderTarget(Main.screenTargetSwap);
-                    //gd.Clear(Color.Transparent);
-                    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                    //CoolerItemVisualEffect.DistortEffect.CurrentTechnique.Passes[1].Apply();
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["tex0"].SetValue(render);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["position"].SetValue(useMask.offset);
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    //CoolerItemVisualEffect.DistortEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                    //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                    //sb.End();
-                    //gd.SetRenderTarget(Main.screenTarget);
-                    //gd.Clear(Color.Transparent);
-                    //sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                    //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    //sb.End();
-                    #endregion
-                    #region MyRegion
-                    ////Main.NewText("Mask!!");
-                    //gd.SetRenderTarget(useBloom.Active ? LogSpiralLibraryMod.Instance.Render_AirDistort : Main.screenTargetSwap);
-                    //gd.Clear(Color.Transparent);
-                    //Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                    //RenderEffect.Parameters["tex0"].SetValue(render);
-                    //RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                    //RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                    //RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                    //RenderEffect.Parameters["position"].SetValue(useMask.offset);
-                    //RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                    //RenderEffect.Parameters["maskBoundColor"].SetValue(useMask.boundColor.ToVector4());
-                    //RenderEffect.Parameters["ImageSize"].SetValue(useMask.texSize);
-                    //RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
-                    //RenderEffect.CurrentTechnique.Passes[1].Apply();
-                    //sb.Draw(useBloom.Active ? render : Main.screenTarget, Vector2.Zero, Color.White);
-                    //if (!useBloom.Active)
-                    //{
-                    //    gd.SetRenderTarget(Main.screenTarget);
-                    //    gd.Clear(Color.Transparent);
-                    //    sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    //}
-                    //else
-                    //{
-                    //    gd.SetRenderTarget(render);
-                    //    gd.Clear(Color.Transparent);
-                    //    sb.Draw(LogSpiralLibraryMod.Instance.Render_AirDistort, Vector2.Zero, Color.White);
-                    //}
-                    ////else { }
-                    ////sb.End();
-                    ////Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-                    ////sb.Draw(render, Vector2.Zero, Color.White);
-                    #endregion
+
                     gd.SetRenderTarget(Main.screenTargetSwap);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
@@ -937,88 +619,68 @@ namespace LogSpiralLibrary.CodeLibrary
                 }
                 if (useBloom.Active)
                 {
+                    gd.SetRenderTarget(Main.screenTargetSwap);
+                    gd.Clear(Color.Transparent);
+                    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                     RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
                     RenderEffect.Parameters["threshold"].SetValue(useBloom.threshold);
                     RenderEffect.Parameters["range"].SetValue(useBloom.range);
-                    RenderEffect.Parameters["intensity"].SetValue(useBloom.intensity);
+                    RenderEffect.Parameters["intensity"].SetValue(useBloom.intensity * 2.5f);
                     RenderEffect.Parameters["uBloomAdditive"].SetValue(useBloom.additive);
                     for (int n = 0; n < useBloom.times - 1; n++)
                     {
-                        //gd.SetRenderTarget(Main.screenTargetSwap);
-                        //gd.Clear(Color.Transparent);
-                        //DistortEffect.CurrentTechnique.Passes[9].Apply();
-                        //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-
-
-                        //gd.SetRenderTarget(Main.screenTarget);
-                        //gd.Clear(Color.Transparent);
-                        //DistortEffect.CurrentTechnique.Passes[8].Apply();
-                        //sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                         gd.SetRenderTarget(Instance.Render_Swap);
-                        RenderEffect.Parameters["tex0"].SetValue(render);
+                        //RenderEffect.Parameters["tex0"].SetValue(render);
                         gd.Clear(Color.Transparent);
-                        RenderEffect.CurrentTechnique.Passes[3].Apply();
-                        sb.Draw(render, Vector2.Zero, Color.White);
+                        RenderEffect.CurrentTechnique.Passes[4].Apply();
+                        sb.Draw(n == 0 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
 
 
 
-                        gd.SetRenderTarget(render);
-                        RenderEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
+                        gd.SetRenderTarget(Instance.Render_Swap2);
+                        //RenderEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
                         gd.Clear(Color.Transparent);
-                        RenderEffect.CurrentTechnique.Passes[2].Apply();
+                        RenderEffect.CurrentTechnique.Passes[4].Apply();
                         sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
                     }
-                    gd.SetRenderTarget(Main.screenTargetSwap);
+                    gd.SetRenderTarget(Instance.Render_Swap);
                     gd.Clear(Color.Transparent);
-                    RenderEffect.Parameters["tex0"].SetValue(render);
-                    RenderEffect.CurrentTechnique.Passes[3].Apply();
-                    sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-
+                    //RenderEffect.Parameters["tex0"].SetValue(render);
+                    RenderEffect.CurrentTechnique.Passes[4].Apply();
+                    sb.Draw(useBloom.times == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
+                    gd.SetRenderTarget(useBloom.times == 1 ? render : Instance.Render_Swap2);
+                    gd.Clear(Color.Transparent);
+                    RenderEffect.CurrentTechnique.Passes[4].Apply();
+                    sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
+                    sb.End();
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
-                    RenderEffect.CurrentTechnique.Passes[2].Apply();
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-                    sb.End();
-                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 }
                 else
                 {
-                    //sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-                    //sb.End();
-
-                    ////最后在screenTarget上把刚刚的结果画上
-                    //gd.SetRenderTarget(Main.screenTarget);
-                    //gd.Clear(Color.Transparent);
-                    //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                     gd.SetRenderTarget(Main.screenTarget);
                     gd.Clear(Color.Transparent);
                     sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
                 }
                 Main.instance.GraphicsDevice.BlendState = AllOne;
-                sb.Draw(render, Vector2.Zero, Color.White);
+                sb.Draw(render, Vector2.Zero, Color.White);// + Main.rand.NextVector2Unit() * 16
+
+                if (useBloom.Active) 
+                {
+                    Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
+                    sb.Draw(useBloom.times == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
+                }
                 Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
             }
             else
             {
+                // 否则使用普通绘制
+
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTransform"].SetValue(model * trans * projection);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uLighter"].SetValue(0);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["uTime"].SetValue(-(float)Main.time * 0.06f);//
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["checkAir"].SetValue(true);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["airFactor"].SetValue(1f);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["gather"].SetValue(true);
-
-                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["heatRotation"].SetValue(Matrix.Identity with { M11 = _v.X, M12 = -_v.Y, M21 = _v.Y, M22 = _v.X });
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["distortScaler"].SetValue(scaler);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["alphaFactor"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor);
-                //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["heatMapAlpha"].SetValue(modPlayer.ConfigurationSwoosh.alphaFactor == 0);
 
                 swooshUL.Parameters["uTransform"].SetValue(VertexDrawInfo.uTransform);
                 swooshUL.Parameters["uLighter"].SetValue(0);
@@ -1027,9 +689,6 @@ namespace LogSpiralLibrary.CodeLibrary
                 swooshUL.Parameters["airFactor"].SetValue(1);
                 swooshUL.Parameters["gather"].SetValue(true);
                 swooshUL.Parameters["lightShift"].SetValue(0);
-
-                //var modPlayer = Player.GetModPlayer<CoolerItemVisualEffectPlayer>();
-                //var _v = modPlayer.ConfigurationSwoosh.directOfHeatMap.ToRotationVector2();
                 swooshUL.Parameters["heatRotation"].SetValue(Matrix.Identity);
                 swooshUL.Parameters["distortScaler"].SetValue(0);
                 swooshUL.Parameters["alphaFactor"].SetValue(1.5f);
@@ -1061,67 +720,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
             }
-        #region Fail
-        //if (!useBloom)
-        //{
-        //    Main.spriteBatch.End();
-        //    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
-        //}
-        //else
-
-        ////Main.NewText("??");
-
-
-        ////Main.spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制内容
-        ////if (useBloom) 
-        //{
-        //    GraphicsDevice graphicsDevice = Main.instance.GraphicsDevice;
-        //    graphicsDevice.SetRenderTarget(Main.screenTarget);
-        //    graphicsDevice.Clear(Color.Transparent);
-        //    sb.End();
-
-        //    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
-        //    CoolerItemVisualEffect.Bloom.CurrentTechnique.Passes[0].Apply();//取亮度超过m值的部分
-        //    CoolerItemVisualEffect.Bloom.Parameters["m"].SetValue(0.9f);
-        //    //CoolerItemVisualEffect.Bloom.CurrentTechnique.Passes["GlurV"].Apply();//横向
-
-        //    Main.spriteBatch.Draw(CoolerItemVisualEffect.Instance.render, Vector2.Zero, Color.White);
-
-        //    Main.spriteBatch.End();
-
-        //    //处理
-        //    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-        //    CoolerItemVisualEffect.Bloom.Parameters["uScreenResolution"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-        //    CoolerItemVisualEffect.Bloom.Parameters["uRange"].SetValue(2.5f);
-        //    CoolerItemVisualEffect.Bloom.Parameters["uIntensity"].SetValue(0.3f);
-        //    for (int i = 0; i < 3; i++)//交替使用两个RenderTarget2D，进行多次模糊
-        //    {
-        //        CoolerItemVisualEffect.Bloom.CurrentTechnique.Passes["GlurH"].Apply();//纵向
-        //        graphicsDevice.SetRenderTarget(CoolerItemVisualEffect.Instance.render);
-        //        graphicsDevice.Clear(Color.Transparent);
-        //        Main.spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-
-
-        //        CoolerItemVisualEffect.Bloom.CurrentTechnique.Passes["GlurV"].Apply();//横向
-        //        graphicsDevice.SetRenderTarget(Main.screenTarget);
-        //        graphicsDevice.Clear(Color.Transparent);
-        //        Main.spriteBatch.Draw(CoolerItemVisualEffect.Instance.render, Vector2.Zero, Color.White);
-        //    }
-        //    Main.spriteBatch.End();
-
-        //    //叠加到原图上
-        //    graphicsDevice.SetRenderTarget(Main.screenTarget);
-        //    graphicsDevice.Clear(Color.Transparent);
-        //    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);//Additive把模糊后的部分加到Main.screenTarget里
-        //    Main.spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
-        //    Main.spriteBatch.Draw(CoolerItemVisualEffect.Instance.render, Vector2.Zero, Color.White);
-        //    Main.spriteBatch.End();
-        //    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
-
-        //}
-        #endregion
-        mylable:
+        mylabel:
             return predraw;
         }
         public override void PostAI()
@@ -1334,7 +933,7 @@ namespace LogSpiralLibrary.CodeLibrary
         }
         public override void ReceiveExtraAI(BinaryReader reader)
         {
-            if (Main.netMode == NetmodeID.Server) 
+            if (Main.netMode == NetmodeID.Server)
                 size = reader.ReadVector2();
             base.ReceiveExtraAI(reader);
         }

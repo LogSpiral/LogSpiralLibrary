@@ -48,8 +48,15 @@ float csaturate(float v)
 float modifyY(float2 coord)
 {
 	float2 _coord = coord;
+	float start = 0;
+	float end = 1;
+	if (gather)
+		start = _coord.x;
 	if (stab)
 	{
+		start *= start;
+		start = 1 - sqrt(1 - start);
+		
 		float targetWidth = 0;
 		float f = (1 - coord.x) * 8;
 		if (f > 5.5)
@@ -69,12 +76,7 @@ float modifyY(float2 coord)
 		//_coord.y = 4 * pow(_coord.y - 0.5, 3.0) + 0.5;
 
 	}
-	float start = 0;
-	float end = 1;
-	if (gather)
-	{
-		start = _coord.x;
-	}
+
 	if (distortScaler > 0)
 	{
 		start /= distortScaler;
@@ -237,7 +239,7 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 	
 	float3 coord = input.Texcoord;
 	float4 _weaponColor = weaponColor(coord.y);
-	if (!any(_weaponColor))
+	if (!any(_weaponColor) && !stab)
 		return float4(0, 0, 0, 0);
 	float4 _mapColor = float4(getMapColor(coord), 1);
 	//float4 mapColor = tex2D(uImage3, mul(float4(coord, 1) - float4(0.5, 0.5, 0, 0), heatRotation).xy + float2(0.5, 0.5));

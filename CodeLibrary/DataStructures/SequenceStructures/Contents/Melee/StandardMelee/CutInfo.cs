@@ -31,12 +31,12 @@ public class CutInfo : LSLMelee
         var verS = standardInfo.vertexStandard;
         if (verS.active)
         {
-            UltraSwoosh u = null;
             swoosh = subSwoosh = null;
             var range = (.625f, -.75f);
             bool f = false;
             float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
             var pair = standardInfo.vertexStandard.swooshTexIndex;
+            UltraSwoosh u;
             if (standardInfo.itemType == ItemID.TrueExcalibur)
             {
                 var eVec = verS.colorVec with { Y = 0 };

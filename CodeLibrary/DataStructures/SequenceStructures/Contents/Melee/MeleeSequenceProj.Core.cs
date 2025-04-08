@@ -13,16 +13,17 @@ public abstract partial class MeleeSequenceProj : ModProjectile
     #endregion
 
     #region 参数属性
-    //这里算是这个弹幕的核心部分
-    //分别是标准参数
-    //目前执行组件
-    //更新函数
+    // 这里算是这个弹幕的核心部分
+    // 分别是标准参数
+    // 目前执行组件
+    // 更新函数
     public virtual StandardInfo StandardInfo => new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+    // 改成发出弹幕时生成而非总是从头new?
     #endregion
 
     #region 重写函数
-    //你只需要知道上面这一段负责 *记录* 我们弹幕具体是怎么运行
-    //弹幕发射和弹幕加载时的初始化，这部分和别的弹幕大差不差
+    // 你只需要知道上面这一段负责 *记录* 我们弹幕具体是怎么运行
+    // 弹幕发射和弹幕加载时的初始化，这部分和别的弹幕大差不差
     public override void SetDefaults()
     {
         Projectile.timeLeft = 10;
@@ -36,24 +37,11 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         Projectile.usesLocalNPCImmunity = true;
         Projectile.localNPCHitCooldown = 8;
         Projectile.ownerHitCheck = true;
-        //if (!SequenceSystem.loaded) ModContent.GetInstance<SequenceSystem>().Load();
-        //if (!SequenceManager<MeleeAction>.loaded) SequenceManager<MeleeAction>.Load();
-        //InitializeSequence(Mod.Name, Name);
-
         base.SetDefaults();
     }
 
     public override void AI()
     {
-        //if (player.heldProj != -1 && player.heldProj != Projectile.whoAmI)
-        //    try
-        //    {
-        //        Main.projectile[player.heldProj].Kill();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Mod.Logger.Error("Error occured when try to clean other heldProj:" + e.Message);
-        //    }
         //这里是手持弹幕的一些常规检测和赋值
         player.heldProj = Projectile.whoAmI;
         Projectile.damage = player.GetWeaponDamage(player.HeldItem);
@@ -79,7 +67,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
             flag1 = true;
             player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
         }
-        int prev = -1;
+
         bool flag2 = false;//次要-持续条件
         if (currentData != null)
         {
@@ -87,7 +75,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
             flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
                                                                                         //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
                                                                                         //Main.NewText(currentData.Cycle);
-            prev = currentData.timer;
+            int prev = currentData.timer;
         }
         if (
            flag1 || flag2// 
@@ -116,17 +104,9 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         base.AI();
     }
 
-    public override void OnKill(int timeLeft)
-    {
-        //if (Main.netMode != NetmodeID.Server)
-        meleeSequence?.ResetCounter();
-        base.OnKill(timeLeft);
-    }
+    public override void OnKill(int timeLeft) => meleeSequence?.ResetCounter();
 
     //还有这个是阻止弹幕自行更新位置的，因为我们会在核心逻辑那里写入弹幕的位置
-    public override bool ShouldUpdatePosition()
-    {
-        return false;
-    }
+    public override bool ShouldUpdatePosition() => false;
     #endregion
 }

@@ -19,6 +19,7 @@ public class BoomerangInfo : VanillaMelee
     public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.25f;
     public override Vector2 offsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => true;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数

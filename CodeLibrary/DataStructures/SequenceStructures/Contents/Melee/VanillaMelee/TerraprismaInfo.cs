@@ -24,6 +24,7 @@ public class TerraprismaInfo : VanillaMelee
     public override float offsetRotation => realRotation;
     public override Vector2 offsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => target != null;
+    public override bool OwnerHitCheek => true;
     #endregion
 
     #region 辅助函数
@@ -151,12 +152,6 @@ public class TerraprismaInfo : VanillaMelee
             ultra.autoUpdate = false;
             ultra.timeLeft = 1;
             ultra.ApplyStdValueToVtxEffect(standardInfo);
-            if (verS.renderInfos == null)
-                ultra.ResetAllRenderInfo();
-            else
-            {
-                ultra.ModityAllRenderInfo(verS.renderInfos);
-            }
         }
 
         base.OnStartSingle();

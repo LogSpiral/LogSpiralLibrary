@@ -12,6 +12,7 @@ public class FistInfo : VanillaMelee
     #region 重写属性
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2) * 512;
     public override bool Attacktive => Factor < .65f;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数

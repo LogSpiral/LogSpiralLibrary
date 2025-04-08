@@ -10,7 +10,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
 {
     public class TestBlade3 : ModItem
     {
-        public override bool IsLoadingEnabled(Mod mod) => false;
+        //public override bool IsLoadingEnabled(Mod mod) => false;
         public override void SetDefaults()
         {
             Item.height = 94;
@@ -36,7 +36,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
     }
     public class TestBlade3Proj : MeleeSequenceProj
     {
-        public override bool IsLoadingEnabled(Mod mod) => false;
+        //public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
         {
@@ -72,7 +72,6 @@ namespace LogSpiralLibrary.ForFun.TestBlade3
             //meleeSequence.Add(subSequence1);
         }
     }
-
 
     public class TestBlade3V2 : ModItem
     {

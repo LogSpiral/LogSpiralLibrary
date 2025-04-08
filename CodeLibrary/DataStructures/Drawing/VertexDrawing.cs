@@ -32,6 +32,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         //}
         public void ModityAllRenderInfo(params IRenderDrawInfo[][] newInfos)
         {
+            if (newInfos == null)
+            {
+                ResetAllRenderInfo();
+                return;
+            }
             var array = Representative.RenderDrawInfos;
             for (int n = 0; n < newInfos.Length; n++)
                 array[n] = newInfos[n];

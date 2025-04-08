@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
-public class ConvoluteInfo : LSLMelee
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
+public class ConvoluteInfo : ExtendedMelee
 {
     #region 辅助字段
     public Vector2 unit;
@@ -14,6 +14,7 @@ public class ConvoluteInfo : LSLMelee
     public override float CompositeArmRotation => Owner.direction;
     public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
     public override bool Attacktive => Factor >= .25f;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数

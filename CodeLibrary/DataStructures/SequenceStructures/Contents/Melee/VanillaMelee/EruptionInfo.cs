@@ -17,6 +17,7 @@ public class EruptionInfo : VanillaMelee
     public override float offsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
     public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
     public override bool Attacktive => true;
+    public override bool OwnerHitCheek => false; 
     #endregion
 
     #region 辅助函数

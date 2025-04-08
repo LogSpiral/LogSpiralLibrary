@@ -49,6 +49,12 @@ public class SwooshInfo : LSLMelee
     [Increment(.2f)]
     [ElementCustomData]
     public float KValueRange = 1f;
+
+    [DefaultValue(MathHelper.Pi / 6)]
+    [ElementCustomData]
+    [Range(0, MathHelper.PiOver2)]
+    [Increment(MathHelper.Pi / 24)]
+    public float randAngleRange = MathHelper.Pi / 6;
     #endregion
 
     #region 重写属性
@@ -94,7 +100,6 @@ public class SwooshInfo : LSLMelee
         var verS = standardInfo.vertexStandard;
         if (verS.active)
         {
-            UltraSwoosh u = null;
             swoosh = subSwoosh = null;
             var range = mode switch
             {
@@ -109,6 +114,7 @@ public class SwooshInfo : LSLMelee
             };
             float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
             var pair = standardInfo.vertexStandard.swooshTexIndex;
+            UltraSwoosh u;
             if (standardInfo.itemType == ItemID.TrueExcalibur)
             {
                 var eVec = verS.colorVec with { Y = 0 };
@@ -122,12 +128,6 @@ public class SwooshInfo : LSLMelee
             else
             {
                 u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
-            }
-            if (verS.renderInfos == null)
-                u.ResetAllRenderInfo();
-            else
-            {
-                u.ModityAllRenderInfo(verS.renderInfos);
             }
             swoosh = u;
             u.ApplyStdValueToVtxEffect(standardInfo);
@@ -184,7 +184,8 @@ public class SwooshInfo : LSLMelee
         base.OnStartSingle();
 
         hitCounter = 0;
-        Rotation += Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6);
+        if (randAngleRange > 0)
+            Rotation += Main.rand.NextFloat(0, randAngleRange) * Main.rand.Next([-1, 1]);
         KValue = minKValue + Main.rand.NextFloat(0, KValueRange);
         if (mode == SwooshMode.Slash)
             flip ^= true;

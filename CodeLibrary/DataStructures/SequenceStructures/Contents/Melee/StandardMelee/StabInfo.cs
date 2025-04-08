@@ -74,8 +74,8 @@ public class StabInfo : LSLMelee
         var verS = standardInfo.vertexStandard;
         if (verS.active)
         {
-            UltraStab u = null;
             var pair = standardInfo.vertexStandard.stabTexIndex;
+            UltraStab u;
             if (standardInfo.itemType == ItemID.TrueExcalibur)
             {
                 float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;

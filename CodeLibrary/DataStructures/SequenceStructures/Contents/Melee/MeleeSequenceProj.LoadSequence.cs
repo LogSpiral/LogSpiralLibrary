@@ -35,13 +35,14 @@ partial class MeleeSequenceProj
     {
         if (LabeledAsCompleted)
         {
+            string inModDirectoryPath = GetType().Namespace.Replace(Mod.Name + ".", "").Replace('.', '/');
             if (!LocalMeleeSequence.TryGetValue(Type, out MeleeSequence localSeq))
             {
                 localSeq = new MeleeSequence();
-                MeleeSequence.Load((GetType().Namespace.Replace(Mod.Name + ".", "") + "." + Name).Replace('.', '/') + ".xml", Mod, localSeq);
+                MeleeSequence.Load($"{inModDirectoryPath}/{Name}.xml", Mod, inModDirectoryPath, localSeq);
                 LocalMeleeSequence[Type] = localSeq;
             }
-            meleeSequence = (MeleeSequence)localSeq.Clone();
+            meleeSequence = localSeq.LocalSequenceClone(inModDirectoryPath);
             //meleeSequence = new MeleeSequence() { groups = ((MeleeSequence)LocalMeleeSequence.Clone()).groups };
             return;
         }

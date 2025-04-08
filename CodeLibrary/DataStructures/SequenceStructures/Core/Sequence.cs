@@ -14,13 +14,9 @@ using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
+using Terraria.ModLoader.IO;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
 {
-
-
-
-    
-
     /// <summary>
     /// 去泛型化的序列基类
     /// </summary>
@@ -64,7 +60,17 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             public abstract string Name { get; }
             public abstract Sequence SequenceInfo { get; }
             //public abstract void SetConfigPanel(UIList uIList);
-            public bool IsSequence => SequenceInfo != null;
+            public bool IsSequence
+            {
+                get
+                {
+                    if (LoadFailedMetaSequence)
+                        TryLoadSequenceAgain();
+                    return SequenceInfo != null;
+                }
+
+            }
+
             public bool Available => IsSequence || IsElement;
             //[CustomSeqConfigItem(typeof(ConditionDefinitionElement))]
             public ConditionDefinition conditionDefinition = new("LogSpiralLibrary", "Always");
@@ -78,6 +84,8 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             //public Condition condition = new Condition("Always", () => true);
             public bool Active { get; set; }
             public abstract WraperBase Clone();
+            public abstract void TryLoadSequenceAgain();
+
         }
         public abstract IReadOnlyList<GroupBase> GroupBases { get; }
         /// <summary>
@@ -110,7 +118,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
         public override void Reset()
         {
             var seq = new Sequence<T>();
-            Load($"PresetSequences/{ElementTypeName}/{FileName}.xml", mod, seq);
+            Load($"PresetSequences/{ElementTypeName}/{FileName}.xml", mod, null, seq);
             SequenceManager<T>.sequences[seq.KeyName] = seq;
         }
         public override string LocalPath => $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{ElementTypeName}/{mod.Name}/{sequenceName}.xml";
@@ -142,7 +150,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 stream.Dispose();
                 return result;
             }
-            else 
+            else
             {
                 XmlWriterSettings settings = new();
                 settings.Indent = true;
@@ -165,6 +173,31 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 return result;
             }
 
+        }
+
+        public Sequence<T> LocalSequenceClone(string inModDirectoryPath) 
+        {
+            XmlWriterSettings settings = new();
+            settings.Indent = true;
+            settings.Encoding = new UTF8Encoding(false);
+            settings.NewLineChars = Environment.NewLine;
+            MemoryStream stream = new();
+            XmlWriter xmlWriter = XmlWriter.Create(stream, settings);
+            WriteContent(xmlWriter);
+            xmlWriter.Dispose();
+            byte[] data = stream.ToArray();
+            stream.Dispose();
+
+            stream = new MemoryStream(data);
+            XmlReader xmlReader = XmlReader.Create(stream);
+            xmlReader.Read();//读取声明
+            xmlReader.Read();//读取空格
+            var result = new Sequence<T>();
+            ReadSequence(xmlReader, mod.Name,inModDirectoryPath, result);
+            result.mod = mod;
+            xmlReader.Dispose();
+            stream.Dispose();
+            return result;
         }
         //public void ReconstructCondition(Entity owner)
         //{
@@ -221,7 +254,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                             else
                             {
                                 xmlWriter.WriteStartElement("Action");
-                                foreach(var pair in wraper.LoadFailedMetaAttributes)
+                                foreach (var pair in wraper.LoadFailedMetaAttributes)
                                     xmlWriter.WriteAttributeString(pair.Key, pair.Value);
                                 xmlWriter.WriteAttributeString("name", wraper.LoadFailedMetaName);
                                 xmlWriter.WriteEndElement();
@@ -252,7 +285,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 }
                 xmlWriter.WriteEndElement();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var str = e.Message;
             }
@@ -277,17 +310,27 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
         }
         public bool active;
         public override bool Active { get => active; set => active = value; }
-        public static void Load(string pathInMod, Mod mod, Sequence<T> target)
+        public static void Load(string pathInMod, Mod mod, string inModDirectoryPath, Sequence<T> target)
         {
-            using Stream stream = mod.GetFileStream(pathInMod);
-            using XmlReader xmlReader = XmlReader.Create(stream);
-            //stream.Close();
-            xmlReader.Read();//读取声明
-            xmlReader.Read();//读取空格
-            target.groups.Clear();
-            //var modName = path.Split('\\', '/')[^2];
-            ReadSequence(xmlReader, mod.Name, target);
-            target.mod = mod;
+            Stream stream = mod.GetFileStream(pathInMod);
+            byte[] bytes;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+            stream.Dispose();
+            using (MemoryStream memoryStream = new MemoryStream(bytes))
+            {
+                using XmlReader xmlReader = XmlReader.Create(memoryStream);
+                //stream.Close();
+                xmlReader.Read();//读取声明
+                xmlReader.Read();//读取空格
+                target.groups.Clear();
+                //var modName = path.Split('\\', '/')[^2];
+                ReadSequence(xmlReader, mod.Name, inModDirectoryPath, target);
+                target.mod = mod;
+            }
         }
         public static void Load(string path, Sequence<T> target)
         {
@@ -296,7 +339,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             xmlReader.Read();//读取空格
             target.groups.Clear();
             var modName = path.Split('\\', '/')[^2];
-            ReadSequence(xmlReader, modName, target);
+            ReadSequence(xmlReader, modName, null, target);
             target.mod = ModLoader.GetMod(modName);
         }
         public static Sequence<T> Load(string path)
@@ -313,7 +356,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             result.mod = ModLoader.GetMod(modName);
             return result;
         }
-        public static bool ReadSequence(XmlReader xmlReader, string modName, Sequence<T> empty)
+        public static bool ReadSequence(XmlReader xmlReader, string modName, string inModDirectoryPath, Sequence<T> empty)
         {
             xmlReader.Read();//读取序列节点开始部分
             if (xmlReader.Name != "Sequence")
@@ -327,7 +370,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 if (fileName != SequenceDefaultName)
                     SequenceSystem.sequenceInfos[$"{modName}/{fileName}"] = new SequenceBasicInfo().Load(xmlReader);
                 xmlReader.Read();//读取空格
-                while (Group.ReadGroup(xmlReader, out var groupResult))
+                while (Group.ReadGroup(xmlReader, inModDirectoryPath, out var groupResult))
                 {
                     empty.Add(groupResult);
                 }
@@ -337,7 +380,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
         public static bool ReadSequence(XmlReader xmlReader, string modName, out Sequence<T> result)
         {
             result = new Sequence<T>();
-            if (!ReadSequence(xmlReader, modName, result))
+            if (!ReadSequence(xmlReader, modName, null, result))
             {
                 result = null;
                 return false;
@@ -358,7 +401,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             {
                 wrapers[index] = (Wraper)wraperBase;
             }
-            public static bool ReadGroup(XmlReader xmlReader, out Group result)
+            public static bool ReadGroup(XmlReader xmlReader, string inModDirectoryPath, out Group result)
             {
                 xmlReader.Read();//读取下一个位置
                 if (xmlReader.Name != "Group")//此时实际上是</Sequence>
@@ -371,7 +414,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 {
                     xmlReader.Read();//读取空格
                     result = new Group();
-                    while (Wraper.ReadWraper(xmlReader, out Wraper wraperResult))
+                    while (Wraper.ReadWraper(xmlReader, inModDirectoryPath, out Wraper wraperResult))
                     {
                         result.wrapers.Add(wraperResult);
                     }
@@ -391,7 +434,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 int counter = 0;
                 foreach (var wraper in wrapers)
                 {
-                    if (wraper.Available&&wraper.Condition.IsMet())
+                    if (wraper.Available && wraper.Condition.IsMet())
                     {
                         index = counter;
                         return wraper;
@@ -427,7 +470,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                     return new Wraper((T)Activator.CreateInstance(type));
                 }
             }
-            public static bool ReadWraper(XmlReader xmlReader, out Wraper result)
+            public static bool ReadWraper(XmlReader xmlReader, string inModDirectoryPath, out Wraper result)
             {
                 xmlReader.Read();
                 if (xmlReader.Name != "Wraper")
@@ -438,7 +481,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                 }
                 else
                 {
-                    result = null;
                     var conditionKey = xmlReader["condition"];
                     var ModName = xmlReader["Mod"];
                     if (xmlReader["IsSequence"] == "True")
@@ -457,26 +499,27 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                             }
                             else
                             {
-                                string filePath = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}/{ModName}/{xmlReader.Value}.xml";
-                                if (File.Exists(filePath))
+
+                                result = null;
+                                if (inModDirectoryPath != null)
                                 {
-                                    var resultSequence = Load(filePath);
-                                    SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = resultSequence;
+                                    string filePath = $"{inModDirectoryPath}/{xmlReader.Value}.xml";
+                                    var resultSequence = new Sequence<T>();
+                                    Load(filePath, ModLoader.GetMod(ModName), inModDirectoryPath, resultSequence);
                                     result = new Wraper(resultSequence);
                                 }
                                 else
                                 {
-                                    /*
-
-                                    //Mod mod = ModLoader.GetMod(ModName);
-                                    sequence = new Sequence<T>();
-                                    //Load($"PresetSequences/{typeof(T).Name}/{xmlReader.Value}.xml",mod, sequence);
-                                    SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = sequence;
-                                    result = new Wraper(sequence);
-                                    */
-
-                                    result = new Wraper($"{ModName}/{xmlReader.Value}", true);
+                                    string filePath = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}/{ModName}/{xmlReader.Value}.xml";
+                                    if (File.Exists(filePath))
+                                    {
+                                        var resultSequence = Load(filePath);
+                                        SequenceManager<T>.sequences[$"{ModName}/{xmlReader.Value}"] = resultSequence;
+                                        result = new Wraper(resultSequence);
+                                    }
                                 }
+                                if(result == null)
+                                     result ??= new Wraper($"{ModName}/{xmlReader.Value}", true);
 
                             }
                         }
@@ -515,11 +558,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
             }
             public override ISequenceElement Element => elementInfo;
             public readonly T elementInfo;
-            public readonly Sequence<T> sequenceInfo;
+            public Sequence<T> sequenceInfo;
             public override Sequence SequenceInfo => sequenceInfo;
             public bool finished;
             public override bool IsElement => elementInfo != null && !IsSequence;
-            public override string Name => Available ? sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString() : Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.{(LoadFailedMetaSequence ? "Sequence":"Action")}Failed") + LoadFailedMetaName;//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
+            public override string Name => Available ? sequenceInfo?.sequenceName ?? elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString() : Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.{(LoadFailedMetaSequence ? "Sequence" : "Action")}Failed") + LoadFailedMetaName;//elementInfo.GetLocalization("DisplayName", () => elementInfo.GetType().Name).ToString()//elementInfo.GetType().Name
             public Wraper(T sequenceELement)
             {
                 elementInfo = sequenceELement;
@@ -655,6 +698,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core
                     meleeAttackData = elementInfo;
                 }
                 return false;
+            }
+
+            public override void TryLoadSequenceAgain()
+            {
+                if (SequenceManager<T>.sequences.TryGetValue(LoadFailedMetaName, out var value))
+                {
+                    sequenceInfo = value;
+                    LoadFailedMetaName = "";
+                    LoadFailedMetaSequence = false;
+                }
             }
         }
         public override void Remove(WraperBase target, GroupBase owner)

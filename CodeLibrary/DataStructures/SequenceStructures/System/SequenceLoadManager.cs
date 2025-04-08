@@ -39,7 +39,7 @@ public static class SequenceManager<T> where T : ISequenceElement
 
                         try
                         {
-                            Sequence<T>.Load(name, mod, seq);
+                            Sequence<T>.Load(name, mod,null, seq);
                             sequences[seq.KeyName] = seq;
                         }
                         catch

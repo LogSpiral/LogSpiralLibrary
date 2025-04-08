@@ -13,6 +13,7 @@ public class HammerInfo : VanillaMelee
     public override float offsetRotation => Factor * MathHelper.TwoPi + (float)LogSpiralLibraryMod.ModTime2 * .025f;
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
     public override bool Attacktive => true;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数

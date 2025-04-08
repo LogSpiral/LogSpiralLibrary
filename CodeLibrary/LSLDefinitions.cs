@@ -267,7 +267,6 @@ namespace LogSpiralLibrary.CodeLibrary
         public static LocalMod[] locals;
         public static LocalMod ModToLocal(Mod mod)
         {
-            LocalMod localMod = null;
             string fileName = $"{mod.Name}.tmod";
             List<LocalMod> targetLocals = [];
             foreach (var localsItem in locals)
@@ -275,7 +274,7 @@ namespace LogSpiralLibrary.CodeLibrary
                 if (localsItem.Name == mod.Name)
                     targetLocals.Add(localsItem);
             }
-            localMod = targetLocals[^1];
+            LocalMod localMod = targetLocals[^1];
             //Main.NewText((targetLocals.Count,localMod.DisplayName,localMod.lastModified));
             //bool success =
             //    ModOrganizer.TryReadLocalMod(ModLocation.Modpack, ModOrganizer.ModPackActive+fileName, out localMod) ||

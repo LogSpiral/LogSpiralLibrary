@@ -3,8 +3,8 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
-public class ChargingInfo : LSLMelee
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
+public class ChargingInfo : ExtendedMelee
 {
     #region 参数字段
     [ElementCustomData]

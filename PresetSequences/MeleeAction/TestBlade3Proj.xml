@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sequence name="TestBlade3Proj" AuthorName="LogSpiral" Description="三号测试剑，对一号和二号进行引用来重组出新的序列" FileName="TestBlade3Proj" DisplayName="测试剑三号" ModName="LogSpiralLibrary" createTime="0" lastModifyDate="1798263086" passWord="" Finished="True">
+  <Group>
+    <Wraper condition="BloodOrSun" IsSequence="True" Mod="LogSpiralLibrary">TestBladeProj</Wraper>
+    <Wraper condition="TimeDay">
+      <Action Cycle="2" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/SwooshInfo" />
+    </Wraper>
+    <Wraper condition="TimeNight" IsSequence="True" Mod="LogSpiralLibrary">TestBlade2Proj</Wraper>
+  </Group>
+  <Group>
+    <Wraper IsSequence="True" Mod="LogSpiralLibrary">TestBladeProj</Wraper>
+  </Group>
+</Sequence>

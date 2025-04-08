@@ -18,6 +18,7 @@ public class ZenithInfo : VanillaMelee
     public override float offsetRotation => MathHelper.SmoothStep(1f, -1f, MathHelper.Clamp((1 - Factor) * 2, 0, 1)) * (flip ? 1 : -1) * MathHelper.Pi;
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist * .5f, 100 / KValue)).RotatedBy(Rotation);
     public override bool Attacktive => true;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数
@@ -92,12 +93,6 @@ public class ZenithInfo : VanillaMelee
                 ultras[n].autoUpdate = false;
                 ultras[n].timeLeft = 1;
                 ultras[n].ApplyStdValueToVtxEffect(standardInfo);
-            }
-            if (verS.renderInfos == null)
-                ultras[0].ResetAllRenderInfo();
-            else
-            {
-                ultras[0].ModityAllRenderInfo(verS.renderInfos);
             }
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
         }

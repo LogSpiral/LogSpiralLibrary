@@ -146,9 +146,6 @@ namespace LogSpiralLibrary
         //public const int tinyScalerInvert = 4;
         RenderTarget2D DirectCreateNewRender(int level = 0)
         {
-
-            var r1 = Main.screenTarget;
-            var r2 = Main.screenTargetSwap;
             int invert = 1 << level;
             if (level != 0)
                 return new RenderTarget2D(Main.graphics.GraphicsDevice, Main.screenTarget.Width / invert, Main.screenTarget.Height / invert);
@@ -421,8 +418,6 @@ namespace LogSpiralLibrary
             else
             {
                 byte[] newbuffer = new byte[bufferToSubmit.Length];
-                float scale = 64;
-                double second = 1;
                 for (int n = 0; n < bufferToSubmit.Length; n++)
                 {
                     //newbuffer[n] = (byte)(n/1024%2 == 1 ? 127 : 0);
@@ -430,7 +425,7 @@ namespace LogSpiralLibrary
                     //newbuffer[n] = (byte)((n / 4096f * 220).CosFactor() * 255);
                     //newbuffer[n] = (byte)(MyFunc(n / 4096f * 4) * scale);
 
-                    second = globalCounter / 4096.0 / 43;
+                    double second = globalCounter / 4096.0 / 43;
 
                     newbuffer[n] = (byte)(Math.Cos(second * 294 * MathHelper.TwoPi) * 128);
                     globalCounter++;//4096×Ö½Ú¶ÔÓ¦1/120Ãë?? 

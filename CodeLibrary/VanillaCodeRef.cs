@@ -29,7 +29,6 @@ static class VanillaCodeRef
         }
 
         Vector2 mountedCenter = player.MountedCenter;
-        bool doFastThrowDust = false;
         bool useRotating = true;
         bool hitCheck = false;
         int timeMax = 10;
@@ -155,7 +154,6 @@ static class VanillaCodeRef
             //状态一 掷出
             case 1:
                 {
-                    doFastThrowDust = true;
                     bool flag3 = projectile.ai[1]++ >= (float)timeMax;
                     flag3 |= projectile.Distance(mountedCenter) >= rangeMax;//时间或者范围超出限制
                     if (player.controlUseItem)//左键单击，切换至滞留状态
@@ -418,7 +416,7 @@ static class VanillaCodeRef
                 Vector2 vector2 = new(Main.rand.Next(-100, 101), Main.rand.Next(-100, 101));
                 vector2.Normalize();
                 vector2 *= (float)Main.rand.Next(10, 41) * 0.1f;
-                if (Main.rand.Next(3) == 0)
+                if (Main.rand.NextBool(3))
                     vector2 *= 2f;
 
                 vector *= 0.25f;
@@ -480,26 +478,21 @@ static class VanillaCodeRef
 
         projectile.timeLeft = 6;
         #endregion
-
         #region 基本参量
-        float num7 = 10f;
-        float yoYoSpeed = 10f;
-        float num9 = 3f;
-        float yoYoLength = 200f;
-        yoYoLength = ProjectileID.Sets.YoyosMaximumRange[projectile.type];
-        yoYoSpeed = ProjectileID.Sets.YoyosTopSpeed[projectile.type];
+        float yoYoLength = ProjectileID.Sets.YoyosMaximumRange[projectile.type];
+        float yoYoSpeed = ProjectileID.Sets.YoyosTopSpeed[projectile.type];
         #endregion
 
         #region 火焰悠悠粒子生成
         if (projectile.type == 545)
         {
-            if (Main.rand.Next(6) == 0)
+            if (Main.rand.NextBool(6))
             {
                 int num11 = Dust.NewDust(projectile.position, projectile.width, projectile.height, 6);
                 Main.dust[num11].noGravity = true;
             }
         }
-        else if (projectile.type == 553 && Main.rand.Next(2) == 0)
+        else if (projectile.type == 553 && Main.rand.NextBool(2))
         {
             int num12 = Dust.NewDust(projectile.position, projectile.width, projectile.height, 6);
             Main.dust[num12].noGravity = true;
@@ -517,7 +510,7 @@ static class VanillaCodeRef
         */
         yoYoLength /= (1f + Main.player[projectile.owner].inverseMeleeSpeed * 3f) / 4f;
         yoYoSpeed /= (1f + Main.player[projectile.owner].inverseMeleeSpeed * 3f) / 4f;
-        num7 = 14f - yoYoSpeed / 2f;
+        float num7 = 14f - yoYoSpeed / 2f;
         if (num7 < 1f)
             num7 = 1f;
 
@@ -528,7 +521,7 @@ static class VanillaCodeRef
         if (num7 < 1.01f)
             num7 = 1.01f;
 
-        num9 = 5f + yoYoSpeed / 2f;
+        float num9 = 5f + yoYoSpeed / 2f;
         if (flag)
             num9 += 20f;
 
@@ -850,7 +843,7 @@ static class VanillaCodeRef
                 projectile.AI_156_GetIdlePosition(index2, totalIndexesInGroup2, out var idleSpot2, out var _);
                 projectile.velocity = Vector2.Zero;
                 projectile.Center = Vector2.SmoothStep(projectile.Center, idleSpot2, 0.45f);
-                if (Main.rand.Next(20) == 0)//1/20的概率脱离闲置状态，这个随机数应该是防止一涌而上用的
+                if (Main.rand.NextBool(20))//1/20的概率脱离闲置状态，这个随机数应该是防止一涌而上用的
                 {
                     int targetIndex = projectile.AI_156_TryAttackingNPCs(blacklist);//尝试搜索目标并开展攻击
                     if (targetIndex != -1)
@@ -872,7 +865,7 @@ static class VanillaCodeRef
                 projectile.velocity = Vector2.Zero;
                 projectile.Center = Vector2.SmoothStep(projectile.Center, idleSpot3, 0.45f);
                 projectile.rotation = projectile.rotation.AngleLerp(idleRotation3, 0.45f);
-                if (Main.rand.Next(20) == 0)
+                if (Main.rand.NextBool(20))
                 {
                     int targetIndex = projectile.AI_156_TryAttackingNPCs(blacklist);
                     if (targetIndex != -1)

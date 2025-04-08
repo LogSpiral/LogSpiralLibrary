@@ -36,6 +36,7 @@ public class FlailInfo : VanillaMelee
         _ => realPos - Owner.Center
     };
     public override bool Attacktive => true;
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 重写函数

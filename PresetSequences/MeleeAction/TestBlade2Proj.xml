@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sequence name="TestBlade2Proj" AuthorName="LogSpiral" Description="二号测试剑，复杂的递归结构登场" FileName="TestBlade2Proj" DisplayName="测试剑二号" ModName="LogSpiralLibrary" createDate="223214514" lastModifyDate="223214514" passWord="" Finished="True">
+  <Group>
+    <Wraper condition="TimeNight" IsSequence="True">
+      <Sequence>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/BoardSwordInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/ShortSwordInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|3.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/BoomerangInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|4.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/FlailInfo" />
+          </Wraper>
+        </Group>
+      </Sequence>
+    </Wraper>
+    <Wraper condition="TimeDay" IsSequence="True">
+      <Sequence>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/SpearInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/FistInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/HammerInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/KnivesInfo" />
+          </Wraper>
+        </Group>
+      </Sequence>
+    </Wraper>
+  </Group>
+  <Group>
+    <Wraper condition="InJungle" IsSequence="True">
+      <Sequence>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|4.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/YoyoInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="4" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/ArkhalisInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="2" ModifyData="(1.00|1.50|1.00|1.00|0|1.00)" name="LogSpiralLibrary/EruptionInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/RotatingInfo" />
+          </Wraper>
+        </Group>
+      </Sequence>
+    </Wraper>
+    <Wraper condition="InRain" IsSequence="True">
+      <Sequence>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/LanceInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/StarlightInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/ZenithInfo" />
+          </Wraper>
+        </Group>
+        <Group>
+          <Wraper>
+            <Action Cycle="1" ModifyData="(1.00|10.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/TerraprismaInfo" />
+          </Wraper>
+        </Group>
+      </Sequence>
+    </Wraper>
+  </Group>
+  <Group>
+    <Wraper>
+      <Action Cycle="4" ModifyData="(1.00|1.00|1.00|1.00|0|1.00)" name="LogSpiralLibrary/StabInfo" />
+    </Wraper>
+  </Group>
+</Sequence>

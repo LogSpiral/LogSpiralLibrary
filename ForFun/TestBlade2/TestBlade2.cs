@@ -11,7 +11,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
 {
     public class TestBlade2 : ModItem
     {
-        public override bool IsLoadingEnabled(Mod mod) => false;
+        //public override bool IsLoadingEnabled(Mod mod) => false;
         public override void SetDefaults()
         {
             Item.height = Item.width = 69;
@@ -35,7 +35,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
     }
     public class TestBlade2Proj : MeleeSequenceProj
     {
-        public override bool IsLoadingEnabled(Mod mod) => false;
+        //public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
         public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>()) with 
         {

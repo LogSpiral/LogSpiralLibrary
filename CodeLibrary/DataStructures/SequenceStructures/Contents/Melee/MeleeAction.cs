@@ -267,6 +267,8 @@ public abstract class MeleeAction : ModType, ISequenceElement
     /// 伤害
     /// </summary>
     public virtual float offsetDamage => 1f;
+
+    public virtual bool OwnerHitCheek => true;
     #endregion
     #endregion
 
@@ -278,6 +280,7 @@ public abstract class MeleeAction : ModType, ISequenceElement
             SequenceSystem.elementDelegates[OnActiveDelegate.Key].Invoke(this);
         }
         _OnActive?.Invoke(this);
+        Projectile.ownerHitCheck = OwnerHitCheek;
     }
 
     public virtual void OnAttack()
@@ -460,11 +463,12 @@ public abstract class MeleeAction : ModType, ISequenceElement
         #endregion
 
     }
+
+    // TODO: 修改默认判定逻辑，现在这样还是太暴力了
     public virtual bool Collide(Rectangle rectangle)
     {
         if (Attacktive)
         {
-            Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 2, 1, 514);
 
 
             /*float point1 = 0f;
@@ -489,7 +493,7 @@ public abstract class MeleeAction : ModType, ISequenceElement
                 CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !flip);
 
                 float point = 0f;
-                Vector2 tar = c[4].Position - drawCen;
+                //Vector2 tar = c[4].Position - drawCen;
                 if (Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), c[0].Position,
                     c[4].Position, 48f, ref point))
                 {
@@ -504,6 +508,7 @@ public abstract class MeleeAction : ModType, ISequenceElement
     }
     public virtual void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
+        Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 2, 1, 514);
         if (OnHitTargetDelegate != null && OnHitTargetDelegate.Key != SequenceSystem.NoneDelegateKey)
         {
             SequenceSystem.elementDelegates[OnHitTargetDelegate.Key].Invoke(this);
@@ -544,8 +549,12 @@ public abstract class MeleeAction : ModType, ISequenceElement
             if (type != property.DeclaringType || property.GetCustomAttribute<ElementCustomDataAttribute>() == null || property.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
                 continue;
             Language.GetOrRegister(this.GetLocalizationKey(property.Name + ".Label").Replace(nameof(MeleeAction), "Configs"), () => property.Name);
-
         }
+        var categoryKey = $"Mods.{Mod.Name}.{LocalizationCategory}.Category.{Category}";
+        //if (!Language.Exists(categoryKey))
+        
+        if (!string.IsNullOrEmpty(Category))
+            Language.GetOrRegister(categoryKey, () => Category);
     }
     public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
     public abstract string Category { get; }

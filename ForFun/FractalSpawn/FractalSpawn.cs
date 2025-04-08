@@ -141,7 +141,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
                 //Main.NewText("螺线你在干什么");
                 return false;
             }
-            var render = FractalSpawnSystem.render;
+
             var renderShift = FractalSpawnSystem.renderShift;
             bool drawOnly = Main.MouseScreen == mouseScreen;
             if (false)

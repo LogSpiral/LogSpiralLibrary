@@ -179,7 +179,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public void DrawToScreen(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap)
         {
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
+            
             graphicsDevice.SetRenderTarget(Main.screenTarget);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);

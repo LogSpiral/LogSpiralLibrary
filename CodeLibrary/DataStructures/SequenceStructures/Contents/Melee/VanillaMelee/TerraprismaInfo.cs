@@ -220,7 +220,7 @@ public class TerraprismaInfo : VanillaMelee
             float sc = 1;
             if (Owner is Player plr)
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
-            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, oldRotations[n] + standardInfo.standardRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, oldCenters[n], !flip, (n == 0 ? 1 : (45f - n) / 90f) * k, standardInfo.frame);
+            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, oldRotations[n], Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, oldCenters[n], !flip, (n == 0 ? 1 : (45f - n) / 90f) * k, standardInfo.frame);
             result = result.Concat(currentVertex);
         }
         return [.. result];

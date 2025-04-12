@@ -23,7 +23,6 @@ public class ChargingInfo : ExtendedMelee
 
     #region 重写属性
     public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
-    public override float CompositeArmRotation => Main.GlobalTimeWrappedHourly;//base.CompositeArmRotation;
     public override float offsetSize => base.offsetSize;
     public override bool Attacktive => timer == 1;
     #endregion

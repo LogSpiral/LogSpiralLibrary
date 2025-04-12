@@ -1,11 +1,14 @@
-﻿using System.IO;
-using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
-public interface ISequenceElement : ILocalizedModType, ILoadable
+partial interface ISequenceElement
 {
-    #region 属性
-    #region 编排序列时调整
+    #region 参数属性
     //持续时间 角度 位移 修改数据
     /// <summary>
     /// 使用数据修改
@@ -18,7 +21,8 @@ public interface ISequenceElement : ILocalizedModType, ILoadable
     [ElementCustomData]
     int Cycle => 1;
     #endregion
-    #region 动态调整，每次执行时重设
+
+    #region 逻辑属性
     bool flip { get; set; }
     /// <summary>
     /// 旋转角，非插值
@@ -35,7 +39,8 @@ public interface ISequenceElement : ILocalizedModType, ILoadable
     int timer { get; set; }
     int timerMax { get; set; }
     #endregion
-    #region 插值生成，最主要的实现内容的地方
+
+    #region 插值属性
     /// <summary>
     /// 当前周期的进度
     /// </summary>
@@ -61,75 +66,11 @@ public interface ISequenceElement : ILocalizedModType, ILoadable
     /// </summary>
     bool Attacktive { get; }
     #endregion
-    #endregion
-    #region 函数
-    #region 切换
-    /// <summary>
-    /// 被切换时调用,脉冲性
-    /// </summary>
-    void OnActive();
 
-    /// <summary>
-    /// 被换走时调用,脉冲性
-    /// </summary>
-    void OnDeactive();
-    #endregion
-
-    #region 吟唱
-    /// <summary>
-    /// 攻击期间调用,持续性
-    /// </summary>
-    void OnAttack();
-
-    /// <summary>
-    /// 攻击以外时间调用,持续性
-    /// </summary>
-    void OnCharge();
-    #endregion
-
-    #region 每轮
-    void OnStartSingle();
-    void OnEndSingle();
-    #endregion
-
-    #region 每次攻击
-    /// <summary>
-    /// 结束时调用,脉冲性
-    /// </summary>
-    void OnEndAttack();
-
-    /// <summary>
-    /// 开始攻击时调用,脉冲性
-    /// </summary>
-    void OnStartAttack();
-    #endregion
-
-    #region 具体传入
-    void Update(bool triggered);
-
-    void Draw(SpriteBatch spriteBatch, Texture2D texture);
-
-    #endregion
-
-    #region SL
-    void SaveAttribute(XmlWriter xmlWriter);
-    void LoadAttribute(XmlReader xmlReader);
-    #endregion
-
-    #region UIConfig
-    //void SetConfigPanel(UIList parent);
-    #endregion
-
-    #region Net
-    void NetSend(BinaryWriter writer);
-    void NetReceive(BinaryReader reader);
-    #endregion
-    #endregion
-    #region 吃闲饭的
+    #region 辅助属性
     Entity Owner { get; set; }
     Projectile Projectile { get; set; }
     StandardInfo standardInfo { get; set; }
-
     string Category { get; }
     #endregion
 }

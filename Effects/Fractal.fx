@@ -30,7 +30,27 @@ float2 ComplexEXP(float2 z)
 	return exp(z.x) * float2(cos(z.y), sin(z.y));
 
 }
-
+float2 ComplexSinh(float2 z)
+{
+	return (ComplexEXP(z) - ComplexEXP(-z)) * .5;
+}
+float2 ComplexCosh(float2 z)
+{
+	return (ComplexEXP(z) + ComplexEXP(-z)) * .5;
+}
+float2 ComplexSin(float2 z)
+{
+	z = float2(-z.y, z.x);
+	z = ComplexSinh(z);
+	z = float2(z.y, -z.x);
+	return z;
+}
+float2 ComplexCos(float2 z)
+{
+	z = float2(-z.y, z.x);
+	z = ComplexCosh(z);
+	return z;
+}
 float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
 {
 	float4 color = tex2D(uImage0, coord); //读取数据
@@ -73,6 +93,29 @@ float4 PixelShaderFunction_Fractal(float2 coord : TEXCOORD0) : COLOR0
 	return float4(GetLerpValue(float2(-2, -2), float2(2, 2), z), color.z + 0.03 * n, 1); //迭代完成塞回数据
 
 }
+
+//float2 uConst;
+float4 PixelShaderFunction_JuilaSetCos(float2 coord : TEXCOORD0) : COLOR0
+{
+	float4 color = tex2D(uImage0, coord); //读取数据
+	if (color.z >= 1)//已经迭代得够多了
+		return color; //润
+	float2 z = lerp(float2(-2, -2), float2(2, 2), color.xy); //读取数据获取z，因为这种尴尬的方式所以我不得不把颜色的初始值设置为(0.5,0.5,0)
+	if (!any(z))
+		z = lerp(uRange.xy, uRange.zw, coord);
+	//float2 z0 = lerp(uRange.xy, uRange.zw, coord); //通过插值获取z0
+		int n;
+	for (n = 0; n < 30; n++)
+	{
+		z = ComplexCos(z) + uM;
+		
+		if (length(z) > 2 || color.z + 0.03 * n >= 1)
+			break;
+	}
+	return float4(GetLerpValue(float2(-2, -2), float2(2, 2), z), color.z + 0.03 * n, 1); //迭代完成塞回数据
+
+}
+
 float4 PixelShaderFunction_HeatMap(float2 coord : TEXCOORD0) : COLOR0
 {
 	return tex2D(uImage1, float2(tex2D(uImage0, coord).z, 0.5));
@@ -89,5 +132,10 @@ technique Technique1
 	pass HeatMap
 	{
 		PixelShader = compile ps_3_0 PixelShaderFunction_HeatMap();
+	}
+	pass JuilaSetCos
+	{
+		PixelShader = compile ps_3_0 PixelShaderFunction_JuilaSetCos();
+		
 	}
 }

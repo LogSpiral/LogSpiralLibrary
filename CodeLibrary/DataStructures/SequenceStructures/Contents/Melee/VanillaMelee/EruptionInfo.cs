@@ -17,19 +17,18 @@ public class EruptionInfo : VanillaMelee
     public override float offsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
     public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
     public override bool Attacktive => true;
-    public override bool OwnerHitCheek => false; 
+    public override bool OwnerHitCheek => false;
     #endregion
 
     #region 辅助函数
     private CustomVertexInfo[] EruptionVertex(Texture2D texture, float alpha)
     {
         Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
-        float finalRotation = offsetRotation + standardInfo.standardRotation;
         Vector2 drawCen = offsetCenter + Owner.Center;
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
+        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
         List<CustomVertexInfo> result = [];
         Vector2 offVec = vtxs[4].Position - vtxs[0].Position;
         float angle = offVec.ToRotation();
@@ -59,9 +58,9 @@ public class EruptionInfo : VanillaMelee
             bool flag = n != 0 && n != 9;
             CustomVertexInfo[] curGroup;
             if (flag)
-                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, standardInfo.standardRotation, angle + MathHelper.PiOver2, texture, .5f, ModifyData.actionOffsetSize * sc * .5f, drawCen + off2, !flip, alpha, standardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, standardInfo.standardRotation, 0, angle + MathHelper.PiOver2, texture, .5f, ModifyData.actionOffsetSize * sc * .5f, drawCen + off2, !flip, alpha, standardInfo.frame);
             else
-                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, angle, texture, 1f, ModifyData.actionOffsetSize * sc * 1f, drawCen - (n == 9 ? off2 : default), !flip, alpha, standardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, 0, angle, texture, 1f, ModifyData.actionOffsetSize * sc * 1f, drawCen - (n == 9 ? off2 : default), !flip, alpha, standardInfo.frame);
 
             if (flag)
             {

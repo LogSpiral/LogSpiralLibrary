@@ -578,8 +578,8 @@ Configs: {
 	}
 
 	StormInfo: {
-		// angleRange.Label: angleRange
-		// xScaler.Label: xScaler
+		angleRange.Label: 回旋圈数
+		xScaler.Label: 扁平程度
 	}
 }
 

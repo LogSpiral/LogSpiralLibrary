@@ -2176,26 +2176,28 @@ namespace LogSpiralLibrary.CodeLibrary
         #endregion
 
         #region 其它
-        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotation, float rotationDir, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip, float alpha = 1f, Rectangle? frame = null)
+        public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotationStandard, float rotationOffset, float rotationDirection, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip, float alpha = 1f, Rectangle? frame = null)
         {
             Rectangle realFrame = frame ?? new Rectangle(0, 0, texture.Width, texture.Height);
             //对数据进行矩阵变换吧！
             Matrix matrix =
             Matrix.CreateTranslation(-origin.X, origin.Y - 1, 0) *          //把变换中心平移到传入的origin上，这里我应该是为了方便改成数学常用的坐标系下的origin了(?)
                 Matrix.CreateScale(realFrame.Width, realFrame.Height, 1) *      //缩放到图片原本的正常比例
-                Matrix.CreateRotationZ(rotation) *                          //先进行一个旋转操作
+                Matrix.CreateRotationZ(rotationStandard) *                          //先进行一个旋转操作
+                Matrix.CreateScale(1, flip ? 1 : -1, 1) *
+                Matrix.CreateRotationZ(rotationOffset) *
                 Matrix.CreateScale(1, 1 / KValue, 1) *                      //压扁来有一种横批的感觉(??)
-                Matrix.CreateRotationZ(rotationDir) *                       //朝向旋转量，我用这个的时候是这个固定，上面那个从小变大，形成一种纸片挥砍的动态感(x
+                Matrix.CreateRotationZ(rotationDirection) *                       //朝向旋转量，我用这个的时候是这个固定，上面那个从小变大，形成一种纸片挥砍的动态感(x
                 Matrix.CreateScale(size);                                   //单纯大小缩放
             Vector2[] vecs = new Vector2[4];
             for (int i = 0; i < 4; i++)
-                vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2 % 2), matrix);//生成单位正方形四个顶点
+                vecs[i] = Vector2.Transform(new Vector2(i % 2, i / 2), matrix);//生成单位正方形四个顶点
             CustomVertexInfo[] c = new CustomVertexInfo[6];//两个三角形，六个顶点
             Vector2 startCoord = realFrame.TopLeft() / texture.Size();
             Vector2 endCoord = realFrame.BottomRight() / texture.Size();
             c[0] = new CustomVertexInfo(vecs[0] + drawCen, new Vector3(startCoord.X, endCoord.Y, alpha));
-            c[1] = new CustomVertexInfo(vecs[1] + drawCen, new Vector3(flip ? startCoord : endCoord, alpha));
-            c[2] = new CustomVertexInfo(vecs[2] + drawCen, new Vector3(flip ? endCoord : startCoord, alpha));
+            c[1] = new CustomVertexInfo(vecs[1] + drawCen, new Vector3(endCoord, alpha));
+            c[2] = new CustomVertexInfo(vecs[2] + drawCen, new Vector3(startCoord, alpha));
             c[3] = c[1];
             c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(endCoord.X, startCoord.Y, alpha));
             //c[4] = new CustomVertexInfo(vecs[3] + drawCen, new Vector3(startCoord.Y,endCoord.X, alpha));

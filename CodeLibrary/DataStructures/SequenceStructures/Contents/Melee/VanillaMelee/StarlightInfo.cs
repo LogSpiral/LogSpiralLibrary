@@ -61,15 +61,17 @@ public class StarlightInfo : VanillaMelee
         spriteBatch.DrawStarLight(Rotation, Owner.Center, standardInfo.standardColor, ModifyData.actionOffsetSize * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
     }
 
-    public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
-    {
-        Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
-        float finalRotation = offsetRotation + standardInfo.standardRotation;
-        Vector2 drawCen = offsetCenter + Owner.Center;
-        float sc = 1;
-        if (Owner is Player plr)
-            sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        return DrawingMethods.GetItemVertexes(finalOrigin, finalRotation, Rotation, texture, KValue, ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
-    }
+    //public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
+    //{
+    //    base.GetWeaponVertex
+    //    Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
+    //    float finalRotation = offsetRotation + standardInfo.standardRotation;
+    //    Vector2 drawCen = offsetCenter + Owner.Center;
+    //    float sc = 1;
+    //    if (Owner is Player plr)
+    //        sc = plr.GetAdjustedItemScale(plr.HeldItem);
+    //    return DrawingMethods.GetItemVertexes(finalOrigin, TODO, finalRotation, Rotation, texture, KValue, ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
+    //}
+    
     #endregion
 }

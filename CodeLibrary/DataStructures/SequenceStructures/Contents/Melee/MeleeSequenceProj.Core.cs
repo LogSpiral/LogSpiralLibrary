@@ -104,7 +104,8 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         base.AI();
     }
 
-    public override void OnKill(int timeLeft) => meleeSequence?.ResetCounter();
+    public override void OnKill(int timeLeft) =>
+        meleeSequence?.ResetCounter();
 
     //还有这个是阻止弹幕自行更新位置的，因为我们会在核心逻辑那里写入弹幕的位置
     public override bool ShouldUpdatePosition() => false;

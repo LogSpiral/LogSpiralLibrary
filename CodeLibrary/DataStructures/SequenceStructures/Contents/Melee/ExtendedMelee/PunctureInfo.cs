@@ -11,7 +11,7 @@ public class PunctureInfo : ExtendedMelee
     #region 重写属性
     public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.PiOver2 - (Rotation < -MathHelper.PiOver2 ? Rotation + MathHelper.TwoPi : Rotation), MathF.Pow(MathHelper.Clamp((1 - Factor) * 2, 0, 1), 2));
     public override float CompositeArmRotation => base.CompositeArmRotation + MathHelper.SmoothStep(0, -MathHelper.PiOver2 * .75f * Owner.direction, MathF.Pow(MathHelper.Clamp((1 - Factor) * 3, 0, 1), 2));
-    public override Vector2 offsetOrigin => base.offsetOrigin + Vector2.SmoothStep(default, (flip ? new Vector2(-.05f, -.15f) : new Vector2(.15f, .05f)) - new Vector2(.2f, -.2f), MathHelper.Clamp((1 - Factor) * 2, 0, 1));
+    public override Vector2 offsetOrigin => base.offsetOrigin + Vector2.SmoothStep(default, new Vector2(-.25f, .05f).RotatedBy(standardInfo.standardRotation + MathHelper.PiOver4), MathHelper.Clamp((1 - Factor) * 2, 0, 1));
     public override bool Attacktive => Factor < .85f;
     #endregion
 

@@ -328,13 +328,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         //    base.OnModifyRenderInfo(infos);
         //}
     }
+    //？？这玩意怎么好像一直没用上
     public class FractalStabInfo : MeleeVertexInfo
     {
         CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[6];
         public override CustomVertexInfo[] VertexInfos => _vertexInfos;
         public override void Uptate()
         {
-            _vertexInfos = DrawingMethods.GetItemVertexes(new Vector2(.5f), 0, rotation, LogSpiralLibraryMod.BaseTex[baseTexIndex].Value, 0.5f, scaler / 1000f, center, negativeDir);
+            _vertexInfos = DrawingMethods.GetItemVertexes(new Vector2(.5f), 0, 0, rotation, LogSpiralLibraryMod.BaseTex[baseTexIndex].Value, 0.5f, scaler / 1000f, center, negativeDir);
             //var vertexs = new CustomVertexInfo[4];
             //for (int n = 0; n < 4; n++) 
             //{

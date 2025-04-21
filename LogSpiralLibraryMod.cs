@@ -504,34 +504,14 @@ namespace LogSpiralLibrary
             base.HandlePacket(reader, whoAmI);
         }
     }
-    public abstract class RenderBasedDrawing : ModType
-    {
-        public sealed override void Register()
-        {
-            ModTypeLookup<RenderBasedDrawing>.Register(this);
-            LogSpiralLibrarySystem.renderBasedDrawings.Add(this);
-        }
-        /// <summary>
-        /// 对需要Render的弹幕进行合批绘制！！
-        /// </summary>
-        /// <param name="spriteBatch"></param>
-        /// <param name="graphicsDevice"></param>
-        /// <param name="render">超级画布布！！</param>
-        /// <param name="renderAirDistort">专门给空气扭曲用的Render,和上面那个没区别其实</param>
-        public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
-        /// <summary>
-        /// 哦但是，如果那些要用到Render的弹幕在Render不可用的时候应该怎么办呢？？
-        /// </summary>
-        /// <param name="spriteBatch"></param>
-        public abstract void CommonDrawingMethods(SpriteBatch spriteBatch);
-    }
+
     public class LogSpiralLibrarySystem : ModSystem
     {
         public override void PostSetupContent()
         {
             base.PostSetupContent();
         }
-        public static List<RenderBasedDrawing> renderBasedDrawings = [];
+        public static List<IRenderBasedDrawing> renderBasedDrawings = [];
         public static Dictionary<Type, VertexDrawInfo> vertexDrawInfoInstance = [];
         public override void OnModLoad()
         {
@@ -609,7 +589,7 @@ namespace LogSpiralLibrary
             base.PostDrawInterface(spriteBatch);
         }
     }
-    public class LogSpitalLibraryRenderDrawing : RenderBasedDrawing
+    public class LogSpitalLibraryRenderDrawing : IRenderBasedDrawing
     {
         static void DrawVertexEffects(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
         {
@@ -634,15 +614,12 @@ namespace LogSpiralLibrary
                 }
             }
         }
-        public override void CommonDrawingMethods(SpriteBatch spriteBatch)
-        {
-            DrawVertexEffects(spriteBatch, null, null, null);
-        }
 
-        public override void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-        {
-            DrawVertexEffects(spriteBatch, graphicsDevice, render, renderAirDistort);
-        }
+        public void CommonDrawingMethods(SpriteBatch spriteBatch)
+            => DrawVertexEffects(spriteBatch, null, null, null);
+
+        public void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+            => DrawVertexEffects(spriteBatch, graphicsDevice, render, renderAirDistort);
 
     }
     [AutoSync]

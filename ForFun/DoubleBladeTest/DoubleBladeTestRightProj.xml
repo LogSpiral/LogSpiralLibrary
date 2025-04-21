@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sequence name="DoubleBladeTestRightProj" AuthorName="LSL" Description="Auto Spawn By LogSpiralLibrary." FileName="DoubleBladeTestRightProj" DisplayName="DoubleBladeTestRightProj" ModName="LogSpiralLibrary" createTime="638801359056304096" lastModifyDate="638801370915448895" passWord="" Finished="True">
+  <Group>
+    <Wraper condition="MouseRight">
+      <Action ModifyData="(1.00|2.00|1.00|1.00|0|1.00)" Cycle="4" mode="0" KValueRange="3.00" randAngleRange="0.79" name="LogSpiralLibrary/SwooshInfo" />
+    </Wraper>
+  </Group>
+</Sequence>

@@ -1,5 +1,4 @@
 ﻿using Humanizer;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.UIElements;
 using System;
@@ -18,6 +17,8 @@ using Terraria.ModLoader.UI;
 using Terraria.UI;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System.UI;
 using ReLogic.Graphics;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System.UIBase;
 

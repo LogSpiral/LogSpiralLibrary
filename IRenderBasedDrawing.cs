@@ -19,3 +19,13 @@ public interface IRenderBasedDrawing
     /// <param name="spriteBatch"></param>
     public abstract void CommonDrawingMethods(SpriteBatch spriteBatch);
 }
+public abstract class RenderBasedDrawing : ModType, IRenderBasedDrawing 
+{
+    public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort);
+    public abstract void CommonDrawingMethods(SpriteBatch spriteBatch);
+    public override sealed void Register()
+    {
+        ModTypeLookup<RenderBasedDrawing>.Register(this);
+        RenderBasedDrawingSystem.RenderBasedDrawings.Add(this);
+    }
+}

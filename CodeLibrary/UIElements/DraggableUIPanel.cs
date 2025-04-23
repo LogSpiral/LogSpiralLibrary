@@ -1,5 +1,5 @@
 using Humanizer;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

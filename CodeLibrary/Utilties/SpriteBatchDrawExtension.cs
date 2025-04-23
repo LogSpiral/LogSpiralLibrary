@@ -1,4 +1,4 @@
-﻿namespace LogSpiralLibrary.CodeLibrary;
+﻿namespace LogSpiralLibrary.CodeLibrary.Utilties;
 
 public static class SpriteBatchDrawExtension
 {
@@ -89,7 +89,7 @@ byte effects
                     offset = 0;
                     spriteBatch.vertexBuffer.SetDataPointerEXT(
                         0,
-                        (IntPtr)sprite,
+                        (nint)sprite,
                         SpriteBatch.VertexPositionColorTexture4.RealStride,
                         SetDataOptions.None
                     );
@@ -152,64 +152,64 @@ byte effects
     {
         float cornerX = -originX * destinationW;
         float cornerY = -originY * destinationH;
-        sprite->Position0.X = (
-            (-rotationSin * cornerY) +
-            (rotationCos * cornerX) +
+        sprite->Position0.X = 
+            -rotationSin * cornerY +
+            rotationCos * cornerX +
             destinationX
-        );
-        sprite->Position0.Y = (
-            (rotationCos * cornerY) +
-            (rotationSin * cornerX) +
+        ;
+        sprite->Position0.Y = 
+            rotationCos * cornerY +
+            rotationSin * cornerX +
             destinationY
-        );
+        ;
         cornerX = (1.0f - originX) * destinationW;
         cornerY = -originY * destinationH;
-        sprite->Position1.X = (
-            (-rotationSin * cornerY) +
-            (rotationCos * cornerX) +
+        sprite->Position1.X = 
+            -rotationSin * cornerY +
+            rotationCos * cornerX +
             destinationX
-        );
-        sprite->Position1.Y = (
-            (rotationCos * cornerY) +
-            (rotationSin * cornerX) +
+        ;
+        sprite->Position1.Y = 
+            rotationCos * cornerY +
+            rotationSin * cornerX +
             destinationY
-        );
+        ;
         cornerX = -originX * destinationW;
         cornerY = (1.0f - originY) * destinationH;
-        sprite->Position2.X = (
-            (-rotationSin * cornerY) +
-            (rotationCos * cornerX) +
+        sprite->Position2.X = 
+            -rotationSin * cornerY +
+            rotationCos * cornerX +
             destinationX
-        );
-        sprite->Position2.Y = (
-            (rotationCos * cornerY) +
-            (rotationSin * cornerX) +
+        ;
+        sprite->Position2.Y = 
+            rotationCos * cornerY +
+            rotationSin * cornerX +
             destinationY
-        );
+        ;
         cornerX = (1.0f - originX) * destinationW;
         cornerY = (1.0f - originY) * destinationH;
-        sprite->Position3.X = (
-            (-rotationSin * cornerY) +
-            (rotationCos * cornerX) +
+        sprite->Position3.X = 
+            -rotationSin * cornerY +
+            rotationCos * cornerX +
             destinationX
-        );
-        sprite->Position3.Y = (
-            (rotationCos * cornerY) +
-            (rotationSin * cornerX) +
+        ;
+        sprite->Position3.Y = 
+            rotationCos * cornerY +
+            rotationSin * cornerX +
             destinationY
-        );
+        ;
         fixed (float* flipX = &SpriteBatch.CornerOffsetX[0])
         {
             fixed (float* flipY = &SpriteBatch.CornerOffsetY[0])
             {
-                sprite->TextureCoordinate0.X = (flipX[0 ^ effects] * sourceW) + sourceX;
-                sprite->TextureCoordinate0.Y = (flipY[0 ^ effects] * sourceH) + sourceY;
-                sprite->TextureCoordinate1.X = (flipX[1 ^ effects] * sourceW) + sourceX;
-                sprite->TextureCoordinate1.Y = (flipY[1 ^ effects] * sourceH) + sourceY;
-                sprite->TextureCoordinate2.X = (flipX[2 ^ effects] * sourceW) + sourceX;
-                sprite->TextureCoordinate2.Y = (flipY[2 ^ effects] * sourceH) + sourceY;
-                sprite->TextureCoordinate3.X = (flipX[3 ^ effects] * sourceW) + sourceX;
-                sprite->TextureCoordinate3.Y = (flipY[3 ^ effects] * sourceH) + sourceY;
+                sprite->TextureCoordinate0.X = flipX[0 ^ effects] * sourceW + sourceX;
+                sprite->TextureCoordinate0.Y = flipY[0 ^ effects] * sourceH + sourceY;
+                sprite->TextureCoordinate1.X = flipX[1 ^ effects] * sourceW + sourceX;
+                sprite->TextureCoordinate1.Y = flipY[1 ^ effects] * sourceH + sourceY;
+                sprite->TextureCoordinate2.X = flipX[2 ^ effects] * sourceW + sourceX;
+                sprite->TextureCoordinate2.Y = flipY[2 ^ effects] * sourceH + sourceY;
+                sprite->TextureCoordinate3.X = flipX[3 ^ effects] * sourceW + sourceX;
+                sprite->TextureCoordinate3.Y = flipY[3 ^ effects] * sourceH + sourceY;
             }
         }
         sprite->Position0.Z = depth;
@@ -335,11 +335,11 @@ Vector2 position,
             sourceW = Math.Sign(sourceRectangle.Value.Width) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Width),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Width;
+            ) / texture.Width;
             sourceH = Math.Sign(sourceRectangle.Value.Height) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Height),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Height;
+            ) / texture.Height;
             destW *= sourceRectangle.Value.Width;
             destH *= sourceRectangle.Value.Height;
         }
@@ -366,8 +366,8 @@ Vector2 position,
             color1,
             color2,
             color3,
-            origin.X / sourceW / (float)texture.Width,
-            origin.Y / sourceH / (float)texture.Height,
+            origin.X / sourceW / texture.Width,
+            origin.Y / sourceH / texture.Height,
             (float)Math.Sin(rotation),
             (float)Math.Cos(rotation),
             layerDepth,
@@ -399,11 +399,11 @@ Vector2 position,
             sourceW = Math.Sign(sourceRectangle.Value.Width) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Width),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Width;
+            ) / texture.Width;
             sourceH = Math.Sign(sourceRectangle.Value.Height) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Height),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Height;
+            ) / texture.Height;
             scale.X *= sourceRectangle.Value.Width;
             scale.Y *= sourceRectangle.Value.Height;
         }
@@ -430,8 +430,8 @@ Vector2 position,
             color1,
             color2,
             color3,
-            origin.X / sourceW / (float)texture.Width,
-            origin.Y / sourceH / (float)texture.Height,
+            origin.X / sourceW / texture.Width,
+            origin.Y / sourceH / texture.Height,
             (float)Math.Sin(rotation),
             (float)Math.Cos(rotation),
             layerDepth,
@@ -544,11 +544,11 @@ Vector2 position,
             sourceW = Math.Sign(sourceRectangle.Value.Width) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Width),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Width;
+            ) / texture.Width;
             sourceH = Math.Sign(sourceRectangle.Value.Height) * Math.Max(
                 Math.Abs(sourceRectangle.Value.Height),
                 MathHelper.MachineEpsilonFloat
-            ) / (float)texture.Height;
+            ) / texture.Height;
         }
         else
         {
@@ -571,8 +571,8 @@ Vector2 position,
             color1,
             color2,
             color3,
-            origin.X / sourceW / (float)texture.Width,
-            origin.Y / sourceH / (float)texture.Height,
+            origin.X / sourceW / texture.Width,
+            origin.Y / sourceH / texture.Height,
             (float)Math.Sin(rotation),
             (float)Math.Cos(rotation),
             layerDepth,

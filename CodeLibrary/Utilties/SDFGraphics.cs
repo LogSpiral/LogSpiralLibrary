@@ -1,12 +1,11 @@
 ﻿//本文件中的形状绘制全部改自iq大佬的SDF https://iquilezles.org/articles/distfunctions2d/
 //本文件源自Qot
-using LogSpiralLibrary.CodeLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.ModLoader.IO;
 
-namespace LogSpiralLibrary.CodeLibrary;
+namespace LogSpiralLibrary.CodeLibrary.Utilties;
 public static class SDFGraphics
 {
     //源自Qot的MyUtils

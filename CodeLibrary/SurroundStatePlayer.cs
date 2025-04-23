@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -106,7 +107,7 @@ public class SurroundStatePlayer : ModPlayer
     }
     public override void ResetEffects()
     {
-        if ((int)LogSpiralLibrarySystem.ModTime2 % SurroundStateConfig.Instance.CheckCycleLength == 0)
+        if ((int)GlobalTimeSystem.GlobalTimePaused % SurroundStateConfig.Instance.CheckCycleLength == 0)
             UpdateData();
         base.ResetEffects();
     }

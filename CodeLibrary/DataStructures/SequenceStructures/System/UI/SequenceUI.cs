@@ -17,6 +17,7 @@ using Terraria.UI;
 using System.IO;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
 using System.Text.Json.Serialization;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System.UI;
 

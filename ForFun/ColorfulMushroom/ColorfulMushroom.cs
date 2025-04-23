@@ -1,4 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using LogSpiralLibrary.ForFun.GeogebraShin;
 using ReLogic.Content;
 using System;

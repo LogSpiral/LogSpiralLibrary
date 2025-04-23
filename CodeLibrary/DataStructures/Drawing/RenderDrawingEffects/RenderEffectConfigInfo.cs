@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
+using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Terraria.ModLoader.Config;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects
 {
     public class AirDistortConfigs : IAvailabilityChangableConfig
     {

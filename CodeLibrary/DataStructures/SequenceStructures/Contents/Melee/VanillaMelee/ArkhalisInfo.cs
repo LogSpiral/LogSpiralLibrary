@@ -1,5 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+using LogSpiralLibrary.CodeLibrary.Utilties;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;

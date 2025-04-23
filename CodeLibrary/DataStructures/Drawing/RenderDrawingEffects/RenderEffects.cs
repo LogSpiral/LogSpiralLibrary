@@ -1,10 +1,11 @@
-﻿using System;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+using System;
 using System.IO;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using static Terraria.GameContent.Bestiary.IL_BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions;
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects
 {
     /// <summary>
     /// 一般需要搭配<see cref="VertexDrawInfo"/>使用
@@ -157,7 +158,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             RenderEffect.Parameters["lightAsAlpha"].SetValue(lightAsAlpha);
             RenderEffect.Parameters["tier1"].SetValue(tier1);
             RenderEffect.Parameters["tier2"].SetValue(tier2);
-            RenderEffect.Parameters["offset"].SetValue((float)LogSpiralLibraryMod.ModTime * new Vector2(0.707f) + (Main.gameMenu ? default : Main.LocalPlayer.Center));//offset
+            RenderEffect.Parameters["offset"].SetValue((float)ModTime * new Vector2(0.707f) + (Main.gameMenu ? default : Main.LocalPlayer.Center));//offset
             RenderEffect.Parameters["maskGlowColor"].SetValue(glowColor.ToVector4());
             RenderEffect.Parameters["ImageSize"].SetValue(TexSize);
             RenderEffect.Parameters["inverse"].SetValue(inverse);
@@ -279,7 +280,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             }
             else
             {
-                RenderTarget2D renderSwap2 = LogSpiralLibraryMod.Instance.Render_Swap2;
+                RenderTarget2D renderSwap2 = Instance.Render_Swap2;
                 RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
                 for (int n = 0; n < times - 1; n++)//times是模糊次数(
                 {

@@ -19,11 +19,11 @@ using Terraria.UI;
 using Newtonsoft.Json;
 using Terraria.Audio;
 using Terraria.GameContent.UI.States;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Runtime.CompilerServices;
 using LogSpiralLibrary.CodeLibrary.ConfigModification;
 using rail;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
 
 namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 {

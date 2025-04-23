@@ -1,5 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using LogSpiralLibrary.ForFun.GeogebraShin;
 using ReLogic.Content;
 using ReLogic.Graphics;

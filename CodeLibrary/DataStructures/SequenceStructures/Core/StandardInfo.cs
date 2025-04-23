@@ -1,4 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using Terraria.Audio;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 

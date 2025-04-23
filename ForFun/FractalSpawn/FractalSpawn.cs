@@ -1,4 +1,5 @@
-﻿using ReLogic.Graphics;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using ReLogic.Graphics;
 using System;
 using System.IO;
 
@@ -108,9 +109,9 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             effect.Parameters["uRange"].SetValue(new Vector4(-2, -2, 2, 2));
-            Vector2 t = CodeLibrary.VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
+            Vector2 t = VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
             Main.NewText($"屏幕插值{t}");
-            t = CodeLibrary.VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
+            t = VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
             Main.NewText($"系数{t}"); 
             effect.Parameters["uM"].SetValue(t); 
              

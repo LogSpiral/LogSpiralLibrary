@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using ReLogic.Graphics;
 using Terraria.UI;
 

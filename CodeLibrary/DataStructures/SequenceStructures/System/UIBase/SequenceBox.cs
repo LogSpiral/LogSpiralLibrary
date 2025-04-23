@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.UIElements;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;

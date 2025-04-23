@@ -78,15 +78,15 @@ public class YoyoInfo : VanillaMelee
 
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
-        float origf = (float)LogSpiralLibrarySystem.ModTime2;
+        float origf = (float)GlobalTimeSystem.GlobalTimePaused;
         IEnumerable<CustomVertexInfo> result = [];
-        LogSpiralLibrarySystem.ModTime2 -= 2f;
+        GlobalTimeSystem.GlobalTimePaused -= 2f;
         for (int i = 9; i >= 0; i--)
         {
-            LogSpiralLibrarySystem.ModTime2 += .2f;
+            GlobalTimeSystem.GlobalTimePaused += .2f;
             result = result.Concat(base.GetWeaponVertex(texture, (1f - i / 10f) * (i == 0 ? 1f : .5f)));
         }
-        LogSpiralLibrarySystem.ModTime2 = origf;
+        GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
     #endregion

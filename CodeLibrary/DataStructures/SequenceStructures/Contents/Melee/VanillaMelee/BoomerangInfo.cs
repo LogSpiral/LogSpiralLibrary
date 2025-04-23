@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
@@ -91,15 +92,15 @@ public class BoomerangInfo : VanillaMelee
 
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
-        var origf = LogSpiralLibrarySystem.ModTime2;
+        var origf = GlobalTimeSystem.GlobalTimePaused;
         IEnumerable<CustomVertexInfo> result = [];
-        LogSpiralLibrarySystem.ModTime2 -= 2f;
+        GlobalTimeSystem.GlobalTimePaused -= 2f;
         for (int i = 9; i >= 0; i--)
         {
-            LogSpiralLibrarySystem.ModTime2 += .2f;
+            GlobalTimeSystem.GlobalTimePaused += .2f;
             result = result.Concat(base.GetWeaponVertex(texture, (1f - i / 10f) * (i == 0 ? 1f : .5f)));
         }
-        LogSpiralLibrarySystem.ModTime2 = origf;
+        GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
     #endregion

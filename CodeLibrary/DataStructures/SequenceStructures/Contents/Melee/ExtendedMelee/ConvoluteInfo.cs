@@ -1,4 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.Utilties;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;

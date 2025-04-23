@@ -1,5 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.ComponentModel;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;

@@ -1,6 +1,7 @@
-﻿using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using LogSpiralLibrary.CodeLibrary.Utilties;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
@@ -191,7 +192,7 @@ public class CutInfo : LSLMelee
                 var Center = Owner.Center + offsetCenter + targetedVector * .75f;
                 var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 + 
                 velocity *= 2;
-                OtherMethods.FastDust(Center, velocity, standardInfo.standardColor);
+                MiscMethods.FastDust(Center, velocity, standardInfo.standardColor);
             }
         base.OnAttack();
     }

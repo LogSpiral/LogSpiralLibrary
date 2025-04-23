@@ -1,6 +1,6 @@
 ﻿using Terraria.Audio;
 
-namespace LogSpiralLibrary.CodeLibrary
+namespace LogSpiralLibrary.CodeLibrary.Utilties
 {
     //↓↓赞美裙↓↓
     /// <summary>

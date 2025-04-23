@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System;
 using System.Collections.Generic;
 
-namespace LogSpiralLibrary.CodeLibrary
+namespace LogSpiralLibrary.CodeLibrary.Utilties
 {
     //螺线于2023年初做的非常没软用的东西
 

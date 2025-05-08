@@ -15,10 +15,13 @@ public abstract class VertexDrawInfo : RenderDrawingContent
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        Main.graphics.GraphicsDevice.Textures[2] = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
+        var targetTex = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
+        Main.graphics.GraphicsDevice.Textures[2] = targetTex;
+
         Main.graphics.GraphicsDevice.Textures[3] = heatMap;
         var swooshUL = ShaderSwooshUL;
-        swooshUL.Parameters["lightShift"].SetValue(factor - 1f);
+        swooshUL.Parameters["uSize"].SetValue(targetTex.Size());
+        swooshUL.Parameters["lightShift"].SetValue(Factor - 1f);
         if (frame != null)
         {
             Rectangle uframe = frame.Value;
@@ -28,7 +31,13 @@ public abstract class VertexDrawInfo : RenderDrawingContent
         else
             swooshUL.Parameters["uItemFrame"].SetValue(new Vector4(0, 0, 1, 1));
         float dS = swooshUL.Parameters["distortScaler"].GetValueSingle();
-        swooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();//
+        if (dS == 0) 
+        {
+            dS = 1;
+            swooshUL.Parameters["distortScaler"].SetValue(1);
+        }
+        // swooshUL.CurrentTechnique.Passes[dS.Equals(1.0f) ? 7 : 0].Apply();
+        swooshUL.CurrentTechnique.Passes[7].Apply();
         DrawPrimitives(dS);
     }
 
@@ -44,10 +53,7 @@ public abstract class VertexDrawInfo : RenderDrawingContent
 
     public Texture2D weaponTex;
     public Rectangle? frame;
-    /// <summary>
-    /// 颜色插值
-    /// </summary>
-    public Func<float, Color> color;
+
 
     /// <summary>
     /// 缩放大小

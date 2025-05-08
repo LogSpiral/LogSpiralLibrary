@@ -141,9 +141,9 @@ partial class MeleeAction
             Vector2 drawCen = offsetCenter + Owner.Center;
 
             float k = 1f;
-            if (standardInfo.vertexStandard.scaler > 0)
+            if (standardInfo.VertexStandard.scaler > 0)
             {
-                k = standardInfo.vertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
+                k = standardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
             }
             CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !flip);
 

@@ -46,7 +46,12 @@ public class StormInfo : ExtendedMelee
     {
         if (Main.netMode != NetmodeID.Server)
         {
-            var u = swoosh = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, standardInfo.standardTimer, standardInfo.vertexStandard.scaler, Owner.Center, null, flip, Rotation, KValue, (0, 1));
+            var verS = standardInfo.VertexStandard;
+            var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler, Owner.Center, (0, 1));
+            u.negativeDir = flip;
+            u.rotation = Rotation;
+            u.xScaler = KValue;
+            (u.aniTexIndex, u.baseTexIndex) = verS.swooshTexIndex ?? (3, 7);
             u.ApplyStdValueToVtxEffect(standardInfo);
         }
         SoundEngine.PlaySound(SoundID.DD2_BookStaffCast);

@@ -1,10 +1,13 @@
-﻿using LogSpiralLibrary.CodeLibrary;
+﻿using log4net;
+using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.ForFun.TestBlade2;
 using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
@@ -31,32 +34,39 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             Item.rare = ItemRarityID.Red;
             base.SetDefaults();
         }
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-        {
-            //Projectile.NewProjectile(source, position, velocity * 12f, ProjectileID.FlowerPow, damage, knockback, player.whoAmI, 5);
-            return true;
-        }
         public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
         public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
     }
     public class TestBladeProj : MeleeSequenceProj
     {
         //public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with 
-        {
-            standardColor = Color.Red,
-            vertexStandard = new VertexDrawInfoStandardInfo() with 
-            {
-                active = true,
-                renderInfos = [[new AirDistortEffectInfo(3)],[default(MaskEffectInfo),new BloomEffectInfo(0.05f,0.5f,1f,2,true)]],
 
-                scaler = 120,
-                timeLeft = 15,
-                alphaFactor = 2f,
-            },
-            itemType = ModContent.ItemType<TestBlade>()
-        };
+        static readonly AirDistortEffect distortEffect = new(3, 1.5f);
+        static readonly BloomEffect bloomEffect = new(0f, 1f, 1f, 3, true, 0, true);
+
+        const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBladeProj);
+
+        public override void Load()
+        {
+            RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[distortEffect],[bloomEffect]]));
+            base.Load();
+        }
+
+        public override void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
+        {
+            standardInfo.standardColor = Color.Red;
+            standardInfo.itemType = ModContent.ItemType<TestBlade>();
+
+            vertexStandard.timeLeft = 15;
+            vertexStandard.scaler = 120;
+            vertexStandard.alphaFactor = 2f;
+            vertexStandard.canvasName = CanvasName;
+            base.InitializeStandardInfo(standardInfo, vertexStandard);
+        }
+
+        /*
         public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
             base.SetUpSequence(meleeSequence, modName, fileName);
@@ -86,6 +96,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
 
             meleeSequence.Add(stabInfo);
         }
+        */
     }
     //public class TestBladeProj : ModProjectile
     //{

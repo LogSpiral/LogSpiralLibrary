@@ -14,6 +14,7 @@ using static LogSpiralLibrary.LogSpiralLibraryMod;
 namespace LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 public abstract class HammerProj : HeldProjectile, IHammerProj
 {
+
     public virtual Vector2 scale => new(1);
     public virtual Rectangle? frame => null;
     public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY);
@@ -198,9 +199,15 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
 }
 public abstract class VertexHammerProj : HammerProj
 {
-    BloomEffectInfo useBloom = default;
-    AirDistortEffectInfo useDistort = default;
-    MaskEffectInfo useMask = default;
+    string CanvasName => FullName.Replace("/", ":");
+    public override void Load()
+    {
+        RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[UseDistort], [UseMask, UseBloom]]));
+        base.Load();
+    }
+    BloomEffect UseBloom => field ??= new BloomEffect();
+    AirDistortEffect UseDistort => field ??= new AirDistortEffect();
+    MaskEffect UseMask => field ??= new MaskEffect();
     public override float Rotation => base.Rotation;
     public virtual CustomVertexInfo[] CreateVertexs(Vector2 drawCen, float scaler, float startAngle, float endAngle, float alphaLight, ref int[] whenSkip)
     {
@@ -231,7 +238,7 @@ public abstract class VertexHammerProj : HammerProj
     /// <param name="useHeatMap"></param>
     /// <param name="passCount">已被弃用</param>
     public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap, ref int passCount) { }
-    public virtual void RenderInfomation(ref BloomEffectInfo useBloom, ref AirDistortEffectInfo useDistort, ref MaskEffectInfo useMask) { }
+    public virtual void RenderInfomation(BloomEffect useBloom, AirDistortEffect useDistort, MaskEffect useMask) { }
     public virtual bool RedrawSelf => false;
     public virtual bool WhenVertexDraw => !Charging && Charged;
     /// <summary>
@@ -274,7 +281,7 @@ public abstract class VertexHammerProj : HammerProj
         float endAngle = Player.direction == -1 ? MathHelper.Pi / 8 : -MathHelper.PiOver2 - MathHelper.Pi / 8;
         bool useHeatMap = HeatMap != null;
 
-        RenderInfomation(ref useBloom, ref useDistort, ref useMask);
+        RenderInfomation(UseBloom, UseDistort, UseMask);
         var passCount = 3;
         VertexInfomation(ref additive, ref indexOfGreyTex, ref endAngle, ref useHeatMap, ref passCount);
         if (useHeatMap) passCount = 2;
@@ -302,7 +309,7 @@ public abstract class VertexHammerProj : HammerProj
             }
         }
         var sb = Main.spriteBatch;
-        if ((useBloom.Active || useDistort.Active || useMask.Active) && CanUseRender)
+        if ((UseBloom.Active || UseDistort.Active || UseMask.Active) && CanUseRender)
         {
             // 如果任一特效存在，就走这边的流程
             // 现在已经被VertexMeleeEffect全面取代了
@@ -350,14 +357,14 @@ public abstract class VertexHammerProj : HammerProj
             Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
             Main.graphics.GraphicsDevice.RasterizerState = originalState;
 
-            if (useDistort.Active)
+            if (UseDistort.Active)
             {
                 sb.End();
                 gd.SetRenderTarget(Instance.Render_Swap);
                 gd.Clear(Color.Transparent);
                 sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
                                                                                                                                                                                             //CoolerItemVisualEffect.ShaderSwooshEX.Parameters["lightShift"].SetValue(0);
-                swooshUL.Parameters["distortScaler"].SetValue(useDistort.distortScaler);
+                swooshUL.Parameters["distortScaler"].SetValue(UseDistort.Intensity);
                 //sb.Draw(AniTex[8].Value, new Vector2(200, 200), Color.White);
                 Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
                 Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
@@ -373,7 +380,7 @@ public abstract class VertexHammerProj : HammerProj
                 swooshUL.CurrentTechnique.Passes[7].Apply();
                 for (int n = 0; n < triangleList.Length; n++)
                 {
-                    triangleList[n].Position = (triangleList[n].Position - Player.Center) * useDistort.distortScaler + Player.Center;
+                    triangleList[n].Position = (triangleList[n].Position - Player.Center) * UseDistort.Intensity + Player.Center;
                 }
                 //TODO 对color魔改
                 Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, bars.Length - 2);
@@ -384,25 +391,25 @@ public abstract class VertexHammerProj : HammerProj
             //原版自带的screenTargetSwap就是一个可以使用的render，（原版用来连续上滤镜）
             Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-            if (useDistort.Active)
+            if (UseDistort.Active)
             {
                 gd.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个 
                 gd.Clear(Color.Transparent);//清空
                 Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
-                AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
-                AirDistortEffect.Parameters["strength"].SetValue(5f);
-                AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);//MathHelper.Pi * Main.GlobalTimeWrappedHourly
-                AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
-                AirDistortEffect.Parameters["colorOffset"].SetValue(0f);
-                AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass 
-                                                                    //0    1     2
-                                                                    //.001 .0035 .005
+                LogSpiralLibraryMod.AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
+                LogSpiralLibraryMod.AirDistortEffect.Parameters["strength"].SetValue(5f);
+                LogSpiralLibraryMod.AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);//MathHelper.Pi * Main.GlobalTimeWrappedHourly
+                LogSpiralLibraryMod.AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
+                LogSpiralLibraryMod.AirDistortEffect.Parameters["colorOffset"].SetValue(0f);
+                LogSpiralLibraryMod.AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass 
+                                                                                        //0    1     2
+                                                                                        //.001 .0035 .005
                 sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
                 gd.SetRenderTarget(Main.screenTarget);
                 gd.Clear(Color.Transparent);
                 sb.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
             }
-            if (useMask.Active)
+            if (UseMask.Active)
             {
 
                 gd.SetRenderTarget(Main.screenTargetSwap);
@@ -410,15 +417,15 @@ public abstract class VertexHammerProj : HammerProj
                 sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                 gd.SetRenderTarget(Instance.Render_Swap);
                 gd.Clear(Color.Transparent);
-                Main.graphics.GraphicsDevice.Textures[1] = useMask.fillTex;
-                RenderEffect.Parameters["tex0"].SetValue(render);
-                RenderEffect.Parameters["invAlpha"].SetValue(useMask.tier1);
-                RenderEffect.Parameters["lightAsAlpha"].SetValue(useMask.lightAsAlpha);
-                RenderEffect.Parameters["tier2"].SetValue(useMask.tier2);
-                RenderEffect.Parameters["position"].SetValue(useMask.offset);
-                RenderEffect.Parameters["maskGlowColor"].SetValue(useMask.glowColor.ToVector4());
-                RenderEffect.Parameters["ImageSize"].SetValue(useMask.TexSize);
-                RenderEffect.Parameters["inverse"].SetValue(useMask.inverse);
+                Main.graphics.GraphicsDevice.Textures[1] = UseMask.FillTex;
+                //RenderEffect.Parameters["tex0"].SetValue(render);
+                RenderEffect.Parameters["invAlpha"].SetValue(UseMask.Tier1);
+                RenderEffect.Parameters["lightAsAlpha"].SetValue(UseMask.LightAsAlpha);
+                RenderEffect.Parameters["tier2"].SetValue(UseMask.Tier2);
+                RenderEffect.Parameters["position"].SetValue(UseMask.Offset);
+                RenderEffect.Parameters["maskGlowColor"].SetValue(UseMask.GlowColor.ToVector4());
+                RenderEffect.Parameters["ImageSize"].SetValue(UseMask.FillTex.Size());
+                RenderEffect.Parameters["inverse"].SetValue(UseMask.Inverse);
                 RenderEffect.CurrentTechnique.Passes[1].Apply();
                 sb.Draw(render, Vector2.Zero, Color.White);
 
@@ -437,17 +444,17 @@ public abstract class VertexHammerProj : HammerProj
                 sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             }
-            if (useBloom.Active)
+            if (UseBloom.Active)
             {
                 gd.SetRenderTarget(Main.screenTargetSwap);
                 gd.Clear(Color.Transparent);
                 sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
                 RenderEffect.Parameters["screenScale"].SetValue(Main.ScreenSize.ToVector2());
-                RenderEffect.Parameters["threshold"].SetValue(useBloom.threshold);
-                RenderEffect.Parameters["range"].SetValue(useBloom.range);
-                RenderEffect.Parameters["intensity"].SetValue(useBloom.intensity * 2.5f);
-                RenderEffect.Parameters["uBloomAdditive"].SetValue(useBloom.additive);
-                for (int n = 0; n < useBloom.times - 1; n++)
+                RenderEffect.Parameters["threshold"].SetValue(UseBloom.Threshold);
+                RenderEffect.Parameters["range"].SetValue(UseBloom.Range);
+                RenderEffect.Parameters["intensity"].SetValue(UseBloom.Intensity * 2.5f);
+                RenderEffect.Parameters["uBloomAdditive"].SetValue(UseBloom.Additive);
+                for (int n = 0; n < UseBloom.Count - 1; n++)
                 {
                     gd.SetRenderTarget(Instance.Render_Swap);
                     //RenderEffect.Parameters["tex0"].SetValue(render);
@@ -467,8 +474,8 @@ public abstract class VertexHammerProj : HammerProj
                 gd.Clear(Color.Transparent);
                 //RenderEffect.Parameters["tex0"].SetValue(render);
                 RenderEffect.CurrentTechnique.Passes[4].Apply();
-                sb.Draw(useBloom.times == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
-                gd.SetRenderTarget(useBloom.times == 1 ? render : Instance.Render_Swap2);
+                sb.Draw(UseBloom.Count == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
+                gd.SetRenderTarget(UseBloom.Count == 1 ? render : Instance.Render_Swap2);
                 gd.Clear(Color.Transparent);
                 RenderEffect.CurrentTechnique.Passes[4].Apply();
                 sb.Draw(Instance.Render_Swap, Vector2.Zero, Color.White);
@@ -488,10 +495,10 @@ public abstract class VertexHammerProj : HammerProj
             Main.instance.GraphicsDevice.BlendState = AllOne;
             sb.Draw(render, Vector2.Zero, Color.White);// + Main.rand.NextVector2Unit() * 16
 
-            if (useBloom.Active)
+            if (UseBloom.Active)
             {
                 Main.instance.GraphicsDevice.BlendState = BlendState.Additive;
-                sb.Draw(useBloom.times == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
+                sb.Draw(UseBloom.Count == 1 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
             }
             Main.instance.GraphicsDevice.BlendState = BlendState.AlphaBlend;
         }
@@ -502,7 +509,7 @@ public abstract class VertexHammerProj : HammerProj
             sb.End();
             sb.Begin(SpriteSortMode.Immediate, additive ? BlendState.Additive : BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);//Main.DefaultSamplerState//Main.GameViewMatrix.TransformationMatrix
 
-            swooshUL.Parameters["uTransform"].SetValue(RenderDrawingContentsSystem.uTransform);
+            swooshUL.Parameters["uTransform"].SetValue(RenderCanvasSystem.uTransform);
             swooshUL.Parameters["uLighter"].SetValue(0);
             swooshUL.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);//-(float)Main.time * 0.06f
             swooshUL.Parameters["checkAir"].SetValue(false);
@@ -552,8 +559,10 @@ public abstract class VertexHammerProj : HammerProj
         if (Charged && Main.netMode != NetmodeID.Server)
         {
             var length = (projTex.Size() / new Vector2(FrameMax.X, FrameMax.Y)).Length() * Player.GetAdjustedItemScale(Player.HeldItem) - (new Vector2(0, projTex.Size().Y / FrameMax.Y) - DrawOrigin).Length();//
-            var u = UltraSwoosh.NewUltraSwoosh(VertexColor, 15, length, Player.Center, HeatMap, false, 0, 1, angleRange: (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));//HeatMap
-            u.ModityAllRenderInfo([useDistort], [useMask, useBloom]);
+
+            var u = UltraSwoosh.NewUltraSwoosh(CanvasName, 15, length, Player.Center, (Player.direction == 1 ? -1.125f : 2.125f, Player.direction == 1 ? 3f / 8 : 0.625f));
+            u.heatMap = heatMap;
+            u.xScaler = 1f;
             u.weaponTex = TextureAssets.Item[Player.HeldItem.type].Value;
         }
     }

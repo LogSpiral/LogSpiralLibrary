@@ -115,7 +115,7 @@ partial class MeleeSequenceProj
                 continue;
             SequenceSystem.elementDelegates[$"{Name}/{method.Name}"] = element =>
             {
-                if (element is not MeleeAction action) return;
+                // if (element is not MeleeAction action) return; // 为什么我会加这个类型检查？？
                 method.Invoke(null, [element]);
             };
         }

@@ -17,11 +17,33 @@ public abstract partial class MeleeSequenceProj : ModProjectile
     // 分别是标准参数
     // 目前执行组件
     // 更新函数
-    public virtual StandardInfo StandardInfo => new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+    public StandardInfo StandardInfo
+    {
+        get
+        {
+            if (field == null)
+            {
+                field = new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), 80, player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+                InitializeStandardInfo(field, field.VertexStandard);
+            }
+            return field;
+        }
+    }
     // 改成发出弹幕时生成而非总是从头new?
     #endregion
 
     #region 重写函数
+
+    public virtual void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
+    {
+
+    }
+
+    public virtual void UpdateStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
+    {
+
+    }
+
     // 你只需要知道上面这一段负责 *记录* 我们弹幕具体是怎么运行
     // 弹幕发射和弹幕加载时的初始化，这部分和别的弹幕大差不差
     public override void SetDefaults()
@@ -47,6 +69,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         Projectile.damage = player.GetWeaponDamage(player.HeldItem);
         Projectile.direction = player.direction;
         Projectile.velocity = (player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - player.Center).SafeNormalize(default);
+        UpdateStandardInfo(StandardInfo, StandardInfo.VertexStandard);
         if (meleeSequence == null)//这里确保弹幕的执行序列加载到了
         {
             InitializeSequence(Mod.Name, Name);

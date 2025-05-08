@@ -11,15 +11,20 @@ partial class LogSpiralLibraryMod
     public static BlendState AllOne;
     public static BlendState InverseColor;
     public static BlendState SoftAdditive;//from yiyang233
+    public static BlendState NonPremultipliedFullAlpha;
     static void InitializeBlendStates() 
     {
-        AllOne = new BlendState();
-        AllOne.Name = "BlendState.AllOne";
-        AllOne.ColorDestinationBlend = AllOne.AlphaDestinationBlend = AllOne.ColorSourceBlend = AllOne.AlphaSourceBlend = Blend.One;
-
+        AllOne = new BlendState
+        {
+            Name = "LogSpiralLibraryMod.AllOne",
+            ColorSourceBlend = Blend.One,
+            AlphaSourceBlend = Blend.One,
+            ColorDestinationBlend = Blend.One,
+            AlphaDestinationBlend = Blend.One,
+        };
         InverseColor = new BlendState()
         {
-            Name = "BlendState.InverseColor",
+            Name = "LogSpiralLibraryMod.InverseColor",
             ColorDestinationBlend = Blend.InverseSourceColor,
             ColorSourceBlend = Blend.InverseDestinationColor,
             AlphaDestinationBlend = Blend.One,
@@ -27,11 +32,19 @@ partial class LogSpiralLibraryMod
         };
         SoftAdditive = new BlendState()
         {
-            Name = "BlendState.SoftAdditve",
+            Name = "LogSpiralLibraryMod.SoftAdditve",
             ColorDestinationBlend = Blend.One,
             ColorSourceBlend = Blend.InverseDestinationColor,
             AlphaDestinationBlend = Blend.One,
             AlphaSourceBlend = Blend.SourceAlpha
+        };
+        NonPremultipliedFullAlpha = new BlendState()
+        {
+            Name = "LogSpiralLibraryMod.NonPremultipliedFullAlpha",
+            ColorSourceBlend = Blend.SourceAlpha,
+            AlphaSourceBlend = Blend.One,
+            ColorDestinationBlend = Blend.InverseSourceAlpha,
+            AlphaDestinationBlend = Blend.InverseSourceAlpha
         };
     }
 }

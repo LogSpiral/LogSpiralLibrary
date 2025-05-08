@@ -18,7 +18,7 @@ float3 AlphaVector; //ultra版本新增变量，自己看下面的颜色矩阵�
 bool normalize; //ultra版本新增变量，用于单位化系数向量
 bool stab; //ultra版本新增变量，打造突刺的感觉
 float4 uItemFrame = float4(0, 0, 1, 1); //ultra版本新增变量，添加对多帧武器的支持√
-
+float2 uSize; // ultra版本新增变量，描述传入的武器贴图的大小
 
 struct VSInput
 {
@@ -91,7 +91,16 @@ float modifyY(float2 coord)
 
 float4 weaponColor(float coordy)
 {
-	return tex2D(uImage2, lerp(float2(uItemFrame.x, uItemFrame.y + uItemFrame.w), float2(uItemFrame.x + uItemFrame.z, uItemFrame.y), coordy * airFactor));
+	float2 samplerCoord = lerp(float2(uItemFrame.x, uItemFrame.y + uItemFrame.w), float2(uItemFrame.x + uItemFrame.z, uItemFrame.y), coordy * airFactor);
+	float2 unit = any(uSize) ? 1 / uSize : 0;
+	float4 result = 0;
+	for (int i = -1; i <= 1; i++)
+	{
+		float k = (2 - i * i) * .25;
+		for (int j = -1; j <= 1; j++)
+			result += tex2D(uImage2, samplerCoord + unit * float2(i, j)) * (2 - j * j) * k * .25;
+	}
+	return result;
 }
 
 float4 getBaseValue(float3 coord)
@@ -238,7 +247,8 @@ float4 PixelShaderFunction_MapColor2(PSInput input) : COLOR0
 		return float4(0, 0, 0, 0);
 	
 	float3 coord = input.Texcoord;
-	float4 _weaponColor = weaponColor(coord.y);
+	// float step = uSize.y == 0 ? 0 : 1. / uSize.y;
+	float4 _weaponColor = weaponColor(coord.y); // * .5f + weaponColor(coord.y + step) * .25f + weaponColor(coord.y - step) * .25f;;
 	if (!any(_weaponColor) && !stab)
 		return float4(0, 0, 0, 0);
 	float4 _mapColor = float4(getMapColor(coord), 1);

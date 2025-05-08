@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoneOfThePhilosophers", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubworldLibrary", "..\SubworldLibrary\SubworldLibrary.csproj", "{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinalFractalSet", "..\FinalFractalSet\FinalFractalSet.csproj", "{84047F75-032E-5611-F194-B3505914341F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatterRecord", "..\MatterRecord\MatterRecord.csproj", "{122CB6FC-4B88-49B0-CB45-C10DD4B433B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0D2CF5C-7DB9-ADF6-19BF-3820B4E6A360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84047F75-032E-5611-F194-B3505914341F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84047F75-032E-5611-F194-B3505914341F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84047F75-032E-5611-F194-B3505914341F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84047F75-032E-5611-F194-B3505914341F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{122CB6FC-4B88-49B0-CB45-C10DD4B433B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{122CB6FC-4B88-49B0-CB45-C10DD4B433B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{122CB6FC-4B88-49B0-CB45-C10DD4B433B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{122CB6FC-4B88-49B0-CB45-C10DD4B433B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

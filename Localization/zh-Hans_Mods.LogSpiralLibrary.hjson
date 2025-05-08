@@ -151,24 +151,19 @@ Configs: {
 	AirDistortConfigs: {
 		// Tooltip: ""
 		
-		intensity: {
+		Intensity: {
 			Label: 扭曲强度
 			Tooltip: 拉得越大越明显
 		}
 
-		rotation: {
+		Rotation: {
 			Label: 角偏移量
 			Tooltip: 不是很重要的莫名奇妙的设置
 		}
 
-		colorOffset: {
+		ColorOffset: {
 			Label: 色差距离
 			Tooltip: 你可以试试拉满或者拉一半
-		}
-
-		tier: {
-			Label: 阶数
-			Tooltip: 反直觉的是，0是采样次数最多的，卡了就改2，配置好可以用0
 		}
 
 		Available: {
@@ -182,27 +177,27 @@ Configs: {
 	BloomConfigs: {
 		// Tooltip: ""
 		
-		threshold: {
+		Threshold: {
 			Label: 阈值
 			Tooltip: 亮度高于这个值的像素会进行外发光
 		}
 
-		intensity: {
+		Intensity: {
 			Label: 强度
 			Tooltip: 要瞎了要瞎了
 		}
 
-		range: {
+		Range: {
 			Label: 范围
 			Tooltip: 点亮一大片！
 		}
 
-		times: {
+		Times: {
 			Label: 迭代次数
 			Tooltip: 迭代太多次绝对会亮瞎眼而卡爆的吧
 		}
 
-		downSampleLevel: {
+		DownSampleLevel: {
 			Label: 降采样等级
 			Tooltip:
 				'''
@@ -211,7 +206,7 @@ Configs: {
 				'''
 		}
 
-		useModeMK: {
+		UseModeMK: {
 			Label: 采用精细采样
 			Tooltip: ""
 		}
@@ -232,32 +227,32 @@ Configs: {
 			Tooltip: 现在你可以两种星空里切换了(x
 		}
 
-		glowColor: {
+		GlowColor: {
 			Label: 主体颜色
 			Tooltip: ""
 		}
 
-		boundColor: {
+		BoundColor: {
 			Label: 边界颜色
 			Tooltip: ""
 		}
 
-		tier1: {
+		Tier1: {
 			Label: 边界阈值
 			Tooltip: 低于这个值的会替换为主体颜色
 		}
 
-		tier2: {
+		Tier2: {
 			Label: 遮罩阈值
 			Tooltip: 高于这个值的会替换为星空遮罩
 		}
 
-		lightAsAlpha: {
+		LightAsAlpha: {
 			Label: 是否让亮度参与透明度的生成
 			Tooltip: 你可以关了试试，我也不知道为什么我要你选这个
 		}
 
-		inverse: {
+		Inverse: {
 			Label: 亮度反向
 			Tooltip: 现在最暗的被换成星空了
 		}
@@ -271,7 +266,7 @@ Configs: {
 	}
 
 	DyeConfigs: {
-		dye: {
+		Dye: {
 			Label: 使用染料
 			Tooltip: ""
 		}

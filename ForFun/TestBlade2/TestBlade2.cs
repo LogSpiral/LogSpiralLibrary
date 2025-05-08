@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary;
 using LogSpiralLibrary.CodeLibrary.DataStructures;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
@@ -37,20 +38,34 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
     {
         //public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
-        public override StandardInfo StandardInfo => new StandardInfo(-MathHelper.Pi / 3, new Vector2(0.1f, 0.9f), player.itemAnimationMax, Color.White * .2f, null, ModContent.ItemType<TestBlade2>()) with 
+        static readonly AirDistortEffect distortEffect = new(3, 1.5f);
+        static readonly BloomEffect bloomEffect = new(0f, 1f, 1, 3, true, 0, true);
+
+        const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBlade2Proj);
+
+        public override void Load()
         {
-            vertexStandard = new VertexDrawInfoStandardInfo() with
-            {
-                active = true,
-                renderInfos = [[new AirDistortEffectInfo(3)], [default(MaskEffectInfo), new BloomEffectInfo(0.05f, 0.5f, 1f, 2, true)]],
+            RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[distortEffect],[bloomEffect]]));//, [bloomEffect]
+            base.Load();
+        }
 
-                scaler = 120,
-                timeLeft = 15,
-                alphaFactor = 2f,
+        public override void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
+        {
+            standardInfo.standardRotation = -MathHelper.Pi / 3;
+            standardInfo.standardColor = Color.White * .2f;
+            standardInfo.itemType = ModContent.ItemType<TestBlade2>();
 
-            }
-        };
+            vertexStandard.timeLeft = 15;
+            vertexStandard.scaler = 120;
+            vertexStandard.alphaFactor = 2f;
+            vertexStandard.canvasName = CanvasName;
+            base.InitializeStandardInfo(standardInfo, vertexStandard);
+        }
 
+        // 历史遗留代码
+        // 之前没有配置文件，也没有编辑界面
+        // 只能用代码嗯搞
+        /*
         public override void SetUpSequence(MeleeSequence sequence, string modName, string fileName)
         {
             base.SetUpSequence(meleeSequence, modName, fileName);
@@ -120,5 +135,6 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
             si.Cycle = 4;
             meleeSequence.Add(si);
         }
+        */
     }
 }

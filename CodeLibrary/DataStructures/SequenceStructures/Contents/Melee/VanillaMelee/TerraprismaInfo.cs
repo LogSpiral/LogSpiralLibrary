@@ -43,7 +43,7 @@ public class TerraprismaInfo : VanillaMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         if (Owner is Player plr)
             plr.direction = Math.Sign(plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition.X - plr.Center.X);
         if (ultra != null) ultra.autoUpdate = false;
@@ -117,7 +117,7 @@ public class TerraprismaInfo : VanillaMelee
 
         ultra.timeLeftMax = timerMax;
         ultra.timeLeft = (int)(timerMax * Math.Pow(Factor, 0.25));
-        ultra.center = Owner.Center; ;
+        ultra.center = Owner.Center;
 
         var vertex = ultra.VertexInfos;
         for (int i = 0; i < 45; i++)
@@ -145,14 +145,18 @@ public class TerraprismaInfo : VanillaMelee
 
     public override void OnStartSingle()
     {
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         var pair = verS.swooshTexIndex ?? (3, 7);
         if (Main.netMode != NetmodeID.Server)
         {
-            ultra = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, timerMax, heat: verS.heatMap, _aniIndex: pair.Item1, _baseIndex: pair.Item2, colorVec: verS.colorVec);
-            ultra.autoUpdate = false;
-            ultra.timeLeft = 1;
-            ultra.ApplyStdValueToVtxEffect(standardInfo);
+            var u = ultra = UltraSwoosh.NewUltraSwoosh(verS.canvasName, timerMax, 1f, default, (0, 0));
+            u.heatMap = verS.heatMap;
+            u.aniTexIndex = pair.Item1;
+            u.baseTexIndex = pair.Item2;
+            u.ColorVector = verS.colorVec;
+            u.autoUpdate = false;
+            u.timeLeft = 1;
+            u.ApplyStdValueToVtxEffect(standardInfo);
         }
 
         base.OnStartSingle();
@@ -190,7 +194,7 @@ public class TerraprismaInfo : VanillaMelee
             if (Owner is Player plr)
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
             var flag = Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), oldCenters[n],
-                    oldCenters[n] + oldRotations[n].ToRotationVector2() * standardInfo.vertexStandard.scaler * offsetSize * sc, 48f, ref point1);
+                    oldCenters[n] + oldRotations[n].ToRotationVector2() * standardInfo.VertexStandard.scaler * offsetSize * sc, 48f, ref point1);
             if (flag)
             {
                 if (Owner is Player player && Main.rand.NextBool(5))

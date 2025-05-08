@@ -65,10 +65,9 @@ public static class DrawingMethods
     public static void ApplyStdValueToVtxEffect(this MeleeVertexInfo info, StandardInfo std)
     {
         info.frame = std.frame;
-        info.heatRotation = std.vertexStandard.heatRotation;
-        info.alphaFactor = std.vertexStandard.alphaFactor;
+        info.heatRotation = std.VertexStandard.heatRotation;
+        info.alphaFactor = std.VertexStandard.alphaFactor;
         info.weaponTex = TextureAssets.Item[std.itemType].Value;
-        info.ModityAllRenderInfo(std.vertexStandard.renderInfos);
     }
 
 
@@ -2184,19 +2183,6 @@ public static class DrawingMethods
 
         c[5] = c[2];
         return c;
-    }
-    public static void UpdateVertexInfo(this RenderDrawingContent[] infos)
-    {
-        foreach (var info in infos)
-        {
-            if (info != null && info.Active)
-            {
-                if (info.autoUpdate)
-                    info.Uptate();
-                else
-                    info.autoUpdate = true;
-            }
-        }
     }
 
     public static Color Vec2NormalColor(Vector2 vector)

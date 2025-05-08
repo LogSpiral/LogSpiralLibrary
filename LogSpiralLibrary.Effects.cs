@@ -16,4 +16,5 @@ partial class LogSpiralLibraryMod
     public static Effect AirDistortEffect => ModAsset.AirDistortEffect.Value;
     public static Effect FadeEffect => ModAsset.FadeEffect.Value;
     public static Effect MagicRing => ModAsset.Effects_MagicRing.Value;
+    public static Effect FinalFractalTailEffect => ModAsset.FinalFractalTailEffect.Value;
 }

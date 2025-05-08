@@ -98,7 +98,7 @@ public class SwooshInfo : LSLMelee
     }
     public void NewSwoosh()
     {
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         if (verS.active)
         {
             swoosh = subSwoosh = null;
@@ -114,21 +114,43 @@ public class SwooshInfo : LSLMelee
                 _ => flip
             };
             float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
-            var pair = standardInfo.vertexStandard.swooshTexIndex;
+            var pair = standardInfo.VertexStandard.swooshTexIndex;
             UltraSwoosh u;
             if (standardInfo.itemType == ItemID.TrueExcalibur)
             {
                 var eVec = verS.colorVec with { Y = 0 };
                 if (eVec.X == 0 && eVec.Z == 0)
                     eVec = new(.5f, 0, .5f);
-                u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size * .67f, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
-                subSwoosh = UltraSwoosh.NewUltraSwoosh(Color.Pink, (int)(verS.timeLeft * 1.2f), size, Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, f, Rotation, KValue, (range.Item1 + 0.125f, range.Item2 - 0.125f), pair?.Item1 ?? 3, pair?.Item2 ?? 7, eVec);
-                subSwoosh.ApplyStdValueToVtxEffect(standardInfo);
-                subSwoosh.heatRotation = 0;
+
+                u = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center, range);
+                u.heatMap = verS.heatMap;
+                u.negativeDir = f;
+                u.xScaler = KValue;
+                u.rotation = Rotation;
+                u.aniTexIndex = pair?.Item1 ?? 3;
+                u.baseTexIndex = pair?.Item2 ?? 7;
+                u.ColorVector = verS.colorVec;
+
+                var su = subSwoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center, (range.Item1 + 0.125f, range.Item2 - 0.125f));
+                su.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
+                su.xScaler = KValue;
+                su.rotation = Rotation;
+                su.aniTexIndex = pair?.Item1 ?? 3;
+                su.baseTexIndex = pair?.Item2 ?? 7;
+                su.ColorVector = eVec;
+                su.ApplyStdValueToVtxEffect(standardInfo);
+                su.heatRotation = 0;
             }
             else
             {
-                u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, size, Owner.Center, verS.heatMap, f, Rotation, KValue, range, pair?.Item1 ?? 3, pair?.Item2 ?? 7, verS.colorVec);
+                u = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, size, Owner.Center, range);
+                u.heatMap = verS.heatMap;
+                u.negativeDir = f;
+                u.xScaler = KValue;
+                u.rotation = Rotation;
+                u.aniTexIndex = pair?.Item1 ?? 3;
+                u.baseTexIndex = pair?.Item2 ?? 7;
+                u.ColorVector = verS.colorVec;
             }
             swoosh = u;
             u.ApplyStdValueToVtxEffect(standardInfo);
@@ -146,6 +168,8 @@ public class SwooshInfo : LSLMelee
         if (flip)
             swoosh.angleRange = (swoosh.angleRange.from, -swoosh.angleRange.to);
         swoosh.timeLeft = (int)(MathHelper.Clamp(MathF.Abs(swoosh.angleRange.Item1 - swoosh.angleRange.Item2), 0, 1) * swoosh.timeLeftMax) + 1;
+        if (swoosh.timeLeft < 2)
+            swoosh.timeLeft = 2;
     }
     #endregion
 

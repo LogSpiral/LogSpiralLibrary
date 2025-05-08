@@ -1,10 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.ForFun.DoubleBladeTest;
 
@@ -74,37 +69,34 @@ public class DoubleBladeTestLeftProj : MeleeSequenceProj
     public override bool IsLoadingEnabled(Mod mod) => false;
     public override bool LabeledAsCompleted => true;
     public override string Texture => $"Terraria/Images/Item_{ItemID.Arkhalis}";
-    public override StandardInfo StandardInfo => base.StandardInfo with
+
+    public override void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
     {
-        standardColor = Color.Cyan * .1f,
-        vertexStandard = new()
-        {
-            active = true,
-            scaler = 60,
-            colorVec = new(0, 1, 0),
-            alphaFactor = 1,
-            timeLeft = 15
-        },
-        itemType = ItemID.Arkhalis
-    };
+
+        standardInfo.standardColor = Color.Cyan * .1f;
+        standardInfo.itemType = ItemID.Arkhalis;
+
+        vertexStandard.timeLeft = 15;
+        vertexStandard.scaler= 60;
+        vertexStandard.colorVec = new(0, 1, 0);
+
+    }
 }
 public class DoubleBladeTestRightProj : MeleeSequenceProj
 {
     public override bool IsLoadingEnabled(Mod mod) => false;
     public override bool LabeledAsCompleted => true;
     public override string Texture => $"Terraria/Images/Item_{ItemID.Terragrim}";
-    public override StandardInfo StandardInfo => base.StandardInfo with
-    {
-        standardColor = Color.LimeGreen * .1f,
-        vertexStandard = new()
-        {
-            active = true,
-            scaler = 60,
-            colorVec = new(0, 1, 0),
-            alphaFactor = 1,
-            timeLeft = 15
-        },
-        itemType = ItemID.Terragrim
 
-    };
+    public override void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
+    {
+
+        standardInfo.standardColor = Color.LimeGreen * .1f;
+        standardInfo.itemType = ItemID.Arkhalis;
+
+        vertexStandard.timeLeft = 15;
+        vertexStandard.scaler = 60;
+        vertexStandard.colorVec = new(0, 1, 0);
+
+    }
 }

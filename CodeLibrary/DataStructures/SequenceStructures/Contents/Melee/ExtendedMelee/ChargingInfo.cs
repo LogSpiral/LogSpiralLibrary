@@ -32,7 +32,7 @@ public class ChargingInfo : ExtendedMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        standardInfo = standardInfo with { extraLight = 3 * MathF.Pow(1 - Factor, 4f) };
+        standardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
         flip = Owner.direction == 1;
         switch (Owner)
         {

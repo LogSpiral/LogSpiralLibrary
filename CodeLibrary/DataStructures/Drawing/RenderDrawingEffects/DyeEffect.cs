@@ -1,0 +1,95 @@
+﻿using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
+using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Terraria.Graphics.Shaders;
+using Terraria.ModLoader.Config;
+
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
+
+public class DyeEffect(int dyeType) : IRenderEffect
+{
+
+    #region 参数属性
+
+    public int Type { get; set; } = dyeType;
+
+    #endregion
+
+    #region 接口实现
+
+    public bool Active => GameShaders.Armor._shaderLookupDictionary.ContainsKey(Type);
+
+    public bool DoRealDraw => true;
+
+    public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
+    {
+
+        #region 准备状态
+
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+        #endregion
+
+        #region 切换绘制目标至备用画布
+
+        graphicsDevice.SetRenderTarget(assistRender);
+        graphicsDevice.Clear(Color.Transparent);
+
+        #endregion
+
+        #region 设置参数
+
+        var shaderData = GameShaders.Armor.GetShaderFromItemId(Type);
+        if (shaderData != null)
+        {
+            // TODO 深入研究盔甲染料的shader参数
+            shaderData.Apply(null);
+            Vector4 value3 = new(0f, 0f, contentRender.Width, contentRender.Height);
+            shaderData.Shader.Parameters["uSourceRect"]?.SetValue(value3);
+            shaderData.Shader.Parameters["uLegacyArmorSourceRect"]?.SetValue(value3);
+            shaderData.Shader.Parameters["uLegacyArmorSheetSize"]?.SetValue(new Vector2(contentRender.Width, contentRender.Height));
+            shaderData.Apply();
+        }
+
+        #endregion
+
+        #region 绘制内容
+
+        spriteBatch.Draw(contentRender, Vector2.Zero, Color.White);
+
+        Utils.Swap(ref contentRender, ref assistRender);
+
+        #endregion
+
+        #region 恢复状态
+
+        spriteBatch.End();
+
+        #endregion
+
+    }
+
+    #endregion
+
+}
+
+public class DyeConfigs : IAvailabilityChangableConfig
+{
+    public bool Available { get; set; } = false;
+
+    [CustomModConfigItem(typeof(DyeDefinitionElement))]
+    [CustomGenericConfigItem<GenericDyeDefinitionElement>]
+    public ItemDefinition Dye
+    {
+        get;
+        set;
+    } = new();
+
+    [JsonIgnore]
+    public DyeEffect EffectInstance => field ??= !Available ? new(0) : new DyeEffect(Dye.Type);
+}

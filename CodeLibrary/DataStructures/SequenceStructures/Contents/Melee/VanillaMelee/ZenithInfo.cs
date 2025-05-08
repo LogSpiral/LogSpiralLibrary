@@ -85,16 +85,20 @@ public class ZenithInfo : VanillaMelee
         if (dist < 100) dist = 100;
         KValue = Main.rand.NextFloat(1, 2);
         flip = Main.rand.NextBool();
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         if (Main.netMode != NetmodeID.Server)
         {
             for (int n = 0; n < 3; n++)
             {
                 var pair = verS.swooshTexIndex ?? (3, 7);
-                ultras[n] = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, timerMax, heat: verS.heatMap, _aniIndex: pair.Item1, _baseIndex: pair.Item2, colorVec: verS.colorVec);
-                ultras[n].autoUpdate = false;
-                ultras[n].timeLeft = 1;
-                ultras[n].ApplyStdValueToVtxEffect(standardInfo);
+                var u = ultras[n] = UltraSwoosh.NewUltraSwoosh(verS.canvasName, timerMax, 1, default, (0, 0));
+                u.heatMap = verS.heatMap;
+                u.aniTexIndex = pair.Item1;
+                u.baseTexIndex = pair.Item2;
+                u.ColorVector = verS.colorVec;
+                u.autoUpdate = false;
+                u.timeLeft = 1;
+                u.ApplyStdValueToVtxEffect(standardInfo);
             }
             SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
         }

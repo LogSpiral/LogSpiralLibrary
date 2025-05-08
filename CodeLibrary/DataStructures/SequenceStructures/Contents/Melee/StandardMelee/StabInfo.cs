@@ -72,18 +72,31 @@ public class StabInfo : LSLMelee
     #region 辅助函数
     public UltraStab NewStab()
     {
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         if (verS.active)
         {
-            var pair = standardInfo.vertexStandard.stabTexIndex;
+            var pair = standardInfo.VertexStandard.stabTexIndex;
             UltraStab u;
             if (standardInfo.itemType == ItemID.TrueExcalibur)
             {
                 float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
-                u = UltraStab.NewUltraStab(standardInfo.standardColor, (int)(verS.timeLeft * 1.2f), size,
-                Owner.Center, LogSpiralLibraryMod.HeatMap[5].Value, flip, Rotation, KValue * 1.5f, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
-                var su = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, size * .67f,
-                Owner.Center + Rotation.ToRotationVector2() * size * .2f, verS.heatMap, !flip, Rotation, KValue * 1.5f, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
+                u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
+                u.negativeDir = flip;
+                u.rotation = Rotation;
+                u.xScaler = KValue * 1.5f;
+                u.aniTexIndex = pair?.Item1 ?? 9;
+                u.baseTexIndex = pair?.Item2 ?? 0;
+                u.ColorVector = verS.colorVec;
+
+                var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + Rotation.ToRotationVector2() * size * .2f);
+                su.heatMap = verS.heatMap;
+                su.negativeDir = !flip;
+                su.rotation = Rotation;
+                u.xScaler = KValue * 1.5f;
+                u.aniTexIndex = pair?.Item1 ?? 9;
+                u.baseTexIndex = pair?.Item2 ?? 0;
+                u.ColorVector = verS.colorVec;
                 su.ApplyStdValueToVtxEffect(standardInfo);
 
                 u.gather = !visualCentered;
@@ -92,17 +105,16 @@ public class StabInfo : LSLMelee
             }
             else
             {
-                u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f,
-                Owner.Center, verS.heatMap, flip, Rotation, KValue * 1.5f, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
+                float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
+                u.heatMap = verS.heatMap;
+                u.negativeDir = flip;
+                u.rotation = Rotation;
+                u.xScaler = KValue * 1.5f;
+                u.aniTexIndex = pair?.Item1 ?? 9;
+                u.baseTexIndex = pair?.Item2 ?? 0;
+                u.ColorVector = verS.colorVec;
                 u.gather = !visualCentered;
-            }
-            //Main.NewText(Owner.Center);
-            //var u = UltraSwoosh.NewUltraSwoosh(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize, Owner.Center, verS.heatMap, this.flip, Rotation, KValue, (.625f, -.75f), colorVec: verS.colorVec);
-            if (verS.renderInfos == null)
-                u.ResetAllRenderInfo();
-            else
-            {
-                u.ModityAllRenderInfo(verS.renderInfos);
             }
             u.ApplyStdValueToVtxEffect(standardInfo);
             return u;

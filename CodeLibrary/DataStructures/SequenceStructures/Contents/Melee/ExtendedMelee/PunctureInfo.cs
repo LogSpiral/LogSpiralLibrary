@@ -26,13 +26,20 @@ public class PunctureInfo : ExtendedMelee
             MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) - Vector2.UnitY * 40 * Main.rand.NextFloat(0, 1) / fallFac * .5f, standardInfo.standardColor, 2);
 
             
-        var verS = standardInfo.vertexStandard;
+        var verS = standardInfo.VertexStandard;
         if (verS.active)
         {
-            UltraStab u = null;
-            var pair = standardInfo.vertexStandard.stabTexIndex;
-            u = UltraStab.NewUltraStab(standardInfo.standardColor, verS.timeLeft, verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f * 4f / fallFac,
-            Owner.Center - Vector2.UnitY * standardInfo.vertexStandard.scaler / fallFac * 2f, verS.heatMap, flip, MathHelper.PiOver2, 2 / fallFac, pair?.Item1 ?? 9, pair?.Item2 ?? 0, colorVec: verS.colorVec);
+            var pair = standardInfo.VertexStandard.stabTexIndex;
+            var scaler = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f * 4f / fallFac;
+            var center = Owner.Center - Vector2.UnitY * standardInfo.VertexStandard.scaler / fallFac * 2f;
+            UltraStab u = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, scaler, center);
+            u.heatMap = verS.heatMap;
+            u.negativeDir = flip;
+            u.rotation = MathHelper.PiOver2;
+            u.xScaler = 2 / fallFac;
+            u.aniTexIndex = pair?.Item1 ?? 9;
+            u.baseTexIndex = pair?.Item2 ?? 0;
+            u.ColorVector = verS.colorVec;
             u.ApplyStdValueToVtxEffect(standardInfo);
         }
 

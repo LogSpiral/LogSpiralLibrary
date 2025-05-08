@@ -5,7 +5,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 /// <summary>
 /// 不同物品有自己独有的标准值
 /// </summary>
-public struct StandardInfo
+public class StandardInfo
 {
 
     /// <summary>
@@ -33,7 +33,24 @@ public struct StandardInfo
     /// 高亮贴图
     /// </summary>
     public Texture2D standardGlowTexture;
-    public VertexDrawInfoStandardInfo vertexStandard = default;
+
+    /// <summary>
+    /// 标准物品大小
+    /// </summary>
+    public float standardScaler;
+
+    public VertexDrawStandardInfo VertexStandard
+    {
+        get 
+        {
+            if (field == null) 
+            {
+                field = new VertexDrawStandardInfo();
+                InitalizeVertexStandard(field);
+            }
+            return field;
+        }
+    }
     public int itemType;
     public SoundStyle? soundStyle;
     public float dustAmount;
@@ -42,14 +59,23 @@ public struct StandardInfo
     public StandardInfo()
     {
     }
-    public StandardInfo(float rotation, Vector2 origin, int timer, Color color, Texture2D glow, int type)
+    public StandardInfo(float rotation, Vector2 origin,int scaler, int timer, Color color, Texture2D glow, int type)
     {
         standardRotation = rotation;
         standardOrigin = origin;
+        standardScaler = scaler;
         standardTimer = timer;
         standardColor = color;
         standardGlowTexture = glow;
         itemType = type;
+    }
+
+    public void InitalizeVertexStandard(VertexDrawStandardInfo vertexStandard) 
+    {
+        vertexStandard.scaler = standardScaler;
+        vertexStandard.timeLeft = 30;
+        vertexStandard.colorVec = Vector3.one * .333f;
+        vertexStandard.active = true;
     }
     //TODO 改成弹幕序列独有
 }
@@ -57,15 +83,15 @@ public struct StandardInfo
 /// <summary>
 /// 物品相应顶点绘制特效的标准值
 /// </summary>
-public struct VertexDrawInfoStandardInfo
+public class VertexDrawStandardInfo
 {
+    public string canvasName = RenderCanvasSystem.DEFAULTCANVASNAME;
     public bool active;
     public Texture2D heatMap;
     public int timeLeft;
     public float scaler;
     public float heatRotation;
-    public float alphaFactor;
-    public IRenderDrawInfo[][] renderInfos;
+    public float alphaFactor = 1f;
     /// <summary>
     /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
     /// </summary>

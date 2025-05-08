@@ -16,17 +16,17 @@ public abstract class MeleeVertexInfo : VertexDrawInfo
     public float alphaFactor = 2f;
     public float heatRotation;
 
-    public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
+    public override void PreDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
-        base.PreDraw(spriteBatch, graphicsDevice, render, renderAirDistort);
+        base.PreDraw(spriteBatch, graphicsDevice);
         Effect effect = LogSpiralLibraryMod.ShaderSwooshUL;
-        effect.Parameters["uTransform"].SetValue(RenderDrawingContentsSystem.uTransform);
+        effect.Parameters["uTransform"].SetValue(RenderCanvasSystem.uTransform);
         effect.Parameters["uTime"].SetValue(-(float)GlobalTimeSystem.GlobalTime * 0.03f);
         effect.Parameters["checkAir"].SetValue(false);
         effect.Parameters["airFactor"].SetValue(2);
         effect.Parameters["heatRotation"].SetValue(Matrix.CreateRotationZ(heatRotation));
         effect.Parameters["lightShift"].SetValue(0f);
-        effect.Parameters["distortScaler"].SetValue(1f);
+        // effect.Parameters["distortScaler"].SetValue(1f);
         effect.Parameters["alphaFactor"].SetValue(alphaFactor);
         effect.Parameters["heatMapAlpha"].SetValue(true);
         effect.Parameters["stab"].SetValue(false);

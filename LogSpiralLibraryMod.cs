@@ -13,6 +13,16 @@ using System.IO;
 using NetSimplified;
 using Terraria.ModLoader.UI;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+using Terraria.ModLoader.Core;
+using Terraria.Localization;
+using static Terraria.Localization.NetworkText;
+using System.Text.RegularExpressions;
+using System.Text;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
+using Hjson;
+using Newtonsoft.Json.Linq;
 namespace LogSpiralLibrary;
 public partial class LogSpiralLibraryMod : Mod
 {
@@ -27,6 +37,7 @@ public partial class LogSpiralLibraryMod : Mod
     {
         InitializeBlendStates();
     }
+
     public override void Load()
     {
         Instance = this;
@@ -37,6 +48,7 @@ public partial class LogSpiralLibraryMod : Mod
         LoadAllTextures();
         AddOnResolutionChangedHook();
         FuckSDKCheck();
+        LocalizationFix();
     }
     public override void Unload() => Instance = null;
     public override void HandlePacket(BinaryReader reader, int whoAmI) => NetModule.ReceiveModule(reader, whoAmI);

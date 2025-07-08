@@ -15,13 +15,20 @@ public abstract class VertexDrawInfo : RenderDrawingContent
 
     public override void Draw(SpriteBatch spriteBatch)
     {
+#if false
+        // 调试用，显示顶点框架，如果需要启用就把false改成true
+        int m = VertexInfos.Length;
+        for (int n = 0; n < m - 1; n++)
+            spriteBatch.DrawLine(VertexInfos[n].Position, VertexInfos[n + 1].Position, Color.White);
+#endif
+
+
         var targetTex = weaponTex ?? TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value;
         Main.graphics.GraphicsDevice.Textures[2] = targetTex;
 
         Main.graphics.GraphicsDevice.Textures[3] = heatMap;
         var swooshUL = ShaderSwooshUL;
         swooshUL.Parameters["uSize"].SetValue(targetTex.Size());
-        swooshUL.Parameters["lightShift"].SetValue(Factor - 1f);
         if (frame != null)
         {
             Rectangle uframe = frame.Value;

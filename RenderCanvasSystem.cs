@@ -59,7 +59,6 @@ public class RenderCanvasSystem : ModSystem
         HashSet<string> pendingRemoveCanvasName = [];
         foreach (var pair in _renderingCanvases)
         {
-            Main.NewText(pair.Key);
             var canvas = pair.Value;
             canvas.Update();
             if (!canvas.ShouldExist) // && pair.Key != DEFAULTCANVASNAME // 是否有必要保留一个画布实例在？
@@ -76,7 +75,11 @@ public class RenderCanvasSystem : ModSystem
         // 服务器端大黑框自然用不到这些
         if (Main.netMode == NetmodeID.Server) return;
         // 挂起矩阵更新，下一次要用的时候就会先计算一下然后缓存着
-        Main.OnPostDraw += delegate { _pendingUpdateViewMatrix = true; };
+        Main.OnPostDraw += delegate 
+        {
+            _pendingUpdateViewMatrix = true;
+            _pendingUpdateUIMatrix = true;
+        };
         // Filters.Scene.OnPostDraw += () => { _pendingUpdateViewMatrix = true; }; // 这个仅在色彩或白光模式下有
 
         // 注册默认画布

@@ -23,7 +23,11 @@ using System.Reflection;
 using System.Collections.Generic;
 using Hjson;
 using Newtonsoft.Json.Linq;
+using Terraria.Audio;
 namespace LogSpiralLibrary;
+
+
+
 public partial class LogSpiralLibraryMod : Mod
 {
     #region Misc

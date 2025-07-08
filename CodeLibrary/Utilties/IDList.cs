@@ -943,7 +943,7 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties
 
     }
 
-    public static class MySoundID 
+    public static class MySoundID
     {
         /// <summary>
         /// 最普通最常见的挥砍效果1
@@ -983,7 +983,7 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties
         /// <summary>
         /// 法杖使用音效
         /// </summary>
-        public static SoundStyle MagicStaff=> SoundID.Item8;
+        public static SoundStyle MagicStaff => SoundID.Item8;
 
         /// <summary>
         /// 落星等
@@ -1073,7 +1073,7 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties
         /// <summary>
         /// 竖琴
         /// </summary>
-        public static SoundStyle Harb=>SoundID.Item26;
+        public static SoundStyle Harb => SoundID.Item26;
 
         /// <summary>
         /// 破碎冰块

@@ -145,7 +145,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             //    qot.Call("AddRenderOnCondition", () => PVRenderUsing);
             //else
             Main.QueueMainThreadAction(() => IL_Main.DoDraw += AddPreviewRenderOn);
-           
+
             base.Load();
         }
         public override void PostSetupContent()
@@ -217,22 +217,34 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             cursor.EmitAnd();
             //↑这里我加入了一个 *不启用设置预览的Render绘制*然后取与
             //也就是说如果既不要饥荒滤镜也不要螺线光污染就不开screenTarget捕获，很合理
-            
+
 
             //下面这部分代码负责在游戏内时等UI绘制完毕再结束屏幕捕获
 
             //这里是先找寻到游戏内结束捕获的函数
             //找寻两次是因为第一次是主页面内结束捕获
+            var endCaptrureMethod = typeof(FilterManager).GetMethod(nameof(FilterManager.EndCapture), BindingFlags.Public | BindingFlags.Instance);
             for (int n = 0; n < 2; n++)
-                if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(typeof(FilterManager).GetMethod(nameof(FilterManager.EndCapture), BindingFlags.Public | BindingFlags.Instance))))
+                if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(endCaptrureMethod)))
                     return;
             //调用函数前会压一堆值到栈里面，所以得往前找一段距离
-            cursor.Index -= 6;
-            
-            //会判定在屏幕捕获状态时才结束捕获，这里我加了个条件来取消结束捕获
-            cursor.EmitDelegate<Func<bool, bool>>(flag =>
+            cursor.Index -= 4;
+            cursor.Remove();
+            // 结束捕获并且满足条件时绘制到自己的Render上
+            cursor.EmitDelegate(() => PVRenderUsing && !Main.hideUI ? LogSpiralLibraryMod.Instance.RenderScreenCapture : null);
+
+            if (!cursor.TryGotoNext(i => i.MatchCallOrCallvirt(endCaptrureMethod)))
+                return;
+            cursor.Index++;
+            cursor.EmitDelegate(() =>
             {
-                return flag && (!PVRenderUsing || Main.hideUI);
+                if (!PVRenderUsing || Main.hideUI) return;
+                var spb = Main.spriteBatch;
+                var gd = Main.graphics.GraphicsDevice;
+                gd.SetRenderTarget(Main.screenTarget);
+                spb.Begin();
+                spb.Draw(LogSpiralLibraryMod.Instance.RenderScreenCapture, Vector2.Zero, Color.White);
+                spb.End();
             });
 
             //两次是因为有一次写在try里面有一次写在catch里面
@@ -245,7 +257,14 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             cursor.EmitDelegate(() =>
             {
                 if (Lighting.NotRetro && PVRenderUsing)
-                    Filters.Scene.EndCapture(null, Main.screenTarget, Main.screenTargetSwap, Color.Black);
+                {
+                    var gd = Main.graphics.GraphicsDevice;
+                    var spb = Main.spriteBatch;
+                    gd.SetRenderTarget(null);
+                    spb.Begin();
+                    spb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+                    spb.End();
+                }
             });
         }
         private static void PreviewDrawing_Hook(Action<ConfigElement, SpriteBatch> orig, ConfigElement self, SpriteBatch spriteBatch)

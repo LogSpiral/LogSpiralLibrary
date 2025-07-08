@@ -3,6 +3,7 @@ using static Terraria.Utils;
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 public static class UIMethods
 {
+    public static bool MouseInRound(Vector2 roundCenter, int radius) => Vector2.DistanceSquared(Main.MouseScreen, roundCenter) <= radius * radius;
     public static bool BelongToMe(this UIElement element, UIElement target)
     {
         if (element.GetHashCode() == target.GetHashCode()) return true;
@@ -46,12 +47,17 @@ public static class UIMethods
     /// </summary>
     public static Vector2 TransformToUIPosition(Vector2 vector)
     {
+        vector /= Main.UIScale;
+        float zoom = Main.GameZoomTarget * Main.ForcedMinimumZoom;
+        return (vector - Main.ScreenSize.ToVector2() * .5f) * zoom + Main.ScreenSize.ToVector2() * .5f;
+        /*
         // 获取相对屏幕中心的向量(一定要在调节xy前获取)
         float oppositeX = (vector.X - Main.screenWidth / 2) / Main.UIScale;
         float oppositeY = (vector.Y - Main.screenHeight / 2) / Main.UIScale;
         vector.X = (int)(vector.X / Main.UIScale) + (int)(oppositeX * (Main.GameZoomTarget - 1f));
         vector.Y = (int)(vector.Y / Main.UIScale) + (int)(oppositeY * (Main.GameZoomTarget - 1f));
         return new(vector.X, vector.Y);
+        */
     }
 
     public static Vector2 MouseScreenUI => TransformToUIPosition(Main.MouseScreen);

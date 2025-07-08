@@ -147,6 +147,14 @@ public class AirDistortConfigs : IAvailabilityChangableConfig
     } = .5f;
 
     [JsonIgnore]
-    public AirDistortEffect EffectInstance => field ??= !Available ? new() : new AirDistortEffect(Intensity, Scaler, Rotation, ColorOffset);
+    public AirDistortEffect EffectInstance => !Available ? new() : new AirDistortEffect(Intensity, Scaler, Rotation, ColorOffset);
+    // field ??= 
+    public void CopyToInstance(AirDistortEffect effect) 
+    {
+        effect.Intensity = Available ? Intensity : 0;
+        effect.Scaler = Scaler;
+        effect.Rotation = Rotation;
+        effect.ColorOffset = ColorOffset;
+    }
 
 }

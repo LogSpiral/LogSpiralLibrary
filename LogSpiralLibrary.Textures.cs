@@ -1,5 +1,7 @@
-﻿using ReLogic.Content;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using ReLogic.Content;
 using System.Collections.Generic;
+using System.Linq;
 namespace LogSpiralLibrary;
 
 partial class LogSpiralLibraryMod
@@ -31,6 +33,14 @@ partial class LogSpiralLibraryMod
     public static List<Asset<Texture2D>> Fractal { get; private set; }
     public static List<Asset<Texture2D>> Mask { get; private set; }
 
+    static readonly Texture2D[] _tempHeatMaps = new Texture2D[10];
+
+    /// <summary>
+    /// 临时采样热图，同时最多10张
+    /// </summary>
+    public static IReadOnlyList<Texture2D> TempHeatMaps => _tempHeatMaps;
+
+
     static void LoadAllTextures()
     {
         BaseTex = LoadTextures(nameof(BaseTex));
@@ -44,8 +54,15 @@ partial class LogSpiralLibraryMod
         Misc = LoadTextures(nameof(Misc));
         Fractal = LoadTextures(nameof(Fractal));
         Mask = LoadTextures(nameof(Mask));
+
+        Main.RunOnMainThread(() =>
+        {
+            for (int n = 0; n < 10; n++)
+                if (_tempHeatMaps[n] == null)
+                    _tempHeatMaps[n] = new Texture2D(Main.graphics.GraphicsDevice, 300, 1);
+        });
     }
-    private static List<Asset<Texture2D>> LoadTextures(string folderName, string textureName)
+    static List<Asset<Texture2D>> LoadTextures(string folderName, string textureName)
     {
         string basePath = $"Images/{folderName}/{textureName}_";
         List<Asset<Texture2D>> assets = [];
@@ -60,5 +77,49 @@ partial class LogSpiralLibraryMod
         }
         return assets;
     }
-    private static List<Asset<Texture2D>> LoadTextures(string textureName) => LoadTextures(textureName, textureName);
+    static List<Asset<Texture2D>> LoadTextures(string textureName) => LoadTextures(textureName, textureName);
+
+    public static void SetTempHeatMap(int index, Func<float, Color> func)
+    {
+        if (index is < 0 or > 9)
+            throw new ArgumentException("index should be greater than -1 and less than 10.");
+        Color[] colors = new Color[300];
+        for (int n = 0; n < 300; n++)
+            colors[n] = func(n / 299f);
+        Main.RunOnMainThread(() => TempHeatMaps[index].SetData(colors));
+    }
+
+    public static void SetTempHeatMap(int index, List<(Color color, float position)> colors)
+    {
+        if (colors.Count == 1)
+        {
+            SetTempHeatMap(index, t => colors.First().Item1);
+            return;
+        }
+
+
+        SetTempHeatMap(index, t =>
+        {
+            int count = colors.Count;
+            if (colors == null || count == 0)
+                return Color.Transparent;
+            if (count == 1) return colors[0].color;
+
+            var current = colors[0];
+            var previous = current;
+            for (int u = 1; t > current.position; u++)
+            {
+                if (u == count)
+                {
+                    previous = current;
+                    break;
+                }
+                previous = current;
+                current = colors[u];
+            }
+
+            if (current == previous) return current.color;
+            return Color.Lerp(previous.color, current.color, Utils.GetLerpValue(previous.position, current.position, t));
+        });
+    }
 }

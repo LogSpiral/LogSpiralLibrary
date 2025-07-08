@@ -2,7 +2,7 @@
 public abstract class MeleeVertexInfo : VertexDrawInfo
 {
     public float rotation;
-    public float xScaler;
+    public float xScaler = 1f;
     public bool negativeDir;
     public bool gather = true;
     /// <summary>
@@ -49,6 +49,7 @@ public abstract class MeleeVertexInfo : VertexDrawInfo
         effect.Parameters["normalize"].SetValue(normalize);
         effect.Parameters["heatRotation"].SetValue(Matrix.CreateRotationZ(heatRotation));
         effect.Parameters["alphaFactor"].SetValue(alphaFactor);
+        effect.Parameters["lightShift"].SetValue(Factor - 1f);
         base.Draw(spriteBatch);
     }
 }

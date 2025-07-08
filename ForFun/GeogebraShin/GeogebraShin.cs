@@ -186,34 +186,4 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             base.Update(gameTime);
         }
     }
-    //不必再存在的config
-    //public class GeogebraShinConfig : ModConfig
-    //{
-    //    public override ConfigScope Mode => ConfigScope.ClientSide;
-    //    public static GeogebraShinConfig instance => ModContent.GetInstance<GeogebraShinConfig>();
-
-    //    [Label("使用奇妙滤镜")]
-    //    [Tooltip("天旋地转！！话说为什么阿汪要在这里留个滤镜")]
-
-    //    public bool UseScreenShader;
-    //    public enum ShaderPassMode
-    //    {
-    //        [Label("单一")]
-    //        Single,
-    //        [Label("取模")]
-    //        Wrap,
-    //        [Label("原来你也玩圆神")]
-    //        ConicSection,
-    //        [Label("测试")]
-    //        Test
-    //    }
-    //    [Label("滤镜模式")]
-    //    public ShaderPassMode PassMode;
-    //    public override void OnChanged()
-    //    {
-    //        if (GeogebraShinSystem.ScreenTransformData != null)
-    //            GeogebraShinSystem.ScreenTransformData.SwapProgram(PassMode.ToString());
-    //        base.OnChanged();
-    //    }
-    //}
 }

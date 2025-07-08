@@ -79,6 +79,13 @@ partial class LogSpiralLibraryMod
         get => field ??= DirectlyCreateNewRender(2);
         private set;
     }
+
+
+    public RenderTarget2D RenderScreenCapture 
+    {
+        get => field ??= DirectlyCreateNewRender();
+        private set;
+    }
     #endregion
 
     #region 辅助函数
@@ -119,6 +126,9 @@ partial class LogSpiralLibraryMod
 
         instance.Render_Tiniest_Swap?.Dispose();
         instance.Render_Tiniest_Swap = DirectlyCreateNewRender(2);
+
+        instance.RenderScreenCapture?.Dispose();
+        instance.RenderScreenCapture = DirectlyCreateNewRender();
     }
 
     /// <summary>

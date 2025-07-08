@@ -24,8 +24,17 @@
 		<AdditionalFiles Include="**/*.xml;**/*.xnb" Exclude="bin/**/*;obj/**/*" Pack="true" ModPath="%(Identity)" />
 	</ItemGroup>
 	<ItemGroup>
+	  <AdditionalFiles Remove="localization\propertypanel\en-US_Mods.LogSpiralLibrary.PropertyPanel.hjson" />
+	  <AdditionalFiles Remove="Localization\PropertyPanel\zh-Hans_Mods.LogSpiralLibrary.PropertyPanel.hjson" />
+	  <AdditionalFiles Remove="localization\sequenceui\en-US_Mods.LogSpiralLibrary.SequenceUI.hjson" />
+	  <AdditionalFiles Remove="Localization\SequenceUI\zh-Hans_Mods.LogSpiralLibrary.SequenceUI.hjson" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">
 			<Visible>true</Visible>
 		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
 	</ItemGroup>
 </Project>

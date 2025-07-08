@@ -11,7 +11,7 @@ using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 
-public class DyeEffect(int dyeType) : IRenderEffect
+public class DyeEffect(int dyeType = 0) : IRenderEffect
 {
 
     #region 参数属性
@@ -91,5 +91,8 @@ public class DyeConfigs : IAvailabilityChangableConfig
     } = new();
 
     [JsonIgnore]
-    public DyeEffect EffectInstance => field ??= !Available ? new(0) : new DyeEffect(Dye.Type);
+    public DyeEffect EffectInstance => !Available ? new(0) : new DyeEffect(Dye.Type);
+    //  field ??= 
+
+    public void CopyToInstance(DyeEffect effect) => effect.Type = Available ? Dye.Type : 0;
 }

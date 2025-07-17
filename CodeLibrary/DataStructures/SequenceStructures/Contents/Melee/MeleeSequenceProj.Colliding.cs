@@ -1,4 +1,6 @@
-﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+﻿using Terraria.Enums;
+
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 partial class MeleeSequenceProj
 {
@@ -46,5 +48,16 @@ partial class MeleeSequenceProj
         //player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f);
 
         base.OnHitPlayer(target, info);
+    }
+
+    public override void CutTiles()
+    {
+        if (currentData is null) return;
+        DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
+        Utils.TileActionAttempt cut = new Utils.TileActionAttempt(DelegateMethods.CutTiles);
+        Vector2 beamStartPos = Projectile.Center;
+        Vector2 beamEndPos = Projectile.Center + currentData.targetedVector;
+        Utils.PlotTileLine(beamStartPos, beamEndPos, 16, cut);
+        base.CutTiles();
     }
 }

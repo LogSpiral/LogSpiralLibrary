@@ -414,7 +414,6 @@ namespace LogSpiralLibrary.CodeLibrary
 
         public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceSystem.conditions[Name].Description.ToString());
     }
-
     public class ConditionDefinitionElement : GenericDefinitionElement<ConditionDefinition>
     {
         public bool resetted;

@@ -1146,7 +1146,7 @@ namespace LogSpiralLibrary.CodeLibrary
         public abstract Point16 Origin { get; }
         public override bool IsTileValidForEntity(int x, int y)
         {
-            Tile tile = Main.tile[x, y];
+            Tile tile = Framing.GetTileSafely(x, y);
             return tile.HasTile && tile.TileType == ModContent.TileType<T>();
         }
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)

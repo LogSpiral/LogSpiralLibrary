@@ -60,7 +60,7 @@ public class PunctureInfo : ExtendedMelee
     {
         int t = 0;
         Point point = Owner.Bottom.ToTileCoordinates();
-        while (point.Y + t < Main.maxTilesY && t < 100 && !Main.tile[point.X, point.Y + t].HasTile)
+        while (point.Y + t < Main.maxTilesY && t < 100 && !Framing.GetTileSafely(point.X, point.Y + t).HasTile)
         {
             t++;
         }

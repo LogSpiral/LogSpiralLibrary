@@ -4616,7 +4616,7 @@ namespace LogSpiralLibrary.CodeLibrary
         /// <returns>The tile location of the multitile's top-left corner, or the input location if no tile is present or the tile is not part of a multitile</returns>
         public static Point16 GetTopLeftTileInMultitile(int x, int y)
         {
-            Tile tile = Main.tile[x, y];
+            Tile tile = Framing.GetTileSafely(x, y);
 
             int frameX = 0;
             int frameY = 0;

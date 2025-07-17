@@ -21,9 +21,9 @@ public static class UIFrameworkExtensions
 
     extension(UIView uiView)
     {
-        public CalculatedStyle Dimension => uiView.GetBounds().ToDimension();
-        public Vector2 Size => uiView.GetBounds().Size.ToVector2();
-        public Vector2 Position => uiView.GetBounds().Position;
+        public CalculatedStyle Dimension => uiView.Bounds.ToDimension();
+        public Vector2 Size => uiView.Bounds.Size.ToVector2();
+        public Vector2 Position => uiView.Bounds.Position;
 
     }
 }

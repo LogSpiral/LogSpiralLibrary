@@ -552,3 +552,11 @@ Projectiles: {
 	// TestBlade2Proj.DisplayName: Test Blade2 Proj
 	// TestBlade3Proj.DisplayName: Test Blade3 Proj
 }
+
+SequenceUI: {
+	// Cancel: Mods.LogSpiralLibrary.SequenceUI.Cancel
+	// SequenceLibrary: Mods.LogSpiralLibrary.SequenceUI.SequenceLibrary
+	// ActionLibrary: Mods.LogSpiralLibrary.SequenceUI.ActionLibrary
+	// PropTitle: Mods.LogSpiralLibrary.SequenceUI.PropTitle
+	// InfoTitle: Mods.LogSpiralLibrary.SequenceUI.InfoTitle
+}

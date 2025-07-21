@@ -4362,7 +4362,7 @@ namespace LogSpiralLibrary.CodeLibrary
             var l1 = new List<T>();
             //l.ForEach()
             //ForeachFunc(l, (T v) => { l1.Add(v); });
-            l.ForEach((T v) => { l1.Add(v); });
+            l.ForEach(v => { l1.Add(v); });
             return l1;
         }
         public static void ForeachFunc<T>(this T[] array, Action<T> action)

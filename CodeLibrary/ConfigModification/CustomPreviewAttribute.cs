@@ -153,7 +153,7 @@ namespace LogSpiralLibrary.CodeLibrary.ConfigModification
             if (ModLoader.TryGetMod("ImproveGame", out var qot))
             {
                 var assembly = qot.GetType().Assembly;
-                ImproveGame_ModernConfigCrossModHelper.OnGlobalConfigPreview(qot, (UIElement element, ModConfig currentConfig, PropertyFieldWrapper varibleInfo, object item, IList list, int index) =>
+                ImproveGame_ModernConfigCrossModHelper.OnGlobalConfigPreview(qot, (element, currentConfig, varibleInfo, item, list, index) =>
                 {
                     OptionMetaData metaData = new(varibleInfo, item, list, index, currentConfig);
                     var pvAttribute = metaData.GetAttribute<CustomPreviewAttribute>();

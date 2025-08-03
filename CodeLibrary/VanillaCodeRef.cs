@@ -1,5 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
+using Terraria.ID;
+
 namespace LogSpiralLibrary.CodeLibrary;
 
 /// <summary>
@@ -489,13 +491,13 @@ static class VanillaCodeRef
         {
             if (Main.rand.NextBool(6))
             {
-                int num11 = Dust.NewDust(projectile.position, projectile.width, projectile.height, 6);
+                int num11 = Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Torch);
                 Main.dust[num11].noGravity = true;
             }
         }
         else if (projectile.type == 553 && Main.rand.NextBool(2))
         {
-            int num12 = Dust.NewDust(projectile.position, projectile.width, projectile.height, 6);
+            int num12 = Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Torch);
             Main.dust[num12].noGravity = true;
             Main.dust[num12].scale = 1.6f;
         }

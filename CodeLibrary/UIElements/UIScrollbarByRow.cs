@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Terraria.Audio;
 using Terraria.GameInput;
 using Terraria.UI;
+using Terraria.ID;
 
 namespace LogSpiralLibrary.CodeLibrary.UIElements
 {
@@ -100,7 +101,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIElements
             bool isHoveringOverHandle = _isHoveringOverHandle;
             _isHoveringOverHandle = handleRectangle.Contains(new Point((int)mousePosition.X, (int)mousePosition.Y));
             if (!isHoveringOverHandle && _isHoveringOverHandle && Main.hasFocus)
-                SoundEngine.PlaySound(12);
+                SoundEngine.PlaySound(SoundID.MenuTick);
             DrawBar(spriteBatch, _texture.Value, dimensions.ToRectangle(), Color.White);
             DrawBar(spriteBatch, _innerTexture.Value, handleRectangle, Color.White * ((_isDragging || _isHoveringOverHandle) ? 1f : 0.85f));
         }

@@ -24,6 +24,7 @@ using LogSpiralLibrary.CodeLibrary.ConfigModification;
 using rail;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
+using Terraria.ID;
 
 namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
 {
@@ -1433,7 +1434,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             initializeButton.HAlign = 1f;
             initializeButton.OnLeftClick += (a, b) =>
             {
-                SoundEngine.PlaySound(21);
+                SoundEngine.PlaySound(SoundID.Tink);
 
                 object data = Activator.CreateInstance(MemberInfo.Type, true);
                 string json = JsonDefaultValueAttribute?.Json ?? "{}";

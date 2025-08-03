@@ -76,7 +76,7 @@ public class FlailInfo : VanillaMelee
                     }
                     realPos += 32f * Rotation.ToRotationVector2() + new Vector2(0, assistTimer * assistTimer * .25f);
                     assistTimer++;
-                    var tile = Main.tile[realPos.ToTileCoordinates16()];
+                    var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16());
 
                     if (assistTimer > 30 || offsetCenter.Length() > 512 || tile.HasTile && Main.tileSolid[tile.TileType])
                     {
@@ -109,12 +109,12 @@ public class FlailInfo : VanillaMelee
                         timer = timerMax = 10;
                         state = 4;
                     }
-                    var tile = Main.tile[realPos.ToTileCoordinates16()];
+                    var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16()) ;
                     if (!(tile.HasTile && Main.tileSolid[tile.TileType]))
                     {
                         assistTimer++;
                         realPos += assistTimer * assistTimer * new Vector2(0, 0.0625f);
-                        tile = Main.tile[(realPos + assistTimer * 4f * Vector2.UnitY).ToTileCoordinates16()];
+                        tile = Framing.GetTileSafely((realPos + assistTimer * 4f * Vector2.UnitY).ToTileCoordinates16());
                         if (tile.HasTile && Main.tileSolid[tile.TileType])
                         {
                             realPos += assistTimer * 4f * Vector2.UnitY;

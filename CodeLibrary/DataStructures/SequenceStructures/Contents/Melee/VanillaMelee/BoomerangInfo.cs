@@ -30,7 +30,7 @@ public class BoomerangInfo : VanillaMelee
         {
             back = true;
         }
-        var tile = Main.tile[realCenter.ToTileCoordinates16()];
+        var tile = Framing.GetTileSafely(realCenter.ToTileCoordinates16());
         if (tile.HasTile && Main.tileSolid[tile.TileType])
         {
             back = true;

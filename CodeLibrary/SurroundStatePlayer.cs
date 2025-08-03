@@ -90,7 +90,7 @@ public class SurroundStatePlayer : ModPlayer
         {
             int h = 0;
             Point coord = Player.Center.ToTileCoordinates();
-            while (h < 5 && !Main.tile[coord + new Point(0, h)].HasTile)
+            while (h < 5 && !Framing.GetTileSafely(coord + new Point(0, h)).HasTile)
             {
                 h++;
             }

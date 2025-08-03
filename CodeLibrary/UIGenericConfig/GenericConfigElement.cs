@@ -1002,7 +1002,7 @@ namespace LogSpiralLibrary.CodeLibrary.UIGenericConfig
             _getValue = () => DefaultGetValue();
             _getValueString = () => DefaultGetStringValue();
             _getIndex = () => DefaultGetIndex();
-            _setValue = (int value) => DefaultSetValue(value);
+            _setValue = value => DefaultSetValue(value);
 
             /*
             if (array != null) {

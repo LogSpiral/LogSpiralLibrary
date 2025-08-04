@@ -1,5 +1,0 @@
-﻿NotSupportText:
-	'''
-	Property or field {0}({1})
-	Type {2} is not supported yet, Left click to go to vanilla tModLoader's config UI to edit it.
-	'''

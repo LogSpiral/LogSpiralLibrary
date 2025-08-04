@@ -26,7 +26,7 @@ public class ZenithInfo : VanillaMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
         if (timer == timerMax)
         {
             for (int n = 0; n < 3; n++)

@@ -113,7 +113,7 @@ public class TerraprismaInfo : VanillaMelee
             oldCenters[0] = realCenter;
             oldRotations[0] = realRotation;
         }
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
 
         ultra.timeLeftMax = timerMax;
         ultra.timeLeft = (int)(timerMax * Math.Pow(Factor, 0.25));

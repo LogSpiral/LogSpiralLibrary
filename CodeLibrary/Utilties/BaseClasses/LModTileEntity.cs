@@ -43,7 +43,7 @@ public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile
     }
     public override void OnNetPlace()
     {
-        if (Main.netMode == NetmodeID.Server)
+        if (Main.dedServ)
         {
             NetMessage.SendData(MessageID.TileEntitySharing, number: ID, number2: Position.X, number3: Position.Y);
         }

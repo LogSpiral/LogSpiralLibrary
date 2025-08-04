@@ -40,14 +40,14 @@ public class ColorfulMushroomSystem : ModSystem
     public static ColorfulMushroomData ScreenTransformData;
     public override void PostSetupContent()
     {
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
         ScreenTransformData = new ColorfulMushroomData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/MatrixFunctionEffect", AssetRequestMode.ImmediateLoad), "McosMt");//
         Filters.Scene["LogSpiralLibrary:ColorfulMushroom"] = new Filter(ScreenTransformData, EffectPriority.VeryHigh);
         base.PostSetupContent();
     }
     public override void PreUpdateEntities()
     {
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
         ControlScreenShader("LogSpiralLibrary:ColorfulMushroom", ColorfulMushroom.active);
     }
     private static void ControlScreenShader(string name, bool state)

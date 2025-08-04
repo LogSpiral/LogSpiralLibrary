@@ -47,7 +47,7 @@ public partial class LogSpiralLibraryMod : Mod
         Instance = this;
         AddContent<NetModuleLoader>();
 
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
 
         LoadAllTextures();
         AddOnResolutionChangedHook();

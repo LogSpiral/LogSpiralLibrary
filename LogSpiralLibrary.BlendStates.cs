@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LogSpiralLibrary;
+﻿namespace LogSpiralLibrary;
 
 partial class LogSpiralLibraryMod
 {
-    public static BlendState AllOne;
-    public static BlendState InverseColor;
-    public static BlendState SoftAdditive;//from yiyang233
-    public static BlendState NonPremultipliedFullAlpha;
-    static void InitializeBlendStates() 
+    public static BlendState AllOne { get; private set; }
+    public static BlendState InverseColor { get; private set; }
+    public static BlendState SoftAdditive { get; private set; }//from yiyang233
+    public static BlendState NonPremultipliedFullAlpha { get; private set; }
+    static void InitializeBlendStates()
     {
         AllOne = new BlendState
         {

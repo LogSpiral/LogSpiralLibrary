@@ -24,7 +24,6 @@ partial class MeleeSequenceProj
     {
         get => meleeSequence;
     }
-
     //这两个函数是用来初始化执行的逻辑序列的
     //因为之前还没有UI编辑制作或者XML文件记录序列，所以之前是重写SetUpSequence来写入序列的具体内容
     public virtual void SetUpSequence(MeleeSequence sequence, string modName, string fileName)

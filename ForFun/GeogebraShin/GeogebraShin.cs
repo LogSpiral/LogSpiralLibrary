@@ -51,7 +51,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
         public static GeogebraShinData ScreenTransformData;
         public override void PostSetupContent()
         {
-            if (Main.netMode == NetmodeID.Server) return;
+            if (Main.dedServ) return;
             ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
             ScreenTransformData = (GeogebraShinData)new GeogebraShinData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "ConicSection").UseImage(LogSpiralLibraryMod.AniTex[8], 0);//
             Filters.Scene["LogSpiralLibrary:GeogebraShin"] = new Filter(ScreenTransformData, EffectPriority.Medium);
@@ -59,7 +59,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
         }
         public override void PreUpdateEntities()
         {
-            if (Main.netMode == NetmodeID.Server) return;
+            if (Main.dedServ) return;
             ControlScreenShader("LogSpiralLibrary:GeogebraShin", GeogebraShin.active);
         }
         private void ControlScreenShader(string name, bool state)

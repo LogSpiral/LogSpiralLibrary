@@ -111,7 +111,7 @@ public class TestBlade3ProjV2 : MeleeSequenceProj
 {
     public override bool IsLoadingEnabled(Mod mod) => false;
     public override string Texture => base.Texture.Replace("ProjV2", "");
-    public override StandardInfo StandardInfo => Main.netMode == NetmodeID.Server ? default : base.StandardInfo with
+    public override StandardInfo StandardInfo => Main.dedServ ? default : base.StandardInfo with
     {
         standardColor = Color.Purple,
         standardRotation = -MathHelper.PiOver4,

@@ -14,7 +14,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
         public static RenderTarget2D renderShift;
         public override void Load()
         {
-            if (Main.netMode == NetmodeID.Server) return;
+            if (Main.dedServ) return;
             var gd = Main.instance.GraphicsDevice;
             Color[] colors = new Color[1000000];
             Array.Fill(colors, new Color(0.5f, 0.5f, 0));
@@ -36,7 +36,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
 
         public override void Unload()
         {
-            if (Main.netMode == NetmodeID.Server) return;
+            if (Main.dedServ) return;
 
             Main.RunOnMainThread(() =>
             {

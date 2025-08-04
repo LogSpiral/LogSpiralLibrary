@@ -18,7 +18,7 @@ public static class ImproveGame_ModernConfigCrossModHelper
     /// <summary>
     /// 这个函数提供了最基本的注册支持
     /// <br>鉴于通常会注册多个分类表，qot请在外部自行调用<see cref="ModLoader.TryGetMod(string, out Mod)"/></br>
-    /// <br>更具体一点，<code>if(Main.netMode == NetmodeID.Server ||!ModLoader.TryGetMod("ImproveGame",out var qot)) <br>    return;</br></code></br>
+    /// <br>更具体一点，<code>if(Main.dedServ ||!ModLoader.TryGetMod("ImproveGame",out var qot)) <br>    return;</br></code></br>
     /// </summary>
     /// <returns>是否注册成功</returns>
     public static bool RegisterCategory(Mod qot, Mod target, List<KeyValuePair<string, ModConfig>> variables, int itemIconID = 0,

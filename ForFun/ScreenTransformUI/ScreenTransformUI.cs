@@ -61,7 +61,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
         }
         public override void PreUpdateEntities()
         {
-            if (Main.netMode == NetmodeID.Server)
+            if (Main.dedServ)
                 return;
             ControlScreenShader("LogSpiralLibrary:WTFScreen", true);
         }

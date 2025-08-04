@@ -1,27 +1,31 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
-using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
-using Terraria.Graphics.Effects;
+
 namespace LogSpiralLibrary;
 
 public class RenderCanvasSystem : ModSystem
 {
     #region 常量
+
     public const string DEFAULTCANVASNAME = "Default Canvas";
-    #endregion
+
+    #endregion 常量
 
     #region 字段/属性
-    static readonly Dictionary<string, RenderingCanvas> _renderingCanvases = [];
 
-    static readonly Dictionary<string, Func<RenderingCanvas>> _renderCanvasFctory = [];
+    private static readonly Dictionary<string, RenderingCanvas> _renderingCanvases = [];
+
+    private static readonly Dictionary<string, Func<RenderingCanvas>> _renderCanvasFctory = [];
 
     public static Dictionary<Type, RenderDrawingContent> RenderDrawingContentInstance { get; } = [];
 
     public static IReadOnlyDictionary<string, RenderingCanvas> RenderingCanvases => _renderingCanvases;
-    #endregion
+
+    #endregion 字段/属性
 
     #region 公开函数
+
     public static RenderingCanvas CreateAndActivateCanvas(string canvasName)
     {
         if (_renderCanvasFctory.TryGetValue(canvasName, out var factory))
@@ -45,17 +49,19 @@ public class RenderCanvasSystem : ModSystem
 
     public static void AddRenderDrawingContent(string canvasName, IRenderDrawingContent content)
     {
+        if (Main.dedServ) return;
         if (!_renderingCanvases.TryGetValue(canvasName, out var canvas))
             canvas = CreateAndActivateCanvas(canvasName);
 
         canvas.Add(content);
     }
-    #endregion
+
+    #endregion 公开函数
 
     #region 重写函数
-    static void UpdateCanvases()
-    {
 
+    private static void UpdateCanvases()
+    {
         HashSet<string> pendingRemoveCanvasName = [];
         foreach (var pair in _renderingCanvases)
         {
@@ -73,9 +79,9 @@ public class RenderCanvasSystem : ModSystem
     public override void Load()
     {
         // 服务器端大黑框自然用不到这些
-        if (Main.netMode == NetmodeID.Server) return;
+        if (Main.dedServ) return;
         // 挂起矩阵更新，下一次要用的时候就会先计算一下然后缓存着
-        Main.OnPostDraw += delegate 
+        Main.OnPostDraw += delegate
         {
             _pendingUpdateViewMatrix = true;
             _pendingUpdateUIMatrix = true;
@@ -87,22 +93,24 @@ public class RenderCanvasSystem : ModSystem
         RegisterCanvasFactory(DEFAULTCANVASNAME, () => new RenderingCanvas());
         base.Load();
     }
-    #endregion
+
+    #endregion 重写函数
 
     #region Matrix
+
     // 已替换为field关键字
     // static Matrix _uTransformCache;
 
     // static Matrix _uTransformUILayerCache;
 
-    static bool _pendingUpdateViewMatrix;
+    private static bool _pendingUpdateViewMatrix;
 
-    static bool _pendingUpdateUIMatrix;
+    private static bool _pendingUpdateUIMatrix;
 
     /// <summary>
     /// 控制是否计算ui层绘制矩阵
     /// </summary>
-    static bool uiDrawing;
+    private static bool uiDrawing;
 
     /// <summary>
     /// spbdraw那边的矩阵
@@ -122,8 +130,9 @@ public class RenderCanvasSystem : ModSystem
             return Main.GameViewMatrix?.TransformationMatrix ?? Matrix.Identity;
         }
     }
-    static Matrix Projection => Main.gameMenu ? Matrix.CreateOrthographicOffCenter(0, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);//Main.screenWidth  Main.screenHeight
-    static Matrix Model => Matrix.CreateTranslation(uiDrawing ? default : new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
+
+    private static Matrix Projection => Main.gameMenu ? Matrix.CreateOrthographicOffCenter(0, Main.instance.Window.ClientBounds.Width, Main.instance.Window.ClientBounds.Height, 0, 0, 1) : Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);//Main.screenWidth  Main.screenHeight
+    private static Matrix Model => Matrix.CreateTranslation(uiDrawing ? default : new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
 
     /// <summary>
     /// 丢给顶点坐标变换的矩阵
@@ -161,11 +170,13 @@ public class RenderCanvasSystem : ModSystem
             return field;
         }
     }
-    #endregion
+
+    #endregion Matrix
 }
+
 public class RenderCanvasDrawing : RenderBasedDrawing
 {
-    static void DrawCanvases(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    private static void DrawCanvases(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
         foreach (var renderCanvas in RenderCanvasSystem.RenderingCanvases.Values)
             if (renderCanvas.RenderDrawingContents.Count > 0)

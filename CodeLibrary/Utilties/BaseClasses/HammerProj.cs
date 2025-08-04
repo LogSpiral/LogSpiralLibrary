@@ -141,7 +141,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
     }
     public override void ReceiveExtraAI(BinaryReader reader)
     {
-        if (Main.netMode == NetmodeID.Server)
+        if (Main.dedServ)
             size = reader.ReadVector2();
         base.ReceiveExtraAI(reader);
     }
@@ -762,7 +762,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
     }
     public override void ReceiveExtraAI(BinaryReader reader)
     {
-        if (Main.netMode == NetmodeID.Server)
+        if (Main.dedServ)
             size = reader.ReadVector2();
         base.ReceiveExtraAI(reader);
     }

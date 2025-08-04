@@ -2,17 +2,12 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
 using ReLogic.Content;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
 using Terraria.Graphics.Shaders;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.Core;
@@ -21,7 +16,6 @@ using Terraria.ModLoader.IO;
 using Terraria.ModLoader.UI;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
-using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary;
 public abstract class GenericDefinitionElement<T> : GenericConfigElement<T> where T : EntityDefinition

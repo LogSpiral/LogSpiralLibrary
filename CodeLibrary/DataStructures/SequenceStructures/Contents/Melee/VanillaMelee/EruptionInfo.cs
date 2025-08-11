@@ -15,8 +15,8 @@ public class EruptionInfo : VanillaMelee
     //public override float offsetSize => (-MathF.Pow(0.5f - Factor, 2) * 28 + 8) * .75f;
     //public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi / 3;
 
-    public override float offsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
-    public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
+    public override float offsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
+    public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
     #endregion
@@ -24,12 +24,12 @@ public class EruptionInfo : VanillaMelee
     #region 辅助函数
     private CustomVertexInfo[] EruptionVertex(Texture2D texture, float alpha)
     {
-        Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
+        Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
         Vector2 drawCen = offsetCenter + Owner.Center;
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
+        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !Flip, alpha, StandardInfo.frame);
         List<CustomVertexInfo> result = [];
         Vector2 offVec = vtxs[4].Position - vtxs[0].Position;
         float angle = offVec.ToRotation();
@@ -59,9 +59,9 @@ public class EruptionInfo : VanillaMelee
             bool flag = n != 0 && n != 9;
             CustomVertexInfo[] curGroup;
             if (flag)
-                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, standardInfo.standardRotation, 0, angle + MathHelper.PiOver2, texture, .5f, ModifyData.actionOffsetSize * sc * .5f, drawCen + off2, !flip, alpha, standardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, StandardInfo.standardRotation, 0, angle + MathHelper.PiOver2, texture, .5f, ModifyData.actionOffsetSize * sc * .5f, drawCen + off2, !Flip, alpha, StandardInfo.frame);
             else
-                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, 0, angle, texture, 1f, ModifyData.actionOffsetSize * sc * 1f, drawCen - (n == 9 ? off2 : default), !flip, alpha, standardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, 0, angle, texture, 1f, ModifyData.actionOffsetSize * sc * 1f, drawCen - (n == 9 ? off2 : default), !Flip, alpha, StandardInfo.frame);
 
             if (flag)
             {
@@ -96,7 +96,7 @@ public class EruptionInfo : VanillaMelee
         base.OnStartSingle();
         KValue = Main.rand.NextFloat(1.5f, 2f);
         Rotation += Main.rand.NextFloat(-1, 1) * MathHelper.PiOver2 / 12;
-        flip = Main.rand.NextBool();
+        Flip = Main.rand.NextBool();
         SoundEngine.PlaySound(SoundID.Item116, Owner.Center);
     }
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)

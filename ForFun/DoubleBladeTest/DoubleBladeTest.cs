@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
 namespace LogSpiralLibrary.ForFun.DoubleBladeTest;
 

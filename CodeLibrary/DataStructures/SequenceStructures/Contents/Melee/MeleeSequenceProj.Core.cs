@@ -1,4 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 /// <summary>
@@ -8,8 +8,17 @@ public abstract partial class MeleeSequenceProj : ModProjectile
 {
     #region 辅助属性
     //辅助更新函数使用的属性
-    public Player player => Main.player[Projectile.owner];
-    public MeleeAction currentData => meleeSequence?.currentData;
+    public Player Player => Main.player[Projectile.owner];
+    public MeleeAction CurrentElement
+    {
+        get
+        {
+            if (IsLocalProj)
+                field = SequenceModel.CurrentElement as MeleeAction ?? null;
+            return field;
+        }
+        set;
+    }
     #endregion
 
     #region 参数属性
@@ -23,7 +32,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         {
             if (field == null)
             {
-                field = new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), 80, player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+                field = new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), 80, Player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
                 InitializeStandardInfo(field, field.VertexStandard);
             }
             return field;
@@ -65,70 +74,38 @@ public abstract partial class MeleeSequenceProj : ModProjectile
     public override void AI()
     {
         //这里是手持弹幕的一些常规检测和赋值
-        player.heldProj = Projectile.whoAmI;
-        Projectile.damage = player.GetWeaponDamage(player.HeldItem);
-        Projectile.direction = player.direction;
-        Projectile.velocity = (player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - player.Center).SafeNormalize(default);
+        Player.heldProj = Projectile.whoAmI;
+        Projectile.damage = Player.GetWeaponDamage(Player.HeldItem);
+        Projectile.direction = Player.direction;
+        Projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - Player.Center).SafeNormalize(default);
         UpdateStandardInfo(StandardInfo, StandardInfo.VertexStandard);
-        if (meleeSequence == null)//这里确保弹幕的执行序列加载到了
+        if (Player.DeadOrGhost)
         {
-            InitializeSequence(Mod.Name, Name);
-            meleeSequence.SetOwner(player);
-        }
-        if (player.DeadOrGhost)
-        {
-            currentData?.OnDeactive();
+            CurrentElement?.OnDeactive();
             Projectile.Kill();
         }
-        if (Projectile.timeLeft == 10) return;
 
-        //这里就是由弹幕检测玩家是否符合执行条件，符合就更新状态
-        if (meleeSequence.Groups.Count < 1) return;
-        bool flag1 = player.controlUseItem || player.controlUseTile || currentData == null;//首要-触发条件
-        if (player.GetModPlayer<SequencePlayer>().PendingForcedNext)
+        bool flag1 = Player.controlUseItem || Player.controlUseTile || CurrentElement == null;//首要-触发条件
+        if (Player.GetModPlayer<SequencePlayer>().PendingForcedNext)
         {
             flag1 = true;
-            player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
+            Player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
         }
-
-        bool flag2 = false;//次要-持续条件
-        if (currentData != null)
-        {
-            flag2 = currentData.counter < currentData.Cycle;//我还没完事呢
-            flag2 |= currentData.counter == currentData.Cycle && currentData.timer >= 0;//最后一次
-                                                                                        //flag2 &= !meleeSequence.currentWrapper.finished;//如果当前打包器完工了就给我停下
-                                                                                        //Main.NewText(currentData.Cycle);
-            int prev = currentData.timer;
-        }
-        if (
-           flag1 || flag2// 
-            )
-        {
-            if (flag1 || (currentData.counter < currentData.Cycle || currentData.counter == currentData.Cycle && currentData.timer > 0) && !meleeSequence.currentWrapper.finished)
-                Projectile.timeLeft = 2;
-
-            meleeSequence.Update(player, Projectile, StandardInfo, flag1);
-        }
-        if (currentData == null) return;
+        if (flag1)
+            SequenceModel.IsCompleted = false;
+        SequenceModel.Update();
+        if (CurrentElement == null) return;
+        if (!SequenceModel.IsCompleted || !IsLocalProj)
+            Projectile.timeLeft = 4;
         //依旧是常规赋值，但是要中间那段执行正常才应当执行
-        Projectile.Center = player.Center + currentData.offsetCenter + player.gfxOffY * Vector2.UnitY;
-        //if (prev != currentData.timer - 1) 
-        //{
-        //    player.itemAnimation = currentData.timer;
-        //    player.itemTime = currentData.timer;
-
-        //    //player.itemAnimationMax = currentData.timerMax;
-        //    //player.itemTimeMax = currentData.timerMax;
-        //}
-        if (player.itemAnimation < 2)
-            player.itemAnimation = 2;
-        if (player.itemTime < 2)
-            player.itemTime = 2;
+        Projectile.Center = Player.Center + CurrentElement.offsetCenter + Player.gfxOffY * Vector2.UnitY;
+        if (Player.itemAnimation < 2)
+            Player.itemAnimation = 2;
+        if (Player.itemTime < 2)
+            Player.itemTime = 2;
         base.AI();
     }
 
-    public override void OnKill(int timeLeft) =>
-        meleeSequence?.ResetCounter();
 
     //还有这个是阻止弹幕自行更新位置的，因为我们会在核心逻辑那里写入弹幕的位置
     public override bool ShouldUpdatePosition() => false;

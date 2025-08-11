@@ -36,4 +36,7 @@
 	  <ProjectReference Include="..\PropertyPanel\PropertyPanelLibrary.csproj" />
 	  <ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="CodeLibrary\DataStructures\SequenceStructures\Core\BuiltInGroups\" />
+	</ItemGroup>
 </Project>

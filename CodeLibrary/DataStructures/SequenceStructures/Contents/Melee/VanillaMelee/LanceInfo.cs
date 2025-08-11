@@ -14,7 +14,7 @@ public class LanceInfo : VanillaMelee
     #region 重写函数
     public override void OnStartSingle()
     {
-        flip = Owner.direction != 1;
+        Flip = Owner.direction != 1;
         base.OnStartSingle();
     }
     public override void OnStartAttack()
@@ -23,7 +23,7 @@ public class LanceInfo : VanillaMelee
         {
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
         }
-        SoundEngine.PlaySound(standardInfo.soundStyle);
+        SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartAttack();
     }
     #endregion

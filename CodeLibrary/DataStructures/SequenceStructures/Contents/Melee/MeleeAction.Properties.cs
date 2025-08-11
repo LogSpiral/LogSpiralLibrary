@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using Terraria.Localization;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 // 以如下标准整理
@@ -17,7 +18,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 // 其中重写函数按如下顺序排序
 // Update -> Active -> Single -> Charge -> Attack -> Collide -> Draw -> Net(目前无效)
 // Start -> End
-public abstract partial class MeleeAction : ModType, ISequenceElement
+public abstract partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType, ILoadable
 {
     #region 参数属性
     //持续时间 角度 位移 修改数据
@@ -25,14 +26,12 @@ public abstract partial class MeleeAction : ModType, ISequenceElement
     /// 近战数据修改
     /// </summary>
     [ElementCustomData]
-    //[CustomSeqConfigItem(typeof(SeqActionModifyDataElement))]
     public ActionModifyData ModifyData { get; set; } = new ActionModifyData(1);
     /// <summary>
     /// 执行次数
     /// </summary>
     [ElementCustomData]
-    //[CustomSeqConfigItem(typeof(SeqIntInputElement))]
-    public virtual int Cycle { get; set; } = 1;
+    public virtual int CounterMax { get; set; } = 1;
     #endregion
 
     #region 逻辑属性
@@ -44,21 +43,27 @@ public abstract partial class MeleeAction : ModType, ISequenceElement
     /// 扁平程度？
     /// </summary>
     public float KValue { get; set; } = 1f;
-    public int counter { get; set; }
-    public float fTimer;
-    public int timer
+    public int Counter { get; set; }
+    protected float fTimer;
+    public int Timer
     {
         get => (int)fTimer; set => fTimer = value;
     }
-    public int timerMax { get; set; }
-    public bool flip { get; set; }
+    public int TimerMax { get; set; }
+
+    /// <summary>
+    /// 当前武器视觉上是否翻转
+    /// </summary>
+    public bool Flip { get; set; }
+
+    bool ISequenceElement.IsCompleted => Timer == 0 && Counter == CounterMax;
     #endregion
 
     #region 重写属性
     /// <summary>
     /// 当前周期的进度
     /// </summary>
-    public virtual float Factor => fTimer / timerMax;
+    public virtual float Factor => fTimer / TimerMax;
     //public virtual float Factor => timer / (float)timerMax;
     /// <summary>
     /// 中心偏移量，默认零向量
@@ -92,9 +97,21 @@ public abstract partial class MeleeAction : ModType, ISequenceElement
     #endregion
 
     #region 辅助属性
+    /// <summary>
+    /// 当前元素所属的实体
+    /// <br>目前只支持<see cref="Player"/></br>
+    /// </summary>
     public Entity Owner { get; set; }
+
+    /// <summary>
+    /// 当前元素代理的弹幕对象
+    /// </summary>
     public Projectile Projectile { get; set; }
-    public StandardInfo standardInfo { get; set; }
+
+    /// <summary>
+    /// 标准信息
+    /// </summary>
+    public StandardInfo StandardInfo { get; set; }
     public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.actionOffsetDamage * offsetDamage) : Projectile.damage;
     public string LocalizationCategory => nameof(MeleeAction);
     public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);

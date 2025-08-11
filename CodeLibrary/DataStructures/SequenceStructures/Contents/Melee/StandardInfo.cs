@@ -1,6 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using Terraria.Audio;
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 /// <summary>
 /// 不同物品有自己独有的标准值

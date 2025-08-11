@@ -1,7 +1,7 @@
 ﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 
 // 这个文件用于实现各种游戏实质性内容
-public partial class SequencePlayer : ModPlayer
+public class SequencePlayer : ModPlayer
 {
     /// <summary>
     /// 挥砍等组件的缓存时间

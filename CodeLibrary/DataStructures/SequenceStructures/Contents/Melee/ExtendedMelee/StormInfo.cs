@@ -29,7 +29,7 @@ public class StormInfo : ExtendedMelee
 
     #region 重写属性
 
-    public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.TwoPi * angleRange, Factor) * (flip ? 1 : -1);
+    public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.TwoPi * angleRange, Factor) * (Flip ? 1 : -1);
 
     public override bool Attacktive => Math.Abs(Factor - 0.5f) < 0.45f;
     #endregion
@@ -46,13 +46,13 @@ public class StormInfo : ExtendedMelee
     {
         if (Main.netMode != NetmodeID.Server)
         {
-            var verS = standardInfo.VertexStandard;
+            var verS = StandardInfo.VertexStandard;
             var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler, Owner.Center, (0, 1));
-            u.negativeDir = flip;
+            u.negativeDir = Flip;
             u.rotation = Rotation;
             u.xScaler = KValue;
             (u.aniTexIndex, u.baseTexIndex) = verS.swooshTexIndex ?? (3, 7);
-            u.ApplyStdValueToVtxEffect(standardInfo);
+            u.ApplyStdValueToVtxEffect(StandardInfo);
         }
         SoundEngine.PlaySound(SoundID.DD2_BookStaffCast);
 
@@ -63,8 +63,8 @@ public class StormInfo : ExtendedMelee
         if (swoosh != null)
         {
             swoosh.timeLeft = (int)(swoosh.timeLeftMax * (1 - Math.Abs(0.5f - Factor) * 2));
-            swoosh.angleRange = (offsetRotation / MathHelper.Pi - 1f + .25f * (flip ? -1 : 1), offsetRotation / MathHelper.Pi + .25f * (flip ? -1 : 1));
-            if (flip)
+            swoosh.angleRange = (offsetRotation / MathHelper.Pi - 1f + .25f * (Flip ? -1 : 1), offsetRotation / MathHelper.Pi + .25f * (Flip ? -1 : 1));
+            if (Flip)
             {
                 swoosh.angleRange = (1 - swoosh.angleRange.to, 1 - swoosh.angleRange.from);
 
@@ -75,7 +75,7 @@ public class StormInfo : ExtendedMelee
     }
     public override void OnStartSingle()
     {
-        flip = Owner.direction == -1;
+        Flip = Owner.direction == -1;
         KValue = xScaler;
         base.OnStartSingle();
     }

@@ -26,14 +26,14 @@ public class ChargingInfo : ExtendedMelee
     #region 重写属性
     public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
     public override float offsetSize => base.offsetSize;
-    public override bool Attacktive => timer == 1;
+    public override bool Attacktive => Timer == 1;
     #endregion
 
     #region 重写函数
     public override void Update(bool triggered)
     {
-        standardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
-        flip = Owner.direction == 1;
+        StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
+        Flip = Owner.direction == 1;
         switch (Owner)
         {
             case Player player:
@@ -47,44 +47,44 @@ public class ChargingInfo : ExtendedMelee
 
         }
         base.Update(triggered);
-        if (timer > 0)
+        if (Timer > 0)
             for (int n = 0; n < 4; n++)
             {
                 Vector2 unit = (MathHelper.PiOver2 * n + 4 * Factor).ToRotationVector2();
-                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, standardInfo.standardColor, 2f);
+                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 2f);
 
-                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, standardInfo.standardColor, 1.5f);
+                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1.5f);
 
             }
-        if (timer == 1 && counter == Cycle)
+        if (Timer == 1 && Counter == CounterMax)
         {
-            timer = 0;
+            Timer = 0;
             SoundEngine.PlaySound(SoundID.Item84);
             for (int n = 0; n < 40; n++)
             {
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), standardInfo.standardColor, Main.rand.NextFloat(1, 4));
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), standardInfo.standardColor, Main.rand.NextFloat(1, 2));
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4));
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2));
 
             }
         }
-        if (!AutoNext && timer < 2 && counter == Cycle)
+        if (!AutoNext && Timer < 2 && Counter == CounterMax)
         {
 
             if (triggered)
-                timer++;
+                Timer++;
             else
                 switch (Owner)
                 {
                     case Player plr:
                         SequencePlayer mplr = plr.GetModPlayer<SequencePlayer>();
                         mplr.PendingForcedNext = true;
-                        timer = 0;
+                        Timer = 0;
                         break;
                 }
         }
-        if (!triggered && timer != 0)
+        if (!triggered && Timer != 0)
         {
-            timer = 0;
+            Timer = 0;
             SoundEngine.PlaySound(MySoundID.MagicStaff);
         }
     }

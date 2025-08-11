@@ -6,7 +6,6 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
 namespace LogSpiralLibrary.ForFun.TestBlade2
 {

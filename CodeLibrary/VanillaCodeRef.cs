@@ -18,7 +18,7 @@ static class VanillaCodeRef
             projectile.Kill();
             return;
         }
-
+        
         if (Main.myPlayer == projectile.owner && Main.mapFullscreen)//打开大地图时消失
         {
             projectile.Kill();

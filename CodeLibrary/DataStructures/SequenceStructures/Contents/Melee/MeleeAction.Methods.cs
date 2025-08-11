@@ -2,8 +2,11 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Terraria;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
@@ -16,13 +19,56 @@ partial class MeleeAction
         var dummy = ModTypeLookup<MeleeAction>.dict.Values.FirstOrDefault(element => element.GetType() == type);
         if (dummy != null)
             Mod = dummy.Mod;
-        else if (SequenceManager<MeleeAction>.loaded)
-            LogSpiralLibraryMod.Instance.Logger.Error($"Instance of the element:{type.FullName} not found.");
+        //else if (SequenceManager<MeleeAction>._loaded)
+        //    LogSpiralLibraryMod.Instance.Logger.Error($"Instance of the element:{type.FullName} not found.");
+    }
+
+    public void Update() 
+    {
+        if (Timer <= 0)//计时器小于等于0时
+        {
+            if (Counter < CounterMax || CounterMax == 0)//如果没执行完所有次数
+            {
+                // Owner = entity;
+                // Projectile = projectile; // 外部赋值
+                // standardInfo = standardInfo; // 外部赋值
+                if (Counter == 0)//标志着刚切换上
+                    OnActive();
+                else OnEndSingle();
+                OnStartSingle();
+                var result = (int)(StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax);
+                TimerMax = Timer = result;
+                Counter++;
+                if (Attacktive)
+                    OnStartAttack();
+            }
+            //迁移至下方
+            else
+            {
+                OnEndSingle();
+                OnDeactive();
+                OnEndAttack();
+            }
+        }
+
+        //bool oldValue = Attacktive;
+        //Attacktive = Attacktive;
+        //if (!oldValue && Attacktive)
+        //{
+        //    OnStartAttack();//TODO Attack相关钩子合理化挂载位置
+        //}
+        //if (oldValue && !Attacktive)
+        //{
+        //    OnEndAttack();
+        //}
+        if (Attacktive) OnAttack();
+        else OnCharge();
+        Update(false);
     }
 
     public virtual void Update(bool triggered)
     {
-        timer--;
+        Timer--;
         switch (Owner)
         {
             case Player player:
@@ -32,6 +78,10 @@ partial class MeleeAction
                     break;
                 }
         }
+    }
+
+    public virtual void Initialize() {
+        Counter = 0;
     }
 
     public virtual void OnActive()
@@ -136,16 +186,16 @@ partial class MeleeAction
         for (int n = 0; n < 5; n++)
         {
             fTimer = t + n * .2f;
-            Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
-            float finalRotation = offsetRotation + standardInfo.standardRotation;
+            Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
+            float finalRotation = offsetRotation + StandardInfo.standardRotation;
             Vector2 drawCen = offsetCenter + Owner.Center;
 
             float k = 1f;
-            if (standardInfo.VertexStandard.scaler > 0)
+            if (StandardInfo.VertexStandard.scaler > 0)
             {
-                k = standardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
+                k = StandardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
             }
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !flip);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !Flip);
 
             float point = 0f;
             //Vector2 tar = c[4].Position - drawCen;
@@ -163,7 +213,7 @@ partial class MeleeAction
 
     public virtual void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
-        Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 2, 1, 514);
+        Projectile.localNPCHitCooldown = Math.Clamp(TimerMax / 2, 1, 514);
         if (OnHitTargetDelegate != null && OnHitTargetDelegate.Key != SequenceSystem.NoneDelegateKey)
         {
             SequenceSystem.elementDelegates[OnHitTargetDelegate.Key].Invoke(this);
@@ -174,8 +224,8 @@ partial class MeleeAction
         if (Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake < 4f)
             Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake += delta;//
 
-        for (int n = 0; n < 30 * delta * (standardInfo.dustAmount + .2f); n++)
-            MiscMethods.FastDust(victim.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(Main.rand.NextFloat(0, 8), 16), standardInfo.standardColor);
+        for (int n = 0; n < 30 * delta * (StandardInfo.dustAmount + .2f); n++)
+            MiscMethods.FastDust(victim.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(Main.rand.NextFloat(0, 8), 16), StandardInfo.standardColor);
 
 
     }
@@ -186,7 +236,7 @@ partial class MeleeAction
     public Vector2 targetedVector;
     public virtual CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
-        Vector2 finalOrigin = offsetOrigin + standardInfo.standardOrigin;
+        Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
         //float finalRotation = offsetRotation + standardInfo.standardRotation;
         Vector2 drawCen = offsetCenter + Owner.Center;
         float sc = 1;
@@ -195,7 +245,7 @@ partial class MeleeAction
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
             drawCen += plr.gfxOffY * Vector2.UnitY;
         }
-        return DrawingMethods.GetItemVertexes(finalOrigin, standardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, flip, alpha, standardInfo.frame);
+        return DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, Flip, alpha, StandardInfo.frame);
     }
 
     public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
@@ -229,9 +279,9 @@ partial class MeleeAction
         ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f % 1);
         ItemEffect.Parameters["uItemColor"].SetValue(Lighting.GetColor((Owner.Center + offsetCenter).ToTileCoordinates()).ToVector4());
         ItemEffect.Parameters["uItemGlowColor"].SetValue(Vector4.One);
-        if (standardInfo.frame != null)
+        if (StandardInfo.frame != null)
         {
-            Rectangle frame = standardInfo.frame.Value;
+            Rectangle frame = StandardInfo.frame.Value;
             Vector2 size = texture.Size();
             ItemEffect.Parameters["uItemFrame"].SetValue(new Vector4(frame.TopLeft() / size, frame.Width / size.X, frame.Height / size.Y));
         }
@@ -240,13 +290,13 @@ partial class MeleeAction
         Main.graphics.GraphicsDevice.Textures[0] = texture;
         Main.graphics.GraphicsDevice.Textures[1] = LogSpiralLibraryMod.Misc[0].Value;
         Main.graphics.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.BaseTex[15].Value;
-        Main.graphics.GraphicsDevice.Textures[3] = standardInfo.standardGlowTexture;
+        Main.graphics.GraphicsDevice.Textures[3] = StandardInfo.standardGlowTexture;
         Main.graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
         Main.graphics.GraphicsDevice.SamplerStates[1] = sampler;
         Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
         Main.graphics.GraphicsDevice.SamplerStates[3] = sampler;
         ItemEffect.CurrentTechnique.Passes[0].Apply();
-        for (int n = 0; n < c.Length; n++) c[n].Color = standardInfo.standardColor * standardInfo.extraLight;
+        for (int n = 0; n < c.Length; n++) c[n].Color = StandardInfo.standardColor * StandardInfo.extraLight;
         Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, c, 0, c.Length / 3);
         Main.graphics.GraphicsDevice.RasterizerState = originalState;
         Main.spriteBatch.End();
@@ -273,6 +323,7 @@ partial class MeleeAction
         ModTypeLookup<MeleeAction>.Register(this);
         Language.GetOrRegister(this.GetLocalizationKey("DisplayName"), () => GetType().Name);
         var type = GetType();
+        SequenceGlobalManager.ElementTypeLookup[FullName] = type;
         foreach (var fld in type.GetFields())
         {
             if (type != fld.DeclaringType || fld.GetCustomAttribute<ElementCustomDataAttribute>() == null || fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)

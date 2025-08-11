@@ -20,30 +20,30 @@ partial class MeleeAction
 
     #region 参数字段
     [ElementCustomData]
-    public SeqDelegateDefinition OnEndAttackDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnEndAttackDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnStartAttackDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnStartAttackDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnAttackDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnAttackDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnChargeDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnChargeDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnActiveDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnActiveDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnDeactiveDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnDeactiveDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnEndSingleDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnEndSingleDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnStartSingleDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnStartSingleDelegate { get; set; } = new SequenceDelegateDefinition();
 
     [ElementCustomData]
-    public SeqDelegateDefinition OnHitTargetDelegate { get; set; } = new SeqDelegateDefinition();
+    public SequenceDelegateDefinition OnHitTargetDelegate { get; set; } = new SequenceDelegateDefinition();
     #endregion
 }

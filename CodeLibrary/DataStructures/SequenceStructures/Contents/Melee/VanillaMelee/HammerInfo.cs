@@ -20,7 +20,7 @@ public class HammerInfo : VanillaMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        timer--;
+        Timer--;
         if ((int)LogSpiralLibraryMod.ModTime2 % 6 == 0)
             SoundEngine.PlaySound(MySoundID.BoomerangRotating, Owner?.Center);
     }

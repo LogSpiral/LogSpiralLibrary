@@ -315,7 +315,7 @@ Configs: {
 			Tooltip: _
 		}
 
-		Cycle: {
+		CounterMax: {
 			Label: 执行次数
 			Tooltip: _
 		}

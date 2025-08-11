@@ -1,7 +1,7 @@
 displayName = 错数前置库~LogSpiral's Library
 author = 错数螺线Log_Spiral
-version = 0.1.4.0
+version = 0.2.0.0
 homepage = https://github.com/LogSpiral
 includeSource = true
-modReferences = SilkyUIFramework
+modReferences = SilkyUIFramework, PropertyPanelLibrary
 dllReferences = NetSimplified

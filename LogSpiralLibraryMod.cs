@@ -6,24 +6,12 @@ global using Terraria;
 global using Terraria.ID;
 global using Terraria.DataStructures;
 global using Terraria.GameContent;
-global using MeleeSequence = LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Sequence<LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.MeleeAction>;
 using Terraria.ModLoader.Config;
 using System.ComponentModel;
 using System.IO;
 using NetSimplified;
 using Terraria.ModLoader.UI;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
-using Terraria.ModLoader.Core;
-using Terraria.Localization;
-using static Terraria.Localization.NetworkText;
-using System.Text.RegularExpressions;
-using System.Text;
-using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
-using Hjson;
-using Newtonsoft.Json.Linq;
-using Terraria.Audio;
 namespace LogSpiralLibrary;
 
 

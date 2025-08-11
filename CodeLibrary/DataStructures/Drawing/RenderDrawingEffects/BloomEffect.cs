@@ -91,7 +91,7 @@ public class BloomEffect(float threshold, float intensity, float range, int coun
         var effect = LogSpiralLibraryMod.RenderEffect;
         effect.Parameters["threshold"].SetValue(Threshold);
         effect.Parameters["range"].SetValue(Range);
-        effect.Parameters["intensity"].SetValue(Intensity * 1.75f);
+        effect.Parameters["intensity"].SetValue(Intensity * .15f + 1);// * 1.75f
         effect.Parameters["uBloomAdditive"].SetValue(true);
 
         #endregion
@@ -300,7 +300,7 @@ public class BloomConfigs : IAvailabilityChangableConfig
     } = true;
 
     [JsonIgnore]
-    public BloomEffect EffectInstance => !Available ? new() : new BloomEffect(Threshold, Intensity * 1.125f, Range, Count, Additive, (byte)DownSampleLevel, UseModeMK);
+    public BloomEffect EffectInstance => !Available ? new() : new BloomEffect(Threshold, Intensity, Range, Count, Additive, (byte)DownSampleLevel, UseModeMK);
     // field ??= 
     public void CopyToInstance(BloomEffect effect)
     {

@@ -16,7 +16,7 @@ public class KnivesInfo : VanillaMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        timer--;
+        Timer--;
     }
 
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)

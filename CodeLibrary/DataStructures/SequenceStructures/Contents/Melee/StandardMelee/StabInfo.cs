@@ -45,9 +45,9 @@ public class StabInfo : LSLMelee
     {
         get
         {
-            float k = MathF.Sqrt(timerMax);
-            float max = timerMax;
-            float t = timer;
+            float k = MathF.Sqrt(TimerMax);
+            float max = TimerMax;
+            float t = Timer;
             if (t >= k)
             {
                 return MathHelper.SmoothStep(1, 1.125f, Utils.GetLerpValue(max, k, t, true));
@@ -64,25 +64,25 @@ public class StabInfo : LSLMelee
             return fac.CosFactor();
         }
     }
-    public override Vector2 offsetOrigin => new Vector2(Factor * .4f - .4f, 0).RotatedBy(standardInfo.standardRotation);
+    public override Vector2 offsetOrigin => new Vector2(Factor * .4f - .4f, 0).RotatedBy(StandardInfo.standardRotation);
     public override float offsetDamage => MathF.Pow(.75f, hitCounter);
-    public override bool Attacktive => timer <= MathF.Sqrt(timerMax);
+    public override bool Attacktive => Timer <= MathF.Sqrt(TimerMax);
     #endregion
 
     #region 辅助函数
     public UltraStab NewStab()
     {
-        var verS = standardInfo.VertexStandard;
+        var verS = StandardInfo.VertexStandard;
         if (verS.active)
         {
-            var pair = standardInfo.VertexStandard.stabTexIndex;
+            var pair = StandardInfo.VertexStandard.stabTexIndex;
             UltraStab u;
-            if (standardInfo.itemType == ItemID.TrueExcalibur)
+            if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
                 float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
-                u.negativeDir = flip;
+                u.negativeDir = Flip;
                 u.rotation = Rotation;
                 u.xScaler = KValue * 1.5f;
                 u.aniTexIndex = pair?.Item1 ?? 9;
@@ -91,13 +91,13 @@ public class StabInfo : LSLMelee
 
                 var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + Rotation.ToRotationVector2() * size * .2f);
                 su.heatMap = verS.heatMap;
-                su.negativeDir = !flip;
+                su.negativeDir = !Flip;
                 su.rotation = Rotation;
                 u.xScaler = KValue * 1.5f;
                 u.aniTexIndex = pair?.Item1 ?? 9;
                 u.baseTexIndex = pair?.Item2 ?? 0;
                 u.ColorVector = verS.colorVec;
-                su.ApplyStdValueToVtxEffect(standardInfo);
+                su.ApplyStdValueToVtxEffect(StandardInfo);
 
                 u.gather = !visualCentered;
 
@@ -108,7 +108,7 @@ public class StabInfo : LSLMelee
                 float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = verS.heatMap;
-                u.negativeDir = flip;
+                u.negativeDir = Flip;
                 u.rotation = Rotation;
                 u.xScaler = KValue * 1.5f;
                 u.aniTexIndex = pair?.Item1 ?? 9;
@@ -116,7 +116,7 @@ public class StabInfo : LSLMelee
                 u.ColorVector = verS.colorVec;
                 u.gather = !visualCentered;
             }
-            u.ApplyStdValueToVtxEffect(standardInfo);
+            u.ApplyStdValueToVtxEffect(StandardInfo);
             return u;
         }
         return null;
@@ -138,7 +138,7 @@ public class StabInfo : LSLMelee
         //    Projectile.netImportant = true;
         //}
 
-        flip ^= true;
+        Flip ^= true;
     }
     public override void OnEndSingle()
     {
@@ -147,17 +147,17 @@ public class StabInfo : LSLMelee
     }
     public override void OnStartAttack()
     {
-        SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
+        SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
         if (Owner is Player plr)
         {
             SequencePlayer seqPlr = plr.GetModPlayer<SequencePlayer>();
             int dmg = CurrentDamage;
-            if (standardInfo.standardShotCooldown > 0)
+            if (StandardInfo.standardShotCooldown > 0)
             {
-                float delta = standardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / Cycle;
+                float delta = StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax;
                 seqPlr.cachedTime += delta + 1;
-                int count = (int)(seqPlr.cachedTime / standardInfo.standardShotCooldown);
-                seqPlr.cachedTime -= count * standardInfo.standardShotCooldown;
+                int count = (int)(seqPlr.cachedTime / StandardInfo.standardShotCooldown);
+                seqPlr.cachedTime -= count * StandardInfo.standardShotCooldown;
                 if (count > 0)
                 {
                     count--;
@@ -185,7 +185,7 @@ public class StabInfo : LSLMelee
         }
         for (int n = 0; n < 30; n++)
         {
-            if (Main.rand.NextFloat(0, 1) < standardInfo.dustAmount)
+            if (Main.rand.NextFloat(0, 1) < StandardInfo.dustAmount)
                 for (int k = 0; k < 2; k++)
                 {
                     var flag = k == 0;
@@ -193,7 +193,7 @@ public class StabInfo : LSLMelee
                     var Center = Owner.Center + offsetCenter + targetedVector * .75f;
                     var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 + 
                     velocity *= 2;
-                    MiscMethods.FastDust(Center, velocity, standardInfo.standardColor);
+                    MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
 
                 }
         }
@@ -266,7 +266,7 @@ public class RapidlyStabInfo : StabInfo
 
     #region 重写属性
     [ElementCustomDataAbabdoned]
-    public override int Cycle { get => realCycle; set => givenCycle = value; }
+    public override int CounterMax { get => realCycle; set => givenCycle = value; }
     public int realCycle;
 
 

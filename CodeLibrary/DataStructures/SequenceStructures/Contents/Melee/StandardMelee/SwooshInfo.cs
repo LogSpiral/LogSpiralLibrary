@@ -65,7 +65,7 @@ public class SwooshInfo : LSLMelee
     {
         get
         {
-            float t = (timerMax - cutTime) * k;
+            float t = (TimerMax - cutTime) * k;
             return fTimer > t && fTimer < t + cutTime;
         }
     }
@@ -74,7 +74,7 @@ public class SwooshInfo : LSLMelee
     #region 辅助函数
     float TimeToAngle(float t)
     {
-        float max = timerMax;
+        float max = TimerMax;
         var fac = t / max;
         if (max > cutTime * 1.5f)
         {
@@ -91,14 +91,14 @@ public class SwooshInfo : LSLMelee
         else
             fac = MathHelper.SmoothStep(-.125f, 1.25f, fac);
 
-        fac = flip ? 1 - fac : fac;
+        fac = Flip ? 1 - fac : fac;
         float start = -.75f;
         float end = .625f;
         return MathHelper.Lerp(end, start, fac) * MathHelper.Pi;
     }
     public void NewSwoosh()
     {
-        var verS = standardInfo.VertexStandard;
+        var verS = StandardInfo.VertexStandard;
         if (verS.active)
         {
             swoosh = subSwoosh = null;
@@ -110,13 +110,13 @@ public class SwooshInfo : LSLMelee
             };
             bool f = mode switch
             {
-                SwooshMode.Chop => !flip,
-                _ => flip
+                SwooshMode.Chop => !Flip,
+                _ => Flip
             };
             float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
-            var pair = standardInfo.VertexStandard.swooshTexIndex;
+            var pair = StandardInfo.VertexStandard.swooshTexIndex;
             UltraSwoosh u;
-            if (standardInfo.itemType == ItemID.TrueExcalibur)
+            if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
                 var eVec = verS.colorVec with { Y = 0 };
                 if (eVec.X == 0 && eVec.Z == 0)
@@ -138,7 +138,7 @@ public class SwooshInfo : LSLMelee
                 su.aniTexIndex = pair?.Item1 ?? 3;
                 su.baseTexIndex = pair?.Item2 ?? 7;
                 su.ColorVector = eVec;
-                su.ApplyStdValueToVtxEffect(standardInfo);
+                su.ApplyStdValueToVtxEffect(StandardInfo);
                 su.heatRotation = 0;
             }
             else
@@ -153,7 +153,7 @@ public class SwooshInfo : LSLMelee
                 u.ColorVector = verS.colorVec;
             }
             swoosh = u;
-            u.ApplyStdValueToVtxEffect(standardInfo);
+            u.ApplyStdValueToVtxEffect(StandardInfo);
         }
         //return null;
     }
@@ -163,9 +163,9 @@ public class SwooshInfo : LSLMelee
             return;
         swoosh.center = Owner.Center;
         swoosh.rotation = Rotation;
-        swoosh.negativeDir = flip;
+        swoosh.negativeDir = Flip;
         swoosh.angleRange = range;
-        if (flip)
+        if (Flip)
             swoosh.angleRange = (swoosh.angleRange.from, -swoosh.angleRange.to);
         swoosh.timeLeft = (int)(MathHelper.Clamp(MathF.Abs(swoosh.angleRange.Item1 - swoosh.angleRange.Item2), 0, 1) * swoosh.timeLeftMax) + 1;
         if (swoosh.timeLeft < 2)
@@ -176,12 +176,12 @@ public class SwooshInfo : LSLMelee
     #region 重写函数
     public override void Update(bool triggered)
     {
-        if (timer > (timerMax - cutTime) * k)
+        if (Timer > (TimerMax - cutTime) * k)
         {
-            timer--;
+            Timer--;
             UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, offsetRotation / MathF.PI));
             UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, offsetRotation / MathF.PI));
-            timer++;
+            Timer++;
         }
         else
         {
@@ -194,13 +194,13 @@ public class SwooshInfo : LSLMelee
 
     public override void OnActive()
     {
-        flip = Owner.direction == -1;
+        Flip = Owner.direction == -1;
         base.OnActive();
     }
     public override void OnDeactive()
     {
         if (mode == SwooshMode.Slash)
-            flip ^= true;
+            Flip ^= true;
         base.OnDeactive();
     }
 
@@ -213,7 +213,7 @@ public class SwooshInfo : LSLMelee
             Rotation += Main.rand.NextFloat(0, randAngleRange) * Main.rand.Next([-1, 1]);
         KValue = minKValue + Main.rand.NextFloat(0, KValueRange);
         if (mode == SwooshMode.Slash)
-            flip ^= true;
+            Flip ^= true;
         NewSwoosh();
     }
     public override void OnEndSingle()
@@ -224,26 +224,26 @@ public class SwooshInfo : LSLMelee
 
     public override void OnStartAttack()
     {
-        SoundEngine.PlaySound((standardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1 }, Owner?.Center);
+        SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1 }, Owner?.Center);
         if (Owner is Player plr)
         {
             SequencePlayer seqPlayer = plr.GetModPlayer<SequencePlayer>();
 
             int dmg = CurrentDamage;
-            if (standardInfo.standardShotCooldown > 0)
+            if (StandardInfo.standardShotCooldown > 0)
             {
-                float delta = standardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / Cycle;
+                float delta = StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax;
                 bool canShoot = plr.HeldItem.shoot > ProjectileID.None;
 
-                float m = Math.Max(standardInfo.standardShotCooldown, delta);
+                float m = Math.Max(StandardInfo.standardShotCooldown, delta);
                 if (canShoot || seqPlayer.cachedTime < m)
                     seqPlayer.cachedTime += delta + 1;
                 if (seqPlayer.cachedTime > m)
                     seqPlayer.cachedTime = m;
-                int count = (int)(seqPlayer.cachedTime / standardInfo.standardShotCooldown);
+                int count = (int)(seqPlayer.cachedTime / StandardInfo.standardShotCooldown);
                 if (canShoot)
                 {
-                    seqPlayer.cachedTime -= standardInfo.standardShotCooldown * count;
+                    seqPlayer.cachedTime -= StandardInfo.standardShotCooldown * count;
                     if (count > 0)
                     {
                         count--;
@@ -290,11 +290,11 @@ public class SwooshInfo : LSLMelee
     }
     public override void OnAttack()
     {
-        for (int n = 0; n < 30 * (1 - Factor) * standardInfo.dustAmount; n++)
+        for (int n = 0; n < 30 * (1 - Factor) * StandardInfo.dustAmount; n++)
         {
             var Center = Owner.Center + offsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
-            var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
-            MiscMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, standardInfo.standardColor);
+            var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (Flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
+            MiscMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, StandardInfo.standardColor);
         }
         base.OnAttack();
     }

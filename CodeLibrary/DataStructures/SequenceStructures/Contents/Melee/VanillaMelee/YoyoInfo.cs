@@ -29,18 +29,18 @@ public class YoyoInfo : VanillaMelee
             Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
             _ => default
         };
-        if (!triggered) timer = 1;
-        if (timer > 10)
+        if (!triggered) Timer = 1;
+        if (Timer > 10)
             realCenter = Vector2.Lerp(realCenter, tarVec, 0.05f);
         else
         {
             realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.15f);
             if ((realCenter - Owner.Center).LengthSquared() < 256f)
-                timer = 1;
+                Timer = 1;
         }
         Rotation += 0.05f;
         if ((int)LogSpiralLibraryMod.ModTime2 % 4 == 0)
-            timer--;
+            Timer--;
     }
 
     public override void OnStartSingle()
@@ -48,7 +48,7 @@ public class YoyoInfo : VanillaMelee
         realCenter = Owner.Center;
         KValue = Main.rand.NextFloat(1, 2);
         Rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
-        SoundEngine.PlaySound(standardInfo.soundStyle);
+        SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartSingle();
     }
 

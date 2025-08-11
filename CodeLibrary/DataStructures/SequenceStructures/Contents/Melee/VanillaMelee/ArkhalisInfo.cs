@@ -12,30 +12,30 @@ public class ArkhalisInfo : VanillaMelee
 {
     #region 重写属性
     public override float Factor => base.Factor * 2 % 1;
-    public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.PiOver2;
+    public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.PiOver2;
     public override bool Attacktive => Factor < 0.85f;
     #endregion
 
     #region 重写函数
     public override void OnStartAttack()
     {
-        SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
+        SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
         if (Owner is Player plr)
         {
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
         }
-        flip ^= true;
-        var verS = standardInfo.VertexStandard;
+        Flip ^= true;
+        var verS = StandardInfo.VertexStandard;
         if (verS.active)
         {
             var range = (1.625f * Main.rand.NextFloat(.5f, 1.25f), -.75f);
-            bool f = flip;
+            bool f = Flip;
             float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
-            var pair = standardInfo.VertexStandard.swooshTexIndex;
+            var pair = StandardInfo.VertexStandard.swooshTexIndex;
             float randK = KValue * Main.rand.NextFloat(1f, 1.75f);
             float randR = Rotation + Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6) * Main.rand.NextFloat(0, 1);
             UltraSwoosh u;
-            if (standardInfo.itemType == ItemID.TrueExcalibur)
+            if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
                 var subSwoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center, range);
                 subSwoosh.heatMap = verS.heatMap;
@@ -53,10 +53,10 @@ public class ArkhalisInfo : VanillaMelee
                 u.aniTexIndex = pair?.Item1 ?? 3;
                 u.baseTexIndex = pair?.Item2 ?? 7;
                 u.ColorVector = verS.colorVec;
-                u.ApplyStdValueToVtxEffect(standardInfo);
+                u.ApplyStdValueToVtxEffect(StandardInfo);
                 u.heatRotation = 0;
 
-                subSwoosh.ApplyStdValueToVtxEffect(standardInfo);
+                subSwoosh.ApplyStdValueToVtxEffect(StandardInfo);
             }
             else
             {
@@ -69,7 +69,7 @@ public class ArkhalisInfo : VanillaMelee
                 u.baseTexIndex = pair?.Item2 ?? 7;
                 u.ColorVector = verS.colorVec;
             }
-            u.ApplyStdValueToVtxEffect(standardInfo);
+            u.ApplyStdValueToVtxEffect(StandardInfo);
             //return u;
         }
         base.OnStartAttack();

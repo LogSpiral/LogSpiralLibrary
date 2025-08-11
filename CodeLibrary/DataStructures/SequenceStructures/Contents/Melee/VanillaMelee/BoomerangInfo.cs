@@ -39,7 +39,7 @@ public class BoomerangInfo : VanillaMelee
         }
         if (back && offsetCenter.Length() >= 32f)
         {
-            timer = 2;
+            Timer = 2;
         }
         if ((int)LogSpiralLibraryMod.ModTime2 % 7 == 0)
             SoundEngine.PlaySound(MySoundID.BoomerangRotating);
@@ -55,7 +55,7 @@ public class BoomerangInfo : VanillaMelee
         //}
 
         realCenter += (realCenter - Owner.Center).SafeNormalize(default) * (Factor - 0.5f) * 144f;
-        timer--;
+        Timer--;
     }
 
     public override void OnStartSingle()

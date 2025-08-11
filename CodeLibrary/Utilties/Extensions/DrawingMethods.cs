@@ -4,10 +4,10 @@ using Terraria.UI;
 using static Terraria.Utils;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 /// <summary>
 /// <para>绘制辅助函数</para>

@@ -156,13 +156,14 @@ float4 PSFunction_BloomMK(float2 coords : TEXCOORD0) : COLOR0 //MasakiKawase
 	}
 	for (int i = -1; i <= 1; i += 1)
 	{
-		k = 0.5 / (abs(i) * 9 + 3) * intensity;
+		// k = 0.5 / (abs(i) * 2 + 2) * intensity;
+		k = 0.5 / (abs(i) * 4.5 + 1.5) * intensity;
 		for (int j = -1; j <= 1; j += 1)
 		{
 			float2 v = float2(i, j) * 2.0;
 			float4 _color = tex2D(uImage0, coords + v / screenScale * range);
 			float s = smoothstep(0, 1, (dot(_color.xyz, 0.333) - threshold + 0.05) / 0.1);
-			_color *= k / (abs(j) * 9 + 3);
+			_color *= k / (abs(j) * 4.5 + 1.5);
 			color = ColorBlend(color, _color);
 		}
 	}

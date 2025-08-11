@@ -16,13 +16,13 @@ public class ShortSwordInfo : VanillaMelee
     #region 重写函数
     public override void OnStartSingle()
     {
-        flip = Owner.direction != 1;
+        Flip = Owner.direction != 1;
         base.OnStartSingle();
     }
 
     public override void OnStartAttack()
     {
-        SoundEngine.PlaySound(standardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
+        SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
         if (Owner is Player plr)
         {
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);

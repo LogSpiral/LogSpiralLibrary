@@ -70,7 +70,7 @@ public class FlailInfo : VanillaMelee
                     if (triggered)
                     {
                         state = 3;
-                        timer = timerMax = timerMax * 10;
+                        Timer = TimerMax = TimerMax * 10;
                         assistTimer = 0;
                         break;
                     }
@@ -81,8 +81,8 @@ public class FlailInfo : VanillaMelee
                     if (assistTimer > 30 || offsetCenter.Length() > 512 || tile.HasTile && Main.tileSolid[tile.TileType])
                     {
                         state = 2;
-                        assistTimer = timerMax;
-                        timer = timerMax = 30;
+                        assistTimer = TimerMax;
+                        Timer = TimerMax = 30;
                     }
                     break;
                 }
@@ -92,21 +92,21 @@ public class FlailInfo : VanillaMelee
                     {
                         Vector2 pos = offsetCenter + Owner.position;
                         state = 3;
-                        timer = timerMax = assistTimer * 10;
+                        Timer = TimerMax = assistTimer * 10;
                         realPos = pos;
                         assistTimer = 0;
                         break;
                     }
-                    timer--;
+                    Timer--;
 
                     break;
                 }
             case 3:
                 {
-                    timer--;
-                    if (timer <= 10 || !triggered || offsetCenter.Length() > 512)
+                    Timer--;
+                    if (Timer <= 10 || !triggered || offsetCenter.Length() > 512)
                     {
-                        timer = timerMax = 10;
+                        Timer = TimerMax = 10;
                         state = 4;
                     }
                     var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16()) ;
@@ -129,7 +129,7 @@ public class FlailInfo : VanillaMelee
                 }
             case 4:
                 {
-                    timer--;
+                    Timer--;
                     break;
                 }
         }

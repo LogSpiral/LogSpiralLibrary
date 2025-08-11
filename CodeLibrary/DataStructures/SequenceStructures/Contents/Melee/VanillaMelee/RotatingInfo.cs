@@ -10,7 +10,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class RotatingInfo : VanillaMelee
 {
     #region 重写属性
-    public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (flip ? -1 : 1);
+    public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (Flip ? -1 : 1);
     public override Vector2 offsetOrigin => base.offsetOrigin;
     public override bool Attacktive => true;
     #endregion
@@ -18,12 +18,12 @@ public class RotatingInfo : VanillaMelee
     #region 重写函数
     public override void OnStartSingle()
     {
-        flip = Owner.direction != 1;
+        Flip = Owner.direction != 1;
         if (Owner is Player plr)
         {
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
         }
-        SoundEngine.PlaySound(standardInfo.soundStyle);
+        SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartSingle();
     }
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

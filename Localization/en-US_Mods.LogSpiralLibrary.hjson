@@ -299,7 +299,7 @@ Configs: {
 			Tooltip: _
 		}
 
-		Cycle: {
+		CounterMax: {
 			Label: Executions count
 			Tooltip: _
 		}

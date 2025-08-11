@@ -18,7 +18,7 @@ public class StarlightInfo : VanillaMelee
     #region 重写函数
     public override void OnStartSingle()
     {
-        flip = Owner.direction != 1;
+        Flip = Owner.direction != 1;
         if (Owner is Player plr)
         {
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
@@ -34,9 +34,9 @@ public class StarlightInfo : VanillaMelee
             _ => default
         };
         Rotation = (tarVec - Owner.Center).ToRotation();
-        if (timer % 3 == 0)
+        if (Timer % 3 == 0)
         {
-            SoundEngine.PlaySound((standardInfo.soundStyle ?? MySoundID.SwooshNormal_1) with { MaxInstances = -1 });
+            SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1) with { MaxInstances = -1 });
         }
         base.OnAttack();
     }
@@ -45,7 +45,7 @@ public class StarlightInfo : VanillaMelee
     {
         if (Attacktive)
         {
-            Projectile.localNPCHitCooldown = Math.Clamp(timerMax / 2, 1, 514);
+            Projectile.localNPCHitCooldown = Math.Clamp(TimerMax / 2, 1, 514);
             float point1 = 0f;
             return Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
                     targetedVector * 1.5f + Projectile.Center, 48f, ref point1);
@@ -59,7 +59,7 @@ public class StarlightInfo : VanillaMelee
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        spriteBatch.DrawStarLight(Rotation, Owner.Center, standardInfo.standardColor, ModifyData.actionOffsetSize * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
+        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.actionOffsetSize * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
     }
 
     //public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

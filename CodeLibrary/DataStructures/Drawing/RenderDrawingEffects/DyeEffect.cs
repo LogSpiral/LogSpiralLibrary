@@ -1,11 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.UIGenericConfig;
-using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader.Config;
 
@@ -83,7 +77,6 @@ public class DyeConfigs : IAvailabilityChangableConfig
     public bool Available { get; set; } = false;
 
     [CustomModConfigItem(typeof(DyeDefinitionElement))]
-    [CustomGenericConfigItem<GenericDyeDefinitionElement>]
     public ItemDefinition Dye
     {
         get;

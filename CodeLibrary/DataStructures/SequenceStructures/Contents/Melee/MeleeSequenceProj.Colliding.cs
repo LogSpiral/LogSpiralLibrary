@@ -6,12 +6,12 @@ partial class MeleeSequenceProj
 {
     public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
     {
-        if (currentData == null) return;
+        if (CurrentElement == null) return;
         //target.life = target.lifeMax;
-        var data = currentData.ModifyData;
-        modifiers.SourceDamage *= data.actionOffsetDamage * currentData.offsetDamage;
+        var data = CurrentElement.ModifyData;
+        modifiers.SourceDamage *= data.actionOffsetDamage * CurrentElement.offsetDamage;
         modifiers.Knockback *= data.actionOffsetKnockBack;
-        var _crit = player.GetWeaponCrit(player.HeldItem);
+        var _crit = Player.GetWeaponCrit(Player.HeldItem);
         _crit += data.actionOffsetCritAdder;
         _crit = (int)(_crit * data.actionOffsetCritMultiplyer);
         if (Main.rand.Next(100) < _crit)
@@ -22,29 +22,29 @@ partial class MeleeSequenceProj
         {
             modifiers.DisableCrit();
         }
-        target.immune[player.whoAmI] = 0;
+        target.immune[Player.whoAmI] = 0;
         base.ModifyHitNPC(target, ref modifiers);
     }
 
     public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers)
     {
-        if (currentData == null) return;
-        var data = currentData.ModifyData;
-        modifiers.SourceDamage *= data.actionOffsetDamage * currentData.offsetDamage;
+        if (CurrentElement == null) return;
+        var data = CurrentElement.ModifyData;
+        modifiers.SourceDamage *= data.actionOffsetDamage * CurrentElement.offsetDamage;
         modifiers.Knockback *= data.actionOffsetKnockBack;
         base.ModifyHitPlayer(target, ref modifiers);
     }
 
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
-        currentData?.OnHitEntity(target, hit.Damage, [hit, damageDone]);
+        CurrentElement?.OnHitEntity(target, hit.Damage, [hit, damageDone]);
 
         base.OnHitNPC(target, hit, damageDone);
     }
 
     public override void OnHitPlayer(Player target, Player.HurtInfo info)
     {
-        currentData?.OnHitEntity(target, info.Damage, [info]);
+        CurrentElement?.OnHitEntity(target, info.Damage, [info]);
         //player.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake = Main.rand.NextFloat(0.85f, 1.15f);
 
         base.OnHitPlayer(target, info);
@@ -52,11 +52,11 @@ partial class MeleeSequenceProj
 
     public override void CutTiles()
     {
-        if (currentData is null) return;
+        if (CurrentElement is null) return;
         DelegateMethods.tilecut_0 = TileCuttingContext.AttackProjectile;
         Utils.TileActionAttempt cut = new Utils.TileActionAttempt(DelegateMethods.CutTiles);
         Vector2 beamStartPos = Projectile.Center;
-        Vector2 beamEndPos = Projectile.Center + currentData.targetedVector;
+        Vector2 beamEndPos = Projectile.Center + CurrentElement.targetedVector;
         Utils.PlotTileLine(beamStartPos, beamEndPos, 16, cut);
         base.CutTiles();
     }

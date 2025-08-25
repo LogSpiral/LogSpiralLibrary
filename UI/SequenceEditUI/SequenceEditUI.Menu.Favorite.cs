@@ -8,10 +8,10 @@ public partial class SequenceEditUI
 {
     static HashSet<string> Favorites { get; } = [];
 
-    static void LoadFromFile() 
+    static void LoadFavoriteListFromFile() 
     {
         Favorites.Clear();
-        var favPath = Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory.ElementName, "Favorites.txt");
+        var favPath = Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory!.ElementName, "Favorites.txt");
         if (File.Exists(favPath)) 
         {
             var contents = File.ReadAllLines(favPath);
@@ -20,12 +20,10 @@ public partial class SequenceEditUI
         }
     }
 
-    static void SaveAsFile() 
+    static void SaveFavoriteListAsFile() 
     {
-        var favPath = Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory.ElementName, "Favorites.txt");
+        var favPath = Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory!.ElementName, "Favorites.txt");
         Directory.CreateDirectory(Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory.ElementName));
         File.WriteAllLines(favPath, Favorites);
     }
-
-
 }

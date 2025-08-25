@@ -25,11 +25,13 @@ public class InsertBasePanel : UIElementGroup
 
     #region Fixing
 
-    public Vector2 FixedPoint { get; set; }
+    private Vector2 FixedPoint { get; set; }
 
     public Vector2 FixPointOffset { get; set; }
 
 #nullable enable
+
+    public bool RecoverAfterFixing { get; set; } = true;
 
     /// <summary>
     /// 固定目标
@@ -39,15 +41,20 @@ public class InsertBasePanel : UIElementGroup
         get;
         set
         {
+
             if (PendingRecoverPositionRejected)
                 PendingRecoverPositionRejected = false;
-            else if (value == null && field != null)
+            else if (value == null && field != null && RecoverAfterFixing)
             {
                 RootElement.SetLeft(_origPosition.X);
                 RootElement.SetTop(_origPosition.Y);
             }
+            RecoverAfterFixing = true;
             if (value != null)
+            {
                 _origPosition = new(RootElement.Left.Pixels, RootElement.Top.Pixels);
+                FixedPoint = value.Bounds.Position;
+            }
 
             field = value;
         }
@@ -106,7 +113,7 @@ public class InsertBasePanel : UIElementGroup
     }
     public override void OnRightMouseClick(UIMouseEvent evt)
     {
-        if (evt.Source == this && RootElement != null) 
+        if (evt.Source == this && RootElement != null)
         {
             SoundEngine.PlaySound(SoundID.Chat);
             RootElement.SetLeft(Bounds.Width * .25f);

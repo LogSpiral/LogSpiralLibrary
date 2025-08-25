@@ -64,8 +64,6 @@ public class InsertablePanel : UIElementGroup
                     _pvMargin = value.Margin;
                     RecordCachedData();
                 }
-
-                BaseView.FixedPoint = Bounds.Position;
                 BaseView.FixedTarget = this;
             }
             else

@@ -1,10 +1,12 @@
 ﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+
 public abstract class MeleeVertexInfo : VertexDrawInfo
 {
     public float rotation;
     public float xScaler = 1f;
     public bool negativeDir;
     public bool gather = true;
+
     /// <summary>
     /// 用来左乘颜色矩阵的系数向量
     /// <br>x:方向渐变</br>
@@ -12,6 +14,7 @@ public abstract class MeleeVertexInfo : VertexDrawInfo
     /// <br>z:热度图</br>
     /// </summary>
     public Vector3 ColorVector;
+
     public bool normalize;
     public float alphaFactor = 2f;
     public float heatRotation;
@@ -39,6 +42,7 @@ public abstract class MeleeVertexInfo : VertexDrawInfo
         Main.graphics.GraphicsDevice.SamplerStates[2] = sampler;
         Main.graphics.GraphicsDevice.SamplerStates[3] = SamplerState.AnisotropicWrap;
     }
+
     public override void Draw(SpriteBatch spriteBatch)
     {
         Effect effect = LogSpiralLibraryMod.ShaderSwooshUL;

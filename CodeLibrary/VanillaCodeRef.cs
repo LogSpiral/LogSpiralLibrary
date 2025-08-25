@@ -1,13 +1,12 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
-using Terraria.ID;
 
 namespace LogSpiralLibrary.CodeLibrary;
 
 /// <summary>
 /// 这个类单纯存了些原版有的函数的注释解析之类，不会被调用到，不注释掉单纯是为了高亮看着舒服
 /// </summary>
-static class VanillaCodeRef
+internal static class VanillaCodeRef
 {
     //附录-原版链球ID详解
     public static void AI_015_Flails(this Projectile projectile)
@@ -18,7 +17,7 @@ static class VanillaCodeRef
             projectile.Kill();
             return;
         }
-        
+
         if (Main.myPlayer == projectile.owner && Main.mapFullscreen)//打开大地图时消失
         {
             projectile.Kill();
@@ -50,37 +49,42 @@ static class VanillaCodeRef
         int throwingTimeMaxForOldVersion = timeMax + 5;
         switch (projectile.type)
         {
-            case ProjectileID.Mace://链锤 
+            case ProjectileID.Mace://链锤
             case ProjectileID.FlamingMace://烧！
                 timeMax = 13;
                 throwingSpeed = 12f;
                 pickupRange = 8f;
                 pickupRange2 = 13f;
                 break;
+
             case ProjectileID.BallOHurt://链球 对的就是叫这个，腐化的
                 timeMax = 15;
                 throwingSpeed = 14f;
                 pickupRange = 10f;
                 pickupRange2 = 15f;
                 break;
+
             case ProjectileID.TheMeatball://肉丸(不是 猩红那边的链球
                 timeMax = 15;
                 throwingSpeed = 15f;
                 pickupRange = 11f;
                 pickupRange2 = 16f;
                 break;
+
             case ProjectileID.BlueMoon://贪玩蓝月
                 timeMax = 15;
                 throwingSpeed = 16f;
                 pickupRange = 12f;
                 pickupRange2 = 16f;
                 break;
+
             case ProjectileID.Sunfury://阳炎之怒
                 timeMax = 15;
                 throwingSpeed = 17f;
                 pickupRange = 14f;
                 pickupRange2 = 18f;
                 break;
+
             case ProjectileID.TheDaoofPow://你不准道观
                 timeMax = 13;
                 throwingSpeed = 21f;
@@ -88,6 +92,7 @@ static class VanillaCodeRef
                 pickupRange2 = 24f;
                 hitCoolDownRotating = 12;
                 break;
+
             case ProjectileID.DripplerFlail://血月滴滴怪链球
                 timeMax = 13;
                 throwingSpeed = 22f;
@@ -95,6 +100,7 @@ static class VanillaCodeRef
                 pickupRange2 = 26f;
                 hitCoolDownRotating = 12;
                 break;
+
             case ProjectileID.FlowerPow://花的力量！
                 timeMax = 13;
                 throwingSpeed = 23f;
@@ -383,14 +389,18 @@ static class VanillaCodeRef
     public static void AI_099_2(this Projectile projectile)
     {
         #region 检查是否为第二个
+
         bool flag = false;//或许是用来检查是不是第二个悠悠
         for (int i = 0; i < projectile.whoAmI; i++)
         {
             if (Main.projectile[i].active && Main.projectile[i].owner == projectile.owner && Main.projectile[i].type == projectile.type)
                 flag = true;
         }
-        #endregion
+
+        #endregion 检查是否为第二个
+
         #region 计时器
+
         if (projectile.owner == Main.myPlayer)
         {
             projectile.localAI[0] += 1f;
@@ -407,8 +417,11 @@ static class VanillaCodeRef
             if (num2 != -1f && num > num2)
                 projectile.ai[0] = -1f;//也许是收回的意思？
         }
-        #endregion
+
+        #endregion 计时器
+
         #region 泰拉球弹幕生成
+
         if (projectile.type == 603 && projectile.owner == Main.myPlayer)
         {
             projectile.localAI[1] += 1f;
@@ -448,8 +461,11 @@ static class VanillaCodeRef
                 projectile.localAI[1] = 0f;
             }
         }
-        #endregion
+
+        #endregion 泰拉球弹幕生成
+
         #region 玩家检测更新等
+
         bool flag2 = false;
         if (projectile.type >= 556 && projectile.type <= 561)
             flag2 = true;
@@ -480,13 +496,18 @@ static class VanillaCodeRef
             projectile.Kill();
 
         projectile.timeLeft = 6;
-        #endregion
+
+        #endregion 玩家检测更新等
+
         #region 基本参量
+
         float yoYoLength = ProjectileID.Sets.YoyosMaximumRange[projectile.type];
         float yoYoSpeed = ProjectileID.Sets.YoyosTopSpeed[projectile.type];
-        #endregion
+
+        #endregion 基本参量
 
         #region 火焰悠悠粒子生成
+
         if (projectile.type == 545)
         {
             if (Main.rand.NextBool(6))
@@ -501,8 +522,8 @@ static class VanillaCodeRef
             Main.dust[num12].noGravity = true;
             Main.dust[num12].scale = 1.6f;
         }
-        #endregion
 
+        #endregion 火焰悠悠粒子生成
 
         if (Main.player[projectile.owner].yoyoString)
             yoYoLength = yoYoLength * 1.25f + 30f;
@@ -650,7 +671,9 @@ static class VanillaCodeRef
                 }
             }
         }
+
         #region 收回
+
         else
         {
             num7 = (int)((double)num7 * 0.8);
@@ -669,12 +692,11 @@ static class VanillaCodeRef
                 projectile.velocity = (projectile.velocity * (num7 - 1f) + vector9) / num7;
             }
         }
-        #endregion
 
+        #endregion 收回
 
         projectile.rotation += 0.45f;
     }
-
 
     public static void AI_182_FinalFractal(this Projectile projectile)
     {
@@ -705,12 +727,8 @@ static class VanillaCodeRef
         Vector2 offset = new Vector2(1f, 0f).RotatedBy(theta, default) * new Vector2(longAxis, shortAxis * MathHelper.Lerp(2f, 1f, lerpValue));//插值生成椭圆轨迹
         Vector2 stdOffset = center + offset.RotatedBy(rotation, default);//加上弹幕自身旋转量
 
-
-
         Vector2 value3 = (1f - Utils.GetLerpValue(0f, 0.5f, factor, true)) *
             new Vector2((projectile.velocity.X > 0f ? 1 : -1) * -longAxis * 0.1f, -projectile.ai[0] * 0.3f);//坐标修改偏移量
-
-
 
         float finalRotation = theta + rotation;
         projectile.rotation = finalRotation + 1.57079637f;//弹幕绘制旋转量
@@ -724,7 +742,6 @@ static class VanillaCodeRef
         }
         projectile.Opacity = Utils.GetLerpValue(0f, 5f, projectile.localAI[0], true) * Utils.GetLerpValue(120f, 115f, projectile.localAI[0], true);//修改透明度
     }
-
 
     //原版泰拉棱镜或者血蝙蝠
     //这个函数除了处理一些基本更新逻辑，唯一的用处就是Think的入口
@@ -861,7 +878,6 @@ static class VanillaCodeRef
             }
             else if (isSword)
             {
-
                 //和蝙蝠的基本一致，多了个夹角的过渡
                 projectile.AI_GetMyGroupIndexAndFillBlackList(blacklist, out var index3, out var totalIndexesInGroup3);
                 projectile.AI_156_GetIdlePosition(index3, totalIndexesInGroup3, out var idleSpot3, out var idleRotation3);
@@ -950,10 +966,8 @@ static class VanillaCodeRef
                 projectile.netUpdate = true;
             }
         }
-
         else if (isSword)
         {
-
             bool skipBodyCheck = true;
             int mode = 0;
             int currentModeTimeMax = batTimerMax;
@@ -1083,6 +1097,7 @@ static class VanillaCodeRef
             }
         }
     }
+
     //进攻...?
     //不是哥们，怎么是清除一下本地的免疫无敌帧就走人了
     public static void AI_156_StartAttack(this Projectile projectile)

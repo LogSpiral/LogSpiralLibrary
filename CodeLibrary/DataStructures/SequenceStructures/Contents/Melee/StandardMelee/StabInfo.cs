@@ -13,10 +13,13 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class StabInfo : LSLMelee
 {
     #region 辅助字段
-    int hitCounter;
-    #endregion
+
+    private int hitCounter;
+
+    #endregion 辅助字段
 
     #region 参数字段
+
     [DefaultValue(1f)]
     [Range(0.2f, 5f)]
     [Increment(.2f)]
@@ -38,9 +41,11 @@ public class StabInfo : LSLMelee
     [Range(0, MathHelper.PiOver2)]
     [Increment(MathHelper.Pi / 24)]
     public float randAngleRange = MathHelper.Pi / 6;
-    #endregion
+
+    #endregion 参数字段
 
     #region 重写属性
+
     public override float Factor
     {
         get
@@ -56,7 +61,6 @@ public class StabInfo : LSLMelee
             {
                 //return MathHelper.SmoothStep(0, 1.125f, t / k);
                 return MathHelper.Hermite(0, -5, 1.125f, 0, t / k);
-
             }
             float fac = base.Factor;
             fac = 1 - fac;
@@ -64,12 +68,15 @@ public class StabInfo : LSLMelee
             return fac.CosFactor();
         }
     }
+
     public override Vector2 offsetOrigin => new Vector2(Factor * .4f - .4f, 0).RotatedBy(StandardInfo.standardRotation);
     public override float offsetDamage => MathF.Pow(.75f, hitCounter);
     public override bool Attacktive => Timer <= MathF.Sqrt(TimerMax);
-    #endregion
+
+    #endregion 重写属性
 
     #region 辅助函数
+
     public UltraStab NewStab()
     {
         var verS = StandardInfo.VertexStandard;
@@ -121,9 +128,11 @@ public class StabInfo : LSLMelee
         }
         return null;
     }
-    #endregion
+
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         base.OnStartSingle();
@@ -140,11 +149,13 @@ public class StabInfo : LSLMelee
 
         Flip ^= true;
     }
+
     public override void OnEndSingle()
     {
         hitCounter = 0;
         base.OnEndSingle();
     }
+
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
@@ -162,7 +173,6 @@ public class StabInfo : LSLMelee
                 {
                     count--;
                     ShootProjCall(plr, dmg);
-
                 }
                 Vector2 orig = plr.Center;
                 Vector2 unit = (Main.MouseWorld - orig).SafeNormalize(default) * 64;
@@ -172,7 +182,6 @@ public class StabInfo : LSLMelee
                     ShootProjCall(plr, dmg);
 
                     plr.Center = orig;
-
                 }
                 if (count > 0)
                     if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
@@ -191,43 +200,48 @@ public class StabInfo : LSLMelee
                     var flag = k == 0;
                     var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
                     var Center = Owner.Center + offsetCenter + targetedVector * .75f;
-                    var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 + 
+                    var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
                     velocity *= 2;
                     MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
-
                 }
         }
         base.OnStartAttack();
     }
+
     public override void OnEndAttack()
     {
         NewStab();
         //Projectile.NewProjectile(Owner.GetSource_FromThis(), Owner.Center, Rotation.ToRotationVector2() * 16, ProjectileID.TerraBeam, 100, 1, Owner.whoAmI);
         base.OnEndAttack();
     }
+
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
         hitCounter++;
         base.OnHitEntity(victim, damageDone, context);
     }
+
     public override void NetSend(BinaryWriter writer)
     {
         writer.Write(Rotation);
         writer.Write(KValue);
         base.NetSend(writer);
     }
+
     public override void NetReceive(BinaryReader reader)
     {
         Rotation = reader.ReadSingle();
         KValue = reader.ReadSingle();
         base.NetReceive(reader);
     }
-    #endregion
+
+    #endregion 重写函数
 }
 
 public class RapidlyStabInfo : StabInfo
 {
     #region 参数字段
+
     [ElementCustomData]
     [DefaultValue(-2)]
     [Range(-5, 5)]
@@ -240,15 +254,16 @@ public class RapidlyStabInfo : StabInfo
     [Slider]
     public int rangeOffsetMax = 1;
 
-
     [ElementCustomData]
     [Range(1, 10)]
     [DefaultValue(4)]
     [Slider]
     public int givenCycle = 4;
-    #endregion
+
+    #endregion 参数字段
 
     #region 辅助属性
+
     public (int min, int max) CycleOffsetRange
     {
         get => (rangeOffsetMin, rangeOffsetMax);
@@ -262,18 +277,20 @@ public class RapidlyStabInfo : StabInfo
         }
     }
 
-    #endregion
+    #endregion 辅助属性
 
     #region 重写属性
+
     [ElementCustomDataAbabdoned]
     public override int CounterMax { get => realCycle; set => givenCycle = value; }
+
     public int realCycle;
 
-
-    #endregion
+    #endregion 重写属性
 
     #region 辅助函数
-    void ResetCycle()
+
+    private void ResetCycle()
     {
         realCycle = Math.Clamp(rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
 
@@ -282,25 +299,29 @@ public class RapidlyStabInfo : StabInfo
         //    realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
         //    Projectile.netImportant = true;
         //}
-
     }
-    #endregion
+
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void OnActive()
     {
         ResetCycle();
         base.OnActive();
     }
+
     public override void NetSend(BinaryWriter writer)
     {
         writer.Write((byte)realCycle);
         base.NetSend(writer);
     }
+
     public override void NetReceive(BinaryReader reader)
     {
         realCycle = reader.ReadByte();
         base.NetReceive(reader);
     }
-    #endregion
+
+    #endregion 重写函数
 }

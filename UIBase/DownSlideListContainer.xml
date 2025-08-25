@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Body Class="LogSpiralLibrary.UIBase.DownSlideListContainer" Width="100%" FitHeight="true" BackgroundColor="rgba(0,0,0,0.1)" FlexDirection="Column" BorderRadius="16 0 0 16">
+	<ElementGroup Name="Title" Width="100%" FitHeight="true" BackgroundColor="rgba(0,0,0,0.2)" BorderRadius="16 0 0 0" OverflowHidden="true" Padding="0 0 36 0" />
+	<HR />
+	<ScrollViewAutoHideBar Name="List" Width="100%" >
+		<M.ScrollBar Height="-16px 100%"/>
+	</ScrollViewAutoHideBar>
+</Body>

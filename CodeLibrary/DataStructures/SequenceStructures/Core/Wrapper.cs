@@ -13,7 +13,15 @@ public partial class Wrapper
 
     public string? RefSequenceFullName { get; set; }
 
-    public bool Available => Sequence != null || Element != null;
+    public bool Available 
+    {
+        get 
+        {
+            if (RefSequenceFullName != null)
+                return !SequenceGlobalManager.UnloadSequences.Contains(RefSequenceFullName);
+            return Element != null || Sequence != null;
+        }
+    }
 
     public Wrapper(ISequence sequence)
     {
@@ -42,12 +50,14 @@ public partial class Wrapper
         foreach (var (key, value) in attributes)
             Attributes.Add(key, value);
     }
+
     public void WriteXml(XmlWriter writer, IReadOnlyDictionary<string, string> attributes)
     {
         writer.WriteStartElement(Sequence != null ? "Sequence" : "Element");
 
-        foreach (var (key, value) in attributes)
-            writer.WriteAttributeString(key, value);
+        if (attributes != null)
+            foreach (var (key, value) in attributes)
+                writer.WriteAttributeString(key, value);
 
         if (Sequence != null)
         {
@@ -63,5 +73,4 @@ public partial class Wrapper
 
         writer.WriteEndElement();
     }
-
 }

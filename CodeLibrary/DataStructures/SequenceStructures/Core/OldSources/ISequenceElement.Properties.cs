@@ -7,7 +7,6 @@
 
 //namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.OldSources;
 
-
 //partial interface ISequenceElement
 //{
 //    #region 参数属性

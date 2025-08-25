@@ -2,7 +2,7 @@
 
 public static class SpriteBatchDrawExtension
 {
-    public unsafe static void PushSprite(this SpriteBatch spriteBatch,
+    public static unsafe void PushSprite(this SpriteBatch spriteBatch,
 Texture2D texture,
 float sourceX,
 float sourceY,
@@ -128,6 +128,7 @@ byte effects
             spriteBatch.numSprites++;
         }
     }
+
     private static unsafe void GenerateVertexInfo(
  SpriteBatch.VertexPositionColorTexture4* sprite,
  float sourceX,
@@ -152,48 +153,48 @@ byte effects
     {
         float cornerX = -originX * destinationW;
         float cornerY = -originY * destinationH;
-        sprite->Position0.X = 
+        sprite->Position0.X =
             -rotationSin * cornerY +
             rotationCos * cornerX +
             destinationX
         ;
-        sprite->Position0.Y = 
+        sprite->Position0.Y =
             rotationCos * cornerY +
             rotationSin * cornerX +
             destinationY
         ;
         cornerX = (1.0f - originX) * destinationW;
         cornerY = -originY * destinationH;
-        sprite->Position1.X = 
+        sprite->Position1.X =
             -rotationSin * cornerY +
             rotationCos * cornerX +
             destinationX
         ;
-        sprite->Position1.Y = 
+        sprite->Position1.Y =
             rotationCos * cornerY +
             rotationSin * cornerX +
             destinationY
         ;
         cornerX = -originX * destinationW;
         cornerY = (1.0f - originY) * destinationH;
-        sprite->Position2.X = 
+        sprite->Position2.X =
             -rotationSin * cornerY +
             rotationCos * cornerX +
             destinationX
         ;
-        sprite->Position2.Y = 
+        sprite->Position2.Y =
             rotationCos * cornerY +
             rotationSin * cornerX +
             destinationY
         ;
         cornerX = (1.0f - originX) * destinationW;
         cornerY = (1.0f - originY) * destinationH;
-        sprite->Position3.X = 
+        sprite->Position3.X =
             -rotationSin * cornerY +
             rotationCos * cornerX +
             destinationX
         ;
-        sprite->Position3.Y = 
+        sprite->Position3.Y =
             rotationCos * cornerY +
             rotationSin * cornerX +
             destinationY
@@ -630,7 +631,7 @@ Vector2 position,
 //        }
 //        private static int get_numSprites(this SpriteBatch spriteBatch) => (int)numSpritesInfo.GetValue(spriteBatch);
 //        private static void set_numSprites(this SpriteBatch spriteBatch, int value) => numSpritesInfo.SetValue(spriteBatch, value);
-//        private static object[] get_vertexInfo(this SpriteBatch spriteBatch) 
+//        private static object[] get_vertexInfo(this SpriteBatch spriteBatch)
 //        {
 //            Array array = (Array)vertexInfoInfo.GetValue(spriteBatch);
 //            object[] result = new object[array.Length];

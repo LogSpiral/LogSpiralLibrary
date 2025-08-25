@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
 
-partial class ComplexPanelInfo
+public partial class ComplexPanelInfo
 {
     public static void DrawComplexPanel_Bound(List<DrawDataBuffer> drawDatas, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation)
     {
@@ -19,8 +15,8 @@ partial class ComplexPanelInfo
         {
             drawDatas.Add(new(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(336, 0, 192, 40), Color.White, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0));
         }
-
     }
+
     public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation)
     {
         int count = (int)(length / 192f) + 1;
@@ -32,8 +28,8 @@ partial class ComplexPanelInfo
         {
             spriteBatch.Draw(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(336, 0, 192, 40), Color.White, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0);
         }
-
     }
+
     public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation, Color glowLight)
     {
         int count = (int)(length / 192f) + 1;
@@ -47,6 +43,7 @@ partial class ComplexPanelInfo
             spriteBatch.Draw(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(530, 0, 192, 40), glowLight, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0);
         }
     }
+
     public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation, Color glowLight, float glowShakingStrength, float glowHueOffsetRange = .2f)
     {
         int count = (int)(length / 192f) + 1;
@@ -62,9 +59,9 @@ partial class ComplexPanelInfo
             else
                 for (int k = 0; k < 4; k++)
                     spriteBatch.Draw(texture, Vector2.Lerp(start, end, (n + .5f) / count) + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, Main.rand.NextFloat(4f * glowShakingStrength)), new Rectangle(530, 0, 192, 40), ModifyHueByRandom(glowLight, glowHueOffsetRange), rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0);
-
         }
     }
+
     public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation, Color glowLight, float glowShakingStrength, int count, float glowHueOffsetRange = .2f)
     {
         Vector2 start = rotation.ToRotationVector2() * length * .5f;
@@ -79,14 +76,15 @@ partial class ComplexPanelInfo
             else
                 for (int k = 0; k < 4; k++)
                     spriteBatch.Draw(texture, Vector2.Lerp(start, end, (n + .5f) / count) + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, Main.rand.NextFloat(4f * glowShakingStrength)), new Rectangle(530, 0, 192, 40), ModifyHueByRandom(glowLight, glowHueOffsetRange), rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0);
-
         }
     }
+
     public static void DrawComplexPanel_Bound(SpriteBatch spriteBatch, Texture2D texture, Vector2 center, float length, float widthScaler, float rotation, Color glowLight, float glowShakingStrength, int? count, float glowHueOffsetRange = .2f)
     {
         if (count == null) DrawComplexPanel_Bound(spriteBatch, texture, center, length, widthScaler, rotation, glowLight, glowShakingStrength, glowHueOffsetRange);
         else DrawComplexPanel_Bound(spriteBatch, texture, center, length, widthScaler, rotation, glowLight, glowShakingStrength, count.Value, glowHueOffsetRange);
     }
+
     /// <summary>
     /// 指定背景图
     /// </summary>
@@ -113,6 +111,7 @@ partial class ComplexPanelInfo
             }
         }
     }
+
     public static void DrawComplexPanel_BackGround(List<DrawDataBuffer> drawDatas, Texture2D texture, Rectangle destination, Rectangle frame, Vector2 size, Color color)
     {
         (float sizeX, float sizeY) = (size.X, size.Y);
@@ -130,6 +129,7 @@ partial class ComplexPanelInfo
             }
         }
     }
+
     /// <summary>
     /// 使用config材质
     /// </summary>
@@ -171,6 +171,7 @@ partial class ComplexPanelInfo
             }
         }
     }
+
     public static Color ModifyHueByRandom(Color color, float range)
     {
         var alpha = color.A;

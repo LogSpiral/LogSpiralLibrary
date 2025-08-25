@@ -12,10 +12,9 @@
 
 //namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.OldSources;
 
-
 //partial interface ISequenceElement
 //{
-//    void SaveAttribute(XmlWriter xmlWriter) 
+//    void SaveAttribute(XmlWriter xmlWriter)
 //    {
 //        var props = GetType().GetProperties();
 //        foreach (var prop in props)
@@ -59,7 +58,7 @@
 //            }
 //        }
 //    }
-//    void LoadAttribute(XmlReader xmlReader) 
+//    void LoadAttribute(XmlReader xmlReader)
 //    {
 //        //Cycle = int.Parse(xmlReader["Cycle"]);
 //        //ModifyData = ActionModifyData.LoadFromString(xmlReader["ModifyData"]);
@@ -94,10 +93,8 @@
 //        }
 //        foreach (var fld in type.GetFields())
 //        {
-
 //            if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
 //            {
-
 //                if (xmlReader[fld.Name] is string content && content.Length != 0)
 //                {
 //                    object dummy = fld.GetValue(this);

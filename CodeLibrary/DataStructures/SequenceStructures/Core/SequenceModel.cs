@@ -6,7 +6,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
 public class SequenceModel
 {
-    sealed class SequenceData(ISequence sequence)
+    private sealed class SequenceData(ISequence sequence)
     {
         public ISequence Sequence { get; init; } = sequence;
         public int Index { get; set; }
@@ -42,7 +42,7 @@ public class SequenceModel
                 {
                     if (SequenceStack.Count > 1)
                         SequenceStack.Pop();
-                    else 
+                    else
                     {
                         SequenceStack.Peek().Index = 0;
                         IsCompleted = true;
@@ -54,7 +54,7 @@ public class SequenceModel
             if (counter == 1000 && wrapper == null)
                 throw new Exception("Too Deep");
 
-            if (wrapper != null) 
+            if (wrapper != null)
             {
                 if (wrapper.Sequence != null)
                 {
@@ -64,7 +64,7 @@ public class SequenceModel
                 else if (wrapper.Element != null)
                 {
                     var oldElement = CurrentElement;
-                    var element = CurrentElement = wrapper.Element;
+                    var element = CurrentElement = wrapper.Element.CloneInstance();
                     OnElementChanged?.Invoke(this, new(oldElement, element));
                     OnInitializeElement?.Invoke(element);
                     element.Initialize();
@@ -73,10 +73,12 @@ public class SequenceModel
         }
         CurrentElement?.Update();
     }
+
     public event Action<ISequenceElement> OnInitializeElement;
+
     public event EventHandler<ValueChangedEventArgs<ISequenceElement>> OnElementChanged;
+
     public ISequenceElement CurrentElement { get; private set; }
 
     public bool IsCompleted { get; set; }
 }
-

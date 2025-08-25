@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 
 public static class ArrayMethods
@@ -10,17 +11,20 @@ public static class ArrayMethods
         l.ForEach(l1.Add);
         return l1;
     }
+
     public static void ForeachFunc<T>(this IEnumerable<T> array, Action<T> action)
     {
         foreach (var elem in array)
             action.Invoke(elem);
     }
+
     public static void ForeachFunc<T>(this IEnumerable<T> array, Action<T, int> action)
     {
         int counter = 0;
         foreach (var elem in array)
             action.Invoke(elem, counter++);
     }
+
     public static T[] CloneArray<T>(this T[] ts)
     {
         T[] myArray = new T[ts.Length];
@@ -28,6 +32,7 @@ public static class ArrayMethods
             myArray[n] = ts[n];
         return myArray;
     }
+
     public static void UpdateArray<T>(this T[] array, T newValue, T defaultValue, bool when = true)
     {
         int length = array.Length;
@@ -53,9 +58,9 @@ public static class ArrayMethods
                 }
                 array[0] = newValue;
             }
-
         }
     }
+
     public static void UpdateArray<T>(this T[] array, T newValue, bool when = true)
     {
         if (when)
@@ -67,6 +72,7 @@ public static class ArrayMethods
             array[0] = newValue;
         }
     }
+
     private static void InsertSort(float[] arr)
     {
         // 检查数据合法性
@@ -93,6 +99,7 @@ public static class ArrayMethods
             arr[j + 1] = tmp;
         }
     }
+
     public static void Reverse<T>(this T[] values)
     {
         var backup = values.CloneArray();
@@ -101,6 +108,7 @@ public static class ArrayMethods
             values[n] = backup[values.Length - n - 1];
         }
     }
+
     public static Vector2[] ClockwiseSorting(this Vector2[] vectors)
     {
         var result = new Vector2[vectors.Length];
@@ -134,6 +142,7 @@ public static class ArrayMethods
         }
         return result;
     }
+
     public static T[] DifferenceSet<T>(this T[] A, IEnumerable<T> B)
     {
         List<T> result = [];
@@ -147,10 +156,12 @@ public static class ArrayMethods
         }
         return [.. result];
     }
+
     public static T[] DelRepeatData<T>(this T[] array)
     {
         return [.. array.GroupBy(p => p).Select(p => p.Key)];
     }
+
     public static List<Vector2> CalcConvexHull(this List<Vector2> list)
     {
         List<Vector2> resPoint = [];
@@ -187,7 +198,6 @@ public static class ArrayMethods
 
                 double up2 = p2Vec.X * baseVec.X;
                 double down2 = Math.Sqrt(p2Vec.X * p2Vec.X + p2Vec.Y * p2Vec.Y);
-
 
                 double cosP1 = up1 / down1;
                 double cosP2 = up2 / down2;

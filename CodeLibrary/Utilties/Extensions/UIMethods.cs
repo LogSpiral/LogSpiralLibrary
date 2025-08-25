@@ -1,9 +1,12 @@
 ﻿using Terraria.UI;
 using static Terraria.Utils;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 public static class UIMethods
 {
     public static bool MouseInRound(Vector2 roundCenter, int radius) => Vector2.DistanceSquared(Main.MouseScreen, roundCenter) <= radius * radius;
+
     public static bool BelongToMe(this UIElement element, UIElement target)
     {
         if (element.GetHashCode() == target.GetHashCode()) return true;
@@ -17,6 +20,7 @@ public static class UIMethods
         }
         return false;
     }
+
     /// <summary>
     /// 绘制鼠标在某矩形下的悬浮字
     /// </summary>
@@ -38,7 +42,6 @@ public static class UIMethods
             Vector2 texPos = worldPos + new Vector2(-size.X * 0.5f, name.Length) - Main.screenPosition;
             DrawBorderStringFourWay(Main.spriteBatch, FontAssets.MouseText.Value, name, texPos.X, texPos.Y, color1, color2, Vector2.Zero);
         }
-
     }
 
     /// <summary>
@@ -61,12 +64,15 @@ public static class UIMethods
     }
 
     public static Vector2 MouseScreenUI => TransformToUIPosition(Main.MouseScreen);
+
     public static Vector2 GetSize(this UIElement uie) => uie.GetDimensions().ToRectangle().Size();
+
     public static UIElement SetSize(this UIElement uie, Vector2 size, float precentWidth = 0, float precentHeight = 0)
     {
         uie.SetSize(size.X, size.Y, precentWidth, precentHeight);
         return uie;
     }
+
     public static UIElement SetSize(this UIElement uie, float width, float height, float precentWidth = 0, float precentHeight = 0)
     {
         uie.Width.Set(width, precentWidth);

@@ -1,12 +1,13 @@
 ﻿namespace LogSpiralLibrary;
 
-partial class LogSpiralLibraryMod
+public partial class LogSpiralLibraryMod
 {
     public static BlendState AllOne { get; private set; }
     public static BlendState InverseColor { get; private set; }
     public static BlendState SoftAdditive { get; private set; }//from yiyang233
     public static BlendState NonPremultipliedFullAlpha { get; private set; }
-    static void InitializeBlendStates()
+
+    private static void InitializeBlendStates()
     {
         AllOne = new BlendState
         {

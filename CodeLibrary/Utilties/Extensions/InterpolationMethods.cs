@@ -21,6 +21,7 @@ public static class InterpolationMethods
         }
         return (MathF.Cos(MathHelper.Pi / 3 * value) + 1) * .5f;
     }
+
     /// <summary>
     /// 线性插值，我不知道为什么我还为这个写了个拓展函数
     /// </summary>
@@ -34,6 +35,7 @@ public static class InterpolationMethods
         if (clamp) t = MathHelper.Clamp(t, 0, 1);
         return (1 - t) * from + t * to;
     }
+
     /// <summary>
     /// 折线，以1为周期，0取到0，0.5时取到1
     /// </summary>
@@ -54,10 +56,12 @@ public static class InterpolationMethods
         var g = MathF.Sin(MathHelper.TwoPi * t) / MathHelper.TwoPi + t - .5f;
         return MathHelper.Lerp(f, g, Math.Abs(f - g) * 2);
     }
+
     public static float SmoothSymmetricFactor(this float value, float whenGetMax)
     {
         return MathHelper.SmoothStep(0, 1, value.SymmetricalFactor(0.5f, whenGetMax));
     }
+
     /// <summary>
     /// 阿汪超喜欢用的插值函数，获得一个先上后下的插值
     /// </summary>
@@ -75,13 +79,14 @@ public static class InterpolationMethods
     /// 阿汪超喜欢用的插值函数，获得一个先上后下的插值
     /// </summary>
     /// <param name="value">丢进去的变量，取值范围一般是[0,2*center]</param>
-		/// <param name="center">中间值，或者说最大值点</param>
-		/// <param name="whenGetMax">决定丢进去的值为多少时第一次达到最大值(1)，一般取(0,center]</param>
-		/// <returns>自己画函数图像去，不是三角形就是梯形(</returns>
+    /// <param name="center">中间值，或者说最大值点</param>
+    /// <param name="whenGetMax">决定丢进去的值为多少时第一次达到最大值(1)，一般取(0,center]</param>
+    /// <returns>自己画函数图像去，不是三角形就是梯形(</returns>
     public static float SymmetricalFactor(this float value, float center, float whenGetMax)
     {
         return MathHelper.Clamp((center - Math.Abs(center - value)) / whenGetMax, 0, 1);
     }
+
     /// <summary>
     /// 阿汪超喜欢用的插值函数，获得一个先迅速增加再慢慢变小的插值
     /// </summary>
@@ -89,10 +94,12 @@ public static class InterpolationMethods
     /// <param name="maxTimeWhen">什么时候插值结束呢</param>
     /// <returns>自己画函数图像去，真的像是一个小山丘一样(</returns>
     public static float HillFactor2(this float value, float maxTimeWhen = 1) => MathF.Sqrt(value / maxTimeWhen).CosFactor(1);
+
     public static float CosFactor(this float value, float maxTimeWhen = 1)
     {
         return (1 - (float)Math.Cos(MathHelper.TwoPi * value / maxTimeWhen)) * 0.5f;
     }
+
     /// <summary>
     /// 阿汪超喜欢用的插值函数，获得一个先迅速增加再慢慢变小的插值
     /// </summary>
@@ -104,6 +111,7 @@ public static class InterpolationMethods
         //return Clamp((center - Math.Abs(center - value)) / center / whenGetMax, 0, 1);
         return (float)Math.Sin(MathHelper.Pi * Math.Sqrt(value / maxTimeWhen));
     }
+
     #region 数组插值
 
     public static float ArrayLerp(this float factor, params float[] values)
@@ -123,6 +131,7 @@ public static class InterpolationMethods
             return MathHelper.Lerp(values[tier], values[tier + 1], c * factor % 1);
         }
     }
+
     public static Vector2 ArrayLerp(this float factor, params Vector2[] values)
     {
         if (factor <= 0)
@@ -140,6 +149,7 @@ public static class InterpolationMethods
             return Vector2.Lerp(values[tier], values[tier + 1], c * factor % 1);
         }
     }
+
     public static Vector4 ArrayLerp(this float factor, params Vector4[] values)
     {
         if (factor <= 0)
@@ -157,6 +167,7 @@ public static class InterpolationMethods
             return Vector4.Lerp(values[tier], values[tier + 1], c * factor % 1);
         }
     }
+
     public static Color ArrayLerp(this float factor, params Color[] values)
     {
         if (factor <= 0)
@@ -188,6 +199,7 @@ public static class InterpolationMethods
             return MathHelper.Lerp(values[tier], values[tier + 1 == c ? 0 : tier + 1], c * factor % 1);
         }
     }
+
     public static Vector2 ArrayLerp_Loop(this float factor, params Vector2[] values)
     {
         if (factor <= 0 || factor >= 1)
@@ -201,6 +213,7 @@ public static class InterpolationMethods
             return Vector2.Lerp(values[tier], values[tier + 1 == c ? 0 : tier + 1], c * factor % 1);
         }
     }
+
     public static Vector4 ArrayLerp_Loop(this float factor, params Vector4[] values)
     {
         if (factor <= 0 || factor >= 1)
@@ -214,5 +227,6 @@ public static class InterpolationMethods
             return Vector4.Lerp(values[tier], values[tier + 1 == c ? 0 : tier + 1], c * factor % 1);
         }
     }
-    #endregion
+
+    #endregion 数组插值
 }

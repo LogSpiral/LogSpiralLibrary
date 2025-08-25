@@ -1,13 +1,11 @@
-using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Localization;
-using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.Config.UI;
 using Terraria.UI;
+
 namespace LogSpiralLibrary;// 复制到你的项目中之后记得右键解决方案资源管理器中的项目然后同步命名空间
 
 //该文件给其它模组开发者提供配置中心的跨模组支持，具体参数信息参阅Readme.md的跨模组支持部分
@@ -45,7 +43,7 @@ Func<Texture2D> getIconTexture = null, Func<string> getLabel = null, Func<string
         RegisterCategory(qot, target, list, itemIconID, getIconTexture, getLabel, getTooltip);
     }
 
-    #endregion
+    #endregion 注册分类表系列
 
     /// <summary>
     /// 设置 “关于” 页面

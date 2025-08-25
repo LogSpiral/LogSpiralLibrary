@@ -9,11 +9,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class ShortSwordInfo : VanillaMelee
 {
     #region 重写属性
+
     public override Vector2 offsetOrigin => Vector2.SmoothStep(new Vector2(-0.15f, 0.15f), -new Vector2(-0.15f, 0.15f), 1 - (1 - Factor) * (1 - Factor));
     public override bool Attacktive => Factor <= 0.5f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
@@ -29,5 +32,6 @@ public class ShortSwordInfo : VanillaMelee
         }
         base.OnStartAttack();
     }
-    #endregion
+
+    #endregion 重写函数
 }

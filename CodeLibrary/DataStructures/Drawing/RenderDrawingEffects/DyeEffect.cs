@@ -7,12 +7,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffec
 
 public class DyeEffect(int dyeType = 0) : IRenderEffect
 {
-
     #region 参数属性
 
     public int Type { get; set; } = dyeType;
 
-    #endregion
+    #endregion 参数属性
 
     #region 接口实现
 
@@ -22,19 +21,18 @@ public class DyeEffect(int dyeType = 0) : IRenderEffect
 
     public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
-
         #region 准备状态
 
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-        #endregion
+        #endregion 准备状态
 
         #region 切换绘制目标至备用画布
 
         graphicsDevice.SetRenderTarget(assistRender);
         graphicsDevice.Clear(Color.Transparent);
 
-        #endregion
+        #endregion 切换绘制目标至备用画布
 
         #region 设置参数
 
@@ -50,7 +48,7 @@ public class DyeEffect(int dyeType = 0) : IRenderEffect
             shaderData.Apply();
         }
 
-        #endregion
+        #endregion 设置参数
 
         #region 绘制内容
 
@@ -58,18 +56,16 @@ public class DyeEffect(int dyeType = 0) : IRenderEffect
 
         Utils.Swap(ref contentRender, ref assistRender);
 
-        #endregion
+        #endregion 绘制内容
 
         #region 恢复状态
 
         spriteBatch.End();
 
-        #endregion
-
+        #endregion 恢复状态
     }
 
-    #endregion
-
+    #endregion 接口实现
 }
 
 public class DyeConfigs : IAvailabilityChangableConfig
@@ -85,7 +81,8 @@ public class DyeConfigs : IAvailabilityChangableConfig
 
     [JsonIgnore]
     public DyeEffect EffectInstance => !Available ? new(0) : new DyeEffect(Dye.Type);
-    //  field ??= 
+
+    //  field ??=
 
     public void CopyToInstance(DyeEffect effect) => effect.Type = Available ? Dye.Type : 0;
 }

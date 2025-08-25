@@ -4,13 +4,17 @@ public interface IChannelProj
 {
     bool Charging { get; }
     bool Charged { get; }
+
     void OnCharging(bool left, bool right);
+
     void OnRelease(bool charged, bool left);
 }
+
 public interface IHammerProj
 {
     //string HammerName { get; }
     Vector2 CollidingSize { get; }
+
     Vector2 CollidingCenter { get; }
     Vector2 DrawOrigin { get; }
     Texture2D projTex { get; }

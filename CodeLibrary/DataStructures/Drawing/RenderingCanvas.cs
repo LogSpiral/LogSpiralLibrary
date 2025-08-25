@@ -1,11 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
-using ReLogic.Content;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 
@@ -13,17 +9,17 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
 {
     #region 常量
 
-    const int TIMELEFT = 180;
+    private const int TIMELEFT = 180;
 
-    #endregion
+    #endregion 常量
 
     #region 字段/属性
 
-    int _timeLeft = TIMELEFT;
+    private int _timeLeft = TIMELEFT;
 
-    IRenderEffect[][] _renderEffects = [];
+    private IRenderEffect[][] _renderEffects = [];
 
-    readonly Dictionary<Type, HashSet<IRenderDrawingContent>> _renderDrawingContents = [];
+    private readonly Dictionary<Type, HashSet<IRenderDrawingContent>> _renderDrawingContents = [];
 
     public bool IsUILayer { get; init; }
 
@@ -47,7 +43,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
         }
     }
 
-    HashSet<HashSet<IRenderEffect>> ActiveRenderEffects
+    private HashSet<HashSet<IRenderEffect>> ActiveRenderEffects
     {
         get
         {
@@ -67,15 +63,16 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
 
     public IReadOnlyDictionary<Type, HashSet<IRenderDrawingContent>> RenderDrawingContents => _renderDrawingContents;
 
-    #endregion
+    #endregion 字段/属性
 
     #region 构造函数
 
-    public RenderingCanvas() { }
+    public RenderingCanvas()
+    { }
 
     public RenderingCanvas(IRenderEffect[][] renderEffects) => _renderEffects = renderEffects;
 
-    #endregion
+    #endregion 构造函数
 
     /// <summary>
     /// 遍历各类型绘制对象并更新那些需要更新的
@@ -110,7 +107,6 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
         }
         foreach (var pendings in pendingRemoveSets)
             _renderDrawingContents.Remove(pendings);
-
     }
 
     /// <summary>
@@ -138,13 +134,13 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
         _timeLeft = TIMELEFT;
     }
 
-    static void CanvasPreDraw(bool isUILayer)
+    private static void CanvasPreDraw(bool isUILayer)
     {
         if (isUILayer)
             LogSpiralLibraryMod.ShaderSwooshUL.Parameters["uTransform"].SetValue(RenderCanvasSystem.uTransformUILayer);
     }
 
-    static void DirectlyDrawSingleGroup(IEnumerable<IRenderDrawingContent> drawingContents, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, bool isUILayer)
+    private static void DirectlyDrawSingleGroup(IEnumerable<IRenderDrawingContent> drawingContents, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, bool isUILayer)
     {
         var instance = drawingContents.First();
         instance.PreDraw(spriteBatch, graphicsDevice);
@@ -153,7 +149,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
         instance.PostDraw(spriteBatch, graphicsDevice);
     }
 
-    void DirectlyDrawAllGroups(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    private void DirectlyDrawAllGroups(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
         foreach (var drawingContentGroup in _renderDrawingContents.Values)
         {
@@ -193,7 +189,6 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
 
                 foreach (var renderEffects in pipeLine)
                 {
-
                     // 如果这个渲染线确实有效果需要重绘内容，就另外执行绘制
                     if (renderEffects.RedrawContents(spriteBatch, graphicsDevice))
                     {

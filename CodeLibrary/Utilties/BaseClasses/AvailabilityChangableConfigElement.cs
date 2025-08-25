@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Reflection;
+using Terraria.Audio;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameContent.UI.States;
-using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.Config;
-using Terraria.Audio;
+using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.UI;
 
 namespace LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
@@ -17,6 +17,7 @@ public interface IAvailabilityChangableConfig
 {
     public bool Available { get; set; }
 }
+
 /// <summary>
 /// 请不要把这玩意和<see cref="SeparatePageAttribute"/>一起用，目前会出冲突(x
 /// </summary>
@@ -25,9 +26,11 @@ public class AvailableConfigElement : ConfigElement<IAvailabilityChangableConfig
     protected Func<string> AbridgedTextDisplayFunction { get; set; }
 
     private readonly bool ignoreSeparatePage;
+
     //private SeparatePageAttribute separatePageAttribute;
     //private object data;
     private bool separatePage;
+
     private bool pendingChanges;
     private bool expanded = true;
     private NestedUIList dataList;
@@ -311,7 +314,6 @@ public class AvailableConfigElement : ConfigElement<IAvailabilityChangableConfig
                     {
                         if (Attribute.IsDefined(variable.MemberInfo, typeof(JsonIgnoreAttribute)) || variable.Name == nameof(IAvailabilityChangableConfig.Available))
                             continue;
-
 
                         int top = 0;
 

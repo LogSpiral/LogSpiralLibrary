@@ -9,32 +9,40 @@ using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+
 public class SwooshInfo : LSLMelee
 {
     #region 类中类
+
     public enum SwooshMode
     {
         Chop,
         Slash,
         //Storm // TODO:完成旋风斩
     }
-    #endregion
+
+    #endregion 类中类
 
     #region 常数
+
     //int cutTime => 8;
     //float k => 0.25f;
-    const int cutTime = 8;
-    const float k = 0.25f;
+    private const int cutTime = 8;
 
-    #endregion
+    private const float k = 0.25f;
+
+    #endregion 常数
 
     #region 辅助字段
-    int hitCounter;
-    UltraSwoosh swoosh;
-    UltraSwoosh subSwoosh;
-    #endregion
+
+    private int hitCounter;
+    private UltraSwoosh swoosh;
+    private UltraSwoosh subSwoosh;
+
+    #endregion 辅助字段
 
     #region 参数字段
+
     [ElementCustomData]
     [DrawTicks]
     public SwooshMode mode;
@@ -56,11 +64,14 @@ public class SwooshInfo : LSLMelee
     [Range(0, MathHelper.PiOver2)]
     [Increment(MathHelper.Pi / 24)]
     public float randAngleRange = MathHelper.Pi / 6;
-    #endregion
+
+    #endregion 参数字段
 
     #region 重写属性
+
     public override float offsetRotation => TimeToAngle(fTimer);
     public override float offsetDamage => MathF.Pow(.75f, hitCounter);
+
     public override bool Attacktive
     {
         get
@@ -69,10 +80,12 @@ public class SwooshInfo : LSLMelee
             return fTimer > t && fTimer < t + cutTime;
         }
     }
-    #endregion
+
+    #endregion 重写属性
 
     #region 辅助函数
-    float TimeToAngle(float t)
+
+    private float TimeToAngle(float t)
     {
         float max = TimerMax;
         var fac = t / max;
@@ -86,7 +99,6 @@ public class SwooshInfo : LSLMelee
                 fac = 0;
             else
                 fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
-
         }
         else
             fac = MathHelper.SmoothStep(-.125f, 1.25f, fac);
@@ -96,6 +108,7 @@ public class SwooshInfo : LSLMelee
         float end = .625f;
         return MathHelper.Lerp(end, start, fac) * MathHelper.Pi;
     }
+
     public void NewSwoosh()
     {
         var verS = StandardInfo.VertexStandard;
@@ -157,7 +170,8 @@ public class SwooshInfo : LSLMelee
         }
         //return null;
     }
-    void UpdateSwoosh(UltraSwoosh swoosh, (float, float) range)
+
+    private void UpdateSwoosh(UltraSwoosh swoosh, (float, float) range)
     {
         if (swoosh == null)
             return;
@@ -171,9 +185,11 @@ public class SwooshInfo : LSLMelee
         if (swoosh.timeLeft < 2)
             swoosh.timeLeft = 2;
     }
-    #endregion
+
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         if (Timer > (TimerMax - cutTime) * k)
@@ -187,7 +203,6 @@ public class SwooshInfo : LSLMelee
         {
             swoosh = null;
             subSwoosh = null;
-
         }
         base.Update(triggered);
     }
@@ -197,6 +212,7 @@ public class SwooshInfo : LSLMelee
         Flip = Owner.direction == -1;
         base.OnActive();
     }
+
     public override void OnDeactive()
     {
         if (mode == SwooshMode.Slash)
@@ -216,6 +232,7 @@ public class SwooshInfo : LSLMelee
             Flip ^= true;
         NewSwoosh();
     }
+
     public override void OnEndSingle()
     {
         hitCounter = 0;
@@ -261,7 +278,6 @@ public class SwooshInfo : LSLMelee
                     Main.mouseX = (int)(target.X - Main.screenPosition.X);
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
-
                 }
                 count /= 2;
                 for (int i = 0; i < count; i++)
@@ -273,12 +289,10 @@ public class SwooshInfo : LSLMelee
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
 
-
                     target = plr.Center + unit.RotatedBy(-angle);
                     Main.mouseX = (int)(target.X - Main.screenPosition.X);
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
-
                 }
                 Main.mouseX = (int)(orig.X - Main.screenPosition.X);
                 Main.mouseY = (int)(orig.Y - Main.screenPosition.Y);
@@ -288,6 +302,7 @@ public class SwooshInfo : LSLMelee
         }
         base.OnStartAttack();
     }
+
     public override void OnAttack()
     {
         for (int n = 0; n < 30 * (1 - Factor) * StandardInfo.dustAmount; n++)
@@ -298,12 +313,12 @@ public class SwooshInfo : LSLMelee
         }
         base.OnAttack();
     }
+
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
         hitCounter++;
         base.OnHitEntity(victim, damageDone, context);
     }
-
 
     public override void NetSend(BinaryWriter writer)
     {
@@ -311,11 +326,13 @@ public class SwooshInfo : LSLMelee
         writer.Write(KValue);
         base.NetSend(writer);
     }
+
     public override void NetReceive(BinaryReader reader)
     {
         Rotation = reader.ReadSingle();
         KValue = reader.ReadSingle();
         base.NetReceive(reader);
     }
-    #endregion
+
+    #endregion 重写函数
 }

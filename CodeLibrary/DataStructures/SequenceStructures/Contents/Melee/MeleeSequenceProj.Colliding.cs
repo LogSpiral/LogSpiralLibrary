@@ -2,7 +2,7 @@
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
-partial class MeleeSequenceProj
+public partial class MeleeSequenceProj
 {
     public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
     {

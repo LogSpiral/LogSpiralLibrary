@@ -5,19 +5,23 @@ using System.Linq;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 圣骑士会个🔨
 /// </summary>
 public class HammerInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float offsetRotation => Factor * MathHelper.TwoPi + (float)LogSpiralLibraryMod.ModTime2 * .025f;
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         Timer--;
@@ -53,5 +57,6 @@ public class HammerInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

@@ -1,14 +1,9 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using System;
-using System.Collections.Generic;
+using ReLogic.Content.Readers;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using Terraria.ModLoader.Config;
@@ -22,6 +17,7 @@ public static class SequenceElementIOHelper
     {
         return variableInfo.propertyInfo?.GetCustomAttribute<T>() ?? variableInfo.fieldInfo?.GetCustomAttribute<T>();
     }
+
     public static void SaveElements(ISequenceElement element, XmlWriter xmlWriter)
     {
         foreach (var variableInfo in ConfigManager.GetFieldsAndProperties(element))
@@ -52,6 +48,7 @@ public static class SequenceElementIOHelper
             }
         }
     }
+
     public static void LoadElements(ISequenceElement element, XmlReader xmlReader)
     {
         var elementReader = new XmlElementReader(xmlReader);
@@ -93,7 +90,6 @@ public static class SequenceElementIOHelper
                     if (value != null)
                         variableInfo.SetValue(element, value);
                 }
-
             }
             else if (variableInfo.GetCustomAttribute<DefaultValueAttribute>() is DefaultValueAttribute defaultValueAttribute)
                 variableInfo.SetValue(element, defaultValueAttribute.Value);

@@ -535,6 +535,7 @@ Configs: {
 Keybinds: {
 	ShowSequenceModifier.DisplayName: 打开序列编辑器
 	ShowScreenProjector.DisplayName: 显示屏幕变换顶点(可拖动，只是为了好玩)
+	// OpenSequenceEditor.DisplayName: Open Sequence Editor
 }
 
 Condition: {
@@ -553,10 +554,4 @@ Projectiles: {
 	// TestBlade3Proj.DisplayName: Test Blade3 Proj
 }
 
-SequenceUI: {
-	// Cancel: Mods.LogSpiralLibrary.SequenceUI.Cancel
-	// SequenceLibrary: Mods.LogSpiralLibrary.SequenceUI.SequenceLibrary
-	// ActionLibrary: Mods.LogSpiralLibrary.SequenceUI.ActionLibrary
-	// PropTitle: Mods.LogSpiralLibrary.SequenceUI.PropTitle
-	// InfoTitle: Mods.LogSpiralLibrary.SequenceUI.InfoTitle
-}
+SequenceElements.MeleeAction.DisplayName: 近战动作

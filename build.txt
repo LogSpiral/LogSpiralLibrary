@@ -5,3 +5,5 @@ homepage = https://github.com/LogSpiral
 includeSource = true
 modReferences = SilkyUIFramework, PropertyPanelLibrary
 dllReferences = NetSimplified
+
+

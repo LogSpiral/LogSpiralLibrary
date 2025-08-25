@@ -1,4 +1,5 @@
 ﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+
 /// <summary>
 /// 基剑必需品
 /// </summary>
@@ -10,7 +11,9 @@ public abstract class MeleeSequenceItem<T> : ModItem where T : MeleeSequenceProj
         ItemID.Sets.SkipsInitialUseSound[Type] = true;
         base.SetStaticDefaults();
     }
+
     public override bool AltFunctionUse(Player player) => EnableRightClick;
+
     public override void SetDefaults()
     {
         Item.width = 62;
@@ -33,6 +36,8 @@ public abstract class MeleeSequenceItem<T> : ModItem where T : MeleeSequenceProj
         Item.noUseGraphic = true;
         Item.channel = true;
     }
+
     public override bool CanShoot(Player player) => player.ownedProjectileCounts[ModContent.ProjectileType<T>()] == 0;
+
     public virtual bool EnableRightClick => false;
 }

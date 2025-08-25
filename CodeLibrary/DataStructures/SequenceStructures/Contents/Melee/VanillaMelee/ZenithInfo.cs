@@ -5,25 +5,32 @@ using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 天顶
 /// </summary>
 public class ZenithInfo : VanillaMelee
 {
     #region 辅助字段
+
     public float dist;
     public UltraSwoosh[] ultras = new UltraSwoosh[3];
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => MathHelper.SmoothStep(1f, -1f, MathHelper.Clamp((1 - Factor) * 2, 0, 1)) * (Flip ? 1 : -1) * MathHelper.Pi;
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist * .5f, 100 / KValue)).RotatedBy(Rotation);
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         if (Main.dedServ) return;
@@ -165,5 +172,6 @@ public class ZenithInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

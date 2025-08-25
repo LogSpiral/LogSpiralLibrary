@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 public static class VectorMethods
 {
     #region 向量
+
     public static void GetClosestVectorsFromNPC(Vector2 center, int count, float maxDistance, out int[] indexs, out float[] Dists)
         => GetClosestVectors(center, from target in Main.npc
                                      where !target.friendly && target.CanBeChasedBy() && target.active
@@ -68,6 +71,7 @@ public static class VectorMethods
     }
 
     public static (Vector2, float) AvgStd(this IEnumerable<Vector2> vectors) => (vectors.Avg(), vectors.Std());
+
     /// <summary>
     /// 求向量的标准差
     /// </summary>
@@ -83,6 +87,7 @@ public static class VectorMethods
         value = MathF.Sqrt(value);
         return value;
     }
+
     /// <summary>
     /// 求向量的平均值
     /// </summary>
@@ -96,6 +101,7 @@ public static class VectorMethods
         result /= vectors.Count();
         return result;
     }
+
     public static float Cos(Vector2 a, Vector2 b, Vector2 center = default)
     {
         a -= center;
@@ -103,6 +109,7 @@ public static class VectorMethods
         if (a == default || b == default) return 0;
         return Vector2.Dot(a, b) / a.Length() / b.Length();
     }
+
     public static Vector2 Lerp(Vector2 from, Vector2 to, Vector2 t, bool clamp = true)
     {
         Vector2 result = default;
@@ -112,6 +119,7 @@ public static class VectorMethods
             result = Vector2.Clamp(result, from, to);
         return result;
     }
+
     public static Vector3 Lerp(Vector3 from, Vector3 to, Vector3 t, bool clamp = true)
     {
         Vector3 result = default;
@@ -123,6 +131,7 @@ public static class VectorMethods
             result = Vector3.Clamp(result, from, to);
         return result;
     }
+
     public static Vector4 Lerp(Vector4 from, Vector4 to, Vector4 t, bool clamp = true)
     {
         Vector4 result = default;
@@ -134,6 +143,7 @@ public static class VectorMethods
             result = Vector4.Clamp(result, from, to);
         return result;
     }
+
     public static Vector2 GetLerpValue(Vector2 from, Vector2 to, Vector2 t, bool clamped = false)
     {
         return new Vector2(
@@ -141,6 +151,7 @@ public static class VectorMethods
             Utils.GetLerpValue(from.Y, to.Y, t.Y, clamped)
             );
     }
+
     public static Vector3 GetLerpValue(Vector3 from, Vector3 to, Vector3 t, bool clamped = false)
     {
         return new Vector3(
@@ -149,6 +160,7 @@ public static class VectorMethods
             Utils.GetLerpValue(from.Z, to.Z, t.Z, clamped)
             );
     }
+
     public static Vector4 GetLerpValue(Vector4 from, Vector4 to, Vector4 t, bool clamped = false)
     {
         return new Vector4(
@@ -158,14 +170,17 @@ public static class VectorMethods
             Utils.GetLerpValue(from.W, to.W, t.W, clamped)
             );
     }
+
     public static Vector2 Projectile(this Vector3 vector, float height, Vector2 center = default)
     {
         return (new Vector2(vector.X, vector.Y) - center) * height / (height - vector.Z) + center;
     }
+
     public static Vector3 Projectile(this Vector4 vector, float height, Vector3 center = default)
     {
         return (new Vector3(vector.X, vector.Y, vector.Z) - center) * height / (height - vector.W) + center;
     }
+
     /// <summary>
     /// 点关于线对称
     /// </summary>
@@ -180,6 +195,7 @@ public static class VectorMethods
         return target + 2 * Vector2.Dot(n, lineStart - target) / n.LengthSquared() * n;
         //return lineStart + lineEnd - target;
     }
+
     /// <summary>
     /// CatMullRom插值，但是是数组
     /// </summary>
@@ -212,6 +228,7 @@ public static class VectorMethods
         }
         return scVecs;
     }
+
     /// <summary>
     /// CatMullRom插值，但是是数组,还可以选定范围！（那为什么不用数组的那个运算符
     /// </summary>
@@ -250,9 +267,11 @@ public static class VectorMethods
         }
         return scVecs;
     }
-    #endregion
+
+    #endregion 向量
 
     #region 矩阵
+
     public static Vector2 ApplyMatrix(this Vector2 v, Matrix matrix)
     {
         return new Vector2(
@@ -260,6 +279,7 @@ public static class VectorMethods
             v.X * matrix.M21 + v.Y * matrix.M22
             );
     }
+
     public static Vector3 ApplyMatrix(this Vector3 v, Matrix matrix)
     {
         return new Vector3(
@@ -268,6 +288,7 @@ public static class VectorMethods
             v.X * matrix.M31 + v.Y * matrix.M32 + v.Z * matrix.M33
             );
     }
+
     public static Vector4 ApplyMatrix(this Vector4 v, Matrix matrix)
     {
         return new Vector4(
@@ -277,16 +298,19 @@ public static class VectorMethods
             v.X * matrix.M41 + v.Y * matrix.M42 + v.Z * matrix.M43 + v.W * matrix.M44
             );
     }
+
     public static Vector2 ApplyMatrix(this Vector2 v, Vector2 i, Vector2 j)
     {
         return new Vector2(v.X * i.X + v.Y * j.X, v.X * i.Y + v.Y * j.Y);
     }
+
     public static Vector2 ApplyMatrix(this Vector2 v, float a, float b, float c, float d)
     {
         //(a b  (x
         // c d)  y)
         return new Vector2(v.X * a + v.Y + b, v.X * c + v.Y * d);
     }
+
     public static Matrix CreateRotationTransform(this Vector3 director, float rotation)
     {
         //var (s, c) = System.MathF.SinCos(rotation);
@@ -303,9 +327,11 @@ public static class VectorMethods
             0, 0, 0, 1
         );
     }
-    #endregion
+
+    #endregion 矩阵
 
     #region 抽象向量
+
     public static T Sum<T, TValue>(T[] values) where T : IVector<T, TValue>
     {
         var vec = values[0];
@@ -313,9 +339,11 @@ public static class VectorMethods
             vec.Add(values[n]);
         return vec;
     }
-    #endregion
+
+    #endregion 抽象向量
 
     #region 参数或者结果里有向量就姑且塞着了
+
     public static Vector2[] EdgePoints(this Vector2[] vecs, out Vector2 left)
     {
         if (vecs.Length < 3)
@@ -364,6 +392,7 @@ public static class VectorMethods
         while (vec == result[0]);
         return [.. result];
     }
+
     public static Vector2[] EdgePoints(this Vector2[] vecs)
     {
         if (vecs.Length < 3)
@@ -441,6 +470,7 @@ public static class VectorMethods
             return null;
         }
     }
+
     public static void RotatedBy(this Vector2[] vecs, float rotation, Vector2 center = default)
     {
         for (int n = 0; n < vecs.Length; n++)
@@ -448,6 +478,7 @@ public static class VectorMethods
             vecs[n] = vecs[n].RotatedBy(rotation, center);
         }
     }
+
     public static void MulY(this Vector2[] vecs, float sclar)
     {
         for (int n = 0; n < vecs.Length; n++)
@@ -455,6 +486,7 @@ public static class VectorMethods
             vecs[n].Y *= sclar;
         }
     }
+
     public static void MulX(this Vector2[] vecs, float sclar)
     {
         for (int n = 0; n < vecs.Length; n++)
@@ -462,6 +494,7 @@ public static class VectorMethods
             vecs[n].X *= sclar;
         }
     }
+
     public static void Mul(this Vector2[] vecs, float sclar)
     {
         for (int n = 0; n < vecs.Length; n++)
@@ -469,6 +502,7 @@ public static class VectorMethods
             vecs[n] *= sclar;
         }
     }
+
     public static void Mul(this Vector2[] vecs, Vector2 sclar)
     {
         for (int n = 0; n < vecs.Length; n++)
@@ -476,5 +510,6 @@ public static class VectorMethods
             vecs[n] *= sclar;
         }
     }
-    #endregion
+
+    #endregion 参数或者结果里有向量就姑且塞着了
 }

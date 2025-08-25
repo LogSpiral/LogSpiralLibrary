@@ -1,22 +1,28 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
 
 public class PunctureInfo : ExtendedMelee
 {
     #region 辅助字段
-    float deltaH = 0f;
-    #endregion
+
+    private float deltaH = 0f;
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.PiOver2 - (Rotation < -MathHelper.PiOver2 ? Rotation + MathHelper.TwoPi : Rotation), MathF.Pow(MathHelper.Clamp((1 - Factor) * 2, 0, 1), 2));
     public override float CompositeArmRotation => base.CompositeArmRotation + MathHelper.SmoothStep(0, -MathHelper.PiOver2 * .75f * Owner.direction, MathF.Pow(MathHelper.Clamp((1 - Factor) * 3, 0, 1), 2));
     public override Vector2 offsetOrigin => base.offsetOrigin + Vector2.SmoothStep(default, new Vector2(-.25f, .05f).RotatedBy(StandardInfo.standardRotation + MathHelper.PiOver4), MathHelper.Clamp((1 - Factor) * 2, 0, 1));
     public override bool Attacktive => Factor < .85f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public virtual void OnBurst(float fallFac)
     {
         for (int n = 0; n < 15 / fallFac; n++)
@@ -25,7 +31,6 @@ public class PunctureInfo : ExtendedMelee
         for (int n = 0; n < 30 / fallFac; n++)
             MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) - Vector2.UnitY * 40 * Main.rand.NextFloat(0, 1) / fallFac * .5f, StandardInfo.standardColor, 2);
 
-            
         var verS = StandardInfo.VertexStandard;
         if (verS.active)
         {
@@ -45,6 +50,7 @@ public class PunctureInfo : ExtendedMelee
 
         SoundEngine.PlaySound(SoundID.Item92);
     }
+
     public override void Update(bool triggered)
     {
         Flip = Owner.direction == 1;
@@ -57,13 +63,12 @@ public class PunctureInfo : ExtendedMelee
                 plr.GetModPlayer<LogSpiralLibraryPlayer>().ultraFallEnable = true;
         }
 
-
         if (Timer == (int)(TimerMax * fallFac))
             OnBurst(fallFac);
 
-
         base.Update(triggered);
     }
+
     public override void OnStartSingle()
     {
         int t = 0;
@@ -75,5 +80,6 @@ public class PunctureInfo : ExtendedMelee
         deltaH = 16 * t;
         base.OnStartSingle();
     }
-    #endregion
+
+    #endregion 重写函数
 }

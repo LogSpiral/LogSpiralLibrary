@@ -515,6 +515,7 @@ Configs: {
 Keybinds: {
 	ShowSequenceModifier.DisplayName: Show Sequence Modifier
 	ShowScreenProjector.DisplayName: Show Screen Transforming Vertex(Draggable, Just for fun)
+	OpenSequenceEditor.DisplayName: Open Sequence Editor
 }
 
 Condition: {
@@ -533,10 +534,4 @@ Projectiles: {
 	TestBlade3Proj.DisplayName: Test Blade3 Proj
 }
 
-SequenceUI: {
-	Cancel: Mods.LogSpiralLibrary.SequenceUI.Cancel
-	SequenceLibrary: Mods.LogSpiralLibrary.SequenceUI.SequenceLibrary
-	ActionLibrary: Mods.LogSpiralLibrary.SequenceUI.ActionLibrary
-	PropTitle: Mods.LogSpiralLibrary.SequenceUI.PropTitle
-	InfoTitle: Mods.LogSpiralLibrary.SequenceUI.InfoTitle
-}
+SequenceElements.MeleeAction.DisplayName: MeleeAction

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+﻿namespace LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 
 /// <summary>
 /// 简化使用的<see cref = "ModTileEntity"/>
@@ -16,11 +10,13 @@ public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile
     /// 必须和tileObjectData那边一样
     /// </summary>
     public abstract Point16 Origin { get; }
+
     public override bool IsTileValidForEntity(int x, int y)
     {
         Tile tile = Framing.GetTileSafely(x, y);
         return tile.HasTile && tile.TileType == ModContent.TileType<T>();
     }
+
     public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
     {
         if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -41,6 +37,7 @@ public abstract class LModTileEntity<T> : ModTileEntity where T : ModTile
         int placedEntity = Place(i - tileOrigin.X, j - tileOrigin.Y);
         return placedEntity;
     }
+
     public override void OnNetPlace()
     {
         if (Main.dedServ)

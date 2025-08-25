@@ -31,7 +31,7 @@
 //                var name = wraper.Name;
 //                if (wraper.IsSequence && SequenceSystem.sequenceInfos.TryGetValue(wraper.SequenceInfo.KeyName, out var value))
 //                    name = value.DisplayName;
-//                //if (name == "挥砍" && desc != "Always") 
+//                //if (name == "挥砍" && desc != "Always")
 //                //{
 //                //    Main.NewText((font.MeasureString(name), font.MeasureString(desc)));
 //                //}
@@ -75,7 +75,6 @@
 //    }
 //    public static Vector2 SequenceSize(this SequenceBox sequencebox, bool start = false)
 //    {
-
 //        Vector2 curr = sequencebox.GetSize();
 //        if (curr == default || sequencebox.CacheRefresh)
 //        {
@@ -104,9 +103,8 @@
 //    //    Vector2 size = MeleeWrapperSize(meleeSAWraper);
 //    //    if (meleeSAWraper.IsSequence)
 //    //    {
-
 //    //    }
-//    //    else 
+//    //    else
 //    //    {
 //    //        var font = FontAssets.MouseText.Value;
 //    //        var name = wrapper.attackInfo.GetType().Name;
@@ -187,7 +185,6 @@
 //    //            }
 //    //            if (wrapper.IsSequence)
 //    //            {
-
 //    //                spriteBatch.DrawMeleeSequence(wrapper.sequenceInfo, positionHere/*, depth + 1, out Vector2 _finalSize*/);
 //    //                if (desc != "Always")
 //    //                {

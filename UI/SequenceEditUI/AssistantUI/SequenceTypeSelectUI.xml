@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Body Class="LogSpiralLibrary.UI.SequenceEditUI.AssistantUI.SequenceTypeSelectUI" Left="50#" Top="50#" Width="800px" Height="600px" Border="1" BorderRadius="8" Padding="8">
+	<ScrollViewAutoHideBar Name="CategoryList" Width="100%" Height="100%" BackgroundColor="rgba(0,0,0,.25)" BorderRadius="8" >
+		<M.Container MainAlignment ="Start"/>
+	</ScrollViewAutoHideBar>
+</Body>

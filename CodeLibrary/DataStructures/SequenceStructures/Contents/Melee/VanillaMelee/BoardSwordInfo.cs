@@ -12,11 +12,14 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class BoardSwordInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float offsetRotation => MathHelper.SmoothStep(0.15f, -0.75f, Factor * Factor) * MathHelper.Pi * Owner.direction;
     public override bool Attacktive => Factor < .75f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
@@ -46,5 +49,6 @@ public class BoardSwordInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

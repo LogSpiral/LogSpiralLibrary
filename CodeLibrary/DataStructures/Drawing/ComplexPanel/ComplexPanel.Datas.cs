@@ -1,63 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
-
-partial class ComplexPanelInfo
+public partial class ComplexPanelInfo
 {
     #region 背景
+
     /// <summary>
     /// 指定背景贴图，为null的时候使用默认背景
     /// </summary>
     public Texture2D backgroundTexture;
+
     public virtual Texture2D StyleTexture { get; set; }
+
     /// <summary>
     /// 指定贴图背景的部分，和绘制那边一个用法
     /// </summary>
     public Rectangle? backgroundFrame;
+
     /// <summary>
     /// 单位大小，最后是进行平铺的
     /// </summary>
     public Vector2 backgroundUnitSize;
+
     /// <summary>
     /// 颜色，可以试试半透明的，很酷
     /// </summary>
     public Color backgroundColor;
-    #endregion
+
+    #endregion 背景
 
     #region 边框
+
     /// <summary>
     /// 指定横向边界数
     /// </summary>
     public int? xBorderCount;
+
     /// <summary>
     /// 指定纵向边界数
     /// </summary>
     public int? yBorderCount;
+
     /// <summary>
     /// 外发光颜色
     /// </summary>
     public Color glowEffectColor;
+
     /// <summary>
     /// 外发光震动剧烈程度
     /// </summary>
     public float glowShakingStrength;
+
     /// <summary>
     /// 外发光色调偏移范围
     /// </summary>
     public float glowHueOffsetRange;
-    #endregion
+
+    #endregion 边框
 
     #region 全局
+
     public Color mainColor;
     public Vector2 origin;
     public float scaler = 1f;
     public Vector2 offset;
     public Rectangle destination;
-    #endregion
+
+    #endregion 全局
 
     public Rectangle ModifiedRectangle
     {
@@ -69,7 +77,6 @@ partial class ComplexPanelInfo
             return VectorsToRectangle(topLeft, size);
         }
     }
-
 
     public ComplexPanelInfo()
     {

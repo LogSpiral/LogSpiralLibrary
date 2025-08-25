@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
 
 /// <summary>
@@ -11,6 +12,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class TerraprismaInfo : VanillaMelee
 {
     #region 辅助字段
+
     public NPC target;
     public Vector2 realCenter;
     public Vector2 assistVelocity;
@@ -19,16 +21,20 @@ public class TerraprismaInfo : VanillaMelee
     public Vector2[] oldCenters = new Vector2[45];
     public float[] oldRotations = new float[45];
     public UltraSwoosh ultra;
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => realRotation;
     public override Vector2 offsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => target != null;
     public override bool OwnerHitCheek => true;
-    #endregion
+
+    #endregion 重写属性
 
     #region 辅助函数
+
     private void FindTarget()
     {
         foreach (var npc in Main.npc)
@@ -38,9 +44,11 @@ public class TerraprismaInfo : VanillaMelee
                 break;
             }
     }
-    #endregion
+
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         var verS = StandardInfo.VertexStandard;
@@ -230,5 +238,6 @@ public class TerraprismaInfo : VanillaMelee
         }
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

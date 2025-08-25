@@ -1,19 +1,21 @@
 ﻿using static LogSpiralLibrary.LogSpiralLibraryMod;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+
 public class UltraStab : MeleeVertexInfo
 {
-    const bool usePSShaderTransform = true;
-    
+    private const bool usePSShaderTransform = true;
+
     #region 参数和属性
 
-    readonly CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[usePSShaderTransform ? 4 : 90];
+    private readonly CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[usePSShaderTransform ? 4 : 90];
     public override CustomVertexInfo[] VertexInfos => _vertexInfos;
 
-    #endregion
+    #endregion 参数和属性
 
     #region 生成函数
 
-    public static UltraStab NewUltraStab(string canvasName,int timeLeft,float scaler,Vector2 center) 
+    public static UltraStab NewUltraStab(string canvasName, int timeLeft, float scaler, Vector2 center)
     {
         var content = new UltraStab();
         content.timeLeft = content.timeLeftMax = timeLeft;
@@ -29,7 +31,7 @@ public class UltraStab : MeleeVertexInfo
     public static UltraStab NewUltraStabOnDefaultCanvas(int timeLeft, float scaler, Vector2 center)
         => NewUltraStab(RenderCanvasSystem.DEFAULTCANVASNAME, timeLeft, scaler, center);
 
-    #endregion
+    #endregion 生成函数
 
     #region 绘制和更新，主体
 
@@ -98,5 +100,5 @@ public class UltraStab : MeleeVertexInfo
         timeLeft--;
     }
 
-    #endregion
+    #endregion 绘制和更新，主体
 }

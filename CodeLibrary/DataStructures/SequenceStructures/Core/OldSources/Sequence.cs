@@ -109,7 +109,6 @@
 //    }
 //    public class Sequence<T> : Sequence where T : ISequenceElement
 //    {
-
 //        //public override GroupBase CreateSimpleGroup(WraperBase wraperBase)
 //        //{
 //        //    var result = new Group();
@@ -176,7 +175,7 @@
 
 //        }
 
-//        public Sequence<T> LocalSequenceClone(string inModDirectoryPath) 
+//        public Sequence<T> LocalSequenceClone(string inModDirectoryPath)
 //        {
 //            XmlWriterSettings settings = new();
 //            settings.Indent = true;
@@ -500,7 +499,6 @@
 //                            }
 //                            else
 //                            {
-
 //                                result = null;
 //                                if (inModDirectoryPath != null)
 //                                {

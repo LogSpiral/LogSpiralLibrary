@@ -32,19 +32,33 @@ public class ModDefinition : EntityDefinition
             return -1;
         }
     }
+
     public override bool IsUnloaded => Type < 0;
     public static readonly Func<TagCompound, ModDefinition> DESERIALIZER = Load;
-    public ModDefinition() : base() { }
-    public ModDefinition(int type) : base(ModLoader.Mods[type].Name) { }
-    public ModDefinition(string mod) : base(mod, mod) { }
+
+    public ModDefinition() : base()
+    {
+    }
+
+    public ModDefinition(int type) : base(ModLoader.Mods[type].Name)
+    {
+    }
+
+    public ModDefinition(string mod) : base(mod, mod)
+    {
+    }
+
     public static ModDefinition FromString(string s) => new(s);
+
     public static ModDefinition Load(TagCompound tag) => new(tag.GetString("mod"));
+
     public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : ModLoader.GetMod(Name).DisplayName;//SequenceSystem.conditions[Name].Description.ToString();
 }
 
 public class ModDefinitionElement : DefinitionElement<ModDefinition>
 {
     public bool resetted;
+
     public override void Update(GameTime gameTime)
     {
         if (!resetted)
@@ -98,7 +112,9 @@ public class ModDefinitionElement : DefinitionElement<ModDefinition>
     {
         optionElement.Left.Set(-184 * OptionScale, 1f);
     }
+
     public static LocalMod[] locals;
+
     public static LocalMod ModToLocal(Mod mod)
     {
         string fileName = $"{mod.Name}.tmod";
@@ -116,6 +132,7 @@ public class ModDefinitionElement : DefinitionElement<ModDefinition>
         //    ModOrganizer.TryReadLocalMod(ModLocation.Workshop, fileName, out localMod);
         return localMod;
     }
+
     public override List<DefinitionOptionElement<ModDefinition>> GetPassedOptionElements()
     {
         var passed = new List<DefinitionOptionElement<ModDefinition>>();
@@ -126,7 +143,6 @@ public class ModDefinitionElement : DefinitionElement<ModDefinition>
 
             if (modname.IndexOf(ChooserFilterMod.CurrentString, StringComparison.OrdinalIgnoreCase) == -1)
                 continue;
-
 
             var mod = ModLoader.Mods[option.Type];
             if (mod.Name == "ModLoader")
@@ -151,13 +167,13 @@ public class ModDefinitionElement : DefinitionElement<ModDefinition>
         }
         return passed;
     }
-
 }
 
 public class ModDefinitionOptionElement : DefinitionOptionElement<ModDefinition>
 {
     public Mod Mod { get; set; }
     public Texture2D modIcon;
+
     public ModDefinitionOptionElement(ModDefinition definition, float scale = .75f) : base(definition, scale)
     {
         NullID = -1;
@@ -200,12 +216,14 @@ public class ModDefinitionOptionElement : DefinitionOptionElement<ModDefinition>
         }
         catch { }
     }
+
     public override void SetScale(float scale)
     {
         Width = Height = new StyleDimension(180 * scale, 0f);
 
         base.SetScale(scale);
     }
+
     public override void DrawSelf(SpriteBatch spriteBatch)
     {
         if (Mod != null)
@@ -219,7 +237,6 @@ public class ModDefinitionOptionElement : DefinitionOptionElement<ModDefinition>
         }
     }
 }
-
 
 [System.ComponentModel.TypeConverter(typeof(ToFromStringConverter<ConditionDefinition>))]
 public class ConditionDefinition : EntityDefinition
@@ -237,16 +254,34 @@ public class ConditionDefinition : EntityDefinition
             return -1;
         }
     }
+
     public override bool IsUnloaded => Type < 0;
-    public ConditionDefinition() : base() { }
-    public ConditionDefinition(int type) : base(SequenceSystem.Conditions.ToList()[type].Key) { }
-    public ConditionDefinition(string key) : base(key) { }
-    public ConditionDefinition(string mod, string name) : base(mod, name) { }
+
+    public ConditionDefinition() : base()
+    {
+    }
+
+    public ConditionDefinition(int type) : base(SequenceSystem.Conditions.ToList()[type].Key)
+    {
+    }
+
+    public ConditionDefinition(string key) : base(key)
+    {
+    }
+
+    public ConditionDefinition(string mod, string name) : base(mod, name)
+    {
+    }
+
     public static ConditionDefinition FromString(string s) => new(s);
+
     public static ConditionDefinition Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
+
     public static readonly Func<TagCompound, ConditionDefinition> DESERIALIZER = Load;
 
     public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceSystem.Conditions[Name].Description.ToString());
+
+    public Condition ToCondition() => IsUnloaded ? SequenceSystem.AlwaysCondition : SequenceSystem.Conditions[Name];
 }
 
 /*
@@ -286,7 +321,6 @@ public class ConditionDefinitionElement : DefinitionElement<ConditionDefinition>
         //optionElement.Left.Set(-124, 1f);
         optionElement.HAlign = 0.5f;
         optionElement.Left.Set(0f, 0f);
-
     }
 
     public override List<DefinitionOptionElement<ConditionDefinition>> CreateDefinitionOptionElementList()
@@ -310,7 +344,6 @@ public class ConditionDefinitionElement : DefinitionElement<ConditionDefinition>
                 UpdateNeeded = true;
                 SelectionExpanded = false;
                 InternalOnSetObject();
-
             };
 
             options.Add(optionElement);
@@ -340,6 +373,7 @@ public class ConditionDefinitionElement : DefinitionElement<ConditionDefinition>
     }
 }
 */
+
 public class ConditionDefinitionOptionElement : DefinitionOptionElement<ConditionDefinition>
 {
     private readonly UIAutoScaleTextTextPanel<string> text;
@@ -392,7 +426,7 @@ public class SequenceDefinition<T> : EntityDefinition where T : ISequenceElement
         {
             // var list = from pair in SequenceManager<T>.Sequences select pair.Value;
             int n = 0;
-            foreach (var pair in SequenceManager<T>.Sequences.Keys)
+            foreach (var pair in SequenceManager<T>.Instance.Sequences.Keys)
             {
                 if ($"{Mod}/{Name}" == pair)
                     return n;
@@ -401,15 +435,31 @@ public class SequenceDefinition<T> : EntityDefinition where T : ISequenceElement
             return -1;
         }
     }
+
     public override bool IsUnloaded => Type < 0;
-    public SequenceDefinition() : base() { }
-    public SequenceDefinition(int type) : base(SequenceManager<T>.Sequences.ToList()[type].Key) { }
-    public SequenceDefinition(string key) : base(key) { }
-    public SequenceDefinition(string mod, string name) : base(mod, name) { }
-    public static ConditionDefinition FromString(string s) => new(s);
-    public static ConditionDefinition Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
-    public static readonly Func<TagCompound, ConditionDefinition> DESERIALIZER = Load;
-    public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceManager<T>.Sequences[$"{Mod}/{Name}"].Data.DisplayName);
+
+    public SequenceDefinition() : base()
+    {
+    }
+
+    public SequenceDefinition(int type) : base(SequenceManager<T>.Instance.Sequences.ToList()[type].Key)
+    {
+    }
+
+    public SequenceDefinition(string key) : base(key)
+    {
+    }
+
+    public SequenceDefinition(string mod, string name) : base(mod, name)
+    {
+    }
+
+    public static SequenceDefinition<T> FromString(string s) => new(s);
+
+    public static SequenceDefinition<T> Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
+
+    public static readonly Func<TagCompound, SequenceDefinition<T>> DESERIALIZER = Load;
+    public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceManager<T>.Instance.Sequences[$"{Mod}/{Name}"].Data.DisplayName);
 }
 
 /*
@@ -496,6 +546,7 @@ public class SequenceDefinitionElement<T> : DefinitionElement<SequenceDefinition
     }
 }
 */
+
 public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<SequenceDefinition<T>> where T : ISequenceElement
 {
     private readonly UIAutoScaleTextTextPanel<string> text;
@@ -511,7 +562,6 @@ public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<Sequen
         {
             Main.NewText("定义null了");
             return;
-
         }
         text = new UIAutoScaleTextTextPanel<string>(Definition.DisplayName)
         {
@@ -526,7 +576,6 @@ public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<Sequen
         base.SetItem(item);
 
         text?.SetText(item.DisplayName);
-
     }
 
     public override void SetScale(float scale)
@@ -560,18 +609,35 @@ public class SequenceDelegateDefinition : EntityDefinition
             return -1;
         }
     }
+
     public override bool IsUnloaded => Type < 0;
     public string Key => $"{Mod}/{Name}";
-    public SequenceDelegateDefinition() : base(SequenceSystem.NoneDelegateKey) { }
-    public SequenceDelegateDefinition(int type) : base(SequenceSystem.elementDelegates.ToList()[type].Key) { }
-    public SequenceDelegateDefinition(string key) : base(key) { }
-    public SequenceDelegateDefinition(string mod, string name) : base(mod, name) { }
+
+    public SequenceDelegateDefinition() : base(SequenceSystem.NoneDelegateKey)
+    {
+    }
+
+    public SequenceDelegateDefinition(int type) : base(SequenceSystem.elementDelegates.ToList()[type].Key)
+    {
+    }
+
+    public SequenceDelegateDefinition(string key) : base(key)
+    {
+    }
+
+    public SequenceDelegateDefinition(string mod, string name) : base(mod, name)
+    {
+    }
+
     public static SequenceDelegateDefinition FromString(string s) => new(s);
+
     public static SequenceDelegateDefinition Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
+
     public static readonly Func<TagCompound, SequenceDelegateDefinition> DESERIALIZER = Load;
 
     public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : Name);
 }
+
 /*
 public class SeqDelegateDefinitionElement : DefinitionElement<SequenceDelegateDefinition>
 {
@@ -631,7 +697,6 @@ public class SeqDelegateDefinitionElement : DefinitionElement<SequenceDelegateDe
                 SelectionExpanded = false;
                 InternalOnSetObject();
                 //SequenceSystem.SetSequenceUIPending();
-
             };
 
             options.Add(optionElement);
@@ -661,6 +726,7 @@ public class SeqDelegateDefinitionElement : DefinitionElement<SequenceDelegateDe
     }
 }
 */
+
 public class GenericDelegateDefinitionOptionElement : DefinitionOptionElement<SequenceDelegateDefinition>
 {
     private readonly UIAutoScaleTextTextPanel<string> text;
@@ -683,7 +749,6 @@ public class GenericDelegateDefinitionOptionElement : DefinitionOptionElement<Se
         base.SetItem(item);
 
         text?.SetText(item.DisplayName);
-
     }
 
     public override void SetScale(float scale)
@@ -700,6 +765,7 @@ public class GenericDelegateDefinitionOptionElement : DefinitionOptionElement<Se
             UIModConfig.Tooltip = Tooltip;
     }
 }
+
 public class DyeDefinitionElement : ItemDefinitionElement
 {
     public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()

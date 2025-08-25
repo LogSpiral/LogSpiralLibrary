@@ -1,0 +1,7 @@
+GroupArgs: {
+	Condition: 条件: {0}
+	Weight: 随机权重: {0}
+	ConditionWeight: 条件: {0}, 随机权重: {1}
+}
+
+SomeFOO: 芝士什么

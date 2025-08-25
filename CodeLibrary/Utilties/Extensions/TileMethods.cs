@@ -1,5 +1,7 @@
 using Terraria.ObjectData;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 public static class TileMethods
 {
     /// <summary>

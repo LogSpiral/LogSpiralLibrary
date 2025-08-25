@@ -1,15 +1,7 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using LogSpiralLibrary.ForFun.GeogebraShin;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using ReLogic.Content;
-using ReLogic.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.Audio;
-using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -20,6 +12,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
     public class ScreenTransformPlayer : ModPlayer
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             if (ScreenTransformSystem.ShowScreenProjectorKeybind.JustPressed)
@@ -32,10 +25,13 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             base.ProcessTriggers(triggersSet);
         }
     }
+
     public class ScreenTransformSystem : ModSystem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         public static ScreenTransformData ScreenTransformData;
+
         public override void PostSetupContent()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -46,6 +42,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             }
             base.PostSetupContent();
         }
+
         public override void Load()
         {
             if (Main.netMode != NetmodeID.Server)
@@ -56,15 +53,16 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
                 screenProjectorUI.Activate();
                 userInterface.SetState(screenProjectorUI);
                 ShowScreenProjectorKeybind = KeybindLoader.RegisterKeybind(Mod, "ShowScreenProjector", "U");
-
             }
         }
+
         public override void PreUpdateEntities()
         {
             if (Main.dedServ)
                 return;
             ControlScreenShader("LogSpiralLibrary:WTFScreen", true);
         }
+
         private void ControlScreenShader(string name, bool state)
         {
             if (!Filters.Scene[name].IsActive() && state)
@@ -81,6 +79,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
         public ScreenTransformUI screenProjectorUI;
         public UserInterface userInterface;
         public static ModKeybind ShowScreenProjectorKeybind { get; private set; }
+
         public override void UpdateUI(GameTime gameTime)
         {
             if (ScreenTransformUI.Visible)
@@ -89,6 +88,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             }
             base.UpdateUI(gameTime);
         }
+
         public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
         {
             //寻找一个名字为Vanilla: Mouse Text的绘制层，也就是绘制鼠标字体的那一层，并且返回那一层的索引
@@ -115,8 +115,8 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             }
             base.ModifyInterfaceLayers(layers);
         }
-
     }
+
     public class DraggableButton : UIElement
     {
         public override void DrawSelf(SpriteBatch spriteBatch)
@@ -133,21 +133,24 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             spriteBatch.Draw(TextureAssets.Extra[98].Value, center, null, Color.White with { A = 0 } * .5f, angle * -2 + MathHelper.PiOver2, new Vector2(36), scale * .5f, 0, 0);
             base.DrawSelf(spriteBatch);
         }
+
         public bool Dragging;
         public Vector2 Offset;
+
         public override void LeftMouseDown(UIMouseEvent evt)
         {
             Dragging = true;
             Offset = new Vector2(evt.MousePosition.X - Left.Pixels, evt.MousePosition.Y - Top.Pixels);
             base.LeftMouseDown(evt);
-
         }
+
         public override void LeftMouseUp(UIMouseEvent evt)
         {
             Dragging = false;
 
             base.LeftMouseUp(evt);
         }
+
         public override void Update(GameTime gameTime)
         {
             if (Dragging)
@@ -159,6 +162,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             base.Update(gameTime);
         }
     }
+
     public class ScreenTransformUI : UIState
     {
         public static Matrix QuadrangleToMatrix(Vector2[] vecs)
@@ -184,8 +188,8 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
                 M24 = pos.Y
             };
             return result;
-
         }
+
         public static Matrix Transform =>
         //QuadrangleToMatrix([((float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(1, 0) + ((float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() * new Vector2(0, 1) + (-(float)LogSpiralLibraryMod.ModTime / 30f).ToRotationVector2() * 200, Main.ScreenSize.ToVector2() + (-(float)LogSpiralLibraryMod.ModTime / 60f).ToRotationVector2() * 200]) * Matrix.Invert(QuadrangleToMatrix([default, new Vector2(Main.screenWidth, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2()]));
 
@@ -193,11 +197,13 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
 
         //QuadrangleToMatrix([default, new Vector2(Main.screenWidth / 2, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2() * new Vector2(.5f,.5f + ((float)m))]) * Matrix.Invert(QuadrangleToMatrix([default, new Vector2(Main.screenWidth, 0), new Vector2(0, Main.screenHeight), Main.ScreenSize.ToVector2()]));
         QuadrangleToMatrix(ScreenTransformSystem.instance.screenProjectorUI.targetVectors) * Matrix.Invert(QuadrangleToMatrix(ScreenTransformSystem.instance.screenProjectorUI.origVectors));
+
         public static bool Visible;
         public Vector2[] origVectors = new Vector2[4];
         public Vector2[] targetVectors = new Vector2[4];
         public DraggableButton[] buttons = new DraggableButton[4];
         public bool selectingOrig;
+
         public override void Update(GameTime gameTime)
         {
             for (int i = 0; i < 4; i++)
@@ -245,6 +251,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             }
             base.OnInitialize();
         }
+
         public void Open()
         {
             SoundEngine.PlaySound(SoundID.MenuOpen);
@@ -253,22 +260,24 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             OnInitialize();
             Recalculate();
         }
+
         public void Close()
         {
             SoundEngine.PlaySound(SoundID.MenuClose);
             Visible = false;
-
         }
     }
+
     public class ScreenTransformData : ScreenShaderData
     {
         public ScreenTransformData(string passName) : base(passName)
         {
         }
+
         public ScreenTransformData(Asset<Effect> shader, string passName) : base(shader, passName)
         {
-
         }
+
         public override void Apply()
         {
             Matrix result = ScreenTransformUI.Transform;
@@ -278,6 +287,7 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
             Shader.Parameters["useHeatMap"].SetValue(false);
             base.Apply();
         }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

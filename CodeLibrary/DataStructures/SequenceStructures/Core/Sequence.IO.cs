@@ -57,7 +57,6 @@ public partial class Sequence
 
             reader.ReadEndElement();
         }
-
     }
 
     public void WriteXml(XmlWriter writer)
@@ -137,7 +136,7 @@ public partial class Sequence
         Data = data;
     }
 
-    void ReadSequenceOld(XmlReader reader)
+    private void ReadSequenceOld(XmlReader reader)
     {
         if (reader.Depth == 0)
             ReadDataOld(reader);
@@ -149,7 +148,8 @@ public partial class Sequence
 
         reader.ReadEndElement();
     }
-    void ReadDataOld(XmlReader reader)
+
+    private void ReadDataOld(XmlReader reader)
     {
         var data = new SequenceData
         {
@@ -164,11 +164,11 @@ public partial class Sequence
         Data = data;
     }
 
-    void ReadGroupOld(XmlReader reader)
+    private void ReadGroupOld(XmlReader reader)
     {
         reader.ReadStartElement("Group");
 
-        List<(Wrapper, string)> Datas = [];
+        List<(Wrapper wrapper, string conditionKey)> Datas = [];
         while (reader.IsStartElement("Wraper"))
         {
             string condition = reader["condition"];
@@ -184,34 +184,27 @@ public partial class Sequence
                 Datas.Add((ReadWrapperOld(reader), condition));
                 reader.ReadEndElement();
             }
-
         }
         if (Datas.Count == 1)
         {
-            var data = Datas[0];
-            if (data.Item2 is null)
-                Groups.Add(new SingleWrapperGroup(data.Item1));
+            var (wrapper, conditionKey) = Datas[0];
+            if (conditionKey is null)
+                Groups.Add(new SingleWrapperGroup(wrapper));
             else
-            {
-                Groups.Add(
-                    new ConditionalSingleGroup(
-                        data.Item1,
-                        SequenceSystem.Conditions[data.Item2],
-                        data.Item2));
-            }
+                Groups.Add(new ConditionalSingleGroup(wrapper, conditionKey));
         }
         else
         {
-            var group = new ConditionalGroup();
-            foreach (var data in Datas)
-                group.DataList.Add((data.Item1, data.Item2 == null ? SequenceSystem.AlwaysCondition : SequenceSystem.Conditions[data.Item2], data.Item2));
+            var group = new ConditionalMultiGroup();
+            foreach (var (wrapper, conditionKey) in Datas)
+                group.DataList.Add(new() { Wrapper = wrapper, Argument = new(conditionKey) });
             Groups.Add(group);
         }
 
         reader.ReadEndElement(); // 关闭 Member
     }
 
-    static Wrapper ReadWrapperOld(XmlReader reader)
+    private static Wrapper ReadWrapperOld(XmlReader reader)
     {
         if (reader.IsStartElement("Action"))
         {
@@ -220,16 +213,17 @@ public partial class Sequence
                 if (!SequenceGlobalManager.ElementTypeLookup.TryGetValue(reader["name"], out var type))
                     return new Wrapper(reader);
 
-
                 var element = Activator.CreateInstance(type);
+
                 #region 自动读取特性
+
                 var props = type.GetProperties();
                 foreach (var prop in props)
                 {
                     if (prop.GetCustomAttribute<ElementCustomDataAttribute>() != null && prop.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
                     {
                         var propName = prop.Name;
-                        if (propName == "CounterMax") 
+                        if (propName == "CounterMax")
                             propName = "Cycle";
                         if (reader[propName] is string content && content.Length != 0)
                         {
@@ -256,10 +250,8 @@ public partial class Sequence
                 }
                 foreach (var fld in type.GetFields())
                 {
-
                     if (fld.GetCustomAttribute<ElementCustomDataAttribute>() != null && fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() == null)
                     {
-
                         if (reader[fld.Name] is string content && content.Length != 0)
                         {
                             object dummy = fld.GetValue(element);
@@ -283,9 +275,10 @@ public partial class Sequence
                         else if (fld.GetCustomAttribute<DefaultValueAttribute>() is DefaultValueAttribute defaultValueAttribute)
                             fld.SetValue(element, defaultValueAttribute.Value);
                     }
-
                 }
-                #endregion
+
+                #endregion 自动读取特性
+
                 reader.Read();
                 return new Wrapper((ISequenceElement)element);
             }

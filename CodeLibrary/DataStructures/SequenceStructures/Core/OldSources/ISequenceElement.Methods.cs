@@ -2,7 +2,6 @@
 //using System.Xml;
 //namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.OldSources;
 
-
 //public partial interface ISequenceElement : ILocalizedModType, ILoadable
 //{
 //    void Update(bool triggered);

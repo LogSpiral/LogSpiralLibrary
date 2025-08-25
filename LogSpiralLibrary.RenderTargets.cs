@@ -1,9 +1,11 @@
 ﻿using Terraria.Graphics.Light;
+
 namespace LogSpiralLibrary;
 
-partial class LogSpiralLibraryMod
+public partial class LogSpiralLibraryMod
 {
     #region Renders
+
     /// <summary>
     /// 用来缓存某渲染链输入的图像内容
     /// </summary>
@@ -80,27 +82,28 @@ partial class LogSpiralLibraryMod
         private set;
     }
 
-
-    public RenderTarget2D RenderScreenCapture 
+    public RenderTarget2D RenderScreenCapture
     {
         get => field ??= DirectlyCreateNewRender();
         private set;
     }
-    #endregion
+
+    #endregion Renders
 
     #region 辅助函数
+
     /// <summary>
     /// 根据降采样等级构造<see cref="RenderTarget2D"/>实例
     /// </summary>
     /// <param name="level"></param>
     /// <returns></returns>
-    static RenderTarget2D DirectlyCreateNewRender(int level = 0) 
+    private static RenderTarget2D DirectlyCreateNewRender(int level = 0)
         => new(Main.graphics.GraphicsDevice, Main.screenTarget.Width >> level, Main.screenTarget.Height >> level);
 
     /// <summary>
     /// 因为分辨率改变所以要重新实例化
     /// </summary>
-    static void CreateRender()
+    private static void CreateRender()
     {
         var instance = Instance;
         instance.RenderOrig?.Dispose();
@@ -135,13 +138,14 @@ partial class LogSpiralLibraryMod
     /// 在主线程上进行重新实例化画布
     /// </summary>
     /// <param name="useless"></param>
-    static void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
+    private static void OnResolutionChanged_RenderCreate(Vector2 useless) => Main.RunOnMainThread(CreateRender);
 
     /// <summary>
     /// 将钩子挂给<see cref="Main.OnResolutionChanged"/>
     /// </summary>
-    static void AddOnResolutionChangedHook() => Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
-    #endregion
+    private static void AddOnResolutionChangedHook() => Main.OnResolutionChanged += OnResolutionChanged_RenderCreate;
+
+    #endregion 辅助函数
 
     /// <summary>
     /// 用来判定当前是否能够使用<see cref="Main.screenTarget"/>

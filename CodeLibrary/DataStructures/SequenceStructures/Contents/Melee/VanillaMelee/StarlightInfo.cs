@@ -1,21 +1,24 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
-using LogSpiralLibrary.CodeLibrary.Utilties;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 银色战车！！
 /// </summary>
 public class StarlightInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float offsetRotation => Main.rand.NextFloat(-1f, 1f) * MathHelper.Pi / 12f;
     public override Vector2 offsetCenter => (Main.rand.NextVector2Unit() * new Vector2(16, 4) + 16 * Vector2.UnitX).RotatedBy(Rotation);
     public override bool Attacktive => true;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
@@ -73,6 +76,6 @@ public class StarlightInfo : VanillaMelee
     //        sc = plr.GetAdjustedItemScale(plr.HeldItem);
     //    return DrawingMethods.GetItemVertexes(finalOrigin, TODO, finalRotation, Rotation, texture, KValue, ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
     //}
-    
-    #endregion
+
+    #endregion 重写函数
 }

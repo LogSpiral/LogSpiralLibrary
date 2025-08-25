@@ -1,21 +1,25 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using System.Collections.Generic;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+
 public class SequenceData : ILoadable
 {
     public string FileName { get; set; } = "";
     public string DisplayName { get; set; } = "";
     public string AuthorName { get; set; } = "";
     public string Description { get; set; } = "";
+
+    [CustomModConfigItem<ModDefinitionElement>]
     public ModDefinition ModDefinition { get; set; }
     public DateTime CreateTime { get; set; }
     public DateTime ModifyTime { get; set; }
     public bool Finished { get; set; } = true;
+
     public override string ToString() => $"DisplayName{DisplayName},AuthorName{AuthorName},Description{Description},CreateTime{CreateTime},ModifyTime{ModifyTime},Finished{Finished}";
+
     public void ReadXml(XmlReader reader)
     {
         XmlElementReader elementReader = new(reader);
@@ -27,13 +31,14 @@ public class SequenceData : ILoadable
         Finished = !bool.TryParse(elementReader[nameof(ModifyTime)]?.Value ?? string.Empty, out bool finished) || finished;
         Load(elementReader);
     }
+
     public virtual string GetFullName => GetType().Name;
+
     public void WriteXml(XmlWriter writer)
     {
         var type = GetType();
         if (type != typeof(SequenceData))
             writer.WriteAttributeString("FullName", GetFullName);
-
 
         writer.WriteElementString(nameof(DisplayName), DisplayName);
         writer.WriteElementString(nameof(AuthorName), AuthorName);
@@ -43,18 +48,14 @@ public class SequenceData : ILoadable
         if (!Finished)
             writer.WriteElementString(nameof(Finished), Finished.ToString());
         Save(writer);
-
     }
 
     protected virtual void Load(XmlElementReader elementReader)
     {
-
-
     }
 
     protected virtual void Save(XmlWriter writer)
     {
-
     }
 
     void ILoadable.Load(Mod mod)

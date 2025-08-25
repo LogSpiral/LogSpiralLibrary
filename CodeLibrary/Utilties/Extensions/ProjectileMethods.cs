@@ -1,6 +1,7 @@
-﻿using static Terraria.Utils;
-using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using static Terraria.Utils;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 
 public static class ProjectileMethods

@@ -1,17 +1,17 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using ReLogic.Graphics;
-using System;
-using System.IO;
 
 namespace LogSpiralLibrary.ForFun.FractalSpawn
 {
     public class FractalSpawnSystem : ModSystem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         private static Effect fractal;
         public static Effect FractalEffect => fractal ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Fractal").Value;
         public static RenderTarget2D render;
         public static RenderTarget2D renderShift;
+
         public override void Load()
         {
             if (Main.dedServ) return;
@@ -47,11 +47,14 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             base.Unload();
         }
     }
+
     public class FractalSpawnItem : ModItem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         public static Vector2 mouseScreen;
         public override string Texture => $"Terraria/Images/Item_{ItemID.WireKite}";
+
         public override void SetDefaults()
         {
             Item.width = Item.height = 10;
@@ -59,6 +62,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 24;
         }
+
         public override bool? UseItem(Player player)
         {
             //if (player.itemAnimation == 1)
@@ -71,14 +75,17 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             //Main.NewText(player.itemAnimation);
             return base.UseItem(player);
         }
+
         public override void UseAnimation(Player player)
         {
             base.UseAnimation(player);
         }
+
         public override bool CanUseItem(Player player)
         {
             return base.CanUseItem(player);
         }
+
         public static void ResetFractal()
         {
             var gd = Main.instance.GraphicsDevice;
@@ -92,6 +99,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             FractalSpawnSystem.render.SetData(colors);
             FractalSpawnSystem.renderShift.SetData(colors);
         }
+
         public static void UpdateFractal()
         {
             SpriteBatch spriteBatch = Main.spriteBatch;
@@ -112,9 +120,9 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             Vector2 t = VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
             Main.NewText($"屏幕插值{t}");
             t = VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
-            Main.NewText($"系数{t}"); 
-            effect.Parameters["uM"].SetValue(t); 
-             
+            Main.NewText($"系数{t}");
+            effect.Parameters["uM"].SetValue(t);
+
             effect.CurrentTechnique.Passes[0].Apply();
             spriteBatch.Draw(renderShift, new Vector2(), Color.White);
             spriteBatch.End();
@@ -128,9 +136,10 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
 
             gd.SetRenderTarget(Main.screenTarget);
         }
+
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            if (!LogSpiralLibraryMod.CanUseRender) 
+            if (!LogSpiralLibraryMod.CanUseRender)
             {
                 spriteBatch.DrawString(FontAssets.MouseText.Value, "请使用颜色光照模式，开启水波", Item.position - Main.screenPosition, Color.White);
                 return true;

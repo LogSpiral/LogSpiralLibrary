@@ -1,22 +1,16 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
 
 namespace LogSpiralLibrary.ForFun.HyperCube
 {
     public class HyperCube : ModItem
     {
         public override string Texture => $"Terraria/Images/Item_{ItemID.LunarBrick}";
+
         public override bool IsLoadingEnabled(Mod mod)
         {
             return false;
         }
+
         /// <summary>
         /// 获取立方体顶点坐标
         /// </summary>
@@ -52,6 +46,7 @@ namespace LogSpiralLibrary.ForFun.HyperCube
             //);
             //return v.ApplyMatrix(matrix);
         }
+
         /// <summary>
         /// 选定立方体中心进行绘制
         /// </summary>
@@ -98,6 +93,7 @@ namespace LogSpiralLibrary.ForFun.HyperCube
             DrawHyperCube(Item.Center);
             return base.PreDrawInWorld(spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
         }
+
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)
         {
             DrawHyperCube(Main.LocalPlayer.Center);
@@ -129,6 +125,7 @@ namespace LogSpiralLibrary.ForFun.HyperCube
                 new Rectangle(0, 0, 1, 1), color, (e - s).ToRotation(),
                 new Vector2(.5f, .5f), new Vector2((s - e).Length(), width), 0, 0);//单纯的直线绘制
         }
+
         /// <summary>
         /// 获取三维向量在平面上的投影坐标
         /// </summary>
@@ -140,6 +137,7 @@ namespace LogSpiralLibrary.ForFun.HyperCube
         {
             return (new Vector2(vector.X, vector.Y) - center) * height / (height - vector.Z) + center;
         }
+
         /// <summary>
         /// 获取四维向量在空间上的投影坐标
         /// </summary>

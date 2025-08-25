@@ -1,0 +1,7 @@
+GroupArgs: {
+	Condition: Condition: {0}
+	Weight: Random weight: {0}
+	ConditionWeight: Condition: {0}, Random weight: {1}
+}
+
+SomeFOO: FOO

@@ -122,7 +122,6 @@
 //            wraperBox.WrapperSize();
 //            wraperBox.IsClone = true;
 
-
 //            string modName = s.Mod.DisplayName;
 //            string categoryName = SequenceSystem.sequenceInfos[s.KeyName].Finished ? "Finished" : "Library";
 
@@ -138,7 +137,6 @@
 //            }
 //            if (!singleModCategory.dict.TryGetValue(categoryName, out var categoriedList)) //如果当前分类没添加过
 //            {
-
 //                UIDownList list = new(Language.GetOrRegister(localizationPath + (categoryName == "Finished" ? ".FinishedSequences" : ".LibrarySequences")).Value)
 //                {
 //                    Width = new(0, 1)
@@ -296,7 +294,6 @@
 //            }
 //        };
 
-
 //        saveAsButton = new UIButton<string>(Language.GetOrRegister(localizationPath + ".SaveAs").Value);
 //        saveAsButton.SetSize(128, 32);
 //        saveAsButton.Left.Set(112, 0);
@@ -389,7 +386,6 @@
 //        UIImageButton delete = new(resetable ? Main.Assets.Request<Texture2D>("Images/UI/CharCreation/HairStyle_Arrow") : Main.Assets.Request<Texture2D>("Images/UI/ButtonDelete"));
 //        delete.OnLeftClick += (evt, elem) =>
 //        {
-
 //            if (resetable)
 //            {
 //                sequence.Reset();
@@ -501,7 +497,6 @@
 //        openFolderButton.Left.Set(48, 0);
 //        BottonPanel.Append(openFolderButton);
 //        BasePanel.Append(BottonPanel);
-
 
 //        UIPanel PagePanel = new LogSpiralLibraryPanel();
 //        PagePanel.SetSize(default, 0.85f, 0.05f);
@@ -626,7 +621,6 @@
 //        SequenceLibraryPanel.Append(sequenceTitle);
 //        SequenceLibraryPanel.MinWidth = ActionLibraryPanel.MinWidth = new StyleDimension(400, 0);
 //        OuterWorkingPanel.Append(SequenceLibraryPanel);
-
 
 //        SetUpBasicInfoPanel();
 //        //ResetPage();
@@ -758,8 +752,6 @@
 //            sequence.SyncInfo(info);
 //            sequence.Save();
 
-
-
 //            SequenceToPage(box);
 //            SwitchToSequencePage(box);
 //            if (Main.netMode == NetmodeID.MultiplayerClient)
@@ -782,7 +774,6 @@
 
 //        Elements.Clear();
 //        OnInitialize();
-
 
 //        ResetPage();
 //        ReloadLib();
@@ -847,7 +838,6 @@
 //    }
 //    public override void DrawSelf(SpriteBatch spriteBatch)
 //    {
-
 //        base.DrawSelf(spriteBatch);
 //        if (hintText != string.Empty)
 //            UICommon.TooltipMouseText(hintText);

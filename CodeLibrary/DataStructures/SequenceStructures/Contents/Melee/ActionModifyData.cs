@@ -4,11 +4,11 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using Terraria.Localization;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 public struct ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1) : IXmlSerializable
 {
-
     public float actionOffsetSize = size;
     public float actionOffsetTimeScaler = timeScaler;
     public float actionOffsetKnockBack = knockBack;
@@ -25,7 +25,9 @@ public struct ActionModifyData(float size = 1, float timeScaler = 1, float knock
         float speed = target.actionOffsetTimeScaler;
         target = this with { actionOffsetTimeScaler = speed };
     }
+
     public void SetActionSpeed(ref ActionModifyData target) => target.actionOffsetTimeScaler = actionOffsetTimeScaler;
+
     public override string ToString()
     {
         //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
@@ -33,6 +35,7 @@ public struct ActionModifyData(float size = 1, float timeScaler = 1, float knock
         var result = $"({actionOffsetSize.ToString("0.00", cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString(cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
         return result;
     }
+
     public static ActionModifyData LoadFromString(string str)
     {
         var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;

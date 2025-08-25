@@ -44,7 +44,6 @@
 //        }
 //        public override void PostDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, float rotation, float scale, int whoAmI)
 //        {
-
 //            var result = (from vec in bezierCurve.results select vec.Value).ToList();
 //            for (int n = 0; n < result.Count(); n++)
 //            {

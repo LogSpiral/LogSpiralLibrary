@@ -1,12 +1,16 @@
-﻿using System.Xml;
-using System.Collections.Generic;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 
-
 public interface IGroup : ILoadable
 {
+    Type? ArgType { get; }
+
+    IReadOnlyList<IWrapperArgPair<IGroupArgument>> Contents { get; }
+
     Wrapper GetWrapper();
 
     void AppendWrapper(Wrapper wrapper, Dictionary<string, string> attributes);
@@ -81,20 +85,18 @@ public interface IGroup : ILoadable
 
     public void WriteXml(XmlWriter writer)
     {
-        
         writer.WriteAttributeString("FullName", GetType().Name);
     }
 
-
-    void ILoadable.Load(Mod mod) 
+    void ILoadable.Load(Mod mod)
     {
         if (ReadSingleWrapper) return;
         var type = GetType();
         var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
         SequenceGlobalManager.GroupTypeLookup.Add(key, type);
     }
+
     void ILoadable.Unload()
     {
-        
     }
 }

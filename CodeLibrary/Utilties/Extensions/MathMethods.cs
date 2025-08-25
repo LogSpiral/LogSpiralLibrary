@@ -2,9 +2,11 @@
 using Terraria.Utilities;
 
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 public static class MathMethods
 {
     #region 希尔伯特曲线生成，一时兴起
+
     private static List<int> FuncForHBC_1(this List<int> l1)
     {
         List<int> l = l1.CopyList();
@@ -24,6 +26,7 @@ public static class MathMethods
         }
         return l;
     }
+
     private static List<int> FuncForHBC_2(this List<int> l1)
     {
         List<int> l = l1.CopyList();
@@ -41,10 +44,12 @@ public static class MathMethods
         }
         return l;
     }
+
     private static void Add<T>(this List<T> l1, List<T> l2)
     {
         l2.ForEach(l1.Add);
     }
+
     public static List<int> HBCIndex(int t = 1)
     {
         if (t < 1)
@@ -71,6 +76,7 @@ public static class MathMethods
             return ml;
         }
     }
+
     public static List<Vector2> HBCPoint(this List<int> index)
     {
         var l = new List<Vector2>() { default };
@@ -187,11 +193,14 @@ public static class MathMethods
 
         return fac.ArrayLerp(HBCIndex(t).HBCPoint().ToArray());
     }
-    #endregion
+
+    #endregion 希尔伯特曲线生成，一时兴起
+
     public static float CrossLength(this Vector2 O, Vector2 A)
     {
         return O.X * A.Y - O.Y * A.X;
     }
+
     public static bool InTriangle(this Vector2 O, Vector2 A, Vector2 B, Vector2 C)
     {
         Vector2 v1 = O - A;
@@ -204,6 +213,7 @@ public static class MathMethods
         //bool flag2 = O.CrossLength(A) <= 0 && O.CrossLength(B) <= 0 && O.CrossLength(C) <= 0;
         return flag1;
     }
+
     /// <summary>
     /// 求t对应的贝塞尔曲线坐标
     /// </summary>
@@ -229,6 +239,7 @@ public static class MathMethods
         }
         return p;
     }
+
     public static Vector2[] BesselCurve(this Vector2[] pos, int length)
     {
         Vector2[] curvePoses = new Vector2[length];
@@ -238,6 +249,7 @@ public static class MathMethods
         }
         return curvePoses;
     }
+
     public static int NextPow(this UnifiedRandom rand, int min, int max, int times, bool aMax = false)
     {
         for (int n = 0; n < times - 1; n++)
@@ -253,12 +265,14 @@ public static class MathMethods
         }
         return rand.Next(min, max);
     }
+
     public static double GaussianRandom(this UnifiedRandom random, double mu, double sigma)
     {
         double u = -2 * Math.Log(random.NextDouble());
         double v = 2 * Math.PI * random.NextDouble();
         return Math.Sqrt(u) * Math.Cos(v) * sigma + mu;
     }
+
     /// <summary>
     /// 计算阶乘
     /// </summary>
@@ -273,6 +287,7 @@ public static class MathMethods
         for (int k = 2; k < n + 1; k++) result *= k;
         return result;
     }
+
     /// <summary>
     /// 计算组合数
     /// </summary>
@@ -280,7 +295,9 @@ public static class MathMethods
     /// <param name="b"></param>
     /// <returns>a取b，即a的阶乘除以b的阶乘乘(a-b)的阶乘的积</returns>
     public static int Combination(int a, int b) => a.Factorial() / b.Factorial() / (a - b).Factorial();
+
     #region 银月的碰撞检测
+
     public static bool LineCheck(Vector2 start, Vector2 end, float width, Rectangle hitbox)
     {
         Vector2 v = end - start;
@@ -321,6 +338,7 @@ public static class MathMethods
         private Vector2 vertex3;
         private Vector2 center;
         private Line_Segment line1, line2, line3;
+
         public Triangle(Vector2 v1, Vector2 v2, Vector2 v3)
         {
             vertex1 = v1;
@@ -328,6 +346,7 @@ public static class MathMethods
             vertex3 = v3;
             Reset();
         }
+
         public Vector2 Vertex1
         {
             get
@@ -340,6 +359,7 @@ public static class MathMethods
                 Reset();
             }
         }
+
         public Vector2 Vertex2
         {
             get
@@ -352,6 +372,7 @@ public static class MathMethods
                 Reset();
             }
         }
+
         public Vector2 Vertex3
         {
             get
@@ -364,6 +385,7 @@ public static class MathMethods
                 Reset();
             }
         }
+
         public Vector2 Center
         {
             get
@@ -371,6 +393,7 @@ public static class MathMethods
                 return center;
             }
         }
+
         public static bool Intersect(Triangle triangle1, Triangle triangle2)
         {
             if (Line_Segment.Intersect(triangle1.line1, triangle2.line1))
@@ -419,6 +442,7 @@ public static class MathMethods
             }
             return false;
         }
+
         public static bool Point_In_Triangle(Vector2 point, Triangle triangle)
         {
             bool flag1, flag2, flag3;
@@ -431,15 +455,18 @@ public static class MathMethods
             }
             return false;
         }
+
         private void Reset()
         {
             ResetCenter();
             ResetLine();
         }
+
         private void ResetCenter()
         {
             center = (vertex1 + vertex2 + vertex3) / 3;
         }
+
         private void ResetLine()
         {
             line1 = new Line_Segment(vertex1, vertex2);
@@ -453,12 +480,14 @@ public static class MathMethods
     {
         private Vector2 startpos, endpos;
         private float a, b, c;
+
         public Line_Segment(Vector2 start, Vector2 end)
         {
             startpos = start;
             endpos = end;
             ABC();
         }
+
         public Vector2 StartPos
         {
             get
@@ -471,6 +500,7 @@ public static class MathMethods
                 ABC();
             }
         }
+
         public Vector2 EndPos
         {
             get
@@ -483,6 +513,7 @@ public static class MathMethods
                 ABC();
             }
         }
+
         public static bool Intersect(Line_Segment line1, Line_Segment line2)
         {
             float x = (line2.B * line1.C - line1.B * line2.C) / (line1.B * line2.A - line2.B * line1.A);
@@ -496,10 +527,12 @@ public static class MathMethods
             }
             return false;
         }
+
         public static bool Is_Same_Side(Vector2 pos1, Vector2 pos2, Line_Segment line)
         {
             return (line.A * pos1.X + line.B * pos1.Y + line.C) * (line.A * pos2.X + line.B * pos2.Y + line.C) > 0;
         }
+
         public float A
         {
             get
@@ -507,6 +540,7 @@ public static class MathMethods
                 return a;
             }
         }
+
         public float B
         {
             get
@@ -514,6 +548,7 @@ public static class MathMethods
                 return b;
             }
         }
+
         public float C
         {
             get
@@ -521,6 +556,7 @@ public static class MathMethods
                 return c;
             }
         }
+
         private void ABC()
         {
             a = endpos.Y - startpos.Y;
@@ -528,5 +564,6 @@ public static class MathMethods
             c = endpos.X * startpos.Y - endpos.Y * startpos.X;
         }
     }
-    #endregion
+
+    #endregion 银月的碰撞检测
 }

@@ -171,7 +171,6 @@
 //                    sBox.groupBoxes.Remove(group);
 //                    group.Remove();
 
-
 //                }
 //                if (sBox.Parent is WraperBox wb)
 //                {
@@ -203,7 +202,6 @@
 //        sequenceUI.OuterWorkingPanel.RemoveChild(this);
 //        box.InsertWraper(this, evt.MousePosition);
 //        sequenceUI.PendingModify = true;
-
 
 //        Dragging = false;
 //        base.LeftMouseUp(evt);

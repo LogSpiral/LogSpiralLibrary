@@ -1,5 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
-using Terraria.Audio;
+﻿using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 /// <summary>
@@ -7,15 +7,16 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 /// </summary>
 public class StandardInfo
 {
-
     /// <summary>
     /// 物品贴图朝向
     /// </summary>
     public float standardRotation = MathHelper.PiOver4;
+
     /// <summary>
     /// 物品手持中心
     /// </summary>
     public Vector2 standardOrigin = new(.1f, .9f);
+
     /// <summary>
     /// 标准持续时长
     /// </summary>
@@ -25,10 +26,12 @@ public class StandardInfo
     /// 标准射击冷却
     /// </summary>
     public int standardShotCooldown;
+
     /// <summary>
     /// 标准颜色
     /// </summary>
     public Color standardColor;
+
     /// <summary>
     /// 高亮贴图
     /// </summary>
@@ -41,9 +44,9 @@ public class StandardInfo
 
     public VertexDrawStandardInfo VertexStandard
     {
-        get 
+        get
         {
-            if (field == null) 
+            if (field == null)
             {
                 field = new VertexDrawStandardInfo();
                 InitalizeVertexStandard(field);
@@ -51,15 +54,18 @@ public class StandardInfo
             return field;
         }
     }
+
     public int itemType;
     public SoundStyle? soundStyle;
     public float dustAmount;
     public Rectangle? frame;
     public float extraLight = 1f;
+
     public StandardInfo()
     {
     }
-    public StandardInfo(float rotation, Vector2 origin,int scaler, int timer, Color color, Texture2D glow, int type)
+
+    public StandardInfo(float rotation, Vector2 origin, int scaler, int timer, Color color, Texture2D glow, int type)
     {
         standardRotation = rotation;
         standardOrigin = origin;
@@ -70,13 +76,14 @@ public class StandardInfo
         itemType = type;
     }
 
-    public void InitalizeVertexStandard(VertexDrawStandardInfo vertexStandard) 
+    public void InitalizeVertexStandard(VertexDrawStandardInfo vertexStandard)
     {
         vertexStandard.scaler = standardScaler;
         vertexStandard.timeLeft = 30;
         vertexStandard.colorVec = Vector3.one * .333f;
         vertexStandard.active = true;
     }
+
     //TODO 改成弹幕序列独有
 }
 
@@ -92,6 +99,7 @@ public class VertexDrawStandardInfo
     public float scaler;
     public float heatRotation;
     public float alphaFactor = 1f;
+
     /// <summary>
     /// x:方位渐变 y:武器贴图 z:热度图 ,均为颜色系数
     /// </summary>

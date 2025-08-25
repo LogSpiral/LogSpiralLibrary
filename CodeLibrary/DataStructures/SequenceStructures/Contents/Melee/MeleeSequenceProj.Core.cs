@@ -1,14 +1,17 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+
 /// <summary>
 /// 来把基剑
 /// </summary>
 public abstract partial class MeleeSequenceProj : ModProjectile
 {
     #region 辅助属性
+
     //辅助更新函数使用的属性
     public Player Player => Main.player[Projectile.owner];
+
     public MeleeAction CurrentElement
     {
         get
@@ -19,9 +22,11 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         }
         set;
     }
-    #endregion
+
+    #endregion 辅助属性
 
     #region 参数属性
+
     // 这里算是这个弹幕的核心部分
     // 分别是标准参数
     // 目前执行组件
@@ -38,19 +43,19 @@ public abstract partial class MeleeSequenceProj : ModProjectile
             return field;
         }
     }
+
     // 改成发出弹幕时生成而非总是从头new?
-    #endregion
+
+    #endregion 参数属性
 
     #region 重写函数
 
     public virtual void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
     {
-
     }
 
     public virtual void UpdateStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
     {
-
     }
 
     // 你只需要知道上面这一段负责 *记录* 我们弹幕具体是怎么运行
@@ -106,8 +111,8 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         base.AI();
     }
 
-
     //还有这个是阻止弹幕自行更新位置的，因为我们会在核心逻辑那里写入弹幕的位置
     public override bool ShouldUpdatePosition() => false;
-    #endregion
+
+    #endregion 重写函数
 }

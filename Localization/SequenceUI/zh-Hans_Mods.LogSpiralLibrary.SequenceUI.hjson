@@ -1,4 +1,4 @@
-﻿DefaultPage: 目录
+DefaultPage: 目录
 DefaultPageHint:
 	'''
 	你正处于默认页面，可以在这里选择一个序列以开始编辑。
@@ -12,11 +12,6 @@ Save: 保存
 SaveAs: 另存为...
 Revert: 撤销修改
 SaveOrRevertPlz: 请先保存或撤销修改
-InfoTitle: 当前页面序列信息
-PropTitle: 选中组件信息
-ActionLibrary: 组件库
-SequenceLibrary: 序列库
-Cancel: 取消
 OK: 确定
 EmptyFileNameException: 文件名不可为空
 EmptyDisplayNameException: 显示名不可空
@@ -41,3 +36,8 @@ resetSequence: 将该序列重置为预设值
 deleteSequence: 删除该序列
 SequenceFailed: 未找到序列：
 ActionFailed: 未找到组件：
+Cancel: 取消
+SequenceLibrary: 序列库
+ActionLibrary: 组件库
+PropTitle: 选中组件信息
+InfoTitle: 当前页面序列信息

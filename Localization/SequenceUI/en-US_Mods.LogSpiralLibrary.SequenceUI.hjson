@@ -1,4 +1,4 @@
-﻿DefaultPage: Menu
+DefaultPage: Menu
 DefaultPageHint:
 	'''
 	You're on the default page, where you can select a sequence to start editing.
@@ -12,11 +12,6 @@ Save: Save
 SaveAs: Save As...
 Revert: Revert Changing
 SaveOrRevertPlz: Please Save(As) or Revert
-InfoTitle: Info of current Page Sequence
-PropTitle: Info of Selected module
-ActionLibrary: Action Library
-SequenceLibrary: Sequence Library
-Cancel: Cancel
 OK: OK
 EmptyFileNameException: The file name cannot be empty
 EmptyDisplayNameException: The display name cannot be empty
@@ -39,5 +34,10 @@ OpenSquenceFolder:
 	'''
 resetSequence: RESET this Sequence to Preset value
 deleteSequence: DELETE this Sequence
-SequenceFailed: SequenceNotFound:
-ActionFailed: ActionNotFound:
+SequenceFailed: Sequence Not Found:
+ActionFailed: Element Not Found:
+Cancel: SequenceUI.Cancel
+SequenceLibrary: Sequence Library
+ActionLibrary: Element Library
+PropTitle: Info of current page Sequence
+InfoTitle: Info of selected Element

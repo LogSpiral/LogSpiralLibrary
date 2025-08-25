@@ -1,33 +1,18 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using System.Collections.Generic;
-using System.Xml;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 
-public class ConditionalSingleGroup(Wrapper wrapper, Condition condition, string conditionName) : IGroup
+public class ConditionalSingleGroup() : SingleGroup<ConditionArg>
 {
-    public ConditionalSingleGroup() : this(null!, null!, null!)
-    {
+    public override Wrapper GetWrapper() => Data.Argument.Condition.IsMet() ? Data.Wrapper : null;
 
-    }
-    Wrapper IGroup.GetWrapper() => (_condition?.IsMet() ?? false) ? _wrapper : null;
-    public bool ReadSingleWrapper => true;
-    private Wrapper _wrapper = wrapper;
-    private string _conditionName = conditionName;
-    private Condition _condition = condition;
-    public void AppendWrapper(Wrapper wrapper, Dictionary<string, string> attributes)
+    public ConditionalSingleGroup(Wrapper wrapper, string conditionKey) : this()
     {
-        _wrapper = wrapper;
-        if (!attributes.Remove("condition", out string conditionName) || !SequenceSystem.Conditions.TryGetValue(conditionName, out var condition))
-            condition = SequenceSystem.AlwaysCondition;
-        _conditionName = conditionName;
-        _condition = condition;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        _wrapper.WriteXml(writer, new Dictionary<string, string>() { { "condition", _conditionName } });
+        Data = new()
+        {
+            Wrapper = wrapper,
+            Argument = new(conditionKey)
+        };
     }
 }

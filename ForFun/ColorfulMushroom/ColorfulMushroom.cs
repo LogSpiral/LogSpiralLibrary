@@ -1,11 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using LogSpiralLibrary.ForFun.GeogebraShin;
 using ReLogic.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -15,6 +9,7 @@ namespace LogSpiralLibrary.ForFun.ColorfulMushroom;
 public class ColorfulMushroom : ModItem
 {
     public override bool IsLoadingEnabled(Mod mod) => false;
+
     public override void SetDefaults()
     {
         Item.useStyle = ItemUseStyleID.HoldUp;
@@ -22,6 +17,7 @@ public class ColorfulMushroom : ModItem
         Item.useTime = Item.useAnimation = 12;
         base.SetDefaults();
     }
+
     public override void UseAnimation(Player player)
     {
         if (player.itemAnimation == 0)
@@ -32,12 +28,16 @@ public class ColorfulMushroom : ModItem
         }
         base.UseAnimation(player);
     }
+
     public static bool active;
 }
+
 public class ColorfulMushroomSystem : ModSystem
 {
     public override bool IsLoadingEnabled(Mod mod) => false;
+
     public static ColorfulMushroomData ScreenTransformData;
+
     public override void PostSetupContent()
     {
         if (Main.dedServ) return;
@@ -45,11 +45,13 @@ public class ColorfulMushroomSystem : ModSystem
         Filters.Scene["LogSpiralLibrary:ColorfulMushroom"] = new Filter(ScreenTransformData, EffectPriority.VeryHigh);
         base.PostSetupContent();
     }
+
     public override void PreUpdateEntities()
     {
         if (Main.dedServ) return;
         ControlScreenShader("LogSpiralLibrary:ColorfulMushroom", ColorfulMushroom.active);
     }
+
     private static void ControlScreenShader(string name, bool state)
     {
         if (!Filters.Scene[name].IsActive() && state)
@@ -58,15 +60,17 @@ public class ColorfulMushroomSystem : ModSystem
             Filters.Scene.Deactivate(name);
     }
 }
+
 public class ColorfulMushroomData : ScreenShaderData
 {
     public ColorfulMushroomData(string passName) : base(passName)
     {
     }
+
     public ColorfulMushroomData(Asset<Effect> shader, string passName) : base(shader, passName)
     {
-
     }
+
     public override void Apply()
     {
         //base.Apply();

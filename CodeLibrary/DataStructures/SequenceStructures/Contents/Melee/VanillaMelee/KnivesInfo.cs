@@ -1,19 +1,24 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// ─━╋ ─━╋ ─━╋
 /// </summary>
 public class KnivesInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float offsetRotation => base.offsetRotation + MathF.Pow(1 - Factor, 4) * MathHelper.Pi * 4;
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 1024 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 256);
     public override bool Attacktive => true;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         Timer--;
@@ -48,5 +53,6 @@ public class KnivesInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

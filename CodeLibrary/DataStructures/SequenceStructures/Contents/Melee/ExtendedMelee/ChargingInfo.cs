@@ -6,9 +6,11 @@ using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
+
 public class ChargingInfo : ExtendedMelee
 {
     #region 参数字段
+
     [ElementCustomData]
     [Range(-MathF.PI, MathF.PI)]
     [Increment(0.1f)]
@@ -21,15 +23,19 @@ public class ChargingInfo : ExtendedMelee
 
     [ElementCustomData]
     public bool AutoNext = false;
-    #endregion
+
+    #endregion 参数字段
 
     #region 重写属性
+
     public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
     public override float offsetSize => base.offsetSize;
     public override bool Attacktive => Timer == 1;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
@@ -44,7 +50,6 @@ public class ChargingInfo : ExtendedMelee
                     Rotation = (tarpos - Owner.Center).ToRotation();
                     break;
                 }
-
         }
         base.Update(triggered);
         if (Timer > 0)
@@ -54,7 +59,6 @@ public class ChargingInfo : ExtendedMelee
                 MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 2f);
 
                 MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1.5f);
-
             }
         if (Timer == 1 && Counter == CounterMax)
         {
@@ -64,12 +68,10 @@ public class ChargingInfo : ExtendedMelee
             {
                 MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4));
                 MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2));
-
             }
         }
         if (!AutoNext && Timer < 2 && Counter == CounterMax)
         {
-
             if (triggered)
                 Timer++;
             else
@@ -88,6 +90,7 @@ public class ChargingInfo : ExtendedMelee
             SoundEngine.PlaySound(MySoundID.MagicStaff);
         }
     }
+
     public override void OnEndSingle()
     {
         if (!AutoNext)
@@ -100,6 +103,8 @@ public class ChargingInfo : ExtendedMelee
             }
         base.OnEndSingle();
     }
+
     public override bool Collide(Rectangle rectangle) => false;
-    #endregion
+
+    #endregion 重写函数
 }

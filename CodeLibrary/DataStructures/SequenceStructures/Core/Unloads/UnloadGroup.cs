@@ -1,19 +1,29 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
-using System.Collections.Generic;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 
 public class UnloadGroup : IGroup
 {
     #region Core
-    static readonly Wrapper NotAvailableInstance = new(default(ISequenceElement)!);
+
+    private static readonly Wrapper NotAvailableInstance = new(default(ISequenceElement)!);
+
     Wrapper IGroup.GetWrapper() => NotAvailableInstance;
-    #endregion
+
+    #endregion Core
 
     #region IO
+
     public string FullName { private get; set; }
+
+    public Type ArgType => null;
+
+    public IReadOnlyList<IWrapperArgPair<IGroupArgument>> Contents => [];
+
     private List<XElement>? ExtraElements;
 
     public void ReadXml(XmlReader reader)
@@ -53,11 +63,10 @@ public class UnloadGroup : IGroup
     {
         throw new NotImplementedException();
     }
-    #endregion
 
+    #endregion IO
 
-    public void Load(Mod mod) 
+    public void Load(Mod mod)
     {
-
     }
 }

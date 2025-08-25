@@ -1,9 +1,9 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
 
 /// <summary>
@@ -12,6 +12,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class EruptionInfo : VanillaMelee
 {
     #region 重写属性
+
     //public override float offsetSize => (-MathF.Pow(0.5f - Factor, 2) * 28 + 8) * .75f;
     //public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi / 3;
 
@@ -19,9 +20,11 @@ public class EruptionInfo : VanillaMelee
     public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 辅助函数
+
     private CustomVertexInfo[] EruptionVertex(Texture2D texture, float alpha)
     {
         Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
@@ -88,9 +91,10 @@ public class EruptionInfo : VanillaMelee
         return [.. result];
     }
 
-    #endregion
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         base.OnStartSingle();
@@ -99,6 +103,7 @@ public class EruptionInfo : VanillaMelee
         Flip = Main.rand.NextBool();
         SoundEngine.PlaySound(SoundID.Item116, Owner.Center);
     }
+
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
         base.OnHitEntity(victim, damageDone, context);
@@ -114,6 +119,7 @@ public class EruptionInfo : VanillaMelee
             }
         }
     }
+
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
         float origf = fTimer;
@@ -128,5 +134,5 @@ public class EruptionInfo : VanillaMelee
         return [.. result];
     }
 
-    #endregion
+    #endregion 重写函数
 }

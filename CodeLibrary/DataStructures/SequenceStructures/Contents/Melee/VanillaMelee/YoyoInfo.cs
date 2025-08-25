@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
 
 /// <summary>
@@ -11,17 +12,22 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class YoyoInfo : VanillaMelee
 {
     #region 辅助字段
+
     public Vector2 realCenter;
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
     public override Vector2 offsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => Factor > 0.05f;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         Vector2 tarVec = Owner switch
@@ -89,5 +95,6 @@ public class YoyoInfo : VanillaMelee
         GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

@@ -5,18 +5,22 @@ using System.Linq;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 石巨人之拳！！
 /// </summary>
 public class FistInfo : VanillaMelee
 {
     #region 重写属性
+
     public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2) * 512;
     public override bool Attacktive => Factor < .65f;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
@@ -32,7 +36,6 @@ public class FistInfo : VanillaMelee
         }
         base.OnStartAttack();
     }
-
 
     public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
     {
@@ -56,5 +59,6 @@ public class FistInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

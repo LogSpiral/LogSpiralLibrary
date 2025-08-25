@@ -1,25 +1,18 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 
 public class MaskEffect(Texture2D fillTex, Color glowColor, float tier1, float tier2, Vector2 offset, bool lightAsAlpha, bool inverse) : IRenderEffect
 {
-
     #region 参数属性
 
     /// <summary>
     /// 到达阈值之后替换的贴图
     /// </summary>
     public Texture2D FillTex { get; set; } = fillTex;
-
 
     /// <summary>
     /// 低于阈值的颜色
@@ -42,7 +35,7 @@ public class MaskEffect(Texture2D fillTex, Color glowColor, float tier1, float t
     /// </summary>
     public bool Inverse { get; set; } = inverse;
 
-    #endregion
+    #endregion 参数属性
 
     #region 接口实现
 
@@ -52,19 +45,18 @@ public class MaskEffect(Texture2D fillTex, Color glowColor, float tier1, float t
 
     public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
-
         #region 准备状态
 
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-        #endregion
+        #endregion 准备状态
 
         #region 切换绘制目标至备用画布
 
         graphicsDevice.SetRenderTarget(assistRender);
         graphicsDevice.Clear(Color.Transparent);
 
-        #endregion
+        #endregion 切换绘制目标至备用画布
 
         #region 设置参数
 
@@ -81,7 +73,7 @@ public class MaskEffect(Texture2D fillTex, Color glowColor, float tier1, float t
         Main.graphics.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
         effect.CurrentTechnique.Passes[1].Apply();
 
-        #endregion
+        #endregion 设置参数
 
         #region 绘制内容
 
@@ -91,24 +83,26 @@ public class MaskEffect(Texture2D fillTex, Color glowColor, float tier1, float t
         // 毕竟那两张画布没什么本质的不同.png
         Utils.Swap(ref contentRender, ref assistRender);
 
-        #endregion
+        #endregion 绘制内容
 
         #region 恢复状态
 
         spriteBatch.End();
 
-        #endregion
-
+        #endregion 恢复状态
     }
 
-    #endregion
+    #endregion 接口实现
 
-    public MaskEffect() : this(null, default, 0, 0, default, true, false) { }
+    public MaskEffect() : this(null, default, 0, 0, default, true, false)
+    {
+    }
 }
 
 public class MaskConfigs : IAvailabilityChangableConfig
 {
     public bool Available { get; set; } = false;
+
     [Range(0, 6)]
     [Slider]
     [DrawTicks]
@@ -144,7 +138,8 @@ public class MaskConfigs : IAvailabilityChangableConfig
 
     [JsonIgnore]
     public MaskEffect EffectInstance => !Available ? new() : new MaskEffect(LogSpiralLibraryMod.Mask[SkyStyle].Value, GlowColor, Tier1, Tier2, default, true, false);
-    // field ??= 
+
+    // field ??=
 
     public void CopyToInstance(MaskEffect effect)
     {
@@ -153,5 +148,4 @@ public class MaskConfigs : IAvailabilityChangableConfig
         effect.Tier1 = Tier1;
         effect.Tier2 = Tier2;
     }
-
 }

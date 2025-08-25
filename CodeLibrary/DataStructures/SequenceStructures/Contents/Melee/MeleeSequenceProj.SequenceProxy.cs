@@ -1,9 +1,10 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using System.IO;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 //这个文件包含了由弹幕接入序列元素代理的实现
-partial class MeleeSequenceProj
+public partial class MeleeSequenceProj
 {
     public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
     {

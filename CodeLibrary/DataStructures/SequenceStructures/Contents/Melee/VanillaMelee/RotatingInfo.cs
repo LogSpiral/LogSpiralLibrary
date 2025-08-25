@@ -4,18 +4,22 @@ using System.Linq;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 其实是天龙之怒
 /// </summary>
 public class RotatingInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (Flip ? -1 : 1);
     public override Vector2 offsetOrigin => base.offsetOrigin;
     public override bool Attacktive => true;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
@@ -26,6 +30,7 @@ public class RotatingInfo : VanillaMelee
         SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartSingle();
     }
+
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
         float origf = (float)GlobalTimeSystem.GlobalTimePaused;
@@ -39,5 +44,6 @@ public class RotatingInfo : VanillaMelee
         GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

@@ -1,22 +1,25 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using Microsoft.Build.Tasks;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 我没拿到真空刀
 /// </summary>
 public class ArkhalisInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float Factor => base.Factor * 2 % 1;
     public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.PiOver2;
     public override bool Attacktive => Factor < 0.85f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
@@ -78,5 +81,6 @@ public class ArkhalisInfo : VanillaMelee
     public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
     {
     }
-    #endregion
+
+    #endregion 重写函数
 }

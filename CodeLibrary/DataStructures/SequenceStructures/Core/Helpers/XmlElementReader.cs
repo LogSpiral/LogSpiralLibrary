@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -10,9 +6,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.He
 
 public class XmlElementReader
 {
-    Dictionary<string, XElement> Elements { get; } = [];
+    private Dictionary<string, XElement> Elements { get; } = [];
+
     // Dictionary<string, List<XElement>> MultiElements { get; } = [];
-    readonly bool _popMode;
+    private readonly bool _popMode;
+
     public XmlElementReader(XmlReader reader, bool popMode = true)
     {
         while (reader.NodeType == XmlNodeType.Element)
@@ -30,9 +28,10 @@ public class XmlElementReader
 
         _popMode = popMode;
     }
-    public XElement this[string name] 
+
+    public XElement this[string name]
     {
-        get 
+        get
         {
             if (_popMode)
                 return Elements.Remove(name, out var result) ? result : null;
@@ -40,7 +39,8 @@ public class XmlElementReader
                 return Elements.TryGetValue(name, out var result) ? result : null;
         }
     }
-    public List<XElement> GetElements() 
+
+    public List<XElement> GetElements()
     {
         List<XElement> result = [];
         foreach (var element in Elements.Values)
@@ -48,7 +48,8 @@ public class XmlElementReader
         if (_popMode) Elements.Clear();
         return result;
     }
-    //public List<XElement> GetMultiElements(string name) 
+
+    //public List<XElement> GetMultiElements(string name)
     //{
     //    if (_popMode)
     //        return MultiElements.Remove(name, out var result) ? result : null;

@@ -1,5 +1,6 @@
 ﻿namespace LogSpiralLibrary;
-partial class LogSpiralLibraryMod
+
+public partial class LogSpiralLibraryMod
 {
     public static Effect ItemEffect => ModAsset.ItemGlowEffect_xnb.Value;
     public static Effect ItemEffectEX => ModAsset.ItemGlowEffectEX.Value;

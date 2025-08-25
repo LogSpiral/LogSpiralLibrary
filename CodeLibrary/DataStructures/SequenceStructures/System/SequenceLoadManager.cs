@@ -1,10 +1,12 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+
 public static class SequenceGlobalManager
 {
     /// <summary>
@@ -44,10 +46,18 @@ public static class SequenceGlobalManager
     /// </summary>
     public static XmlSerializer Serializer { get => field ??= new(typeof(Sequence)); }
 }
-public static class SequenceManager<T> where T : ISequenceElement
+
+public abstract class SequenceManager
 {
-    public static Dictionary<string, Sequence> Sequences { get; } = [];
+    public Dictionary<string, Sequence> Sequences { get; } = [];
+    public Dictionary<string, Type> ElementTypeLookup { get; } = [];
+}
+
+public class SequenceManager<T> : SequenceManager where T : ISequenceElement
+{
+    public static SequenceManager<T> Instance { get => field ??= new(); }
     private static bool _loaded;
+
     public static void Load()
     {
         if (_loaded) return;
@@ -76,26 +86,32 @@ public static class SequenceManager<T> where T : ISequenceElement
 
                 var fullName = $"{modName}/{Path.GetFileNameWithoutExtension(name)}";
                 using MemoryStream stream = new(mod.GetFileBytes(name));
-                RegisterSingleSequence(fullName, stream);
+                var sequence = RegisterSingleSequence(fullName, stream);
+                sequence.Data.ModDefinition = new(modName);
             }
         }
-        #endregion
+
+        #endregion 加载模组预设序列
 
         #region 加载本地文件夹目录文件
-        var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{typeof(T).Name}";
+
+        var path = Path.Combine(SequenceSystem.SequenceSavePath, typeof(T).Name);
         if (!Directory.Exists(path)) return;
-        var list = SequenceLoadingHelper.GetAllFilesByDir(path);
+        List<FileInfo> list = [];
+        SequenceLoadingHelper.GetAllFilesByDir(path, list);
         foreach (FileInfo file in list)
         {
-            var modName = file.Directory.Name;
+            if (file.Extension != ".xml") continue;
+            var fullPath = file.FullName.Replace($"{path}\\", "").Replace(".xml", "").Replace('\\', '/');
+            var modName = fullPath.Split("/")[0];
             if (!ModLoader.TryGetMod(modName, out var mod))
                 continue;
-
-            string fullName = $"{modName}/{Path.GetFileNameWithoutExtension(file.Name)}";
             using FileStream stream = new(file.FullName, FileMode.Open);
-            RegisterSingleSequence(fullName, stream);
+            var sequence = RegisterSingleSequence(fullPath, stream);
+            sequence.Data.ModDefinition = new(modName);
         }
-        #endregion
+
+        #endregion 加载本地文件夹目录文件
     }
 
     public static Sequence RegisterSingleSequence(string fullName, Stream stream)
@@ -108,27 +124,27 @@ public static class SequenceManager<T> where T : ISequenceElement
         {
             var loadedSequence = (Sequence)SequenceGlobalManager.Serializer.Deserialize(stream);
             sequence.Groups = loadedSequence.Groups;
-            Sequences[fullName] = sequence;
+            sequence.Data = loadedSequence.Data;
+            Instance.Sequences[fullName] = sequence;
             SequenceGlobalManager.SequenceLookup[fullName] = sequence;
             return sequence;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             LogSpiralLibraryMod.Instance.Logger.Error($"Couldn't load sequence: {nameof(T)}-{fullName}\n Message as follows:{e.Message}");
             return null;
         }
     }
 
-    public static void RegisterSingleSequence(string fullName, Sequence sequence) 
+    public static void RegisterSingleSequence(string fullName, Sequence sequence)
     {
         SequenceGlobalManager.UnloadSequences.Remove(fullName);
-        Sequences[fullName] = sequence;
+        Instance.Sequences[fullName] = sequence;
         SequenceGlobalManager.SequenceLookup[fullName] = sequence;
     }
 }
 
-
-file static class SequenceLoadingHelper 
+internal static class SequenceLoadingHelper
 {
     /// <summary>
     /// 获得指定目录下的所有文件
@@ -166,12 +182,25 @@ file static class SequenceLoadingHelper
         DirectoryInfo[] subDir = dir.GetDirectories();
         foreach (DirectoryInfo d in subDir)
         {
-            List<FileInfo> subList = GetFilesByDir(d.FullName);
+            List<FileInfo> subList = GetAllFilesByDir(d.FullName);
             foreach (FileInfo subFile in subList)
             {
                 list.Add(subFile);
             }
         }
         return list;
+    }
+
+    public static void GetAllFilesByDir(string path, List<FileInfo> list)
+    {
+        DirectoryInfo dir = new(path);
+
+        FileInfo[] fi = dir.GetFiles();
+
+        list.AddRange(fi);
+
+        DirectoryInfo[] subDir = dir.GetDirectories();
+        foreach (DirectoryInfo d in subDir)
+            GetAllFilesByDir(d.FullName, list);
     }
 }

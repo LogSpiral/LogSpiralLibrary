@@ -12,18 +12,23 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class BoomerangInfo : VanillaMelee
 {
     #region 辅助字段
+
     public bool back;
     public Vector2 realCenter;
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.25f;
     public override Vector2 offsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         if (Factor <= .5f)
@@ -103,5 +108,6 @@ public class BoomerangInfo : VanillaMelee
         GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

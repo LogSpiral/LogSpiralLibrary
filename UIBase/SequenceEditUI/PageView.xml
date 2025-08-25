@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Body Class="LogSpiralLibrary.UIBase.SequenceEditUI.PageView" FlexShrink="1" FitWidth="true" Height="80%" Top="100#" CrossAlignment="Center">
+	<ElementGroup FitWidth="true" FlexGrow="1" FlexShrink="1" Top="50#" Height="100%" OverflowHidden="true" Margin="8 0 0 0" IgnoreMouseInteraction="true">
+		<TextView Name="Title" Top="50#" TextAlign="0 0.5"  IgnoreMouseInteraction="true" />
+	</ElementGroup>
+	<Image Name="CloseButton" ImageAlign="0.5" Margin="8" BorderRadius="4" Width="24px" Height="24px" />
+</Body>

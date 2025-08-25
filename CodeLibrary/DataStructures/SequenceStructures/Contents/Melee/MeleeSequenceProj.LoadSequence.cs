@@ -6,24 +6,26 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Terraria.ModLoader;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
-partial class MeleeSequenceProj
+public partial class MeleeSequenceProj
 {
     //初始化-加载序列数据
     /// <summary>
     /// 是否是本地序列的弹幕
     /// </summary>
-    bool IsLocalProj => Player.whoAmI == Main.myPlayer;
+    private bool IsLocalProj => Player.whoAmI == Main.myPlayer;
+
     /// <summary>
     /// 标记为完工，设置为true后将读取与文件同目录下同类名的xml文件(参考Texture默认读取
     /// </summary>
     public virtual bool LabeledAsCompleted => false;
+
     public static Dictionary<int, Sequence> LocalMeleeSequence { get; } = [];
     protected Sequence meleeSequence = null;
     public SequenceModel SequenceModel { get; protected set; }
+
     //这两个函数是用来初始化执行的逻辑序列的
     //因为之前还没有UI编辑制作或者XML文件记录序列，所以之前是重写SetUpSequence来写入序列的具体内容
     public virtual void SetUpSequence(Sequence sequence, string modName, string fileName)
@@ -36,18 +38,20 @@ partial class MeleeSequenceProj
                 var fullName = FullName;
                 using MemoryStream stream = new(Mod.GetFileBytes($"{inModDirectoryPath}/{Name}.xml"));
                 LocalMeleeSequence[Type] = localSeq = SequenceManager<MeleeAction>.RegisterSingleSequence(fullName, stream);
+                localSeq.Data.ModDefinition = new(Mod.Name);
             }
             meleeSequence = localSeq;
             return;
         }
         if (IsLocalProj)
         {
-            var path = $"{Main.SavePath}/Mods/LogSpiralLibrary_Sequence/{nameof(MeleeAction)}/{modName}/{fileName}.xml";
+            var path = Path.Combine(SequenceSystem.SequenceSavePath, nameof(MeleeAction), modName, $"{fileName}.xml");
             string fullName = $"{modName}/{fileName}";
             if (File.Exists(path))
             {
                 using FileStream fs = new(path, FileMode.Open);
                 meleeSequence = SequenceManager<MeleeAction>.RegisterSingleSequence(fullName, fs);
+                meleeSequence.Data.ModDefinition = new(Mod.Name);
             }
             else
             {
@@ -73,12 +77,14 @@ partial class MeleeSequenceProj
             // 非本地序列代理弹幕没有序列实例，只有接收的元素实例
         }
     }
+
     public virtual void InitializeSequence(string modName, string fileName)
     {
         Main.NewText("111");
         if (!LabeledAsCompleted
             && IsLocalProj
             && SequenceManager<MeleeAction>
+                .Instance
                 .Sequences
                 .TryGetValue($"{modName}/{fileName}",
                 out var value)
@@ -100,12 +106,14 @@ partial class MeleeSequenceProj
             Projectile.netUpdate = true;
         };
     }
+
     public override void OnSpawn(IEntitySource source)
     {
         InitializeSequence(Mod.Name, Name);
 
         base.OnSpawn(source);
     }
+
     public override void Load()
     {
         var methods = GetType().GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);

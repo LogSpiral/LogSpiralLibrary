@@ -1,4 +1,5 @@
 ﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+
 public interface IRenderDrawingContent
 {
     /// <summary>
@@ -15,5 +16,6 @@ public interface IRenderDrawingContent
     /// 用于<see cref="SpriteBatch.End()">之类
     /// </summary>
     void PostDraw(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice);
+
     bool Active { get; }
 }

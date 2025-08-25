@@ -1,7 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures;
-using ReLogic.Content;
-using System;
+﻿using ReLogic.Content;
 using Terraria.Audio;
 using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
@@ -11,11 +8,13 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
     public class GeogebraShin : ModItem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("圆神");
             // Tooltip.SetDefault("你知道我要说什么的对吧");
         }
+
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -24,6 +23,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             //Item.UseSound = null;
             base.SetDefaults();
         }
+
         public override void UseAnimation(Player player)
         {
             if (player.itemAnimation == 0)
@@ -43,12 +43,16 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             }
             base.UseAnimation(player);
         }
+
         public static bool active;
     }
+
     public class GeogebraShinSystem : ModSystem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
+
         public static GeogebraShinData ScreenTransformData;
+
         public override void PostSetupContent()
         {
             if (Main.dedServ) return;
@@ -57,11 +61,13 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             Filters.Scene["LogSpiralLibrary:GeogebraShin"] = new Filter(ScreenTransformData, EffectPriority.Medium);
             base.PostSetupContent();
         }
+
         public override void PreUpdateEntities()
         {
             if (Main.dedServ) return;
             ControlScreenShader("LogSpiralLibrary:GeogebraShin", GeogebraShin.active);
         }
+
         private void ControlScreenShader(string name, bool state)
         {
             if (!Filters.Scene[name].IsActive() && state)
@@ -74,18 +80,21 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             }
         }
     }
+
     public class GeogebraShinData : ScreenShaderData
     {
         public GeogebraShinData(string passName) : base(passName)
         {
         }
+
         public GeogebraShinData(Asset<Effect> shader, string passName) : base(shader, passName)
         {
-
         }
+
         public override void Apply()
         {
             #region Old
+
             ////float[] m = LogSpiralLibraryConfig.instance.Matrix;
             ////Matrix matrix = new Matrix
             ////    (
@@ -134,9 +143,11 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             ////    dynamic coolerPlr = value;
             ////    Main.instance.GraphicsDevice.Textures[1] = coolerPlr.colorInfo.Item1;
             ////}
-            #endregion
+
+            #endregion Old
 
             #region 采样图
+
             //var texture = Main.LocalPlayer.GetModPlayer<CoolerItemVisualEffectPlayer>().colorInfo.tex;
             //if (texture != null)
             //{
@@ -148,7 +159,8 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
 
             //}
             //Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearClamp;
-            #endregion
+
+            #endregion 采样图
 
             #region 启动！
 
@@ -160,7 +172,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
             var scaler = MathHelper.Lerp(0, MathHelper.Pi * .45f, fac2);
             var (s, c) = MathF.SinCos(336.7f);
             var (s2, c2) = MathF.SinCos(scaler);
-            Matrix matrix = new                (
+            Matrix matrix = new(
                 1, 0, 0, c * s2,
                 0, 1, 0, s * s2,
                 0, 0, 1, 0,
@@ -179,8 +191,10 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
 
             Shader.Parameters["useHeatMap"].SetValue(false);
             base.Apply();
-            #endregion
+
+            #endregion 启动！
         }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

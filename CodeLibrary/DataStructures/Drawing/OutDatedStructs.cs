@@ -1,9 +1,5 @@
 ﻿using ReLogic.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 {
@@ -12,15 +8,18 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
     {
         //这个不好用（明明是阿汪你不会用
         CustomVertexInfo A { get; }
+
         CustomVertexInfo B { get; }
         CustomVertexInfo C { get; }
         CustomVertexInfo this[int index] { get; }
         //CustomVertexInfo[] ToVertexInfo(IVertexTriangle[] tris);
     }
+
     public struct VertexTriangle3List
     {
         //ListOfTriangleIn3DSpace
         public int Length => tris.Length;
+
         public float height;
         public Vector2 offset;
         public VertexTriangle3[] tris;
@@ -32,7 +31,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             offset = _offset;
             tris = _tris;
         }
+
         public Vector2 Projectile(Vector3 vector) => height / (height - vector.Z) * (new Vector2(vector.X, vector.Y) + offset - Main.screenPosition - new Vector2(960, 560)) + Main.screenPosition + new Vector2(960, 560);
+
         public CustomVertexInfo[] ToVertexInfo()
         {
             var vis = new CustomVertexInfo[tris.Length * 3];
@@ -47,6 +48,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             return vis;
         }
     }
+
     public struct VertexTriangle3 : IVertexTriangle
     {
         //TriangleIn3DSpace
@@ -65,16 +67,20 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             positions[1] = pB;
             positions[2] = pC;
         }
+
         public static float height = 100;
         public readonly Vector3[] positions;
         public readonly Vector3[] vertexs;
         public readonly Color[] colors;
         public static Vector2 offset = default;
+
         public static Vector2 Projectile(Vector3 vector) => height / (height - vector.Z) * (new Vector2(vector.X, vector.Y) + offset - Main.screenPosition - new Vector2(960, 560)) + Main.screenPosition + new Vector2(960, 560);
+
         public CustomVertexInfo this[int index] => new(Projectile(positions[index]), colors[index], vertexs[index]);
         public CustomVertexInfo A => new(Projectile(positions[0]), colors[0], vertexs[0]);
         public CustomVertexInfo B => new(Projectile(positions[1]), colors[1], vertexs[1]);
         public CustomVertexInfo C => new(Projectile(positions[2]), colors[2], vertexs[2]);
+
         public static CustomVertexInfo[] ToVertexInfo(VertexTriangle3[] tris)
         {
             var vis = new CustomVertexInfo[tris.Length * 3];
@@ -89,6 +95,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             return vis;
         }
     }
+
     public struct VertexTriangleList
     {
         public int Length => tris.Length;
@@ -96,12 +103,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
         public VertexTriangle this[int i] => tris[i];
 
         public VertexTriangle[] tris;
+
         public Vector2 GetRealPosition(Vector2 vector) => vector + offset;
+
         public VertexTriangleList(Vector2 _offset, params VertexTriangle[] _tris)
         {
             offset = _offset;
             tris = _tris;
         }
+
         public CustomVertexInfo[] ToVertexInfo()
         {
             var vis = new CustomVertexInfo[tris.Length * 3];
@@ -116,6 +126,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             return vis;
         }
     }
+
     public struct VertexTriangle : IVertexTriangle
     {
         public VertexTriangle(Vector3 vA, Vector3 vB, Vector3 vC, Color cA, Color cB, Color cC, Vector2 pA = default, Vector2 pB = default, Vector2 pC = default)
@@ -133,15 +144,19 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             positions[1] = pB;
             positions[2] = pC;
         }
+
         public readonly Vector2[] positions;
         public readonly Vector3[] vertexs;
         public readonly Color[] colors;
         public static Vector2 offset = default;
+
         public static Vector2 GetRealPosition(Vector2 vector) => vector + offset;
+
         public CustomVertexInfo this[int index] => new(GetRealPosition(positions[index]), colors[index], vertexs[index]);
         public CustomVertexInfo A => new(GetRealPosition(positions[0]), colors[0], vertexs[0]);
         public CustomVertexInfo B => new(GetRealPosition(positions[1]), colors[1], vertexs[1]);
         public CustomVertexInfo C => new(GetRealPosition(positions[2]), colors[2], vertexs[2]);
+
         public static CustomVertexInfo[] ToVertexInfo(VertexTriangle[] tris)
         {
             var vis = new CustomVertexInfo[tris.Length * 3];
@@ -155,7 +170,6 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             }
             return vis;
         }
-
     }
 
     /// <summary>
@@ -192,10 +206,12 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
 
         public string text;
 
-        DynamicSpriteFont spriteFont;
+        private DynamicSpriteFont spriteFont;
 
         public bool IsText;
+
         #region 纹理部分
+
         public DrawDataBuffer(Texture2D texture, Vector2 position, Color color, float layerDepth = 0f)
             : this(texture, position, nullRectangle, color, layerDepth)
         {
@@ -257,10 +273,11 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             text = null;
             spriteFont = null;
         }
-        #endregion
 
+        #endregion 纹理部分
 
         #region 字体部分
+
         public DrawDataBuffer(DynamicSpriteFont spriteFont, string text, Vector2 position, Color color, float layerDepth)
             : this(spriteFont, text, position, color, 0, default, 1f, 0, layerDepth)
         {
@@ -285,6 +302,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             : this(spriteFont, text.ToString(), position, color, rotation, origin, scale, effects, layerDepth)
         {
         }
+
         public DrawDataBuffer(DynamicSpriteFont spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
         {
             this.spriteFont = spriteFont;
@@ -298,9 +316,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing
             this.depth = layerDepth;
         }
 
-
-        #endregion
-
+        #endregion 字体部分
 
         public void Draw(SpriteBatch sb)
         {

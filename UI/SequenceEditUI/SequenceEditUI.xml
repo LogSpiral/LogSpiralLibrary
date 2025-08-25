@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Body Class="LogSpiralLibrary.UI.SequenceEditUI.SequenceEditUI" Width="-368px 100%" Height="-168px 100%" MinWidth="960px" MinHeight="540px" Left="84px" Top="104px" Padding="16">
+	<ElementGroup Name="MainContainer" Width="100%" Height="100%" BorderRadius="8" Border="1" FlexDirection="Column">
+		<DraggableView Name="PagePanel" Width="100%" Height="60px" MaxHeight="15%" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="8 8 0 0">
+			<Image Name="MainPageButton" Width="60px" Height="80%" Top="100#" Margin="8 0 2 0" BorderRadius="8" ImageAlign="0.5" />
+			<!--<PageView Name="TestPage1" Width="180px" Height="80%" Top="100#" />
+			<PageView Name="TestPageCursored" Width="160px" Height="80%" Top="100#" BackgroundColor="rgba(0,0,0,0.135)" />
+			<PageView Name="TestPage2" Width="120px" Height="80%" Top="100#" />-->
+			<VR Height="-16px 80%" Top="-8px 0% 100#" BackgroundColor="rgba(0,0,0,0.25)" />
+			<Image Name="CreateNewButton" Width="60px" Height="80%" Top="100#" Margin="2 0 8 0" BorderRadius="8" ImageAlign="0.5" />
+		</DraggableView>
+		<ElementGroup Name="EditPanel" Width="100%" FlexGrow ="1" Margin="0">
+			<ElementGroup Name="DataPanel" Height="100%" Width="400px" MaxWidth="30%" FlexDirection="Column" OverflowHidden="true">
+				<TextView Name="PanelDataText" TextScale="1.0" TextAlign="0.5" Left="50#" Height="40px" />
+				<PropertyPanel Name="PropertyPanelData" FlexGrow="1" Width="-16px 100%" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="8" Margin="8" />
+				<HR Width="100%" BackgroundColor="rgba(0,0,0,0.25)" />
+				<TextView Name="PanelConfigText" TextScale="1.0" TextAlign="0.5" Left="50#" Height="40px" />
+				<PropertyPanel Name="PropertyPanelConfig" FlexGrow="2" Width="-16px 100%" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="8" Margin="8" />
+			</ElementGroup>
+			<CompressLine Name="DataLine" Direction="Vertical" Height="100%" BackgroundColor="rgba(0,0,0,0.5)" />
+			<ElementGroup Name="Mask" FlexGrow="1" Height="100%" OverflowHidden="true" Border="0" Margin="0" Padding="0">
+				<InsertBasePanel Name="BasePanel" Height="100%" FlexGrow="1" BackgroundColor="rgba(0,0,0,0.35)" OverflowHidden="true" />
+				<CompressLine Name="LibraryLine" Direction="Vertical" Height="100%" BackgroundColor="rgba(0,0,0,0.5)" />
+				<ElementGroup Name="LibraryPanel" Width="250px" MaxWidth="25%" Height="100%" FlexDirection="Column" OverflowHidden="true">
+					<TextView Name="ElementLibraryText" TextScale="1.0" TextAlign="0.5" Left="50#" Height="40px" />
+					<ScrollViewAutoHideBar Name="ElementLibrary" FlexGrow="1" Width="-16px 100%" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="16 0 0 16" Margin="8" >
+						<M.ScrollBar Height="-16px 100%"/>
+					</ScrollViewAutoHideBar>
+					<HR Width="100%" BackgroundColor="rgba(0,0,0,0.25)" />
+					<TextView Name="SequenceLibraryText" TextScale="1.0" TextAlign="0.5" Left="50#" Height="40px" />
+					<ScrollViewAutoHideBar Name="SequenceLibrary" FlexGrow="1" Width="-16px 100%" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="16 0 0 16" Margin="8" >
+						<M.ScrollBar Height="-16px 100%"/>
+					</ScrollViewAutoHideBar>
+				</ElementGroup>
+			</ElementGroup>
+		</ElementGroup>
+		<ElementGroup Name="ButtonPanel" Width="100%" Height="40px" MaxHeight="10%" BackgroundColor="rgba(0,0,0,0.25)" Padding="16 0 0 0" Gap="16" BorderRadius="0 0 8 8">
+			<Image Name="SequenceTypeIcon" ImageAlign="0.5" Top="50#" />
+			<Image Name="OpenFolderIcon" ImageAlign="0.5" Top="50#" />
+			<Image Name="HomePageIcon" ImageAlign="0.5" Top="50#" />
+			<Image Name="HelperIcon" ImageAlign="0.5" Top="50#" />
+		</ElementGroup>
+	</ElementGroup>
+</Body>

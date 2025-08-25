@@ -1,7 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
-using LogSpiralLibrary.ForFun.TestBlade;
 
 namespace LogSpiralLibrary.ForFun.TestBlade3;
 
@@ -27,10 +26,12 @@ public class TestBlade3 : ModItem
         Item.rare = ItemRarityID.Red;
         base.SetDefaults();
     }
-    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
-    public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
+    public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
+    public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 }
+
 public class TestBlade3Proj : MeleeSequenceProj
 {
     //public override bool IsLoadingEnabled(Mod mod) => false;
@@ -38,11 +39,11 @@ public class TestBlade3Proj : MeleeSequenceProj
 
     public override bool LabeledAsCompleted => false;
 
-    static readonly AirDistortEffect distortEffect = new(3, 1.5f);
+    private static readonly AirDistortEffect distortEffect = new(3, 1.5f);
 
-    static readonly BloomEffect bloomEffect = new(0.05f, 0.25f, 1f, 2, true,1,true);
+    private static readonly BloomEffect bloomEffect = new(0.05f, 0.25f, 1f, 2, true, 1, true);
 
-    const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBlade3Proj);
+    private const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBlade3Proj);
 
     public override void Load()
     {
@@ -104,7 +105,6 @@ public class TestBlade3V2 : ModItem
     }
     public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
     public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
-
 }
 public class TestBlade3ProjV2 : MeleeSequenceProj
 {
@@ -123,10 +123,8 @@ public class TestBlade3ProjV2 : MeleeSequenceProj
             colorVec = new Vector3(0,0.5f,0.5f),
             renderInfos = [[new AirDistortEffectInfo(3)], [new MaskEffect(LogSpiralLibraryMod.Misc[25].Value,Color.Purple,0.15f,0.25f,default,true,false), new BloomEffectInfo(0.75f, 0.85f, 1f, 2, true)]],
             alphaFactor = 2f,
-
         },
         itemType = ModContent.ItemType<TestBlade3V2>()
     };
 }
 */
-

@@ -2,12 +2,14 @@
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
+
 /// <summary>
 /// 长枪
 /// </summary>
 public class SpearInfo : VanillaMelee
 {
     #region 重写属性
+
     public override float Factor => MathF.Pow(base.Factor, 3);
 
     public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi) * .25f;
@@ -23,9 +25,11 @@ public class SpearInfo : VanillaMelee
     }
 
     public override bool Attacktive => Factor < 0.85f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
@@ -42,5 +46,6 @@ public class SpearInfo : VanillaMelee
         }
         base.OnStartAttack();
     }
-    #endregion
+
+    #endregion 重写函数
 }

@@ -4,22 +4,29 @@ using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
+
 public class ConvoluteInfo : ExtendedMelee
 {
     #region 辅助字段
+
     public Vector2 unit;
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => Factor * MathHelper.TwoPi * 2 + (float)LogSpiralLibraryMod.ModTime2 * .025f;
     public override float CompositeArmRotation => Owner.direction;
     public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
     public override bool Attacktive => Factor >= .25f;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void OnStartSingle()
     {
         base.OnStartSingle();
@@ -58,5 +65,6 @@ public class ConvoluteInfo : ExtendedMelee
         fTimer = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

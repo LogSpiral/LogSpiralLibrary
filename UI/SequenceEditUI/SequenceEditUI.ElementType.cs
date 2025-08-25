@@ -1,0 +1,67 @@
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using ReLogic.Content;
+using SilkyUIFramework;
+using System.Collections.Generic;
+using Terraria.Localization;
+
+namespace LogSpiralLibrary.UI.SequenceEditUI;
+
+public partial class SequenceEditUI
+{
+#nullable enable
+
+    public static SequenceElementCategory? CurrentCategory
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value == null && Active)
+            {
+                Close(true);
+                SequenceTypeSelectUI.Open();
+            }
+            if (value != null && !Active)
+            {
+                Open();
+                SequenceTypeSelectUI.Close(true);
+            }
+        }
+    } = SequenceSystem.MeleeActionCategoryInstance;
+
+#nullable disable
+}
+
+public class SequenceElementCategory
+{
+    private SequenceElementCategory()
+    { }
+
+    public LocalizedText CategoryName { get; init; }
+    public Asset<Texture2D> Icon { get; init; }
+    public Color ThemeColor { get; init; }
+    public string ElementName { get; init; }
+    public SequenceManager Maganger { get; init; }
+
+    #region Statics
+
+    public static readonly Dictionary<string, SequenceElementCategory> CategoryLookup = [];
+
+    public static SequenceElementCategory RegisterCategory<T>(Mod mod, Asset<Texture2D> icon, Color? themeColor = null) where T : ISequenceElement
+    {
+        var name = typeof(T).Name;
+        var result = new SequenceElementCategory()
+        {
+            CategoryName = Language.GetOrRegister($"Mods.{mod.Name}.SequenceElements.{name}.DisplayName"),
+            Icon = icon,
+            ThemeColor = themeColor ?? SUIColor.Background * .25f,
+            ElementName = name,
+            Maganger = SequenceManager<T>.Instance
+        };
+        CategoryLookup.TryAdd(name, result);
+        return result;
+    }
+
+    #endregion Statics
+}

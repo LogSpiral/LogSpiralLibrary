@@ -8,6 +8,7 @@ public partial class Wrapper
 {
     private List<XElement>? ExtraElements;
     private Dictionary<string, string>? Attributes;
+    public bool IsUnload => ExtraElements != null;
     private void ReadUnloadData(XmlReader reader)
     {
         ExtraElements = [];
@@ -29,6 +30,7 @@ public partial class Wrapper
             }
         }
     }
+
     private void WriteUnloadData(XmlWriter writer)
     {
         if (Attributes != null)
@@ -41,6 +43,7 @@ public partial class Wrapper
                 element.WriteTo(writer);
             }
     }
+
     public Wrapper(XmlReader reader)
     {
         if (!reader.IsEmptyElement)
@@ -49,7 +52,10 @@ public partial class Wrapper
             ReadUnloadData(reader);
             reader.ReadEndElement();
         }
-        else
+        else 
+        {
             reader.Read();
+            ExtraElements = [];
+        }
     }
 }

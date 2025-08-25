@@ -2,33 +2,32 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.Audio;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 
 namespace LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+
 public abstract class HammerProj : HeldProjectile, IHammerProj
 {
-
     public virtual Vector2 scale => new(1);
     public virtual Rectangle? frame => null;
     public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY);
     public Projectile projectile => Projectile;
     public override bool Charged => Factor > 0.75f;
     public virtual SpriteEffects flip => Player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
+
     public override void SetStaticDefaults()
     {
         // DisplayName.SetDefault(HammerName);
     }
+
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
         target.immune[projectile.owner] = 5;
     }
+
     public override void SetDefaults()
     {
         projectile.width = 1;
@@ -43,6 +42,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         projectile.tileCollide = false;
         projectile.friendly = true;
     }
+
     public override void OnRelease(bool charged, bool left)
     {
         if (Charged)
@@ -67,10 +67,12 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
             projectile.Kill();
         }
     }
+
     public override bool ShouldUpdatePosition()
     {
         return false;
     }
+
     public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
     {
         if ((int)projectile.ai[1] == 0)
@@ -85,6 +87,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         //bool flag2 = Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), player.Center - vec * (30 - Distance - NegativeDistance), player.Center + vec * (66 + Distance + NegativeDistance), 18, ref point);
         //return flag2;
     }
+
     //public float Rotation => projectile.ai[1] > 0 ? ((int)factor == 1 ? (projectile.ai[1] / 5).Lerp(-MathHelper.PiOver2, MathHelper.Pi / 8 * 3) : ((timeCount - projectile.ai[1]) / MaxTime).Lerp(MathHelper.Pi / 8 * 3, -MathHelper.PiOver2)) : ((float)Math.Pow(factor,2)).Lerp(MathHelper.Pi / 8 * 3, -MathHelper.PiOver2 - MathHelper.Pi / 8);//MathHelper.Pi / 8 * 3 - factor * (MathHelper.Pi / 8 * 7)
     public virtual float Rotation
     {
@@ -107,7 +110,6 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
                 }
             }
             return Player.direction == -1 ? MathHelper.Pi * 1.5f - theta : theta;
-
         }
     }
 
@@ -119,6 +121,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
             projectile.ai[0] = MathHelper.Clamp(value, 0, MaxTime);
         }
     }
+
     public virtual string HammerName => "做个锤子";
     public virtual float MaxTime => 15;
     public override float Factor => timeCount / MaxTime;
@@ -126,6 +129,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
     public virtual Vector2 CollidingCenter => new(size.X / FrameMax.X - 16, 16);
     public virtual Vector2 DrawOrigin => new(16, size.Y / FrameMax.Y - 16);
     public Vector2 size;
+
     public override void OnSpawn(IEntitySource source)
     {
         if (Main.netMode != NetmodeID.Server)
@@ -133,21 +137,25 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
 
         base.OnSpawn(source);
     }
+
     public override void SendExtraAI(BinaryWriter writer)
     {
         if (Main.netMode == NetmodeID.MultiplayerClient)
             writer.WriteVector2(size);
         base.SendExtraAI(writer);
     }
+
     public override void ReceiveExtraAI(BinaryReader reader)
     {
         if (Main.dedServ)
             size = reader.ReadVector2();
         base.ReceiveExtraAI(reader);
     }
+
     public virtual Color color => /*projectile.GetAlpha(Color.White);*/Lighting.GetColor((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16, Color.White);
     public virtual float MaxTimeLeft => 5;
     public override bool Charging => base.Charging && projectile.ai[1] == 0;
+
     public override void AI()
     {
         //Projectiles.KluexEnergyCrystal.KluexEnergyZone
@@ -179,8 +187,8 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
 
         projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
-
     }
+
     public override bool PreDraw(ref Color lightColor)
     {
         if (size == default)
@@ -193,22 +201,27 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         //Main.spriteBatch.DrawHammer(this);
         return false;
     }
+
     public virtual void OnChargedShoot()
     {
     }
 }
+
 public abstract class VertexHammerProj : HammerProj
 {
-    string CanvasName => FullName.Replace("/", ":");
+    private string CanvasName => FullName.Replace("/", ":");
+
     public override void Load()
     {
         RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[UseDistort], [UseMask, UseBloom]]));
         base.Load();
     }
-    BloomEffect UseBloom => field ??= new BloomEffect();
-    AirDistortEffect UseDistort => field ??= new AirDistortEffect();
-    MaskEffect UseMask => field ??= new MaskEffect();
+
+    private BloomEffect UseBloom => field ??= new BloomEffect();
+    private AirDistortEffect UseDistort => field ??= new AirDistortEffect();
+    private MaskEffect UseMask => field ??= new MaskEffect();
     public override float Rotation => base.Rotation;
+
     public virtual CustomVertexInfo[] CreateVertexs(Vector2 drawCen, float scaler, float startAngle, float endAngle, float alphaLight, ref int[] whenSkip)
     {
         var bars = new CustomVertexInfo[90];
@@ -228,23 +241,31 @@ public abstract class VertexHammerProj : HammerProj
         }
         return bars;
     }
+
     public virtual Color VertexColor(float time) => Color.White;
+
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="additive"></param>
     /// <param name="indexOfGreyTex"></param>
     /// <param name="endAngle"></param>
     /// <param name="useHeatMap"></param>
     /// <param name="passCount">已被弃用</param>
-    public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap, ref int passCount) { }
-    public virtual void RenderInfomation(BloomEffect useBloom, AirDistortEffect useDistort, MaskEffect useMask) { }
+    public virtual void VertexInfomation(ref bool additive, ref int indexOfGreyTex, ref float endAngle, ref bool useHeatMap, ref int passCount)
+    { }
+
+    public virtual void RenderInfomation(BloomEffect useBloom, AirDistortEffect useDistort, MaskEffect useMask)
+    { }
+
     public virtual bool RedrawSelf => false;
     public virtual bool WhenVertexDraw => !Charging && Charged;
+
     /// <summary>
     /// 默认使用的热度图，允许被外部修改，除非子类那边重写了属性
     /// </summary>
     public Texture2D heatMap;
+
     public virtual Texture2D HeatMap
     {
         get
@@ -258,6 +279,7 @@ public abstract class VertexHammerProj : HammerProj
             return heatMap;
         }
     }
+
     public override bool PreDraw(ref Color lightColor)
     {
         bool predraw = false;
@@ -339,7 +361,6 @@ public abstract class VertexHammerProj : HammerProj
             swooshUL.Parameters["heatMapAlpha"].SetValue(true);
             swooshUL.Parameters["AlphaVector"].SetValue(HeatMap != null ? new Vector3(0, 0, 1) : new Vector3(0, 1, 0));
 
-
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[indexOfGreyTex].Value;
             Main.graphics.GraphicsDevice.Textures[1] = AniTex[3].Value;
             Main.graphics.GraphicsDevice.Textures[2] = itemTex;
@@ -393,7 +414,7 @@ public abstract class VertexHammerProj : HammerProj
 
             if (UseDistort.Active)
             {
-                gd.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个 
+                gd.SetRenderTarget(Main.screenTargetSwap);//将画布设置为这个
                 gd.Clear(Color.Transparent);//清空
                 Main.instance.GraphicsDevice.Textures[2] = Misc[18].Value;
                 LogSpiralLibraryMod.AirDistortEffect.Parameters["uScreenSize"].SetValue(new Vector2(Main.screenWidth, Main.screenHeight));
@@ -401,7 +422,7 @@ public abstract class VertexHammerProj : HammerProj
                 LogSpiralLibraryMod.AirDistortEffect.Parameters["rotation"].SetValue(Matrix.Identity);//MathHelper.Pi * Main.GlobalTimeWrappedHourly
                 LogSpiralLibraryMod.AirDistortEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
                 LogSpiralLibraryMod.AirDistortEffect.Parameters["colorOffset"].SetValue(0f);
-                LogSpiralLibraryMod.AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass 
+                LogSpiralLibraryMod.AirDistortEffect.CurrentTechnique.Passes[0].Apply();//ApplyPass
                                                                                         //0    1     2
                                                                                         //.001 .0035 .005
                 sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);//绘制原先屏幕内容
@@ -411,7 +432,6 @@ public abstract class VertexHammerProj : HammerProj
             }
             if (UseMask.Active)
             {
-
                 gd.SetRenderTarget(Main.screenTargetSwap);
                 gd.Clear(Color.Transparent);
                 sb.Draw(Main.screenTarget, Vector2.Zero, Color.White);
@@ -442,7 +462,6 @@ public abstract class VertexHammerProj : HammerProj
 
                 sb.End();
                 sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
             }
             if (UseBloom.Active)
             {
@@ -461,8 +480,6 @@ public abstract class VertexHammerProj : HammerProj
                     gd.Clear(Color.Transparent);
                     RenderEffect.CurrentTechnique.Passes[4].Apply();
                     sb.Draw(n == 0 ? render : Instance.Render_Swap2, Vector2.Zero, Color.White);
-
-
 
                     gd.SetRenderTarget(Instance.Render_Swap2);
                     //RenderEffect.Parameters["tex0"].SetValue(Instance.Render_Swap);
@@ -550,10 +567,12 @@ public abstract class VertexHammerProj : HammerProj
     mylabel:
         return predraw;
     }
+
     public override void PostAI()
     {
         base.PostAI();
     }
+
     public override void OnKill(int timeLeft)
     {
         if (Charged && Main.netMode != NetmodeID.Server)
@@ -567,6 +586,7 @@ public abstract class VertexHammerProj : HammerProj
         }
     }
 }
+
 /// <summary>
 /// 武器手持弹幕对应的基类
 /// 以下是需要经常重写的属性
@@ -578,19 +598,22 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
 {
     public virtual Vector2 scale => new(1);
     public virtual Rectangle? frame => null;
-    public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY) + new Vector2(-8 * Player.direction, -3) + (Rotation - (Player.direction == -1 ? MathHelper.PiOver2 : 0)).ToRotationVector2() * 16;// 
+    public virtual Vector2 projCenter => Player.Center + new Vector2(0, Player.gfxOffY) + new Vector2(-8 * Player.direction, -3) + (Rotation - (Player.direction == -1 ? MathHelper.PiOver2 : 0)).ToRotationVector2() * 16;//
     public Projectile projectile => Projectile;
     public virtual bool Charged => factor > 0.75f && controlState == 2;
     public virtual SpriteEffects flip => Player.direction == -1 ? SpriteEffects.FlipHorizontally : 0;
     public virtual (int X, int Y) FrameMax => (1, 1);
+
     public override void SetStaticDefaults()
     {
         // DisplayName.SetDefault(ProjName);
     }
+
     public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
     {
         target.immune[projectile.owner] = 5;
     }
+
     public override void SetDefaults()
     {
         projectile.width = 1;
@@ -604,12 +627,14 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         projectile.tileCollide = false;
         projectile.friendly = true;
     }
+
     public virtual void OnEndAttack()
     {
         projectile.ai[0] = controlState == 2 ? MaxTime : 0;
         if (controlState == 1)
             controlTier++;
     }
+
     public virtual void OnCharging(bool left, bool right)
     {
         if (left)
@@ -629,6 +654,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
             SoundEngine.PlaySound(SoundID.Item71);
         }
     }
+
     public virtual void OnRelease(bool charged, bool left)
     {
         if (left)
@@ -638,7 +664,6 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
             {
                 OnEndAttack();
                 projectile.Kill();
-
             }
             if ((int)projectile.ai[0] == MaxTime / 4 && left)
             {
@@ -672,12 +697,13 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
                 projectile.Kill();
             }
         }
-
     }
+
     public override bool ShouldUpdatePosition()
     {
         return false;
     }
+
     public override bool? Colliding(Rectangle projHitbox, Rectangle targetHitbox)
     {
         //if ((int)projectile.ai[1] == 0)
@@ -690,6 +716,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         var _rotation = Rotation;
         return targetHitbox.Intersects(Utils.CenteredRectangle((CollidingCenter - DrawOrigin).RotatedBy(_rotation) + projCenter, CollidingSize)) || Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), projCenter, (CollidingCenter - DrawOrigin).RotatedBy(_rotation) + projCenter, 8, ref point);
     }
+
     /// <summary>
     /// 面向右边时实际角度与x正半轴夹角
     /// </summary>
@@ -725,9 +752,9 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
                 return theta;
             }
             return 0;
-
         }
     }
+
     /// <summary>
     /// 绘制用Rotation属性
     /// </summary>
@@ -739,6 +766,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
             return Player.direction == -1 ? MathHelper.PiOver2 * 3 - rotation : rotation;
         }
     }
+
     public Player Player => Main.player[projectile.owner];
 
     public virtual float timeCount
@@ -746,6 +774,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         get => projectile.ai[0];//controlState == 2 ? MathHelper.Clamp(projectile.ai[0], 0, MaxTime) : projectile.ai[0] % MaxTime
         set => projectile.ai[0] = value;
     }
+
     public Texture2D projTex => TextureAssets.Projectile[projectile.type].Value;
     public virtual string ProjName => "做个弹幕";
     public virtual float MaxTime => 15;
@@ -754,32 +783,36 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
     public virtual Vector2 CollidingCenter => new(size.X / FrameMax.X - 16, 16);
     public virtual Vector2 DrawOrigin => new(16, size.Y / FrameMax.Y - 16);
     public Vector2 size;
+
     public override void SendExtraAI(BinaryWriter writer)
     {
         if (Main.netMode == NetmodeID.MultiplayerClient)
             writer.WriteVector2(size);
         base.SendExtraAI(writer);
     }
+
     public override void ReceiveExtraAI(BinaryReader reader)
     {
         if (Main.dedServ)
             size = reader.ReadVector2();
         base.ReceiveExtraAI(reader);
     }
+
     public override void OnSpawn(IEntitySource source)
     {
         if (Main.netMode != NetmodeID.Server)
             size = projTex.Size();
         base.OnSpawn(source);
     }
+
     public virtual Color color => /*projectile.GetAlpha(Color.White);*/Lighting.GetColor((int)projectile.Center.X / 16, (int)projectile.Center.Y / 16, Color.White);
     public virtual float MaxTimeLeft => 5;
     public virtual bool UseLeft => true;
     public virtual bool UseRight => true;
     public virtual bool Charging => UseLeft && Player.controlUseItem || UseRight && Player.controlUseTile && projectile.ai[1] == 0;
+
     public override void AI()
     {
-
         //Projectiles.KluexEnergyCrystal.KluexEnergyZone
         if (Player.dead) projectile.Kill();
         if (Charging && projectile.ai[1] == 0)
@@ -807,10 +840,11 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
         projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).SafeNormalize(default);
         projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
-
     }
+
     public byte controlState;
     public byte controlTier;
+
     public override bool PreDraw(ref Color lightColor)
     {
         if (size == default)
@@ -825,8 +859,8 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
 
         return false;
     }
+
     public virtual void OnChargedShoot()
     {
     }
 }
-

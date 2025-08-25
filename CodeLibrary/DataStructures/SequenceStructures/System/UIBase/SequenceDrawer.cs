@@ -99,7 +99,6 @@
 //            {
 //                if (wraperBox.wraper.Condition.IsMet())
 //                {
-
 //                    for (int n = 0; n < 3; n++)
 //                        spriteBatch.DrawString(font, "→" + desc, cen + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4f), new Color(0.8f, 0.2f, 1f, 0f), 0, default, 1f, 0, 0);
 //                    spriteBatch.DrawString(font, "→" + desc, cen, Color.White, 0, default, 1f, 0, 0);
@@ -116,7 +115,6 @@
 
 //        //锚点
 //        //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.MediumPurple * .5f, 0, new Vector2(.5f), 16, 0, 0);
-
 
 //    }
 //    public static void DrawGroup(GroupBox groupBox, Vector2 position, bool active)
@@ -149,7 +147,6 @@
 //            c++;
 //            position.Y += (wsize.Y + SequenceConfig.Instance.Step.Y + offY) * .5f;
 
-
 //        }
 //        //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.DarkCyan, 0, new Vector2(.5f), 16, 0, 0);
 //        //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Cyan, 0, new Vector2(.5f), 12, 0, 0);
@@ -158,7 +155,6 @@
 
 //        //锚点
 //        //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), Color.Cyan * .5f, 0, new Vector2(.5f), 12, 0, 0);
-
 
 //    }
 //    public static void DrawSequence(SequenceBox sequenceBox, Vector2 position, Vector2 offsetFrame, bool active, bool start)
@@ -188,13 +184,11 @@
 
 //            //position.X += g.GetSize().X + offset + SequenceConfig.Instance.Step.X;
 
-
 //            //计数器自增
 //            counter++;
 
 //        }
 //        Main.spriteBatch.DrawLine(pos + new Vector2(sequenceBox.GetSize().X, 0), position + new Vector2(-SequenceConfig.Instance.Step.X * .75f, 0), Color.White);//32
-
 
 //        //锚点
 //        //Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, pos, new Rectangle(0, 0, 1, 1), SequenceColor * .5f, 0, new Vector2(.5f), 8, 0, 0);

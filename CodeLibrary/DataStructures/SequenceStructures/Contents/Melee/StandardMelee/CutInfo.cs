@@ -5,28 +5,36 @@ using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+
 public class CutInfo : LSLMelee
 {
     #region 辅助字段
-    int hitCounter;
-    UltraSwoosh swoosh;
-    UltraSwoosh subSwoosh;
-    #endregion
+
+    private int hitCounter;
+    private UltraSwoosh swoosh;
+    private UltraSwoosh subSwoosh;
+
+    #endregion 辅助字段
 
     #region 辅助属性
-    bool Adjusted => base.Factor < .75f;
-    #endregion
+
+    private bool Adjusted => base.Factor < .75f;
+
+    #endregion 辅助属性
 
     #region 重写属性
+
     public override float Factor => Adjusted ? MathHelper.SmoothStep(0, 1, MathHelper.SmoothStep(0, 1, 1 - MathF.Pow(1 - base.Factor / .75f, 2))) : (base.Factor - .75f) / .25f;
     public override float offsetRotation => (Adjusted ? MathHelper.SmoothStep(.03125f * MathHelper.Pi, -0.0625f * MathHelper.Pi, Factor) : MathHelper.SmoothStep(-0.0625f * MathHelper.Pi, .625f * MathHelper.Pi, Factor)) * Owner.direction;
     public override Vector2 offsetCenter => base.offsetCenter - (Adjusted ? Rotation.ToRotationVector2() * (1 - Factor) * 16 : default);
     public override Vector2 offsetOrigin => base.offsetOrigin + (Adjusted ? new Vector2(0.1f, -0.1f) * (1 - Factor) : default);
     public override float offsetDamage => base.offsetDamage * MathF.Pow(.75f, hitCounter);
     public override bool Attacktive => base.Factor < .5f;
-    #endregion
+
+    #endregion 重写属性
 
     #region 辅助函数
+
     public void NewSwoosh()
     {
         var verS = StandardInfo.VertexStandard;
@@ -78,7 +86,8 @@ public class CutInfo : LSLMelee
             u.ApplyStdValueToVtxEffect(StandardInfo);
         }
     }
-    void UpdateSwoosh(UltraSwoosh swoosh, (float, float) range)
+
+    private void UpdateSwoosh(UltraSwoosh swoosh, (float, float) range)
     {
         if (swoosh == null)
             return;
@@ -89,9 +98,11 @@ public class CutInfo : LSLMelee
         swoosh.xScaler = 2f;
         swoosh.timeLeft = (int)MathHelper.Clamp(swoosh.timeLeftMax * MathHelper.SmoothStep(0, 1, Utils.GetLerpValue(1, 0.5f, Factor, true)), 1, swoosh.timeLeftMax - 1) + 1;
     }
-    #endregion
+
+    #endregion 辅助函数
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         Flip = Owner.direction == -1;
@@ -117,6 +128,7 @@ public class CutInfo : LSLMelee
         hitCounter = 0;
         base.OnStartSingle();
     }
+
     public override void OnEndSingle()
     {
         hitCounter = 0;
@@ -170,7 +182,6 @@ public class CutInfo : LSLMelee
                     Main.mouseX = (int)(target.X - Main.screenPosition.X);
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
-
                 }
                 count /= 2;
                 for (int i = 0; i < count; i++)
@@ -182,12 +193,10 @@ public class CutInfo : LSLMelee
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
 
-
                     target = plr.Center + unit.RotatedBy(-angle);
                     Main.mouseX = (int)(target.X - Main.screenPosition.X);
                     Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
                     ShootProjCall(plr, dmg);
-
                 }
                 Main.mouseX = (int)(orig.X - Main.screenPosition.X);
                 Main.mouseY = (int)(orig.Y - Main.screenPosition.Y);
@@ -206,7 +215,7 @@ public class CutInfo : LSLMelee
                 var flag = k == 0;
                 var unit = Rotation.ToRotationVector2();//((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
                 var Center = Owner.Center + offsetCenter + targetedVector * .75f;
-                var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 + 
+                var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
                 velocity *= 2;
                 MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
             }
@@ -218,5 +227,6 @@ public class CutInfo : LSLMelee
         hitCounter++;
         base.OnHitEntity(victim, damageDone, context);
     }
-    #endregion
+
+    #endregion 重写函数
 }

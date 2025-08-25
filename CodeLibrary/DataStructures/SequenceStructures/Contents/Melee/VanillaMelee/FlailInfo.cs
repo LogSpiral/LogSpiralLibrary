@@ -1,8 +1,8 @@
-﻿using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Audio;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
 
 /// <summary>
@@ -12,17 +12,21 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 public class FlailInfo : VanillaMelee
 {
     #region 辅助字段
+
     //0旋转
     //1掷出
     //2回收
     //3滞留
     //4回收2
     public int state;
+
     public int assistTimer;
     public Vector2 realPos;
-    #endregion
+
+    #endregion 辅助字段
 
     #region 重写属性
+
     public override float offsetRotation => state switch
     {
         3 => assistTimer * .5f,
@@ -35,11 +39,14 @@ public class FlailInfo : VanillaMelee
         2 or 4 => Vector2.SmoothStep(default, realPos - Owner.Center, Factor),
         _ => realPos - Owner.Center
     };
+
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
-    #endregion
+
+    #endregion 重写属性
 
     #region 重写函数
+
     public override void Update(bool triggered)
     {
         if (state != 3)
@@ -109,7 +116,7 @@ public class FlailInfo : VanillaMelee
                         Timer = TimerMax = 10;
                         state = 4;
                     }
-                    var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16()) ;
+                    var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16());
                     if (!(tile.HasTile && Main.tileSolid[tile.TileType]))
                     {
                         assistTimer++;
@@ -142,7 +149,6 @@ public class FlailInfo : VanillaMelee
         realPos = default;
         base.OnStartSingle();
     }
-
 
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
@@ -183,5 +189,6 @@ public class FlailInfo : VanillaMelee
         GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
-    #endregion
+
+    #endregion 重写函数
 }

@@ -6,7 +6,9 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingConte
 public class UltraSwoosh : MeleeVertexInfo
 {
     #region 参数和属性
-    int counts = 45;
+
+    private int counts = 45;
+
     public int Counts
     {
         get { return counts = Math.Clamp(counts, 2, 45); }
@@ -19,16 +21,18 @@ public class UltraSwoosh : MeleeVertexInfo
                 Array.Resize(ref _vertexInfos, 2 * counts);
                 if (autoUpdate)
                 {
-                    Update(); 
+                    Update();
                     timeLeft++;
                 }
             }
         }
     }
-    CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
+
+    private CustomVertexInfo[] _vertexInfos = new CustomVertexInfo[90];
     public override CustomVertexInfo[] VertexInfos => _vertexInfos;
     public (float from, float to) angleRange;
-    #endregion
+
+    #endregion 参数和属性
 
     #region 生成函数
 
@@ -50,18 +54,20 @@ public class UltraSwoosh : MeleeVertexInfo
     public static UltraSwoosh NewUltraSwooshOnDefaultCanvas(int timeLeft, float scaler, Vector2 center, (float, float) angleRange)
         => NewUltraSwoosh(RenderCanvasSystem.DEFAULTCANVASNAME, timeLeft, scaler, center, angleRange);
 
-    #endregion
+    #endregion 生成函数
 
     #region 绘制和更新，主体
+
     public override void Draw(SpriteBatch spriteBatch)
     {
         Main.graphics.GraphicsDevice.Textures[0] = BaseTex_Swoosh[baseTexIndex].Value;
         Main.graphics.GraphicsDevice.Textures[1] = AniTex_Swoosh[aniTexIndex].Value;
         base.Draw(spriteBatch);
     }
+
     public override void Update()
     {
-        if (!autoUpdate) 
+        if (!autoUpdate)
         {
             autoUpdate = true;
             return;
@@ -84,5 +90,6 @@ public class UltraSwoosh : MeleeVertexInfo
             VertexInfos[2 * i + 1] = new CustomVertexInfo(center + adder, realColor, new Vector3(0, 0, 1));
         }
     }
-    #endregion
+
+    #endregion 绘制和更新，主体
 }

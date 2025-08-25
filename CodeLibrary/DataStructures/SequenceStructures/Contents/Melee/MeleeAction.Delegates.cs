@@ -2,9 +2,10 @@
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
-partial class MeleeAction
+public partial class MeleeAction
 {
     #region 辅助字段
+
     public Action<MeleeAction> _OnActive;
     public Action<MeleeAction> _OnAttack;
     public Action<MeleeAction> _OnCharge;
@@ -16,9 +17,11 @@ partial class MeleeAction
     //上面这些也许大概已经过时了？
     //毕竟现在都是直接操作xml文件了
     //当然要是愿意直接用代码搭建序列剑，也是可以用这些的
-    #endregion
+
+    #endregion 辅助字段
 
     #region 参数字段
+
     [ElementCustomData]
     public SequenceDelegateDefinition OnEndAttackDelegate { get; set; } = new SequenceDelegateDefinition();
 
@@ -45,5 +48,6 @@ partial class MeleeAction
 
     [ElementCustomData]
     public SequenceDelegateDefinition OnHitTargetDelegate { get; set; } = new SequenceDelegateDefinition();
-    #endregion
+
+    #endregion 参数字段
 }

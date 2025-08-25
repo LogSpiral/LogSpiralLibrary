@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using static Terraria.Utils;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System.Collections.Generic;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
-using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using static Terraria.Utils;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 /// <summary>
 /// 我实在不知道该往哪里丢了
 /// </summary>
@@ -19,12 +21,16 @@ public static class MiscMethods
         dust.fadeIn *= .5f;
         dust.noGravity = true;
     }
+
     public static void FastDust(Vector2 Center, Vector2 velocity, Color color) => FastDust(Center, velocity, color, 1f);
+
     public static T HardmodeValue<T>(T normalValue, T expertValue, T masterValue)
     {
         return Main.expertMode ? Main.masterMode ? masterValue : expertValue : normalValue;
     }
+
     #region 线条粒子
+
     public static void LinerDust(Vector2 vec1, Vector2 vec2, int type = MyDustId.Fire, float step = 2)
     {
         for (float n = 0; n <= (vec1 - vec2).Length(); n += step)
@@ -32,6 +38,7 @@ public static class MiscMethods
             Dust.NewDustPerfect(Vector2.Lerp(vec1, vec2, n / (vec1 - vec2).Length()), type, default, newColor: Color.White).noGravity = true;
         }
     }
+
     public static void LinerDust(Vector3 vec1, Vector3 vec2, float height, Vector2 projCenter = default, Vector2 drawOffset = default, int type = MyDustId.Fire, float step = 2)
     {
         var v1 = vec1.Projectile(height, projCenter);
@@ -41,6 +48,7 @@ public static class MiscMethods
             Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, default, newColor: Color.White).noGravity = true;
         }
     }
+
     public static void LinerDust(Vector4 vec1, Vector4 vec2, float heightZ, float heightW, Vector2 drawOffset = default, Vector2 projCenter = default, int type = MyDustId.Fire, float step = 2)
     {
         var v1 = vec1.Projectile(heightW, new Vector3(projCenter, 0)).Projectile(heightZ, projCenter);
@@ -50,6 +58,7 @@ public static class MiscMethods
             Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, default, newColor: Color.White).noGravity = true;
         }
     }
+
     public static void LinerDust(Vector4 vec1, Vector4 vec2, float heightZ, float heightW, Action<Dust> action, Vector2 drawOffset = default, Vector2 projCenter = default, int type = MyDustId.Fire, float step = 2)
     {
         var v1 = vec1.Projectile(heightW, new Vector3(projCenter, 0)).Projectile(heightZ, projCenter);
@@ -60,7 +69,9 @@ public static class MiscMethods
             action?.Invoke(d);
         }
     }
-    #endregion
+
+    #endregion 线条粒子
+
     public static Vector2 GetPlayerArmPosition(Projectile proj)
     {
         Player player = Main.player[proj.owner];
@@ -139,12 +150,14 @@ public static class MiscMethods
             end = vecs2[0].X > vecs2[1].X ? vecs2[1] : vecs2[0];
         }
     }
+
     public static void ProjFrameChanger(this Projectile projectile, int frames, int time)
     {
         Main.projFrames[projectile.type] = frames;
         projectile.frame += (int)ModTime % time == 0 ? 1 : 0;
         projectile.frame %= frames;
     }
+
     public static bool ZoneForest(this Player player)
     {
         if (player.ZoneSkyHeight)
@@ -189,6 +202,7 @@ public static class MiscMethods
         }
         return true;
     }
+
     public static Vector2[] EasierVec2Array(params float[] v)
     {
         var len = v.Length;
@@ -205,7 +219,9 @@ public static class MiscMethods
         }
         return [.. l];
     }
+
     #region 判定
+
     public static bool PointHit(this Rectangle target, Func<float, Vector2> vectorFunc, int times = 25)
     {
         if (vectorFunc == null)
@@ -223,6 +239,7 @@ public static class MiscMethods
         }
         return false;
     }
+
     public static bool RectangleHit(this Rectangle target, Func<float, Vector2> vectorFunc, Point size, int times = 25)
     {
         if (vectorFunc == null)
@@ -239,6 +256,7 @@ public static class MiscMethods
         }
         return false;
     }
+
     public static bool RectangleHit(this Func<float, Vector2> vectorFunc, Rectangle target, int width = 4, int height = 4, int times = 25)
     {
         if (vectorFunc == null)
@@ -255,15 +273,19 @@ public static class MiscMethods
         }
         return false;
     }
+
     public static bool RectangleHit(this Vector2 vector, Rectangle target, Point size)
     {
         return vector.RectangleHit(target, size.X, size.Y);
     }
+
     public static bool RectangleHit(this Vector2 vector, Rectangle target, int width = 4, int height = 4)
     {
         return target.Intersects(new Rectangle((int)vector.X - width / 2, (int)vector.Y - height / 2, width, height));
     }
-    #endregion
+
+    #endregion 判定
+
     /// <summary>
     /// 威胁程度
     /// 未完工

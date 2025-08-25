@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 /// <summary>
 /// 原版的私有方法
 /// 有几个落在绘制那边了，搬过来不太合适
 /// </summary>
 public static class VanillaPrivateMethod
 {
-
     public static bool FindSharpTearsOpening(int x, int y, bool acceptLeft, bool acceptRight, bool acceptUp, bool acceptDown)
     {
         if (acceptLeft && !WorldGen.SolidTile(x - 1, y))
@@ -23,6 +24,7 @@ public static class VanillaPrivateMethod
 
         return false;
     }
+
     public static Point FindSharpTearsSpot(this Player player, Vector2 targetSpot)
     {
         Point point = targetSpot.ToTileCoordinates();

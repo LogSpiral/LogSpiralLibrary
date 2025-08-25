@@ -1,13 +1,6 @@
-﻿using log4net;
-using LogSpiralLibrary.CodeLibrary;
-using LogSpiralLibrary.CodeLibrary.DataStructures;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
-using LogSpiralLibrary.ForFun.TestBlade2;
-using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.ForFun.TestBlade
 {
@@ -33,23 +26,25 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             Item.rare = ItemRarityID.Red;
             base.SetDefaults();
         }
-        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
-        public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
 
+        public override bool CanUseItem(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
+
+        public override bool CanShoot(Player player) => player.ownedProjectileCounts[Item.shoot] == 0;
     }
+
     public class TestBladeProj : MeleeSequenceProj
     {
         //public override bool IsLoadingEnabled(Mod mod) => false;
         public override string Texture => base.Texture.Replace("Proj", "");
 
-        static readonly AirDistortEffect distortEffect = new(3, 1.5f);
-        static readonly BloomEffect bloomEffect = new(0f, 1f, 1f, 3, true, 0, true);
+        private static readonly AirDistortEffect distortEffect = new(3, 1.5f);
+        private static readonly BloomEffect bloomEffect = new(0f, 1f, 1f, 3, true, 0, true);
 
-        const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBladeProj);
+        private const string CanvasName = nameof(LogSpiralLibrary) + ":" + nameof(TestBladeProj);
 
         public override void Load()
         {
-            RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[distortEffect],[bloomEffect]]));
+            RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[distortEffect], [bloomEffect]]));
             base.Load();
         }
 
@@ -86,8 +81,8 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             };
             stabInfo.KValue = 3;
             meleeSequence.Add(stabInfo);
-            ConvoluteInfo convoluteInfo = new() 
-            { 
+            ConvoluteInfo convoluteInfo = new()
+            {
                 Cycle = 4,
                 ModifyData = new (1,2f)
             };
@@ -97,6 +92,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         }
         */
     }
+
     //public class TestBladeProj : ModProjectile
     //{
     //    public override string Texture => base.Texture.Replace("Proj", "");

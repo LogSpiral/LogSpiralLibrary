@@ -12,7 +12,7 @@ public class UltraCanvas : RenderDrawingContent
 
     public override void Update() => timeLeft--;
 
-    public static UltraCanvas NewUltraCanvas(string canvasName, int timeLeft, CanvasDrawing drawingDelegate) 
+    public static UltraCanvas NewUltraCanvas(string canvasName, int timeLeft, CanvasDrawing drawingDelegate)
     {
         var content = new UltraCanvas();
         content.timeLeftMax = content.timeLeft = timeLeft;

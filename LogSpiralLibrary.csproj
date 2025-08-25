@@ -1,42 +1,40 @@
-﻿
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="..\tModLoader.targets" />
 	<PropertyGroup>
 		<AssemblyName>LogSpiralLibrary</AssemblyName>
 		<LangVersion>preview</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
+		
+		<!-- 引用紫幽的nuget包，公有化几个程序集 -->
 		<PackageReference Include="Solaestas.tModLoader.ModBuilder" Version="1.6.1" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Reference Include="NetSimplified">
-	    <HintPath>lib\NetSimplified.dll</HintPath>
-	  </Reference>
-		<ModReference Include="lib\*.dll" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Update="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" />
 		<Publicize Include="ReLogic" />
 		<Publicize Include="MonoMod.RuntimeDetour" />
 		<Publicize Include="MonoMod.Utils" />
-	</ItemGroup>
-	<ItemGroup>
+		
+		<!-- 引用Cyril的NetSimplified -->
+		<Reference Include="NetSimplified">
+			<HintPath>lib\NetSimplified.dll</HintPath>
+		</Reference>
+		<ModReference Include="lib\*.dll" />
+		
+		<!-- 额外包含xml和xnb文件，忽略bin和obj目录下的 -->
 		<AdditionalFiles Include="**/*.xml;**/*.xnb" Exclude="bin/**/*;obj/**/*" Pack="true" ModPath="%(Identity)" />
-	</ItemGroup>
-	<ItemGroup>
-	  <AdditionalFiles Remove="localization\sequenceui\en-US_Mods.LogSpiralLibrary.SequenceUI.hjson" />
-	  <AdditionalFiles Remove="Localization\SequenceUI\zh-Hans_Mods.LogSpiralLibrary.SequenceUI.hjson" />
-	</ItemGroup>
-	<ItemGroup>
+		<AdditionalFiles Remove="Images/Fractal/OrigScreenPrint/*" />
+		<AdditionalFiles Remove="Images/MagicZone/OrigTexturePacket/*" />
+		
+		<!-- 包含模组描述文件 -->
 		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">
 			<Visible>true</Visible>
 		</None>
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\PropertyPanel\PropertyPanelLibrary.csproj" />
-	  <ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="CodeLibrary\DataStructures\SequenceStructures\Core\BuiltInGroups\" />
+		
+		<!-- 项目引用 属性面板 SilkyUIFramework SilkyUIAnalyzer-->
+		<ProjectReference Include="..\PropertyPanel\PropertyPanelLibrary.csproj" />
+		<ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
+		<ProjectReference Include="..\SilkyUIAnalyzer\SilkyUIAnalyzer.csproj">
+			<OutputItemType>Analyzer</OutputItemType>
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+		
 	</ItemGroup>
 </Project>

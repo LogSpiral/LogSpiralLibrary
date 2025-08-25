@@ -1,13 +1,12 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.IO;
 using Terraria.ModLoader.Config;
+
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 
 public class AirDistortEffect(float intensity, float scaler, float rotation = 0f, float colorOffset = 0f) : IRenderEffect
 {
-
     #region 参数属性
 
     /// <summary>
@@ -30,13 +29,13 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
     /// </summary>
     public float ColorOffset { get; set; } = colorOffset;
 
-    #endregion
+    #endregion 参数属性
 
     #region 公有静态属性
 
     public static float DistortScaler { get; private set; }
 
-    #endregion
+    #endregion 公有静态属性
 
     #region 接口实现
 
@@ -54,21 +53,20 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
 
     public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
-
         // 这里对内容画布没有调整，而是修改Main.screenTarget以达成扭曲效果
 
         #region 准备状态
 
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-        #endregion
+        #endregion 准备状态
 
         #region 切换绘制目标至备用画布
 
         graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
         graphicsDevice.Clear(Color.Transparent);
 
-        #endregion
+        #endregion 切换绘制目标至备用画布
 
         #region 设置参数
 
@@ -81,10 +79,11 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
         Main.instance.GraphicsDevice.Textures[2] = LogSpiralLibraryMod.Misc[18].Value;
         effect.CurrentTechnique.Passes[0].Apply();//ApplyPass
 
-        #endregion
+        #endregion 设置参数
 
         #region 绘制内容
-        //using (FileStream fs = new FileStream("D:/图片测试/ScreenShot.png", FileMode.Create)) 
+
+        //using (FileStream fs = new FileStream("D:/图片测试/ScreenShot.png", FileMode.Create))
         //{
         //    Main.screenTarget.SaveAsPng(fs, Main.screenTarget.Width, Main.screenTarget.Height);
 
@@ -94,24 +93,26 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
         //graphicsDevice.Clear(Color.Transparent);
         //spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
 
-        #endregion
+        #endregion 绘制内容
 
         #region 恢复状态
 
         spriteBatch.End();
         LogSpiralLibraryMod.ShaderSwooshUL.Parameters["distortScaler"].SetValue(1f);
         DistortScaler = 1f;
-        #endregion
 
+        #endregion 恢复状态
     }
 
-    #endregion
+    #endregion 接口实现
 
-    public AirDistortEffect() : this(0, 0) { }
+    public AirDistortEffect() : this(0, 0)
+    {
+    }
 }
+
 public class AirDistortConfigs : IAvailabilityChangableConfig
 {
-
     public bool Available { get; set; } = true;
 
     [Range(0, 10f)]
@@ -148,13 +149,13 @@ public class AirDistortConfigs : IAvailabilityChangableConfig
 
     [JsonIgnore]
     public AirDistortEffect EffectInstance => !Available ? new() : new AirDistortEffect(Intensity, Scaler, Rotation, ColorOffset);
-    // field ??= 
-    public void CopyToInstance(AirDistortEffect effect) 
+
+    // field ??=
+    public void CopyToInstance(AirDistortEffect effect)
     {
         effect.Intensity = Available ? Intensity : 0;
         effect.Scaler = Scaler;
         effect.Rotation = Rotation;
         effect.ColorOffset = ColorOffset;
     }
-
 }

@@ -1,10 +1,10 @@
-﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using ReLogic.Content;
+﻿using ReLogic.Content;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace LogSpiralLibrary;
 
-partial class LogSpiralLibraryMod
+public partial class LogSpiralLibraryMod
 {
     public static List<Asset<Texture2D>> BaseTex { get; private set; }
     public static List<Asset<Texture2D>> AniTex { get; private set; }
@@ -14,6 +14,7 @@ partial class LogSpiralLibraryMod
     public static List<Asset<Texture2D>> AniTex_Stab { get; private set; }
     public static List<Asset<Texture2D>> HeatMap { get; private set; }
     public static List<Asset<Texture2D>> MagicZone { get; private set; }
+
     /// <summary>
     /// 杂图，以下是内容表(0-17)
     /// <br>0-2:也许是给物品附魔光泽用的贴图</br>
@@ -30,18 +31,18 @@ partial class LogSpiralLibraryMod
     /// <br>21:星空2</br>
     /// </summary>
     public static List<Asset<Texture2D>> Misc { get; private set; }
+
     public static List<Asset<Texture2D>> Fractal { get; private set; }
     public static List<Asset<Texture2D>> Mask { get; private set; }
 
-    static readonly Texture2D[] _tempHeatMaps = new Texture2D[10];
+    private static readonly Texture2D[] _tempHeatMaps = new Texture2D[10];
 
     /// <summary>
     /// 临时采样热图，同时最多10张
     /// </summary>
     public static IReadOnlyList<Texture2D> TempHeatMaps => _tempHeatMaps;
 
-
-    static void LoadAllTextures()
+    private static void LoadAllTextures()
     {
         BaseTex = LoadTextures(nameof(BaseTex));
         AniTex = LoadTextures(nameof(AniTex));
@@ -62,7 +63,8 @@ partial class LogSpiralLibraryMod
                     _tempHeatMaps[n] = new Texture2D(Main.graphics.GraphicsDevice, 300, 1);
         });
     }
-    static List<Asset<Texture2D>> LoadTextures(string folderName, string textureName)
+
+    private static List<Asset<Texture2D>> LoadTextures(string folderName, string textureName)
     {
         string basePath = $"Images/{folderName}/{textureName}_";
         List<Asset<Texture2D>> assets = [];
@@ -77,7 +79,8 @@ partial class LogSpiralLibraryMod
         }
         return assets;
     }
-    static List<Asset<Texture2D>> LoadTextures(string textureName) => LoadTextures(textureName, textureName);
+
+    private static List<Asset<Texture2D>> LoadTextures(string textureName) => LoadTextures(textureName, textureName);
 
     public static void SetTempHeatMap(int index, Func<float, Color> func)
     {
@@ -96,7 +99,6 @@ partial class LogSpiralLibraryMod
             SetTempHeatMap(index, t => colors.First().Item1);
             return;
         }
-
 
         SetTempHeatMap(index, t =>
         {

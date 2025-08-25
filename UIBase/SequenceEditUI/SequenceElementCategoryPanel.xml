@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Body Class="LogSpiralLibrary.UIBase.SequenceEditUI.SequenceElementCategoryPanel" Width="180px" Height="210px" Border="1" BorderRadius="8" BorderColor="rgba(0,0,0,.5)" Margin="16" FlexDirection="Column" OverflowHidden="false">
+	<Image Name="IconImage" ImageAlign="0.5" FlexGrow="4" Width="100%" BackgroundColor="rgba(0,0,0,.1)" />
+	<HR BackgroundColor="rgba(0,0,0,.1)" />
+	<ElementGroup Width="100%" FlexGrow="1"  BackgroundColor="rgba(0,0,0,.2)">
+		<TextView Name="DisplayName" Left="50#" Top="50#" TextAlign="0.5"/>
+	</ElementGroup>
+</Body>

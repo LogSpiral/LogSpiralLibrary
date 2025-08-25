@@ -1,0 +1,37 @@
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using System.Collections.Generic;
+using Terraria.Localization;
+
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
+
+public class ConditionArg(ConditionDefinition definition) : IGroupArgument
+{
+    public ConditionArg() : this(new ConditionDefinition(0))
+    {
+    }
+
+    public ConditionArg(string fullName) : this(fullName == null ? new ConditionDefinition(0) : new ConditionDefinition(fullName))
+    {
+    }
+
+    public ConditionDefinition ConditionDefinition { get => field ??= new ConditionDefinition(0); set; } = definition;
+    public bool IsHidden => ConditionDefinition.Type == 0;
+
+    public void SetDefault() => ConditionDefinition = new(0);
+
+    public override string ToString() => Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.Condition", ConditionDefinition.ToCondition().Description.Value);
+
+    public void LoadAttributes(Dictionary<string, string> attributes)
+    {
+        if (attributes.Remove("condition", out string conditionName))
+            ConditionDefinition = new(conditionName);
+    }
+
+    public void WriteAttributes(Dictionary<string, string> attributes)
+    {
+        attributes["condition"] = Name;
+    }
+
+    public Condition Condition => ConditionDefinition.ToCondition();
+    public string Name => ConditionDefinition.Name;
+}

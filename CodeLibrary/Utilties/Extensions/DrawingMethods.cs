@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Terraria.UI;
-using static Terraria.Utils;
-using static LogSpiralLibrary.LogSpiralLibraryMod;
-using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using System.Collections.Generic;
+using System.Linq;
+using Terraria.UI;
+using static LogSpiralLibrary.LogSpiralLibraryMod;
+using static Terraria.Utils;
+
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+
 /// <summary>
 /// <para>绘制辅助函数</para>
 /// <para>包括但不限于</para>
@@ -62,6 +64,7 @@ public static class DrawingMethods
         sb.Begin(0, sb.GraphicsDevice.BlendState, sb.GraphicsDevice.SamplerStates[0],
             sb.GraphicsDevice.DepthStencilState, sb.GraphicsDevice.RasterizerState, effect, matrix);
     }
+
     public static void ApplyStdValueToVtxEffect(this MeleeVertexInfo info, StandardInfo std)
     {
         info.frame = std.frame;
@@ -69,7 +72,6 @@ public static class DrawingMethods
         info.alphaFactor = std.VertexStandard.alphaFactor;
         info.weaponTex = TextureAssets.Item[std.itemType].Value;
     }
-
 
     #region 直接用来绘制的b崽子们
 
@@ -101,12 +103,12 @@ public static class DrawingMethods
             spriteBatch.Draw(starLight, center, null, whiteLight, rotation, origin, scalerVector * 0.6f, 0, 0f);
         }
     }
+
     public static void DrawHorizonBLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float scale = 1f, float width = 4f, int counts = 20)
     {
         Vector2[] vecs = new Vector2[counts];
         for (int n = 0; n < counts; n++)
         {
-
             //vecs[n] = Vector2.CatmullRom(new Vector2(MathHelper.Lerp(start.X,end.X,-scale), start.Y) , start, end, new Vector2(MathHelper.Lerp(end.X, start.X, -scale), end.Y) * new Vector2(scale, 1), n / (counts - 1f));
             vecs[n] = Vector2.Hermite(start, (end - start) * Vector2.UnitX * scale, end, (end - start) * Vector2.UnitX * scale, n / (counts - 1f));
         }
@@ -114,6 +116,7 @@ public static class DrawingMethods
         for (int n = 0; n < counts - 1; n++)
             spriteBatch.DrawLine(vecs[n], vecs[n + 1], color, width);
     }
+
     public static void DrawRectangle(this SpriteBatch spriteBatch, Rectangle rectangle, Color color, float width = 4f)
     {
         spriteBatch.DrawLine(rectangle.TopLeft(), rectangle.TopRight(), color, width);
@@ -121,6 +124,7 @@ public static class DrawingMethods
         spriteBatch.DrawLine(rectangle.BottomRight(), rectangle.TopRight(), color, width);
         spriteBatch.DrawLine(rectangle.BottomLeft(), rectangle.BottomRight(), color, width);
     }
+
     //不好用，用新的
     //    public static void DrawShaderTail(SpriteBatch spriteBatch, Projectile projectile, ShaderTailTexture shaderTail = ShaderTailTexture.Fire, ShaderTailStyle tailStyle = ShaderTailStyle.Dust, float Width = 30, ShaderTailMainStyle shaderTailMainStyle = ShaderTailMainStyle.MiddleLine, Vector2 Offset = default, float alpha = 1, bool additive = false)
     //    {
@@ -168,7 +172,6 @@ public static class DrawingMethods
 
     //        if (bars.Count > 2)
     //        {
-
     //            // 按照顺序连接三角形
     //            triangleList.Add(bars[0]);//等腰直角三角形的底角1的顶点
     //            var vertex = new CustomVertexInfo((bars[0].Position + bars[1].Position) * 0.5f + Vector2.Normalize(projectile.velocity) * 30, Color.White,
@@ -185,7 +188,6 @@ public static class DrawingMethods
     //                triangleList.Add(bars[i + 2]);
     //                triangleList.Add(bars[i + 3]);
     //            }//每次消耗两个点生成新三角形
-
 
     //            spriteBatch.End();
     //            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
@@ -217,7 +219,6 @@ public static class DrawingMethods
     //}*/
     //            IllusionBoundMod.DefaultEffect.CurrentTechnique.Passes[0].Apply();
 
-
     //            Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList.ToArray(), 0, triangleList.Count / 3);//连接三角形顶点
 
     //            Main.graphics.GraphicsDevice.RasterizerState = originalState;
@@ -236,6 +237,7 @@ public static class DrawingMethods
             spriteBatch.Draw(projectileTexture, drawPos, new Rectangle(0, frameHeight * projectile.frame, projectileTexture.Width, frameHeight), color, projectile.rotation, new Vector2(TextureAssets.Projectile[projectile.type].Value.Width * 0.5f, frameHeight * 0.5f), projectile.scale - 0.1f * k, SpriteEffects.None, 0f);
         }
     }
+
     public static void DrawStorm(Color c1, Projectile projectile, float MaxValue)
     {
         float num252 = 15f;
@@ -296,6 +298,7 @@ public static class DrawingMethods
             Main.spriteBatch.Draw(texture2D29, vector54 + new Vector2(projectile.Center.X % 16 + xValue, projectile.Center.Y % 16), new Microsoft.Xna.Framework.Rectangle?(rectangle14), color49, num258 + num263, origin6, 1f + num264, SpriteEffects.None, 0f);
         }
     }
+
     public static void DrawWind(Color c1, Color c2, Projectile projectile, float MaxValue)
     {
         float num266 = projectile.ai[0];
@@ -379,6 +382,7 @@ public static class DrawingMethods
             Main.spriteBatch.Draw(texture2D30, vector58 + new Vector2(16 * xValue, 0), new Microsoft.Xna.Framework.Rectangle?(rectangle15), color51, num268 + num274, origin7, 1f + num275, effects2, 0f);
         }
     }
+
     /// <summary>
     /// 大猿人战那里星空背景的，不如用render，建议放弃掉这货
     /// </summary>
@@ -390,7 +394,9 @@ public static class DrawingMethods
     {
         return;
         /*
+
         #region Outside
+
         //FileStream fileStream = new FileStream(@"D:\\TestTesseract.txt", FileMode.OpenOrCreate, FileAccess.Write);
         //BinaryWriter binaryWriter = new BinaryWriter(fileStream);
         float left = Main.screenPosition.X;
@@ -520,9 +526,12 @@ public static class DrawingMethods
         //binaryWriter.Flush();
         //binaryWriter.Close();
         //fileStream.Close();
-        #endregion
+
+        #endregion Outside
+
         */
     }
+
     public static void DrawWhip(this Projectile proj)
     {
         List<Vector2> list = [];
@@ -544,6 +553,7 @@ public static class DrawingMethods
         }
         DrawWhip_WhipBland(proj, list);
     }
+
     public static Vector2 DrawWhip_WhipBland(Projectile proj, List<Vector2> controlPoints, Texture2D otherTex = null)
     {
         SpriteEffects spriteEffects = SpriteEffects.None;
@@ -603,6 +613,7 @@ public static class DrawingMethods
 
         return vector2;
     }
+
     public static void VertexDraw(CustomVertexInfo[] vertexs, Texture2D baseTex, Texture2D aniTex, Texture2D heatMap = null, Vector2 uTime = default, bool trailing = false, Matrix? matrix = null, string pass = null, bool autoStart = true, bool autoComplete = true)
     {
         Effect effect = LogSpiralLibraryMod.VertexDraw;
@@ -656,6 +667,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     /// <summary>
     /// 高阶版本的顶点绘制函数！！
     /// </summary>
@@ -724,7 +736,6 @@ public static class DrawingMethods
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
-
     }
 
     /// <summary>
@@ -824,6 +835,7 @@ public static class DrawingMethods
         spriteBatch.Draw(value, drawpos, null, color2, 1.57079637f, origin, vector * 0.6f, dir, 0);
         spriteBatch.Draw(value, drawpos, null, color2, 0f, origin, vector2 * 0.6f, dir, 0);
     }
+
     /// <summary>
     /// 画好看的星星拖尾
     /// </summary>
@@ -923,6 +935,7 @@ public static class DrawingMethods
             spriteBatch.Draw(value9, position, new Microsoft.Xna.Framework.Rectangle?(rectangle2), color, rotation, origin3, projectile.scale, SpriteEffects.None, 0);
         }
     }
+
     /// <summary>
     /// 画个高亮锤啊
     /// </summary>
@@ -949,6 +962,7 @@ public static class DrawingMethods
                 rotation += MathHelper.PiOver2;
 
                 break;
+
             case SpriteEffects.FlipVertically:
                 origin.Y = hammerProj.projTex.Size().Y / hammerProj.FrameMax.Y - origin.Y;
                 break;
@@ -980,6 +994,7 @@ public static class DrawingMethods
                 rotation += MathHelper.PiOver2;
 
                 break;
+
             case SpriteEffects.FlipVertically:
                 origin.Y = hammerProj.projTex.Size().Y / hammerProj.FrameMax.Y - origin.Y;
                 break;
@@ -988,12 +1003,12 @@ public static class DrawingMethods
     }
 
     #region 某阵子的阿汪实在太喜欢魔炮以至于要专门开一栏
+
     //哦等等，这货的.fx是不是丢了
     //找时间重做一个吧
     //TODO 魔炮shader
     public static void DrawQuadraticLaser_PassColorBar(this SpriteBatch spriteBatch, Vector2 start, Vector2 unit, Texture2D colorBar, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, bool timeOffset = false, float maxFactor = 0.5f, bool autoAdditive = true, (float x1, float y1, float x2, float y2) texcoord = default, float alpha = 1)
     {
-
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
         if (autoAdditive)
         {
@@ -1054,6 +1069,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawQuadraticLaser_PassColorBar(this SpriteBatch spriteBatch, (Vector2 start, Vector2 unit)[] startAndUnits, Texture2D colorBar, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, bool timeOffset = false, float maxFactor = 0.5f, bool autoAdditive = true, float alpha = 1)
     {
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
@@ -1119,6 +1135,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawQuadraticLaser_PassHeatMap(this SpriteBatch spriteBatch, Vector2 start, Vector2 unit, Texture2D heatMap, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, bool timeOffset = false, float maxFactor = 0.5f, bool autoAdditive = true, (float x1, float y1, float x2, float y2) texcoord = default, float alpha = 1)
     {
         //start += Vector2.UnitX * 64;
@@ -1243,6 +1260,7 @@ public static class DrawingMethods
             }
         }
     }
+
     public static void DrawQuadraticLaser_PassHeatMap(this SpriteBatch spriteBatch, (Vector2 start, Vector2 unit)[] startAndUnits, Texture2D heatMap, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, bool timeOffset = false, float maxFactor = 0.5f, bool autoAdditive = true, float alpha = 1)
     {
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
@@ -1308,6 +1326,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawQuadraticLaser_PassNormal(this SpriteBatch spriteBatch, Vector2 start, Vector2 unit, Color color, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, float maxFactor = 0.5f, bool autoAdditive = true)
     {
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
@@ -1359,6 +1378,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawQuadraticLaser_PassNormal(this SpriteBatch spriteBatch, (Vector2 start, Vector2 unit)[] startAndUnits, Color color, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, float maxFactor = 0.5f, bool autoAdditive = true)
     {
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
@@ -1414,9 +1434,11 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
-    #endregion
+
+    #endregion 某阵子的阿汪实在太喜欢魔炮以至于要专门开一栏
 
     #region 什么，他还喜欢画特效线
+
     public static void DrawEffectLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 _unit, Color color, Texture2D style, float startLight = 1, float endLight = 0, float length = 3200, float width = 512, bool autoAdditive = true)
     {
         try
@@ -1475,6 +1497,7 @@ public static class DrawingMethods
             Main.NewText(e);
         }
     }
+
     public static void DrawEffectLine(this SpriteBatch spriteBatch, (Vector2 start, Vector2 unit)[] startAndUnits, Color color, Texture2D style, float startLight = 1, float endLight = 0, float length = 3200, float width = 512, bool autoAdditive = true)
     {
         Effect effect = ShaderSwooshEffect;
@@ -1525,6 +1548,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawEffectLine_StartAndEnd(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, Texture2D style, float startLight = 1, float endLight = 0, float width = 512, bool autoAdditive = true)
     {
         Effect effect = ShaderSwooshEffect;
@@ -1572,6 +1596,7 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
+
     public static void DrawEffectLine_StartAndEnd(this SpriteBatch spriteBatch, (Vector2 start, Vector2 end)[] startAndEnds, Color color, Texture2D style, float startLight = 1, float endLight = 0, float width = 512, bool autoAdditive = true)
     {
         Effect effect = ShaderSwooshEffect;
@@ -1622,9 +1647,11 @@ public static class DrawingMethods
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
     }
-    #endregion
+
+    #endregion 什么，他还喜欢画特效线
 
     #region 总算，这次不是特效线了
+
     public static void DrawLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float width = 4f, bool offset = false, Vector2 drawOffset = default)
     {
         if (offset)
@@ -1634,6 +1661,7 @@ public static class DrawingMethods
 
         spriteBatch.Draw(TextureAssets.MagicPixel.Value, (start + end) * .5f + drawOffset, new Rectangle(0, 0, 1, 1), color, (end - start).ToRotation(), new Vector2(.5f, .5f), new Vector2((start - end).Length(), width), 0, 0);
     }
+
     public static void DrawLine(this SpriteBatch spriteBatch, Vector3 start, Vector3 end, Color color, float height, float width = 4f, bool offset = false, Vector2 drawOffset = default, Vector2 projCenter = default)
     {
         if (offset)
@@ -1645,6 +1673,7 @@ public static class DrawingMethods
         var e = end.Projectile(height, projCenter);
         spriteBatch.Draw(TextureAssets.MagicPixel.Value, (s + e) * .5f + drawOffset, new Rectangle(0, 0, 1, 1), color, (e - s).ToRotation(), new Vector2(.5f, .5f), new Vector2((s - e).Length(), width), 0, 0);
     }
+
     public static void DrawLine(this SpriteBatch spriteBatch, Vector4 start, Vector4 end, Color color, float heightZ, float heightW, float width = 4f, bool offset = false, Vector2 drawOffset = default, Vector2 projCenter = default)
     {
         if (offset)
@@ -1658,6 +1687,7 @@ public static class DrawingMethods
             new Rectangle(0, 0, 1, 1), color, (e - s).ToRotation(),
             new Vector2(.5f, .5f), new Vector2((s - e).Length(), width), 0, 0);
     }
+
     public static void DrawLine(this SpriteBatch spriteBatch, Vector3 start, Vector3 end, Color color, float height, out Vector2 s, out Vector2 e, float width = 4f, bool offset = false, Vector2 drawOffset = default, Vector2 projCenter = default)
     {
         if (offset)
@@ -1669,6 +1699,7 @@ public static class DrawingMethods
         e = end.Projectile(height, projCenter) + drawOffset;
         spriteBatch.Draw(TextureAssets.MagicPixel.Value, (s + e) * .5f, new Rectangle(0, 0, 1, 1), color, (e - s).ToRotation(), new Vector2(.5f, .5f), new Vector2((s - e).Length(), width), 0, 0);
     }
+
     public static void DrawLine(this SpriteBatch spriteBatch, Vector4 start, Vector4 end, Color color, float heightZ, float heightW, out Vector2 s, out Vector2 e, float width = 4f, bool offset = false, Vector2 drawOffset = default, Vector2 projCenter = default)
     {
         if (offset)
@@ -1680,9 +1711,11 @@ public static class DrawingMethods
         e = end.Projectile(heightW, new Vector3(projCenter, 0)).Projectile(heightZ, projCenter) + drawOffset;
         spriteBatch.Draw(TextureAssets.MagicPixel.Value, (s + e) * .5f, new Rectangle(0, 0, 1, 1), color, (e - s).ToRotation(), new Vector2(.5f, .5f), new Vector2((s - e).Length(), width), 0, 0);
     }
-    #endregion
+
+    #endregion 总算，这次不是特效线了
 
     #region 绘制一个路径，你不会想用第二次
+
     public static void DrawPath(this SpriteBatch spriteBatch, Vector2[] vectorFunc, Func<float, Color> colorFunc, Effect effect, Texture2D baseTex, Texture2D aniTex, Vector2 offest = default, float width = 16, float kOfX = 1, bool looped = false, Func<float, float> factorFunc = null, Func<float, float> widthFunc = null, Func<float, float> lightFunc = null, Func<float> timeFunc = null, string pass = default, Action<Vector2, int> doSth = null, bool alwaysDoSth = false)
     {
         if (vectorFunc == null || colorFunc == null || effect == null || vectorFunc.Length < 3)
@@ -1752,8 +1785,8 @@ public static class DrawingMethods
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
-
     }
+
     public static void DrawPath(this SpriteBatch spriteBatch, Func<float, Vector2> vectorFunc, Func<float, Color> colorFunc, Effect effect, Texture2D baseTex, Texture2D aniTex, Vector2 offest = default, int counts = 25, float min = 0, float max = 1, float width = 16, float kOfX = 1, bool looped = false, Func<float, float> factorFunc = null, Func<float, float> widthFunc = null, Func<float, float> lightFunc = null, Func<float> timeFunc = null, string pass = default, Action<Vector2, float> doSth = null, bool alwaysDoSth = false, bool autoAdditive = true, int[] skipPoint = null)
     {
         if (vectorFunc == null || colorFunc == null || effect == null || counts < 3)
@@ -1844,11 +1877,12 @@ public static class DrawingMethods
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
         }
-
     }
-    #endregion
+
+    #endregion 绘制一个路径，你不会想用第二次
 
     #region 绘制空间平面，不好用，该换
+
     public static void Draw3DPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, VertexTriangle3List loti, string pass = default)
     {
         if (loti.tris == null)
@@ -1878,6 +1912,7 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
     }
+
     public static void Draw3DPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, string pass = default, params VertexTriangle3[] tris)
     {
         spriteBatch.End();
@@ -1903,6 +1938,7 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
     }
+
     public static void DrawPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, VertexTriangleList vttl, string pass = default)
     {
         spriteBatch.End();
@@ -1928,6 +1964,7 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
     }
+
     public static void DrawPlane(this SpriteBatch spriteBatch, Effect effect, Texture2D baseTex, Texture2D aniTex, string pass = default, params VertexTriangle[] tris)
     {
         spriteBatch.End();
@@ -1953,7 +1990,8 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
     }
-    #endregion
+
+    #endregion 绘制空间平面，不好用，该换
 
     /// <summary>
     /// 给物品上fumo光泽，但是这次是在世界
@@ -1974,7 +2012,6 @@ public static class DrawingMethods
 
         var matrix = spriteBatch.transformMatrix;
         var effect = spriteBatch.customEffect;
-
 
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null);
@@ -2024,6 +2061,7 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, samplerState, depthStencilState, rasterizerState, effect, matrix);
     }
+
     /// <summary>
     /// 给物品上fumo光泽，但是这次是在包包
     /// </summary>
@@ -2104,16 +2142,20 @@ public static class DrawingMethods
         spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, samplerState, depthStencilState, rasterizerState, effect, matrix);
     }
-    #endregion
+
+    #endregion 直接用来绘制的b崽子们
 
     #region 处理颜色的奇怪函数
+
     public static Color ToColor(this Vector3 vector) => new(vector.X, vector.Y, vector.Z);
+
     /// <summary>
     /// 获取颜色的亮度
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
     public static float Luminance(this Color color) => (Math.Max(Math.Max(color.R, color.G), color.B) + Math.Min(Math.Min(color.R, color.G), color.B)) / 2;
+
     /// <summary>
     /// 对比两个颜色的相似程度，实现得挺迫真的
     /// 0是直接向量距离了
@@ -2124,6 +2166,7 @@ public static class DrawingMethods
     /// <param name="style">模式</param>
     /// <returns></returns>
     public static float DistanceColor(this Color mainColor, Color target, int style) => style switch { 0 => (mainColor.ToVector3() - target.ToVector3()).Length(), 1 => mainColor.DistanceColor(target), _ => 0 };
+
     /// <summary>
     /// 获取颜色的距离，这里是hsl
     /// </summary>
@@ -2135,16 +2178,21 @@ public static class DrawingMethods
         float hueDistance;
         float saturationDistance = Math.Max(mainColor.Y, target.Y) - Math.Min(mainColor.Y, target.Y);
         float luminosityDistance = Math.Max(mainColor.Z, target.Z) - Math.Min(mainColor.Z, target.Z);
+
         #region 色调处理
+
         {
             hueDistance = Math.Max(mainColor.X, target.X);
             float helper = Math.Min(mainColor.X, target.X);
             hueDistance = Math.Min(hueDistance - helper, helper + 1 - hueDistance);
         }
-        #endregion
+
+        #endregion 色调处理
+
         hueDistance *= mainColor.Y * 2 * MathF.Sqrt(mainColor.Z * (1 - mainColor.Z));
         return hueDistance * 8 + saturationDistance + luminosityDistance;
     }
+
     /// <summary>
     /// 获取颜色的距离，这里是rgb
     /// </summary>
@@ -2152,9 +2200,11 @@ public static class DrawingMethods
     /// <param name="target"></param>
     /// <returns></returns>
     public static float DistanceColor(this Color mainColor, Color target) => Main.rgbToHsl(mainColor).DistanceColor(Main.rgbToHsl(target));
-    #endregion
+
+    #endregion 处理颜色的奇怪函数
 
     #region 其它
+
     public static CustomVertexInfo[] GetItemVertexes(Vector2 origin, float rotationStandard, float rotationOffset, float rotationDirection, Texture2D texture, float KValue, float size, Vector2 drawCen, bool flip, float alpha = 1f, Rectangle? frame = null)
     {
         Rectangle realFrame = frame ?? new Rectangle(0, 0, texture.Width, texture.Height);
@@ -2190,6 +2240,7 @@ public static class DrawingMethods
         vector = vector.SafeNormalize(default);
         return new Color(0, vector.X / 2 + .5f, vector.Y / 2 + .5f);
     }
+
     /// <summary>
     /// 生成三角形列
     /// </summary>
@@ -2208,7 +2259,6 @@ public static class DrawingMethods
             triangleList[3 * i] = source[i];
             triangleList[3 * i + 1] = source[i + 2];
             triangleList[3 * i + 2] = source[i + 1];
-
 
             triangleList[3 * i + 3] = source[i + 1];
             triangleList[3 * i + 4] = source[i + 2];
@@ -2237,14 +2287,15 @@ public static class DrawingMethods
         }
         return triangleList;
     }
+
     public static CustomVertexInfo VertexInScreen(this Vector2 vec, Color color, float light = 1)
     {
         return new CustomVertexInfo(vec, color, new Vector3((vec.X - Main.screenPosition.X) / 1920f, (vec.Y - Main.screenPosition.Y) / 1120f, light));
     }
+
     //[Obsolete]
     //public static Vector2[] GetVertexPoints(ref Vector2[] points)
     //{
-
     //    //Vector2[] result = new Vector2[4];
     //    LoopArray<Vector2> result = new LoopArray<Vector2>(new Vector2[4]);
     //    float left = float.MaxValue, bottom = float.MaxValue;
@@ -2283,7 +2334,7 @@ public static class DrawingMethods
     //        }
 
     //        var vec = points[n];
-    //        //if (!result.array.Contains(vec)) 
+    //        //if (!result.array.Contains(vec))
     //        //{
     //        //    if (vec.X < left)
     //        //    {
@@ -2327,7 +2378,7 @@ public static class DrawingMethods
     //            result[3] = vec;
     //        }
     //    }
-    //    //if ((result[0] == result[1] && result[2] == result[3]) || (result[2] == result[1] && result[0] == result[3])) 
+    //    //if ((result[0] == result[1] && result[2] == result[3]) || (result[2] == result[1] && result[0] == result[3]))
     //    //{
     //    //    return null;
     //    //}
@@ -2416,14 +2467,17 @@ public static class DrawingMethods
         texture.GetData(cs);
         return cs[(int)(texcoord.X * w) + (int)(texcoord.Y * h) * w];
     }
+
     public static Color GetColor(this Player drawPlayer, Color color)
     {
         return Lighting.GetColor((drawPlayer.Center / 16).ToPoint().X, (drawPlayer.Center / 16).ToPoint().Y, color);
     }
+
     public static Color GetColor(this Player drawPlayer)
     {
         return Lighting.GetColor((drawPlayer.Center / 16).ToPoint().X, (drawPlayer.Center / 16).ToPoint().Y);
     }
+
     /// <summary>
     /// 弹幕生成顶点数组
     /// </summary>
@@ -2454,8 +2508,8 @@ public static class DrawingMethods
             normalDir = Vector2.Normalize(new Vector2(-normalDir.Y, normalDir.X));
             var factor = i / (float)indexMax;
             var w = 1 - factor;
-            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha * .6f)));//w * 
-            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha * .6f)));//w * 
+            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha * .6f)));//w *
+            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha * .6f)));//w *
         }
         List<CustomVertexInfo> triangleList = [];
         if (bars.Count > 2)
@@ -2513,8 +2567,8 @@ public static class DrawingMethods
             var w = 1 - factor;
             var Width = widthFunc?.Invoke(factor) ?? 30f;
             var _mainColor = colorFunc?.Invoke(factor) ?? Color.White;
-            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha)));//w * 
-            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha)));//w * 
+            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 1, alpha)));//w *
+            bars.Add(new CustomVertexInfo(projectile.oldPos[i] + Offset + normalDir * -Width, _mainColor * w, new Vector3((float)Math.Sqrt(factor), 0, alpha)));//w *
         }
         List<CustomVertexInfo> triangleList = [];
         if (bars.Count > 2)
@@ -2542,7 +2596,6 @@ public static class DrawingMethods
         return [.. triangleList];
     }
 
-
     /// <summary>
     /// 临时获取贴图
     /// </summary>
@@ -2551,5 +2604,5 @@ public static class DrawingMethods
     /// <returns></returns>
     public static Texture2D GetTexture(string path, bool autoPath = true) => ModContent.Request<Texture2D>((autoPath ? "LogSpiralLibrary/Images/" : "") + path).Value;
 
-    #endregion
+    #endregion 其它
 }

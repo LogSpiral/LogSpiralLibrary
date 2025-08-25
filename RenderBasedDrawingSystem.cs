@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Terraria.Graphics.Effects;
+
 namespace LogSpiralLibrary;
 
 public class RenderBasedDrawingSystem : ModSystem
@@ -12,7 +13,7 @@ public class RenderBasedDrawingSystem : ModSystem
         On_Main.DrawProjectiles += AddNoRenderDrawings;
     }
 
-    static void AddRenderBasedDrawings(On_FilterManager.orig_EndCapture orig, FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
+    private static void AddRenderBasedDrawings(On_FilterManager.orig_EndCapture orig, FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Color clearColor)
     {
         if (!LogSpiralLibraryMod.CanUseRender) goto label;
         foreach (var renderDrawing in RenderBasedDrawings)
@@ -30,7 +31,7 @@ public class RenderBasedDrawingSystem : ModSystem
         orig.Invoke(self, finalTexture, screenTarget1, screenTarget2, clearColor);
     }
 
-    static void AddNoRenderDrawings(On_Main.orig_DrawProjectiles orig, Main self)
+    private static void AddNoRenderDrawings(On_Main.orig_DrawProjectiles orig, Main self)
     {
         orig.Invoke(self);
         if (LogSpiralLibraryMod.CanUseRender) return;

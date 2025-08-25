@@ -1,14 +1,17 @@
 ﻿namespace LogSpiralLibrary;
+
 public class LogSpiralLibraryPlayer : ModPlayer
 {
     public bool ultraFallEnable;
     public Vector2 targetedMousePosition;
     public float strengthOfShake;
+
     public override void ResetEffects()
     {
         ultraFallEnable = false;
         base.ResetEffects();
     }
+
     public override void PreUpdate()
     {
         if (ultraFallEnable)
@@ -22,6 +25,7 @@ public class LogSpiralLibraryPlayer : ModPlayer
         }
         base.PreUpdate();
     }
+
     public override void ModifyScreenPosition()
     {
         var set = LogSpiralLibraryMiscConfig.Instance.screenShakingSetting;

@@ -1,0 +1,170 @@
+Help: Help
+
+HelpPanel: {
+	DisplayName: Help Panel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+PagePanel: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+MenuButton: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+CreateNewButton: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+ButtonPanel: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+TypeSelect: {
+	DisplayName: 元素类型选择按钮
+	Tooltip:
+		'''
+		用于切换目前编辑的序列元素
+		默认是近战动作元素，以后会有更多
+		'''
+}
+
+OpenFolder: {
+	DisplayName: 打开文件夹按钮
+	Tooltip:
+		'''
+		点击打开存放所有序列的文件夹
+		如果需要更直接的编辑
+		就可以直接在里面找到xml文件然后干坏事啦
+		'''
+}
+
+LSHomePage: {
+	DisplayName: 联系客服
+	Tooltip:
+		'''
+		笨，笨蛋，我一个前置库能有什么客服啦
+		所以这个按钮的功能就是打开螺线子的B站主页
+		然后你可以在私信里面轰炸他问问这玩意怎么用
+		'''
+}
+
+HelpPanelOpener: {
+	DisplayName: 打开帮助面板
+	Tooltip: 也许我该加个打开帮助面板的帮助信息？
+}
+
+Menu: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+MenuRecent: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+MenuFavorite: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+MenuFinished: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+MenuLibrary: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+PropertyPanelData: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+PropertyPanelConfig: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+ElementLibrary: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+SequenceLibrary: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}
+
+EditPanel: {
+	DisplayName: PagePanel
+	Tooltip:
+		'''
+		This panel is used to help you know the usage of each component.
+		Hover the cursor on a component for more details.
+		'''
+}

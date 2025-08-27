@@ -99,4 +99,6 @@ public interface IGroup : ILoadable
     void ILoadable.Unload()
     {
     }
+
+    IGroup Clone();
 }

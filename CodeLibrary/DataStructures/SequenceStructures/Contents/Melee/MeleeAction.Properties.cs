@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using PropertyPanelLibrary.PropertyPanelComponents.Attributes;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
@@ -28,6 +29,7 @@ public abstract partial class MeleeAction : ModType, ISequenceElement, ILocalize
     /// 近战数据修改
     /// </summary>
     [ElementCustomData]
+    [LabelPresentValue(false)]
     public ActionModifyData ModifyData { get; set; } = new ActionModifyData(1);
 
     /// <summary>

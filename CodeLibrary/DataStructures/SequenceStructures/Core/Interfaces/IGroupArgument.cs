@@ -13,4 +13,6 @@ public interface IGroupArgument
     void LoadAttributes(Dictionary<string, string> attributes);
 
     void WriteAttributes(Dictionary<string, string> attributes);
+
+    IGroupArgument Clone();
 }

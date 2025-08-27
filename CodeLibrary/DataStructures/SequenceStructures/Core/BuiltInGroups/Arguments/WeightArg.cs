@@ -21,7 +21,7 @@ public class WeightArg(float weight) : IGroupArgument
 
     public override string ToString()
     {
-        return Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.Weight", Weight);
+        return Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.Weight", Weight.ToString("0.00"));
     }
 
     public void LoadAttributes(Dictionary<string, string> attributes)
@@ -34,4 +34,6 @@ public class WeightArg(float weight) : IGroupArgument
     {
         attributes["wWeight"] = Weight.ToString("0.00");
     }
+
+    public IGroupArgument Clone() => new WeightArg(Weight);
 }

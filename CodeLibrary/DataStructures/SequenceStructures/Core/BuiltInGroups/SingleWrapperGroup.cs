@@ -11,8 +11,8 @@ public class SingleWrapperGroup() : SingleGroup<NoneArg>
     {
         Data = new()
         {
-            Wrapper = wrapper,
-            Argument = new()
+            Wrapper = wrapper.Clone(),
+            Argument = NoneArg.Instance
         };
     }
 }

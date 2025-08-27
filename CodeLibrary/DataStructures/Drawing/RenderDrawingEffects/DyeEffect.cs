@@ -1,7 +1,11 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader.Config;
+using Terraria.ModLoader.Config.UI;
+using Terraria.ModLoader.Default;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 
@@ -85,4 +89,10 @@ public class DyeConfigs : IAvailabilityChangableConfig
     //  field ??=
 
     public void CopyToInstance(DyeEffect effect) => effect.Type = Available ? Dye.Type : 0;
+}
+
+file class DyeDefinitionElement : ItemDefinitionElement
+{
+    public override List<DefinitionOptionElement<ItemDefinition>> GetPassedOptionElements()
+        => [.. (from elem in base.GetPassedOptionElements() where elem.Definition.Type == 0 || elem.Definition.Type == ModContent.ItemType<UnloadedItem>() || GameShaders.Armor._shaderLookupDictionary.ContainsKey(elem.Definition.Type) select elem)];
 }

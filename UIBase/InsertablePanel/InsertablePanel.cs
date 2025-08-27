@@ -148,6 +148,7 @@ public class InsertablePanel : UIElementGroup
         BorderRadius = new(8f);
         Margin = new(8f);
         Border = 1f;
+        CrossAlignment = CrossAlignment.Stretch;
     }
 
     #endregion ctor
@@ -176,6 +177,7 @@ public class InsertablePanel : UIElementGroup
             _isDragging = true;
             Remove();
             StartDragging();
+            OnDraggingOut?.Invoke(this, evt);
         }
 
         base.OnLeftMouseDown(evt);
@@ -209,7 +211,7 @@ public class InsertablePanel : UIElementGroup
         UpdateDragging();
         UpdatePreview(gameTime);
     }
-    private void UpdateDecorate() 
+    private void UpdateDecorate()
     {
         if (!_pendingUpdateDecorate) return;
         _pendingUpdateDecorate = false;
@@ -405,7 +407,7 @@ public class InsertablePanel : UIElementGroup
     }
 
     public event Action<InsertablePanel, GroupPanel> OnAppendingToGroup;
-    public event Action<InsertablePanel,SequencePanel> OnAppendingToSequence;
+    public event Action<InsertablePanel, SequencePanel> OnAppendingToSequence;
 
     protected virtual void Inserting(UIMouseEvent evt)
     {
@@ -471,6 +473,8 @@ public class InsertablePanel : UIElementGroup
     #endregion Virtuals
 
     public static void ForceEnablePV() => IsPVExists = false;
+
+    public event MouseEventHandler OnDraggingOut;
 }
 
 //  public class ElementPanel : InsertablePanel

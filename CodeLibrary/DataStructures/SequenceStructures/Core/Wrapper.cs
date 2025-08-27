@@ -36,6 +36,7 @@ public partial class Wrapper
     public Wrapper(string refSequenceFullName)
     {
         RefSequenceFullName = refSequenceFullName;
+        if (string.IsNullOrEmpty(refSequenceFullName)) return;
         if (!SequenceGlobalManager.SequenceLookup.TryGetValue(refSequenceFullName, out Sequence sequence))
         {
             SequenceGlobalManager.UnloadSequences.Add(refSequenceFullName);
@@ -72,5 +73,19 @@ public partial class Wrapper
             WriteUnloadData(writer);
 
         writer.WriteEndElement();
+    }
+
+
+    public Wrapper Clone() 
+    {
+        if(Element is { } element)
+            return new Wrapper(element.CloneInstance());
+        if (RefSequenceFullName is { } refName)
+            return new Wrapper(refName);
+        if (Sequence is { } sequence && sequence is Sequence standardSequence)
+            return new Wrapper(standardSequence.Clone());
+        if (IsUnload)
+            return new Wrapper(ExtraElements, Attributes);
+        return null;
     }
 }

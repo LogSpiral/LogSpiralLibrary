@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
         #region 加载模组预设序列
 
         List<string> pendingLoadMods = [nameof(LogSpiralLibrary)];
-        foreach (var localMod in ModDefinitionElement.locals)
+        foreach (var localMod in SequenceSystem.locals)
             foreach (var refMod in localMod.properties.modReferences)
                 if (refMod.mod == nameof(LogSpiralLibrary))
                 {

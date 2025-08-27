@@ -54,7 +54,6 @@ public class SequencePanel : MultiPanel
         if (deltaSize.Y < 0) deltaSize.Y = 0;
         _pvView.SetWidth(_pvSize.X * factor);
         _pvView.SetHeight(_pvSize.Y - deltaSize.Y * (1 - factor));
-        Main.NewText(_pvView.Height.Pixels);
         float gapWidth = InsertContainerPanel.Gap.Width;
         if (index == 0)
         {

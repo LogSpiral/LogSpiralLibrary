@@ -9,7 +9,7 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
 {
     public Type ArgType => typeof(T);
 
-    public List<WrapperArgPair<T>> DataList { get; } = [];
+    public List<WrapperArgPair<T>> DataList { get; private set; } = [];
 
     public IReadOnlyList<IWrapperArgPair<IGroupArgument>> Contents => DataList;
 
@@ -36,4 +36,15 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
     }
 
     public abstract Wrapper GetWrapper();
+
+    public IGroup Clone()
+    {
+        var result = MemberwiseClone() as MultiGroup<T>;
+        result.DataList = [];
+        foreach (var pair in DataList)
+            result.DataList.
+                Add(pair.Clone());
+
+        return result;
+    }
 }

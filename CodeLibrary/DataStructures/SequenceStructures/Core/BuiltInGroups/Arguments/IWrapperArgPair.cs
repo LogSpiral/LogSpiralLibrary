@@ -17,6 +17,8 @@ public sealed class WrapperArgPair<T>() : IWrapperArgPair<T> where T : IGroupArg
     public (Wrapper, T) Deconstruct() => (Wrapper, Argument);
 
     public WrapperArgPair ToNonGeneric() => new() { Argument = Argument, Wrapper = Wrapper };
+
+    public WrapperArgPair<T> Clone() => new() { Argument = (T)Argument.Clone(), Wrapper = Wrapper.Clone() };
 }
 
 public class WrapperArgPair 

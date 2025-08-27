@@ -1,4 +1,6 @@
-﻿using SilkyUIFramework;
+﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using LogSpiralLibrary.UIBase.InsertablePanel;
+using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Graphics2D;
 
@@ -7,6 +9,8 @@ namespace LogSpiralLibrary.UI.SequenceEditUI;
 public partial class SequenceEditUI
 {
     private AnimationTimer SwitchTimer { get; init; } = new(3);
+
+    internal InsertablePanel CurrentEditTarget { get; set; }
 
     protected override void UpdateStatus(GameTime gameTime)
     {
@@ -36,11 +40,23 @@ public partial class SequenceEditUI
                 BlurMakeSystem.KawaseBlur();
                 batch.Begin();
             }
-
+            if (MainContainer == null) return;
             SDFRectangle.SampleVersion(BlurMakeSystem.BlurRenderTarget,
                 MainContainer.Bounds.Position * Main.UIScale, MainContainer.Bounds.Size * Main.UIScale, MainContainer.BorderRadius * Main.UIScale, Matrix.Identity);
         }
 
         base.Draw(gameTime, spriteBatch);
+
+        if (CurrentEditTarget != null && PropertyPanelConfig != null && _currentPageFullName != null && DataLine.ExpandFactor > 0) 
+        {
+            var factor = DataLine.ExpandFactor * .25f;
+            var start = CurrentEditTarget.InnerBounds.LeftTop;
+            if (!BasePanel.ContainsPoint(start)) return;
+            var end = PropertyPanelConfig.InnerBounds.RightTop;
+            spriteBatch.DrawHorizonBLine(start, end, Main.DiscoColor with { A = 0} * factor, 1, 4);
+            spriteBatch.DrawHorizonBLine(start, end, Color.White * factor, 1, 2);
+
+        }
+
     }
 }

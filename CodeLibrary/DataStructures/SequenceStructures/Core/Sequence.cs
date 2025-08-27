@@ -16,4 +16,16 @@ public partial class Sequence(params List<IGroup> groups) : ISequence
     int ISequence.Count => Groups.Count;
 
     Wrapper ISequence.GetWrapperAt(int index) => Groups[index].GetWrapper();
+
+
+    public Sequence Clone() 
+    {
+        var result = new Sequence()
+        {
+            Data = Data.Clone()
+        };
+        foreach (var group in Groups) 
+            result.Groups.Add(group.Clone());
+        return result;
+    }
 }

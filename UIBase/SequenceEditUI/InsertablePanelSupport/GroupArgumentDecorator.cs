@@ -5,6 +5,7 @@ using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.BasicComponents;
 using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,23 +23,35 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
     public HorizontalRule HorizontalRule { get; set; }
     public UITextView ArgumentText { get; set; }
     public UIElementGroup Mask { get; set; }
+    public UIElementGroup InnerContainer { get; set; }
     public void Decorate(InsertablePanel.InsertablePanel panel)
     {
         panel.FlexDirection = FlexDirection.Column;
-        HorizontalRule = new();
+        HorizontalRule = new()
+        {
+            Margin = new(16,0,4,0),
+            IgnoreMouseInteraction = true
+        };
         panel.Add(HorizontalRule);
-        var mask = new UIElementGroup()
+        var mask = Mask = new()
+        {
+            OverflowHidden = true,
+            IgnoreMouseInteraction = true
+        };
+        var container = new UIElementGroup()
         {
             FitWidth = true,
             FitHeight = true,
-            OverflowHidden = true
+            IgnoreMouseInteraction = true
         };
-        Mask = mask;
+        container.Join(mask);
+        InnerContainer = container;
         ArgumentText = new()
         {
             Margin = new(16, 0, 4, 8),
             TextAlign = new(0, .5f),
-            Top = new(0, 0, .5f)
+            Top = new(0, 0, .5f),
+            IgnoreMouseInteraction = true
         };
         if (Pair != null)
         {
@@ -47,37 +60,40 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
                 HiddenTimer.ImmediateReverseCompleted();
             else
                 HiddenTimer.ImmediateCompleted();
-            UpdateVisuals();
         }
-
+        ArgumentText.ContentChanged += delegate
+        {
+            UpdateVisuals();
+        };
         ArgumentText.OnUpdateStatus += (gameTime) =>
         {
-            if (Pair?.Argument?.IsHidden is false && HiddenTimer.IsReverse)
-                HiddenTimer.StartUpdate();
-            if (Pair?.Argument?.IsHidden is true && HiddenTimer.IsForward)
-                HiddenTimer.StartReverseUpdate();
+
             HiddenTimer.Update(gameTime);
             if (Pair != null)
+            {
+                if (!Pair.Argument.IsHidden && HiddenTimer.IsReverse)
+                    HiddenTimer.StartUpdate();
+                if (Pair.Argument.IsHidden && HiddenTimer.IsForward)
+                    HiddenTimer.StartReverseUpdate();
+
                 ArgumentText.Text = $"->{Pair.Argument.ToString()}";
-            if (HiddenTimer.IsCompleted) return;
+            }
             UpdateVisuals();
 
+            // Main.NewText((HorizontalRule.Width, HorizontalRule.Parent.Bounds, HorizontalRule.Bounds));
         };
-        mask.Add(ArgumentText);
+        container.Add(ArgumentText);
 
         panel.Add(mask);
     }
 
-    private void UpdateVisuals() 
+    private void UpdateVisuals()
     {
         var factor = HiddenTimer.Schedule;
-        HorizontalRule.SetWidth(114514);
         HorizontalRule.SetHeight(factor * 4, 0);
         HorizontalRule.Border = factor;
-        var bounds = HorizontalRule.Bounds;
-        Mask.SetMaxHeight((ArgumentText.TextSize.Y * ArgumentText.TextScale + ArgumentText.Margin.Vertical) * factor, 0);
-        Mask.SetMaxWidth((ArgumentText.TextSize.X * ArgumentText.TextScale + ArgumentText.Margin.Horizontal) * factor, 0);
-        HorizontalRule.SetMaxWidth(Mask.MaxWidth.Pixels * .8f);
+        Mask.SetHeight(InnerContainer.Bounds.Height * factor, 0);
+        Mask.SetWidth(InnerContainer.Bounds.Width * factor, 0);
     }
 
     public void UnloadDecorate(InsertablePanel.InsertablePanel panel)

@@ -35,4 +35,11 @@ public abstract class SingleGroup<T> : IGroup where T : class, IGroupArgument, n
     }
 
     public abstract Wrapper GetWrapper();
+
+    public IGroup Clone()
+    {
+        var result = MemberwiseClone() as SingleGroup<T>;
+        result.Data = Data.Clone();
+        return result;
+    }
 }

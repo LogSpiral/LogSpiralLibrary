@@ -1,4 +1,5 @@
-﻿using SilkyUIFramework.Attributes;
+﻿using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
+using SilkyUIFramework.Attributes;
 using SilkyUIFramework.BasicElements;
 using Terraria.Audio;
 
@@ -32,6 +33,12 @@ public partial class SequenceEditUI : BasicBody
         if (!Active)
             SoundEngine.PlaySound(SoundID.MenuOpen);
         Active = true;
+        foreach (var pair in Instance.PendingSequences) 
+        {
+            if (!CurrentCategory.Maganger.Sequences.ContainsKey(pair.Key)) continue;
+            var page = MenuHelper.AppendPage(Instance, pair.Key, pair.Value, false);
+            page.PendingModified = true;
+        }
     }
 
     public static void Close(bool silent = false)
@@ -40,5 +47,6 @@ public partial class SequenceEditUI : BasicBody
             SoundEngine.PlaySound(SoundID.MenuClose);
         Active = false;
         Instance!.OpenedPages.Clear();
+        SequenceEditHelperUI.Close();
     }
 }

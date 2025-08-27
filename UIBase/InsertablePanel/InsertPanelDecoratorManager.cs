@@ -27,4 +27,16 @@ public class InsertPanelDecoratorManager
         foreach(var decorator in Decorators)
             decorator.UnloadDecorate(panel);
     }
+
+    public bool TryFindFirst<T>(out T decorator)  where T : IInsertPanelDecorator
+    {
+        decorator = default;
+        foreach (var dummy in Decorators)
+            if (dummy is T result) 
+            {
+                decorator = result;
+                return true;
+            }
+        return false;
+    }
 }

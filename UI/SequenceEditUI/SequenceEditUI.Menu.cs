@@ -17,6 +17,59 @@ public partial class SequenceEditUI
 {
     private static class MenuHelper
     {
+        public static PageView AppendPage(SequenceEditUI instance, string name, Sequence sequence, bool immediateSwitch)
+        {
+            void SwitchToPage(PageView page)
+            {
+                instance._currentPageFullName = name;
+                instance.SwitchToEdit();
+                page.BackgroundColor = Color.Black * .135f;
+                var index = instance.PagePanel.GetInnerChildIndex(page);
+                instance.PagePanel.PendingChildren[index - 1].BackgroundColor = default;
+                instance.PagePanel.PendingChildren[index + 1].BackgroundColor = default;
+                Recents.Remove(name);
+                Recents.Insert(0, name);
+                SaveRecentListAsFile();
+            }
+            var fullName = name;
+            if (!instance.OpenedPages.TryGetValue(name, out var page))
+            {
+                page = new()
+                {
+                    TitleText = sequence.Data?.DisplayName ?? name,
+                    NameIndex = name
+                };
+                var vr = new VerticalRule() { Height = new(-16, 0.8f), Top = new(-8f, 0, 1), BackgroundColor = Color.Black * .25f };
+                instance.PagePanel.AddBefore(page, instance.CreateNewButton);
+                instance.PagePanel.AddBefore(vr, instance.CreateNewButton);
+
+                page.CloseButton.LeftMouseClick += delegate
+                {
+                    page.Remove();
+                    vr.Remove();
+                    instance.OpenedPages.Remove(name);
+                    if (instance._currentPageFullName == name)
+                        instance.SwitchToMenu();
+                };
+                page.LeftMouseClick += (source, evt) =>
+                {
+                    if (evt.Source != source) return;
+                    SequenceEditUIHelper.RecoverPreviousActivePageColor(instance);
+                    SwitchToPage(page);
+                };
+                page.OnUpdateStatus += delegate
+                {
+                    if (instance._currentPageFullName != name)
+                        SequenceEditUIHelper.HoverColor(page, default, Color.White * .1f);
+                };
+                instance.OpenedPages[name] = page;
+                if (immediateSwitch)
+                    SwitchToPage(page);
+            }
+            else
+                SwitchToPage(page);
+            return page;
+        }
         public static UIView SpawnViewFromPair(SequenceEditUI instance, KeyValuePair<string, Sequence> pair)
         {
             var sequence = pair.Value;
@@ -51,65 +104,14 @@ public partial class SequenceEditUI
                     textView.TextColor = Color.White;
                 }
             };
-            void SwitchToPage(PageView page)
-            {
-                instance._currentPageFullName = name;
-                instance.SwitchToEdit();
-                page.BackgroundColor = Color.Black * .135f;
-                var index = instance.PagePanel.GetInnerChildIndex(page);
-                instance.PagePanel.PendingChildren[index - 1].BackgroundColor = default;
-                instance.PagePanel.PendingChildren[index + 1].BackgroundColor = default;
-                Recents.Remove(name);
-                Recents.Insert(0, name);
-                SaveRecentListAsFile();
-            }
-            void AppendPage(bool immediateSwitch)
-            {
-                var fullName = name;
-                if (!instance.OpenedPages.TryGetValue(name, out var page))
-                {
-                    page = new()
-                    {
-                        TitleText = textView.Text,
-                        NameIndex = name
-                    };
-                    var vr = new VerticalRule() { Height = new(-16, 0.8f), Top = new(-8f, 0, 1), BackgroundColor = Color.Black * .25f };
-                    instance.PagePanel.AddBefore(page, instance.CreateNewButton);
-                    instance.PagePanel.AddBefore(vr, instance.CreateNewButton);
 
-                    page.CloseButton.LeftMouseClick += delegate
-                    {
-                        page.Remove();
-                        vr.Remove();
-                        instance.OpenedPages.Remove(name);
-                        if (instance._currentPageFullName == name)
-                            instance.SwitchToMenu();
-                    };
-                    page.LeftMouseClick += (source, evt) =>
-                    {
-                        if (evt.Source != source) return;
-                        SequenceEditUIHelper.RecoverPreviousActivePageColor(instance);
-                        SwitchToPage(page);
-                    };
-                    page.OnUpdateStatus += delegate
-                    {
-                        if (instance._currentPageFullName != name)
-                            SequenceEditUIHelper.HoverColor(page, default, Color.White * .1f);
-                    };
-                    instance.OpenedPages[name] = page;
-                    if (immediateSwitch)
-                        SwitchToPage(page);
-                }
-                else
-                    SwitchToPage(page);
-            }
             mask.LeftMouseClick += delegate
             {
-                AppendPage(false);
+                AppendPage(instance, name, sequence, false);
             };
             mask.RightMouseClick += delegate
             {
-                AppendPage(true);
+                AppendPage(instance, name, sequence, true);
             };
             return mask;
         }
@@ -140,7 +142,7 @@ public partial class SequenceEditUI
     private bool _pendingUpdateMenu = true;
 
     private string? _currentPageFullName;
-    private SequenceMenuPanel MenuPanel { get; } = new();
+    public SequenceMenuPanel MenuPanel { get; } = new();
     private Dictionary<string, PageView> OpenedPages { get; } = [];
 
     private void SwitchToMenu()

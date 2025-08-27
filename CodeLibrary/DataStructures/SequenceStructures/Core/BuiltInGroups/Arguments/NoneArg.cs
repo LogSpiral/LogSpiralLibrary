@@ -6,7 +6,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Bu
 public class NoneArg : IGroupArgument
 {
     public bool IsHidden => true;
-
+    public static NoneArg Instance { get; } = new();
     public void LoadAttributes(Dictionary<string, string> attributes)
     {
     }
@@ -18,4 +18,5 @@ public class NoneArg : IGroupArgument
     public void WriteAttributes(Dictionary<string, string> attributes)
     {
     }
+    public IGroupArgument Clone() => this;
 }

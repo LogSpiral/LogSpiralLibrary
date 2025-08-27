@@ -69,4 +69,6 @@ public class UnloadGroup : IGroup
     public void Load(Mod mod)
     {
     }
+
+    public IGroup Clone() => new UnloadGroup() { FullName = FullName, ExtraElements = ExtraElements };
 }

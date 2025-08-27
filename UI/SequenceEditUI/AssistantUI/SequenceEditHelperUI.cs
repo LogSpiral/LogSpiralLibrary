@@ -4,10 +4,11 @@ using SilkyUIFramework.Attributes;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Graphics2D;
 using Terraria.Audio;
+using Terraria.Localization;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 
-[RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
+[RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
 public partial class SequenceEditHelperUI : BasicBody
 {
     #region 属性
@@ -23,6 +24,22 @@ public partial class SequenceEditHelperUI : BasicBody
     }
 
     #endregion 属性
+
+    public static void SetHelpHintKey(string key) => Instance?.HelpHintKey = key;
+    public string HelpHintKey
+    {
+        get;
+        set
+        {
+            if (value != field && HintTextTitle != null)
+            {
+                var key = value ?? "HelpPanel";
+                HintTextTitle.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.Sequence.Help.{key}.DisplayName");
+                HintTextContent.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.Sequence.Help.{key}.Tooltip");
+            }
+            field = value;
+        }
+    }
 
     #region 初始化 开启关闭
 
@@ -43,14 +60,14 @@ public partial class SequenceEditHelperUI : BasicBody
         CloseButton.CrossBorderHoverColor = SUIColor.Highlight;
         CloseButton.CrossBackgroundHoverColor = SUIColor.Warn;
         TitlePanel.ControlTarget = this;
-        Title.Text = "帮助";
+        Title.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.Help");
         Title.UseDeathText();
         CloseButton.LeftMouseClick += delegate
         {
             Close();
         };
-        HintTextTitle.Text = "这是一个非常好的元素！";
-        HintTextContent.Text = "这个元素能帮你干非常爽的编辑功能\n什么，你说我不知道说的哪个元素？\n我也不知道哦(\n因为这个槽氮的悬浮提示功能还没实装";
+        HintTextTitle.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.HelpPanel.DisplayName");
+        HintTextContent.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.HelpPanel.Tooltip");
     }
 
     private void ReloadContent()
@@ -83,6 +100,9 @@ public partial class SequenceEditHelperUI : BasicBody
 
     protected override void UpdateStatus(GameTime gameTime)
     {
+        HandleTextManually();
+
+
         if (Active) SwitchTimer.StartUpdate();
         else SwitchTimer.StartReverseUpdate();
 
@@ -123,4 +143,62 @@ public partial class SequenceEditHelperUI : BasicBody
     }
 
     #endregion 毛玻璃效果
+
+
+    #region 手动显示提示文本
+    static void HandleTextManually()
+    {
+        if (!SequenceEditUI.Active) return;
+        Vector2 mousePosition = Main.MouseScreen;
+        var instance = SequenceEditUI.Instance;
+        if (instance.PagePanel.ContainsPoint(mousePosition))
+        {
+            if (instance.MainPageButton.ContainsPoint(mousePosition))
+                SetHelpHintKey("MenuButton");
+            else if (instance.CreateNewButton.ContainsPoint(mousePosition))
+                SetHelpHintKey("CreateNewButton");
+            else
+                SetHelpHintKey("PagePanel");
+        }
+        else if (instance.ButtonPanel.ContainsPoint(mousePosition))
+        {
+            if (instance.SequenceTypeIcon.ContainsPoint(mousePosition))
+                SetHelpHintKey("TypeSelect");
+            else if (instance.OpenFolderIcon.ContainsPoint(mousePosition))
+                SetHelpHintKey("OpenFolder");
+            else if (instance.HomePageIcon.ContainsPoint(mousePosition))
+                SetHelpHintKey("LSHomePage");
+            else if (instance.HelperIcon.ContainsPoint(mousePosition))
+                SetHelpHintKey("HelpPanelOpener");
+            else
+                SetHelpHintKey("ButtonPanel");
+        }
+        else if (instance.MenuPanel.ContainsPoint(mousePosition) && instance.CurrentPage is null) 
+        {
+            if (instance.MenuPanel.RecentList.ContainsPoint(mousePosition))
+                SetHelpHintKey("MenuRecent");
+            else if (instance.MenuPanel.FavoriteList.ContainsPoint(mousePosition))
+                SetHelpHintKey("MenuFavorite");
+            else if (instance.MenuPanel.FinishedList.ContainsPoint(mousePosition))
+                SetHelpHintKey("MenuFinished");
+            else if (instance.MenuPanel.LibraryList.ContainsPoint(mousePosition))
+                SetHelpHintKey("MenuLibrary");
+            else
+                SetHelpHintKey("Menu");
+        }
+        else if (instance.PropertyPanelData.ContainsPoint(mousePosition))
+            SetHelpHintKey("PropertyPanelData");
+        else if (instance.PropertyPanelConfig.ContainsPoint(mousePosition))
+            SetHelpHintKey("PropertyPanelConfig");
+        else if (instance.ElementLibrary.ContainsPoint(mousePosition))
+            SetHelpHintKey("ElementLibrary");
+        else if (instance.SequenceLibrary.ContainsPoint(mousePosition))
+            SetHelpHintKey("SequenceLibrary");
+        else if (instance.BasePanel.ContainsPoint(mousePosition))
+            SetHelpHintKey("EditPanel");
+        else
+            SetHelpHintKey(null);
+
+    }
+    #endregion
 }

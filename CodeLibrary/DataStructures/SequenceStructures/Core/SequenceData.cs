@@ -1,6 +1,7 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using LogSpiralLibrary.CodeLibrary.Utilties;
+using PropertyPanelLibrary.EntityDefinition;
 using System.Xml;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
@@ -12,7 +13,7 @@ public class SequenceData : ILoadable
     public string AuthorName { get; set; } = "";
     public string Description { get; set; } = "";
 
-    [CustomModConfigItem<ModDefinitionElement>]
+    [CustomEntityDefinitionHandler<LSLRefedModDefinitionHandler>]
     public ModDefinition ModDefinition { get; set; }
     public DateTime CreateTime { get; set; }
     public DateTime ModifyTime { get; set; }
@@ -67,5 +68,17 @@ public class SequenceData : ILoadable
 
     void ILoadable.Unload()
     {
+    }
+
+    protected virtual void HandleClone(SequenceData target) 
+    {
+
+    }
+    public SequenceData Clone() 
+    {
+        var result = MemberwiseClone() as SequenceData;
+        result.ModDefinition = new(ModDefinition.Name);
+        HandleClone(result);
+        return result;
     }
 }

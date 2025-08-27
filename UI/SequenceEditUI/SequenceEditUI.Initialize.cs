@@ -2,8 +2,10 @@
 using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using SilkyUIFramework;
+using SilkyUIFramework.Extensions;
 using System.IO;
 using Terraria.Audio;
+using Terraria.UI.Chat;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
 
@@ -19,7 +21,12 @@ public partial class SequenceEditUI
     protected override void OnInitialize()
     {
         base.OnInitialize();
+
         InitializeBody();
+        Instance.OpenedPanels.Clear();
+        Instance.PendingPanels.Clear();
+        Instance.OpenedSequences.Clear();
+        Instance.PendingSequences.Clear();
     }
 
     private void InitializeMainContainer()
@@ -54,7 +61,7 @@ public partial class SequenceEditUI
         SequenceLibraryText.Text = SequenceEditUIHelper.GetText("SequenceLibrary");
     }
 
-    private void InitializeIconVisuals() 
+    private void InitializeIconVisuals()
     {
         SequenceTypeIcon.Texture2D = CurrentCategory?.Icon ?? TextureAssets.Item[ItemID.WireKite]; // TODO 注册序列类型，添加更多图标
         HomePageIcon.Texture2D = ModAsset.Rose;
@@ -78,7 +85,7 @@ public partial class SequenceEditUI
         };
     }
 
-    private void InitializeIconFunction() 
+    private void InitializeIconFunction()
     {
         SequenceTypeIcon.LeftMouseClick += delegate
         {
@@ -105,13 +112,13 @@ public partial class SequenceEditUI
         };
     }
 
-    private void InitializePagePanel() 
+    private void InitializePagePanel()
     {
         PagePanel.ControlTarget = this;
         CreateNewButton.Texture2D = ModAsset.Plus;
         MainPageButton.Texture2D = ModAsset.Menu;
         MainPageButton.LeftMouseClick += delegate { SwitchToMenu(); };
-        MainPageButton.OnUpdateStatus += delegate { SequenceEditUIHelper.HoverColor(MainPageButton,default,Color.White * .1f); };
+        MainPageButton.OnUpdateStatus += delegate { SequenceEditUIHelper.HoverColor(MainPageButton, default, Color.White * .1f); };
         PagePanel.OnUpdateStatus += delegate
         {
             var list = PagePanel.PendingChildren;
@@ -136,10 +143,67 @@ public partial class SequenceEditUI
         CreateNewButton.OnUpdateStatus += delegate { SequenceEditUIHelper.HoverColor(CreateNewButton, default, Color.White * .1f); };
     }
 
-    private void InitializeLibrary() 
+    private void InitializeLibrary()
     {
         ElementLibrary.ScrollBar.SetHeight(-16, 1);
         SequenceLibrary.ScrollBar.SetHeight(-16, 1);
+    }
+
+    private void InitializeEditButtons()
+    {
+        SaveButton = SequenceEditUIHelper.FastIconTextButton(ModAsset.Save_Transparent_Premultiplied, "Save");
+        RevertButton = SequenceEditUIHelper.FastIconTextButton(ModAsset.Revert_Transparent_Premultiplied, "Revert");
+        SaveAsButton = SequenceEditUIHelper.FastIconTextButton(ModAsset.SaveAs_Transparent_Premultiplied, "SaveAs");
+        EditButtonContainer = new UIElementGroup()
+        {
+            FitHeight = true,
+            FitWidth = true,
+            Gap = new(16)
+        };
+        EditButtonMask = new UIElementGroup()
+        {
+            Left = new(48),
+            Top = new(-48, 0, 1),
+            Positioning = Positioning.Absolute,
+            OverflowHidden = true
+        };
+        EditButtonContainer.Join(EditButtonMask);
+        SaveButton.Join(EditButtonContainer);
+        RevertButton.LeftMouseClick += delegate
+        {
+            if (_currentPageFullName == null || CurrentPage is not { } page) return;
+            page.PendingModified = false;
+            PendingSequences.Remove(_currentPageFullName);
+            OpenedSequences.Remove(_currentPageFullName);
+            OpenedPanels.Remove(_currentPageFullName);
+            PendingPanels.Remove(_currentPageFullName);
+            SwitchToEdit();
+        };
+        RevertButton.Join(EditButtonContainer);
+        SaveAsButton.Join(EditButtonContainer);
+        Mask.OnUpdateStatus += (gameTime) =>
+        {
+            if (EditButtonMask.Parent is null && CurrentPage is { PendingModified: true })
+            {
+                EditButtonMask.Join(Mask);
+                _buttonContainerTimer.StartUpdate();
+                return;
+            }
+            if (EditButtonMask.Parent != null && (CurrentPage == null || !CurrentPage.PendingModified))
+            {
+                _buttonContainerTimer.StartReverseUpdate();
+                if (_buttonContainerTimer.IsReverseCompleted)
+                {
+                    EditButtonMask.Remove();
+                    return;
+                }
+            }
+            _buttonContainerTimer.Update(gameTime);
+            var bounds = EditButtonContainer.Bounds;
+            var factor = _buttonContainerTimer.Schedule;
+            EditButtonMask.SetWidth(bounds.Width * factor);
+            EditButtonMask.SetHeight(bounds.Height);
+        };
     }
 
     private void InitializeComponentExtra()
@@ -157,6 +221,8 @@ public partial class SequenceEditUI
         InitializePagePanel();
 
         InitializeLibrary();
+
+        InitializeEditButtons();
 
         SwitchToMenu();
     }

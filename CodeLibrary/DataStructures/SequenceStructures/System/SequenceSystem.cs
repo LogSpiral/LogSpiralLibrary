@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UI.SequenceEditUI;
 using System.Collections.Generic;
@@ -30,9 +31,27 @@ public class SequenceSystem : ModSystem
         return result;
     }
 
+    public static LocalMod[] locals;
+    public static LocalMod ModToLocal(Mod mod)
+    {
+        string fileName = $"{mod.Name}.tmod";
+        List<LocalMod> targetLocals = [];
+        foreach (var localsItem in locals)
+        {
+            if (localsItem.Name == mod.Name)
+                targetLocals.Add(localsItem);
+        }
+        LocalMod localMod = targetLocals[^1];
+        //Main.NewText((targetLocals.Count,localMod.DisplayName,localMod.lastModified));
+        //bool success =
+        //    ModOrganizer.TryReadLocalMod(ModLocation.Modpack, ModOrganizer.ModPackActive+fileName, out localMod) ||
+        //    ModOrganizer.TryReadLocalMod(ModLocation.Local, ModOrganizer.modPath+fileName, out localMod) ||
+        //    ModOrganizer.TryReadLocalMod(ModLocation.Workshop, fileName, out localMod);
+        return localMod;
+    }
     public override void Load()
     {
-        ModDefinitionElement.locals = ModOrganizer.FindAllMods();
+        locals = ModOrganizer.FindAllMods();
 
         #region 旧版位置转移至新版
         var path = Path.Combine(Main.SavePath, "Mods", "LogSpiralLibrary_Sequence");

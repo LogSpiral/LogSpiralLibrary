@@ -4,8 +4,12 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase;
 using LogSpiralLibrary.UIBase.InsertablePanel;
+using LogSpiralLibrary.UIBase.SequenceEditUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
+using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Option.Writers;
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
+using SilkyUIFramework;
+using SilkyUIFramework.Animation;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
@@ -18,6 +22,19 @@ public partial class SequenceEditUI
 {
     private bool _pendingUpdateElementLib = true;
     private bool _pendingUpdateSequenceLib = true;
+    internal Dictionary<string, Sequence> PendingSequences { get; } = [];
+    internal Dictionary<string, InsertablePanel> PendingPanels { get; } = [];
+    internal Dictionary<string, Sequence> OpenedSequences { get; } = [];
+    internal Dictionary<string, InsertablePanel> OpenedPanels { get; } = [];
+    public UIElementGroup SaveButton { get; set; }
+    public UIElementGroup RevertButton { get; set; }
+    public UIElementGroup SaveAsButton { get; set; }
+    public UIElementGroup EditButtonContainer { get; set; }
+    public UIElementGroup EditButtonMask { get; set; }
+    private AnimationTimer _buttonContainerTimer = new();
+    internal static bool AutoLoadingPanels { get; private set; }
+    public PageView CurrentPage => (string.IsNullOrEmpty(_currentPageFullName) || !OpenedPages.TryGetValue(_currentPageFullName, out var page)) ? null : page;
+
     public void SetupElementLib()
     {
         if (!_pendingUpdateElementLib) return;
@@ -35,7 +52,9 @@ public partial class SequenceEditUI
             {
                 PanelFactory = delegate
                 {
+                    AutoLoadingPanels = true;
                     var panel = InsertablePanelUtils.ElementTypeToPanel(type);
+                    AutoLoadingPanels = false;
                     panel.BaseView = BasePanel;
                     panel.Mask = Mask;
                     return panel;
@@ -87,7 +106,9 @@ public partial class SequenceEditUI
             {
                 PanelFactory = delegate
                 {
+                    AutoLoadingPanels = true;
                     var panel = InsertablePanelUtils.SequenceRefKeyToPanel(name);
+                    AutoLoadingPanels = false;
                     panel.BaseView = BasePanel;
                     panel.Mask = Mask;
                     return panel;
@@ -115,9 +136,15 @@ public partial class SequenceEditUI
     private void SetupRootElement()
     {
         var sequenceName = _currentPageFullName;
-        var sequence = SequenceGlobalManager.SequenceLookup[sequenceName];
+        if (!OpenedSequences.TryGetValue(sequenceName, out var sequence))
+            OpenedSequences[sequenceName] = sequence = SequenceGlobalManager.SequenceLookup[sequenceName].Clone();
         PropertyPanelData.Filler = new ObjectMetaDataFiller(sequence.Data);
-        var rootPanel = InsertablePanelUtils.SequenceToInsertablePanel(sequence);
+
+
+        AutoLoadingPanels = true;
+        if (!OpenedPanels.TryGetValue(sequenceName, out var rootPanel))
+            OpenedPanels[sequenceName] = rootPanel = InsertablePanelUtils.SequenceToInsertablePanel(sequence);
+        AutoLoadingPanels = false;
         rootPanel.BaseView = BasePanel;
         rootPanel.Mask = Mask;
         BasePanel.RootElement = rootPanel;
@@ -125,6 +152,20 @@ public partial class SequenceEditUI
         rootPanel.SetLeft(BasePanel.Bounds.Width * .25f);
         rootPanel.SetTop(BasePanel.Bounds.Height * .25f);
         PropertyPanelConfig.Filler = new NoneFiller();
+        CurrentEditTarget = null;
+        var delegateWriter = new DelegateWriter();
+        delegateWriter.OnWriteValue += (option, value, boradCast) =>
+        {
+            if (CurrentPage is not { } page) return;
+            page.PendingModified = true;
+            PendingSequences.TryAdd(_currentPageFullName, sequence);
+            PendingPanels.TryAdd(_currentPageFullName, rootPanel);
+        };
+
+        var pendingWriter = new CombinedWriter(DefaultWriter.Instance, delegateWriter);
+        PropertyPanelData.Writer = pendingWriter;
+        PropertyPanelConfig.Writer = pendingWriter;
+
     }
 
     private void SwitchToEdit()

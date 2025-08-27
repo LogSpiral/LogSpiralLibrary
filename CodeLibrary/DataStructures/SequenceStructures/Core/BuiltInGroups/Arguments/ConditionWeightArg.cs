@@ -1,4 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using PropertyPanelLibrary.EntityDefinition;
 using System.Collections.Generic;
 using Terraria.Localization;
 
@@ -18,6 +20,7 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
     {
     }
 
+    [CustomEntityDefinitionHandler<ConditionDefinitionHandler>]
     public ConditionDefinition ConditionDefinition { get; set; } = definition;
     public float Weight { get; set; } = weight;
     public bool IsHidden => false;
@@ -30,7 +33,7 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     public override string ToString()
     {
-        return Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.ConditionWeight", ConditionDefinition.ToCondition().Description.Value, Weight);
+        return Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.ConditionWeight", ConditionDefinition.ToCondition().Description.Value, Weight.ToString("0.00"));
     }
 
     public void LoadAttributes(Dictionary<string, string> attributes)
@@ -46,6 +49,8 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
         attributes["condition"] = Name;
         attributes["weight"] = Weight.ToString("0.00");
     }
+
+    public IGroupArgument Clone() => new ConditionWeightArg(new ConditionDefinition(ConditionDefinition.Mod, ConditionDefinition.Name), Weight);
 
     public Condition Condition => ConditionDefinition.ToCondition();
     public string Name => ConditionDefinition.Name;

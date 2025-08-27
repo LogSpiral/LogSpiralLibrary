@@ -1,4 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+using PropertyPanelLibrary.PropertyPanelComponents.BuiltInElements.Object;
+using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;

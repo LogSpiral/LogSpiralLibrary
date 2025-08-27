@@ -58,4 +58,9 @@ public partial class Wrapper
             ExtraElements = [];
         }
     }
+    private Wrapper(List<XElement> extraElem, Dictionary<string, string> attributes) 
+    {
+        ExtraElements = extraElem;
+        Attributes = attributes;
+    }
 }

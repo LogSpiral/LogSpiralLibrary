@@ -1,4 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using PropertyPanelLibrary.EntityDefinition;
 using System.Collections.Generic;
 using Terraria.Localization;
 
@@ -14,6 +16,7 @@ public class ConditionArg(ConditionDefinition definition) : IGroupArgument
     {
     }
 
+    [CustomEntityDefinitionHandler<ConditionDefinitionHandler>]
     public ConditionDefinition ConditionDefinition { get => field ??= new ConditionDefinition(0); set; } = definition;
     public bool IsHidden => ConditionDefinition.Type == 0;
 
@@ -31,6 +34,8 @@ public class ConditionArg(ConditionDefinition definition) : IGroupArgument
     {
         attributes["condition"] = Name;
     }
+
+    public IGroupArgument Clone() => new ConditionArg(new ConditionDefinition(ConditionDefinition.Mod, ConditionDefinition.Name));
 
     public Condition Condition => ConditionDefinition.ToCondition();
     public string Name => ConditionDefinition.Name;

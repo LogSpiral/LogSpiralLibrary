@@ -72,6 +72,9 @@ public class CompressLine : UIView
         }
     } = true;
 
+    public float ExpandFactor => _expandTimer.Schedule;
+
+
     public UIView? TargetView { private get; set; }
     private Dimension TargetDimension { get; set; }
     private Dimension TargetDimensionMax { get; set; }

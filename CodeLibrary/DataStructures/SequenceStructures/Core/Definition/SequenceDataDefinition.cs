@@ -24,6 +24,7 @@ public class SequenceDataDefinition : EntityDefinition
             return -1;
         }
     }
+    public override bool IsUnloaded => Type < 0;
     string Key => Mod == nameof(LogSpiralLibrary) ? Name : $"{Mod}/{Name}";
 
     public Type DataType => SequenceGlobalManager.DataTypeLookup[Key];

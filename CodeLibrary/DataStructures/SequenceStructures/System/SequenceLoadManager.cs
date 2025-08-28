@@ -4,6 +4,8 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interf
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
@@ -49,7 +51,12 @@ public static class SequenceGlobalManager
     /// <summary>
     /// 序列化和反序列化器
     /// </summary>
-    public static XmlSerializer Serializer { get => field ??= new(typeof(Sequence)); }
+    public static XmlSerializer Serializer => field ??= new(typeof(Sequence));
+    public static XmlWriterSettings WriterSettings => field ??= new() { Indent = true, Encoding = new UTF8Encoding(false) };
+    public static Dictionary<Type, Type> SingleGroupToMultiGroup { get; } = [];
+    public static Dictionary<Type, Type> MultiGroupToSingleGroup { get; } = [];
+
+    public static Dictionary<Type, Type> GroupArgToSingleGroup { get; } = [];
 }
 
 public abstract class SequenceManager
@@ -66,7 +73,7 @@ public abstract class SequenceManager
 
 public class SequenceManager<T> : SequenceManager where T : ISequenceElement
 {
-    public static SequenceManager<T> Instance { get => field ??= new(); }
+    public static SequenceManager<T> Instance => field ??= new();
     private static bool _loaded;
 
     public static void Load()

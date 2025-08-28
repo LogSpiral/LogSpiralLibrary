@@ -11,7 +11,7 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 /// </summary>
 public static class MiscMethods
 {
-    private static MethodInfo GetInstanceMethod { get => field ??= typeof(ModContent).GetMethod(nameof(ModContent.GetInstance), BindingFlags.Static | BindingFlags.Public); }
+    private static MethodInfo GetInstanceMethod => field ??= typeof(ModContent).GetMethod(nameof(ModContent.GetInstance), BindingFlags.Static | BindingFlags.Public);
     public static object GetInstanceViaType(Type type) 
     {
         return GetInstanceMethod?.MakeGenericMethod(type)?.Invoke(null, []);

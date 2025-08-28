@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UIBase.InsertablePanel;
 using Microsoft.Build.Utilities;
 using SilkyUIFramework;
@@ -17,9 +18,7 @@ namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 internal class GroupArgumentDecorator : IInsertPanelDecorator
 {
     AnimationTimer HiddenTimer { get; } = new();
-
-    public WrapperArgPair Pair { get; set; }
-
+    public IGroupArgument Argument { get; set; }
     public HorizontalRule HorizontalRule { get; set; }
     public UITextView ArgumentText { get; set; }
     public UIElementGroup Mask { get; set; }
@@ -29,7 +28,7 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         panel.FlexDirection = FlexDirection.Column;
         HorizontalRule = new()
         {
-            Margin = new(16,0,4,0),
+            Margin = new(16, 0, 4, 0),
             IgnoreMouseInteraction = true
         };
         panel.Add(HorizontalRule);
@@ -53,10 +52,10 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
             Top = new(0, 0, .5f),
             IgnoreMouseInteraction = true
         };
-        if (Pair != null)
+        if (Argument != null)
         {
-            ArgumentText.Text = $"->{Pair.Argument.ToString()}";
-            if (Pair.Argument.IsHidden)
+            ArgumentText.Text = $"->{Argument.ToString()}";
+            if (Argument.IsHidden)
                 HiddenTimer.ImmediateReverseCompleted();
             else
                 HiddenTimer.ImmediateCompleted();
@@ -69,14 +68,14 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         {
 
             HiddenTimer.Update(gameTime);
-            if (Pair != null)
+            if (Argument != null)
             {
-                if (!Pair.Argument.IsHidden && HiddenTimer.IsReverse)
+                if (!Argument.IsHidden && HiddenTimer.IsReverse)
                     HiddenTimer.StartUpdate();
-                if (Pair.Argument.IsHidden && HiddenTimer.IsForward)
+                if (Argument.IsHidden && HiddenTimer.IsForward)
                     HiddenTimer.StartReverseUpdate();
 
-                ArgumentText.Text = $"->{Pair.Argument.ToString()}";
+                ArgumentText.Text = $"->{Argument.ToString()}";
             }
             UpdateVisuals();
 

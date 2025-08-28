@@ -1,5 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UI.SequenceEditUI;
@@ -96,6 +98,15 @@ public class SequenceSystem : ModSystem
         // TODO 加入基本序列类型的专用注册
         AvailableElementBaseTypes.Add(typeof(MeleeAction));
         MeleeActionCategoryInstance = SequenceElementCategory.RegisterCategory<MeleeAction>(Mod, TextureAssets.Item[ItemID.WarriorEmblem], new SwooshInfo());
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionalSingleGroup), typeof(ConditionalMultiGroup));
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(SingleWrapperGroup), typeof(ConditionalMultiGroup));
+        SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(ConditionalMultiGroup), typeof(ConditionalSingleGroup));
+        SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(ConditionalWeightedGroup), typeof(ConditionalSingleGroup));
+        SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(WeightedRandomGroup), typeof(SingleWrapperGroup));
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(NoneArg), typeof(SingleWrapperGroup));
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(WeightArg), typeof(SingleWrapperGroup));
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionArg), typeof(ConditionalSingleGroup));
+        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionWeightArg), typeof(ConditionalSingleGroup));
 
         foreach (var type in AvailableElementBaseTypes)
             LoadSequenceWithType(type);
@@ -107,7 +118,7 @@ public class SequenceSystem : ModSystem
 
     public static void LoadSequenceWithType(Type type) => LoadSequencesMethod.MakeGenericMethod(type).Invoke(null, []);
 
-    private static MethodInfo LoadSequencesMethod { get => field ??= typeof(SequenceSystem).GetMethod("LoadSequences", BindingFlags.Static | BindingFlags.Public); }
+    private static MethodInfo LoadSequencesMethod => field ??= typeof(SequenceSystem).GetMethod("LoadSequences", BindingFlags.Static | BindingFlags.Public);
 
     public override void Unload()
     {

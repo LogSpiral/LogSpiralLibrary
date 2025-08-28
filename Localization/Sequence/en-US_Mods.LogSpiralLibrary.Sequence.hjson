@@ -6,7 +6,6 @@ GroupArgs: {
 
 SingleWrapperGroup: None
 ConditionalSingleGroup: Conditional
-
 ConditionalMultiGroup: Conditional
 WeightedRandomGroup: Weighted
-ConditionalWeightedGroup: "Conditional-Weighted"
+ConditionalWeightedGroup: Conditional-Weighted

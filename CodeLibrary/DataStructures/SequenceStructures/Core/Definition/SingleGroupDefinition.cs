@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using SilkyUIFramework.BasicElements;
@@ -22,6 +23,7 @@ public class SingleGroupDefinition : EntityDefinition
             return -1;
         }
     }
+    public override bool IsUnloaded => Type < 0;
     string Key => Mod == nameof(LogSpiralLibrary) ? Name : $"{Mod}/{Name}";
 
     public Type GroupType => SequenceGlobalManager.SingleGroupTypeLookup[Key];
@@ -40,6 +42,30 @@ public class SingleGroupDefinition : EntityDefinition
         {
             Mod = datas[0];
             Name = datas[1];
+        }
+    }
+    public SingleGroupDefinition(IGroup group)
+    {
+        var type = group.GetType();
+        foreach (var pair in SequenceGlobalManager.SingleGroupTypeLookup)
+        {
+            if (pair.Value == type)
+            {
+                var datas = pair.Key.Split('/');
+
+                if (datas.Length == 1)
+                {
+                    Mod = nameof(LogSpiralLibrary);
+                    Name = pair.Key;
+
+                }
+                else
+                {
+                    Mod = datas[0];
+                    Name = datas[1];
+                }
+                break;
+            }
         }
     }
 }

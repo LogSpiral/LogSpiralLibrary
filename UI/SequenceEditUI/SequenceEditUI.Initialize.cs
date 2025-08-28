@@ -1,10 +1,14 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
+using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 using SilkyUIFramework;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.IO;
+using System.Text;
+using System.Xml;
 using Terraria.Audio;
 using Terraria.UI.Chat;
 
@@ -153,8 +157,8 @@ public partial class SequenceEditUI
         };
         CreateNewButton.LeftMouseClick += delegate
         {
-            SequenceCreateNewUI.SequenceData = 
-            new CodeLibrary.DataStructures.SequenceStructures.Core.SequenceData() 
+            SequenceCreateNewUI.SequenceData =
+            new CodeLibrary.DataStructures.SequenceStructures.Core.SequenceData()
             {
                 ModDefinition = new(nameof(LogSpiralLibrary)),
                 CreateTime = DateTime.Now,
@@ -200,13 +204,18 @@ public partial class SequenceEditUI
             if (_currentPageFullName == null || CurrentPage is not { } page) return;
             page.PendingModified = false;
             OpenedPanels.Remove(_currentPageFullName);
-            PendingPanels.Remove(_currentPageFullName);
             if (PendingSequences.TryGetValue(_currentPageFullName, out var sequence) && PendingPanels.TryGetValue(_currentPageFullName, out var panel))
             {
                 PendingSequences.Remove(_currentPageFullName);
                 PendingPanels.Remove(_currentPageFullName);
-                // TODO 保存相关逻辑
+
+                var loadingSequence = CurrentCategory.Maganger.Sequences[_currentPageFullName];
+                loadingSequence.Data = sequence.Data;
+                InsertPanelToSequenceUtils.RefillSequenceViaInsertablePanel(panel, loadingSequence);
+
+                SequenceSaveHelper.SaveSequence(loadingSequence, CurrentCategory.ElementName);
             }
+            PendingPanels.Remove(_currentPageFullName);
         };
 
         RevertButton.LeftMouseClick += delegate

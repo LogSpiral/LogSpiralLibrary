@@ -174,10 +174,10 @@ public class InsertablePanel : UIElementGroup
 
         if (Parent != null && Parent != BaseView && !IgnoreMouseInteraction)
         {
+            OnDraggingOut?.Invoke(this, evt);
             _isDragging = true;
             Remove();
             StartDragging();
-            OnDraggingOut?.Invoke(this, evt);
         }
 
         base.OnLeftMouseDown(evt);
@@ -406,8 +406,8 @@ public class InsertablePanel : UIElementGroup
     {
     }
 
-    public event Action<InsertablePanel, GroupPanel> OnAppendingToGroup;
-    public event Action<InsertablePanel, SequencePanel> OnAppendingToSequence;
+    public event Action<InsertablePanel, InsertablePanel, GroupPanel> OnAppendingToGroup;
+    public event Action<InsertablePanel, InsertablePanel, SequencePanel> OnAppendingToSequence;
 
     protected virtual void Inserting(UIMouseEvent evt)
     {
@@ -427,9 +427,9 @@ public class InsertablePanel : UIElementGroup
             };
 
             if (_pvState < 2)
-                OnAppendingToSequence?.Invoke(this, multiPanel as SequencePanel);
+                OnAppendingToSequence?.Invoke(this,PendingPanel, multiPanel as SequencePanel);
             else
-                OnAppendingToGroup?.Invoke(this, multiPanel as GroupPanel);
+                OnAppendingToGroup?.Invoke(this, PendingPanel, multiPanel as GroupPanel);
 
             if (parent.Parent is MultiPanel mPanel)
                 mPanel.RemoveFromInnerListManually(this);

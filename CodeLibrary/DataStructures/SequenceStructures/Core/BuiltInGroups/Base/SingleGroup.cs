@@ -34,7 +34,7 @@ public abstract class SingleGroup<T> : IGroup where T : class, IGroupArgument, n
         var mod = (MiscMethods.GetInstanceViaType(type) as SingleGroup<T>).Mod;
         var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
 
-        writer.WriteAttributeString("SingleGroupFullName", key);
+        _attributeDict["SingleGroupFullName"] =  key;
 
         var (wrapper, argument) = Data.Deconstruct();
         argument.WriteAttributes(_attributeDict);

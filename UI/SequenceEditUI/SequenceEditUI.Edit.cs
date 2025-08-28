@@ -2,6 +2,8 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase;
@@ -166,6 +168,8 @@ public partial class SequenceEditUI
             page.PendingModified = true;
             PendingSequences.TryAdd(_currentPageFullName, sequence);
             PendingPanels.TryAdd(_currentPageFullName, rootPanel);
+            if (value is SingleGroupDefinition or MultiGroupDefinition)
+                PropertyPanelConfig?.ForceReload();
         };
 
         var pendingWriter = new CombinedWriter(DefaultWriter.Instance, delegateWriter);
@@ -211,5 +215,9 @@ public partial class SequenceEditUI
         }
         CurrentCategory.Maganger.RegisterSingleSequence_Instance(dataFullName, sequence);
         MenuHelper.AppendPage(this, dataFullName, sequence, true);
+
+
+        InsertPanelToSequenceUtils.RefillSequenceViaInsertablePanel(OpenedPanels[_currentPageFullName], sequence);
+        SequenceSaveHelper.SaveSequence(sequence, CurrentCategory.ElementName);
     }
 }

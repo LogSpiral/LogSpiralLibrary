@@ -43,3 +43,6 @@ ActionLibrary: Element Library
 PropTitle: Info of current page Sequence
 InfoTitle: Info of selected Element
 CreateNew: CreateNew
+UnloadSequence: Unload Sequence
+UnloadGroup: Unload Group
+UnloadElement: Unload Element

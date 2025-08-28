@@ -43,3 +43,6 @@ ActionLibrary: 组件库
 PropTitle: 选中组件信息
 InfoTitle: 当前页面序列信息
 CreateNew: 新建
+UnloadSequence: 未加载序列
+UnloadGroup: 未加载组
+UnloadElement: 未加载元素

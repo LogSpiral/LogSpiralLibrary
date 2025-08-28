@@ -21,10 +21,10 @@ public class ModDefinition : EntityDefinition
     {
         get
         {
-            var list = ModLoader.Mods.ToList();
-            for (int n = 0; n < list.Count; n++)
+            var mods = ModLoader.Mods;
+            for (int n = 0; n < mods.Length; n++)
             {
-                if (Name == list[n].Name)
+                if (Name == mods[n].Name)
                     return n;
             }
             return -1;
@@ -32,23 +32,10 @@ public class ModDefinition : EntityDefinition
     }
 
     public override bool IsUnloaded => Type < 0;
-    public static readonly Func<TagCompound, ModDefinition> DESERIALIZER = Load;
-
-    public ModDefinition() : base()
-    {
-    }
-
-    public ModDefinition(int type) : base(ModLoader.Mods[type].Name)
-    {
-    }
 
     public ModDefinition(string mod) : base(mod, mod)
     {
     }
-
-    public static ModDefinition FromString(string s) => new(s);
-
-    public static ModDefinition Load(TagCompound tag) => new(tag.GetString("mod"));
 
     public override string DisplayName =>
         IsUnloaded
@@ -56,13 +43,11 @@ public class ModDefinition : EntityDefinition
         : ModLoader.GetMod(Name).DisplayName;
 }
 
-public class ModDefinitionOption : SUIEntityDefinitionOption
+public class ModDefinitionOption : SUIDefinitionIconOption 
 {
     public override void OnSetDefinition(EntityDefinition current, EntityDefinition previous)
     {
         base.OnSetDefinition(current, previous);
-        Tooltip = current.DisplayName;
-
         try
         {
             var Mod = ModLoader.Mods[Type];
@@ -90,34 +75,17 @@ public class ModDefinitionOption : SUIEntityDefinitionOption
                 }
             }
 
-            ModIcon.Texture2D = modIcon;
+            Icon.Texture2D = modIcon;
         }
         catch { }
     }
-    SUIImage ModIcon { get; set; }
-
-    public ModDefinitionOption()
-    {
-        Padding = new(4);
-        BorderRadius = new(2);
-        FitWidth = true;
-        FitHeight = true;
-        BackgroundColor = Color.Black * .1f;
-        ModIcon = new()
-        {
-            FitWidth = true,
-            FitHeight = true
-        };
-        ModIcon.Join(this);
-    }
-
 }
 
 public class ModDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
     {
-        var proxyOptionChoice = OptionChoice = new ModDefinitionOption() { Definition = metaData.GetValue() as EntityDefinition };
+        var proxyOptionChoice = OptionChoice = new SUIDefinitionIconOption() { Definition = metaData.GetValue() as EntityDefinition };
         proxyOptionChoice.SetTop(2);
         proxyOptionChoice.SetLeft(-4, 0, 0);
         proxyOptionChoice.SetPadding(0);

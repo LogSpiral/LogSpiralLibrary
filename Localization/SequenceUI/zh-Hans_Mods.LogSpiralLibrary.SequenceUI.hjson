@@ -15,7 +15,8 @@ SaveOrRevertPlz: 请先保存或撤销修改
 OK: 确定
 EmptyFileNameException: 文件名不可为空
 EmptyDisplayNameException: 显示名不可空
-InvalidFileNameException: 文件名不可用(重复)
+InvalidFileNameException: 文件名不可用
+FileNameAlreadyExistsException: 同名文件已存在
 UnknownModException: 不存在的模组
 SaveSucceed: 保存成功!!
 RepeatedNameHint: 但是建议避免显示名的重复
@@ -41,3 +42,4 @@ SequenceLibrary: 序列库
 ActionLibrary: 组件库
 PropTitle: 选中组件信息
 InfoTitle: 当前页面序列信息
+CreateNew: 新建

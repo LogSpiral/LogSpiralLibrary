@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
+using System.Reflection;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using static Terraria.Utils;
 
@@ -10,6 +11,12 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 /// </summary>
 public static class MiscMethods
 {
+    private static MethodInfo GetInstanceMethod { get => field ??= typeof(ModContent).GetMethod(nameof(ModContent.GetInstance), BindingFlags.Static | BindingFlags.Public); }
+    public static object GetInstanceViaType(Type type) 
+    {
+        return GetInstanceMethod?.MakeGenericMethod(type)?.Invoke(null, []);
+    }
+
     public static void FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler)
     {
         var hsl = Main.rgbToHsl(color);//Color.MediumPurple

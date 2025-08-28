@@ -36,6 +36,10 @@ public static class SequenceGlobalManager
     /// </summary>
     public static Dictionary<string, Type> GroupTypeLookup { get; } = [];
 
+    public static Dictionary<string, Type> SingleGroupTypeLookup { get; } = [];
+
+    public static Dictionary<string, Type> MultiGroupTypeLookup { get; } = [];
+
     /// <summary>
     /// 元素的注册类型集合
     /// <br>使用"模组名/类名"就能查找到对应的Type, 前置库内的可以省略模组名</br>
@@ -52,6 +56,12 @@ public abstract class SequenceManager
 {
     public Dictionary<string, Sequence> Sequences { get; } = [];
     public Dictionary<string, Type> ElementTypeLookup { get; } = [];
+    public void RegisterSingleSequence_Instance(string fullName, Sequence sequence)
+    {
+        SequenceGlobalManager.UnloadSequences.Remove(fullName);
+        Sequences[fullName] = sequence;
+        SequenceGlobalManager.SequenceLookup[fullName] = sequence;
+    }
 }
 
 public class SequenceManager<T> : SequenceManager where T : ISequenceElement
@@ -67,7 +77,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
         #region 加载模组预设序列
 
         List<string> pendingLoadMods = [nameof(LogSpiralLibrary)];
-        foreach (var localMod in SequenceSystem.locals)
+        foreach (var localMod in SequenceSystem.LocalMods)
             foreach (var refMod in localMod.properties.modReferences)
                 if (refMod.mod == nameof(LogSpiralLibrary))
                 {
@@ -137,12 +147,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
         }
     }
 
-    public static void RegisterSingleSequence(string fullName, Sequence sequence)
-    {
-        SequenceGlobalManager.UnloadSequences.Remove(fullName);
-        Instance.Sequences[fullName] = sequence;
-        SequenceGlobalManager.SequenceLookup[fullName] = sequence;
-    }
+    public static void RegisterSingleSequence(string fullName, Sequence sequence) => Instance.RegisterSingleSequence_Instance(fullName, sequence);
 }
 
 internal static class SequenceLoadingHelper

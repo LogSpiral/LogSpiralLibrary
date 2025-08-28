@@ -67,7 +67,7 @@ public partial class Sequence
         writer.WriteEndElement();
         foreach (var group in Groups)
         {
-            bool single = group.ReadSingleWrapper;
+            bool single = group.ReadSingleWrapper || Groups.Count == 1;
             if (!single)
                 writer.WriteStartElement("Group");
             group.WriteXml(writer);
@@ -79,20 +79,37 @@ public partial class Sequence
     private void ParseSingle(XmlReader reader)
     {
         IGroup group;
-        if (reader["condition"] != null)
-            group = new ConditionalSingleGroup();
+        if (reader["SingleGroupFullName"] is { } fullname)
+        {
+            if (!SequenceGlobalManager.SingleGroupTypeLookup.TryGetValue(fullname, out Type type))
+                type = typeof(UnloadSingleGroup);
+            group = (IGroup)Activator.CreateInstance(type)!;
+        }
         else
-            group = new SingleWrapperGroup();
+        {
+            if (reader["condition"] != null)
+                group = new ConditionalSingleGroup();
+            else
+                group = new SingleWrapperGroup();
+        }
+
         group.ReadXml(reader);
         Groups.Add(group);
     }
 
     private void ParseGroup(XmlReader reader)
     {
-        if (reader.IsEmptyElement) return;
+
+        if (ParseGroupToInstance(reader) is { } group)
+            Groups.Add(group);
+    }
+
+    public static IGroup ParseGroupToInstance(XmlReader reader)
+    {
+        if (reader.IsEmptyElement) return null;
 
         string fullName = reader["FullName"]!;
-        if (!SequenceGlobalManager.GroupTypeLookup.TryGetValue(fullName, out Type? type))
+        if (!SequenceGlobalManager.GroupTypeLookup.TryGetValue(fullName, out Type type) && !SequenceGlobalManager.GroupTypeLookup.TryGetValue(fullName, out type))
             type = typeof(UnloadGroup);
 
         IGroup group = (IGroup)Activator.CreateInstance(type)!;
@@ -103,8 +120,7 @@ public partial class Sequence
 
         if (group is UnloadGroup unload)
             unload.FullName = fullName;
-
-        Groups.Add(group);
+        return group;
     }
 
     private void ParseData(XmlReader reader)

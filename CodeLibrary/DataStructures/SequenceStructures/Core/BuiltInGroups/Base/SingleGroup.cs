@@ -1,5 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Xml;
 
@@ -27,7 +29,12 @@ public abstract class SingleGroup<T> : IGroup where T : class, IGroupArgument, n
     public void WriteXml(XmlWriter writer)
     {
         _attributeDict.Clear();
-        writer.WriteAttributeString("FullName", GetType().Name);
+
+        var type = GetType();
+        var mod = (MiscMethods.GetInstanceViaType(type) as SingleGroup<T>).Mod;
+        var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
+
+        writer.WriteAttributeString("SingleGroupFullName", key);
 
         var (wrapper, argument) = Data.Deconstruct();
         argument.WriteAttributes(_attributeDict);
@@ -42,4 +49,15 @@ public abstract class SingleGroup<T> : IGroup where T : class, IGroupArgument, n
         result.Data = Data.Clone();
         return result;
     }
+
+    void ILoadable.Load(Mod mod)
+    {
+        Mod = mod;
+        var type = GetType();
+        var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
+        SequenceGlobalManager.GroupTypeLookup.Add(key, type);
+        SequenceGlobalManager.SingleGroupTypeLookup.Add(key, type);
+    }
+    private Mod Mod { get; set; }
+
 }

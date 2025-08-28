@@ -2,6 +2,7 @@
 using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using SilkyUIFramework;
+using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.IO;
 using Terraria.Audio;
@@ -17,6 +18,16 @@ public partial class SequenceEditUI
         Border = 0;
         BorderColor = default;
         BackgroundColor = default;
+        BlackMask = new()
+        {
+            Width = new(0, 1),
+            Height = new(0, 1),
+            Positioning = Positioning.Absolute
+        };
+
+        if (InvalidPathChars.Count == 0)
+            foreach (var c in Path.GetInvalidPathChars())
+                InvalidPathChars.Add(c);
     }
     protected override void OnInitialize()
     {
@@ -121,7 +132,7 @@ public partial class SequenceEditUI
         MainPageButton.OnUpdateStatus += delegate { SequenceEditUIHelper.HoverColor(MainPageButton, default, Color.White * .1f); };
         PagePanel.OnUpdateStatus += delegate
         {
-            var list = PagePanel.PendingChildren;
+            var list = PagePanel.Children;
             int count = list.Count;
             for (int n = 0; n < count; n += 2)
             {
@@ -139,6 +150,18 @@ public partial class SequenceEditUI
                         list[n + 1].BackgroundColor = Color.Black * (.25f * factor);
                 }
             }
+        };
+        CreateNewButton.LeftMouseClick += delegate
+        {
+            SequenceCreateNewUI.SequenceData = 
+            new CodeLibrary.DataStructures.SequenceStructures.Core.SequenceData() 
+            {
+                ModDefinition = new(nameof(LogSpiralLibrary)),
+                CreateTime = DateTime.Now,
+                ModifyTime = DateTime.Now
+            };
+            SequenceCreateNewUI.IsFromSaveAs = false;
+            SequenceCreateNewUI.Open();
         };
         CreateNewButton.OnUpdateStatus += delegate { SequenceEditUIHelper.HoverColor(CreateNewButton, default, Color.White * .1f); };
     }
@@ -169,6 +192,23 @@ public partial class SequenceEditUI
         };
         EditButtonContainer.Join(EditButtonMask);
         SaveButton.Join(EditButtonContainer);
+        RevertButton.Join(EditButtonContainer);
+        SaveAsButton.Join(EditButtonContainer);
+
+        SaveButton.LeftMouseClick += delegate
+        {
+            if (_currentPageFullName == null || CurrentPage is not { } page) return;
+            page.PendingModified = false;
+            OpenedPanels.Remove(_currentPageFullName);
+            PendingPanels.Remove(_currentPageFullName);
+            if (PendingSequences.TryGetValue(_currentPageFullName, out var sequence) && PendingPanels.TryGetValue(_currentPageFullName, out var panel))
+            {
+                PendingSequences.Remove(_currentPageFullName);
+                PendingPanels.Remove(_currentPageFullName);
+                // TODO 保存相关逻辑
+            }
+        };
+
         RevertButton.LeftMouseClick += delegate
         {
             if (_currentPageFullName == null || CurrentPage is not { } page) return;
@@ -179,8 +219,18 @@ public partial class SequenceEditUI
             PendingPanels.Remove(_currentPageFullName);
             SwitchToEdit();
         };
-        RevertButton.Join(EditButtonContainer);
-        SaveAsButton.Join(EditButtonContainer);
+
+        SaveAsButton.LeftMouseClick += delegate
+        {
+            if (_currentPageFullName == null || CurrentPage is not { } page) return;
+            SequenceCreateNewUI.SequenceData = OpenedSequences[_currentPageFullName].Data.Clone();
+            SequenceCreateNewUI.SequenceData.CreateTime = DateTime.Now;
+            SequenceCreateNewUI.SequenceData.ModifyTime = DateTime.Now;
+            SequenceCreateNewUI.IsFromSaveAs = true;
+            SequenceCreateNewUI.Open();
+        };
+
+
         Mask.OnUpdateStatus += (gameTime) =>
         {
             if (EditButtonMask.Parent is null && CurrentPage is { PendingModified: true })

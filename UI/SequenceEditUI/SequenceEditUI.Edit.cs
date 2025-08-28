@@ -1,5 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase;
@@ -13,6 +15,7 @@ using SilkyUIFramework.Animation;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Localization;
 
@@ -35,6 +38,9 @@ public partial class SequenceEditUI
     internal static bool AutoLoadingPanels { get; private set; }
     public PageView CurrentPage => (string.IsNullOrEmpty(_currentPageFullName) || !OpenedPages.TryGetValue(_currentPageFullName, out var page)) ? null : page;
 
+    public AnimationTimer BlackMaskTimer { get; private set; } = new();
+    public UIView BlackMask { get; private set; }
+    public static HashSet<char> InvalidPathChars { get; } = [];
     public void SetupElementLib()
     {
         if (!_pendingUpdateElementLib) return;
@@ -178,5 +184,32 @@ public partial class SequenceEditUI
         SetupElementLib();
         SetupSequenceLib();
         SetupRootElement();
+    }
+
+
+    public void AppendNewPageFromData(SequenceData data, bool isFromSaveAs)
+    {
+        string dataFullName = $"{data.ModDefinition.Name}/{data.FileName}";
+        Sequence sequence;
+        if (isFromSaveAs)
+        {
+            sequence = PendingSequences[_currentPageFullName];
+            sequence.Data = data;
+            CurrentPage.PendingModified = false;
+            PendingSequences.Remove(_currentPageFullName);
+            PendingPanels.Remove(_currentPageFullName);
+            OpenedPanels[dataFullName] = OpenedPanels[_currentPageFullName];
+            OpenedSequences[dataFullName] = OpenedSequences[_currentPageFullName];
+            OpenedPanels.Remove(_currentPageFullName);
+            OpenedSequences.Remove(_currentPageFullName);
+        }
+        else
+        {
+            sequence = new Sequence();
+            sequence.Data = data;
+            sequence.Groups.Add(new SingleWrapperGroup(new(CurrentCategory.DefaultElement.CloneInstance())));
+        }
+        CurrentCategory.Maganger.RegisterSingleSequence_Instance(dataFullName, sequence);
+        MenuHelper.AppendPage(this, dataFullName, sequence, true);
     }
 }

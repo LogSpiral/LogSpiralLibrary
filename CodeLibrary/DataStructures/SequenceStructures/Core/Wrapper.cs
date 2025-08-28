@@ -13,9 +13,9 @@ public partial class Wrapper
 
     public string? RefSequenceFullName { get; set; }
 
-    public bool Available 
+    public bool Available
     {
-        get 
+        get
         {
             if (RefSequenceFullName != null)
                 return !SequenceGlobalManager.UnloadSequences.Contains(RefSequenceFullName);
@@ -54,7 +54,14 @@ public partial class Wrapper
 
     public void WriteXml(XmlWriter writer, IReadOnlyDictionary<string, string> attributes)
     {
-        writer.WriteStartElement(Sequence != null ? "Sequence" : "Element");
+        if (Sequence != null)
+        {
+            if (Sequence.Count == 1 && RefSequenceFullName == null)
+                writer.WriteStartElement("Group");
+            else
+                writer.WriteStartElement("Sequence");
+        }
+        writer.WriteStartElement("Element");
 
         if (attributes != null)
             foreach (var (key, value) in attributes)
@@ -76,9 +83,9 @@ public partial class Wrapper
     }
 
 
-    public Wrapper Clone() 
+    public Wrapper Clone()
     {
-        if(Element is { } element)
+        if (Element is { } element)
             return new Wrapper(element.CloneInstance());
         if (RefSequenceFullName is { } refName)
             return new Wrapper(refName);

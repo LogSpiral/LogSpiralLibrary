@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Body Class="LogSpiralLibrary.UI.SequenceEditUI.AssistantUI.SequenceCreateNewUI" Height="400px" Width="700px" Left="50#" Top="50#" Gap="0" BorderRadius="8">
+	<DraggableView Name="TitlePanel" Width="100%" Height="40px" BackgroundColor="rgba(0,0,0,0.25)" BorderRadius="6 6 0 0" FlexDirection="Row" MainAlignment="Start" CrossAlignment="Center">
+		<!-- 标题 -->
+		<TextView Name="Title" Padding="12 0" Width="25%" Height="100%" TextScale="0.45" TextAlign="0 0.5" IsDeathText="true" />
+	</DraggableView>
+	<PropertyPanel Name="DataPanel" Width="-16px 100%" FlexGrow="1" BackgroundColor="rgba(0,0,0,0.1)" BorderRadius="8" Margin="8 8 8 0"/>
+	<ElementGroup Name="ButtonPanel" Width="100%" FitHeight="true" MainAlignment="Center" Gap="160 0" Padding="8"/>
+</Body>

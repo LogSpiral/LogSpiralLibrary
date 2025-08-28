@@ -1,7 +1,10 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Xml;
+using Terraria.ModLoader;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 
@@ -25,6 +28,11 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
     public void WriteXml(XmlWriter writer)
     {
         _attributeDict.Clear();
+
+        var type = GetType();
+        var mod = (MiscMethods.GetInstanceViaType(type) as MultiGroup<T>).Mod;
+        var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
+
         writer.WriteAttributeString("FullName", GetType().Name);
 
         foreach (var pair in DataList)
@@ -47,4 +55,14 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
 
         return result;
     }
+
+    void ILoadable.Load(Mod mod)
+    {
+        Mod = mod;
+        var type = GetType();
+        var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
+        SequenceGlobalManager.GroupTypeLookup.Add(key, type);
+        SequenceGlobalManager.MultiGroupTypeLookup.Add(key, type);
+    }
+    private Mod Mod { get; set; }
 }

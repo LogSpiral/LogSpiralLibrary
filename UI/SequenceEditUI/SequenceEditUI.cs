@@ -48,5 +48,6 @@ public partial class SequenceEditUI : BasicBody
         Active = false;
         Instance!.OpenedPages.Clear();
         SequenceEditHelperUI.Close();
+        SequenceCreateNewUI.Close();
     }
 }

@@ -49,6 +49,7 @@ file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel ba
                 {
                     var parent = Parent.Parent;
                     var sub = InnerPanels[0];
+                    OnDeconstructContainer?.Invoke(Parent as MultiPanel, insertablePanel, sub);
                     if (parent == BaseView)
                     {
                         Vector2 pos = new(Parent.Left.Pixels + Parent.Padding.Left + Parent.Border, Parent.Top.Pixels + Parent.Padding.Top + Parent.Border);
@@ -59,11 +60,14 @@ file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel ba
                     RemoveLock = true;
                     parent.AddBefore(sub, Parent);
                     RemoveLock = false;
+
                 }
                 Parent?.Remove();
             }
         }
     }
+    public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer;
+
 }
 public abstract class MultiPanel : InsertablePanel
 {
@@ -104,6 +108,12 @@ public abstract class MultiPanel : InsertablePanel
     public IReadOnlyList<InsertablePanel> SubInsertablePanels => InnerPanels;
 
     public event Action<MultiPanel, InsertablePanel> OnInsertPanelToInnerContainer;
+
+    public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer 
+    {
+        add => (InsertContainerPanel as InsertContainer).OnDeconstructContainer += value;
+        remove => (InsertContainerPanel as InsertContainer).OnDeconstructContainer -= value;
+    }
 
     public bool RemoveFromInnerListManually(InsertablePanel panel) => InnerPanels.Remove(panel);
     public MultiPanel()

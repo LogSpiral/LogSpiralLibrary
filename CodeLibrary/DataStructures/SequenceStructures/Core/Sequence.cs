@@ -22,7 +22,7 @@ public partial class Sequence(params List<IGroup> groups) : ISequence
     {
         var result = new Sequence()
         {
-            Data = Data.Clone()
+            Data = Data?.Clone()
         };
         foreach (var group in Groups) 
             result.Groups.Add(group.Clone());

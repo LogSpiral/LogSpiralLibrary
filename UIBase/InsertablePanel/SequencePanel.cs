@@ -39,8 +39,8 @@ public class SequencePanel : MultiPanel
     protected override void HandlePreviewAnimation()
     {
         var index = _pvState - 4;
-        if (InsertContainerPanel.PendingChildren.Count <= index || InsertContainerPanel.PendingChildren[index] != _pvView)
-            InsertContainerPanel.Add(_pvView, Math.Min(index, InsertContainerPanel.PendingChildren.Count));
+        if (InsertContainerPanel.Children.Count <= index || InsertContainerPanel.Children[index] != _pvView)
+            InsertContainerPanel.Add(_pvView, Math.Min(index, InsertContainerPanel.Children.Count));
 
         var factor = _pvTimer.Schedule;
         if (_pvContainer.Parent != null)

@@ -1,8 +1,11 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using PropertyPanelLibrary.EntityDefinition;
 using System.Xml;
+using Terraria.ModLoader;
+using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
@@ -33,13 +36,13 @@ public class SequenceData : ILoadable
         Load(elementReader);
     }
 
-    public virtual string GetFullName => GetType().Name;
+    public virtual string GetFullName(Mod mod) => mod.Name == nameof(LogSpiralLibrary) ? GetType().Name : $"{mod.Name}/{GetType().Name}";
 
     public void WriteXml(XmlWriter writer)
     {
         var type = GetType();
         if (type != typeof(SequenceData))
-            writer.WriteAttributeString("FullName", GetFullName);
+            writer.WriteAttributeString("FullName", GetFullName((MiscMethods.GetInstanceViaType(GetType()) as SequenceData).Mod));
 
         writer.WriteElementString(nameof(DisplayName), DisplayName);
         writer.WriteElementString(nameof(AuthorName), AuthorName);
@@ -58,23 +61,24 @@ public class SequenceData : ILoadable
     protected virtual void Save(XmlWriter writer)
     {
     }
-
+    private Mod Mod { get; set; }
     void ILoadable.Load(Mod mod)
     {
+        Mod = mod;
         var type = GetType();
         //var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
-        SequenceGlobalManager.DataTypeLookup.Add(GetFullName, type);
+        SequenceGlobalManager.DataTypeLookup.Add(GetFullName(mod), type);
     }
 
     void ILoadable.Unload()
     {
     }
 
-    protected virtual void HandleClone(SequenceData target) 
+    protected virtual void HandleClone(SequenceData target)
     {
 
     }
-    public SequenceData Clone() 
+    public SequenceData Clone()
     {
         var result = MemberwiseClone() as SequenceData;
         result.ModDefinition = new(ModDefinition.Name);

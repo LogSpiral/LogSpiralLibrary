@@ -17,12 +17,12 @@ public class SequenceElementCategory
     public Color ThemeColor { get; init; }
     public string ElementName { get; init; }
     public SequenceManager Maganger { get; init; }
-
+    public ISequenceElement DefaultElement { get; init; }
     #region Statics
 
     public static readonly Dictionary<string, SequenceElementCategory> CategoryLookup = [];
 
-    public static SequenceElementCategory RegisterCategory<T>(Mod mod, Asset<Texture2D> icon, Color? themeColor = null) where T : ISequenceElement
+    public static SequenceElementCategory RegisterCategory<T>(Mod mod, Asset<Texture2D> icon, T defaultElement, Color? themeColor = null) where T : ISequenceElement
     {
         var name = typeof(T).Name;
         var result = new SequenceElementCategory()
@@ -31,7 +31,8 @@ public class SequenceElementCategory
             Icon = icon,
             ThemeColor = themeColor ?? SUIColor.Background * .25f,
             ElementName = name,
-            Maganger = SequenceManager<T>.Instance
+            Maganger = SequenceManager<T>.Instance,
+            DefaultElement = defaultElement
         };
         CategoryLookup.TryAdd(name, result);
         return result;

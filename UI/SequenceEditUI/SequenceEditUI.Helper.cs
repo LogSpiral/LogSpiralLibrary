@@ -1,8 +1,11 @@
-﻿using ReLogic.Content;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using ReLogic.Content;
 using SilkyUIFramework;
 using SilkyUIFramework.BasicComponents;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
+using System.Linq;
 using Terraria.Audio;
 using Terraria.Localization;
 
@@ -10,7 +13,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI;
 
 public partial class SequenceEditUI
 {
-    private static class SequenceEditUIHelper
+    public static class SequenceEditUIHelper
     {
         public static UIElementGroup NewDownlistMask()
         {
@@ -42,8 +45,8 @@ public partial class SequenceEditUI
             {
                 previous.BackgroundColor = default;
                 var prevIndex = instance.PagePanel.GetInnerChildIndex(previous);
-                instance.PagePanel.PendingChildren[prevIndex - 1].BackgroundColor = Color.Black * .25f;
-                instance.PagePanel.PendingChildren[prevIndex + 1].BackgroundColor = Color.Black * .25f;
+                instance.PagePanel.Children[prevIndex - 1].BackgroundColor = Color.Black * .25f;
+                instance.PagePanel.Children[prevIndex + 1].BackgroundColor = Color.Black * .25f;
             }
         }
 
@@ -72,6 +75,32 @@ public partial class SequenceEditUI
             textView.Join(result);
 
             return result;
+        }
+
+        public static bool SequenceDataSaveCheck(SequenceData data,out string msg) 
+        {
+            if (string.IsNullOrEmpty(data.FileName))
+            {
+                msg = GetText("EmptyFileNameException");
+                return false;
+            }
+            else if (data.FileName.Any(InvalidPathChars.Contains))
+            {
+                msg = GetText("InvalidFileNameException");
+                return false;
+            }
+            else if (SequenceGlobalManager.SequenceLookup.ContainsKey($"{data.ModDefinition.Name}/{data.FileName}")) 
+            {
+                msg = GetText("InvalidFileNameException");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(data.DisplayName))
+            {
+                msg = GetText("EmptyDisplayNameException");
+                return false;
+            }
+            msg = GetText("SaveSucceed");
+            return true;
         }
     }
 }

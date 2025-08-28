@@ -15,7 +15,8 @@ SaveOrRevertPlz: Please Save(As) or Revert
 OK: OK
 EmptyFileNameException: The file name cannot be empty
 EmptyDisplayNameException: The display name cannot be empty
-InvalidFileNameException: File name is not available (Repeated)
+InvalidFileNameException: File name is not available
+FileNameAlreadyExistsException: File with same name already exist
 UnknownModException: Mods that don't exist
 SaveSucceed: Saved successfully!!
 RepeatedNameHint: However, it is advisable to avoid duplication of display names
@@ -41,3 +42,4 @@ SequenceLibrary: Sequence Library
 ActionLibrary: Element Library
 PropTitle: Info of current page Sequence
 InfoTitle: Info of selected Element
+CreateNew: CreateNew

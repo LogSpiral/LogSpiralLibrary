@@ -19,9 +19,10 @@ public interface IGroup : ILoadable
 
     public void ReadXml(XmlReader reader)
     {
-        while (reader.IsStartElement("Element") || reader.IsStartElement("Sequence"))
+        while (reader.IsStartElement("Element") || reader.IsStartElement("Sequence") || reader.IsStartElement("Group"))
         {
             bool isSequence = reader.IsStartElement("Sequence");
+            bool isGroup = reader.IsStartElement("Group");
             bool isEmptyElement = reader.IsEmptyElement;
             string fullName = reader["FullName"]!;
             Dictionary<string, string> attributes = [];
@@ -54,6 +55,13 @@ public interface IGroup : ILoadable
                     sequence.ReadXml(reader);
                     AppendWrapper(new Wrapper(sequence), attributes);
                 }
+            }
+            else if (isGroup) 
+            {
+                Sequence sequence = new();
+                var innerGroup = Sequence.ParseGroupToInstance(reader);
+                sequence.Groups.Add(innerGroup);
+                AppendWrapper(new Wrapper(sequence), attributes);
             }
             else
             {

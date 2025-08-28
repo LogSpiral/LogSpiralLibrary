@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UI.SequenceEditUI;
@@ -31,12 +32,12 @@ public class SequenceSystem : ModSystem
         return result;
     }
 
-    public static LocalMod[] locals;
+    public static LocalMod[] LocalMods { get; private set; }
     public static LocalMod ModToLocal(Mod mod)
     {
         string fileName = $"{mod.Name}.tmod";
         List<LocalMod> targetLocals = [];
-        foreach (var localsItem in locals)
+        foreach (var localsItem in LocalMods)
         {
             if (localsItem.Name == mod.Name)
                 targetLocals.Add(localsItem);
@@ -51,7 +52,7 @@ public class SequenceSystem : ModSystem
     }
     public override void Load()
     {
-        locals = ModOrganizer.FindAllMods();
+        LocalMods = ModOrganizer.FindAllMods();
 
         #region 旧版位置转移至新版
         var path = Path.Combine(Main.SavePath, "Mods", "LogSpiralLibrary_Sequence");
@@ -94,7 +95,7 @@ public class SequenceSystem : ModSystem
     {
         // TODO 加入基本序列类型的专用注册
         AvailableElementBaseTypes.Add(typeof(MeleeAction));
-        MeleeActionCategoryInstance = SequenceElementCategory.RegisterCategory<MeleeAction>(Mod, TextureAssets.Item[ItemID.WarriorEmblem]);
+        MeleeActionCategoryInstance = SequenceElementCategory.RegisterCategory<MeleeAction>(Mod, TextureAssets.Item[ItemID.WarriorEmblem], new SwooshInfo());
 
         foreach (var type in AvailableElementBaseTypes)
             LoadSequenceWithType(type);

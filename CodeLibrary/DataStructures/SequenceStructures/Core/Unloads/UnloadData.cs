@@ -21,7 +21,7 @@ public class UnloadData : SequenceData, ILoadable
             element.WriteTo(writer);
     }
 
-    public override string GetFullName => FullName!;
+    public override string GetFullName(Mod mod) => FullName!;
 
     void ILoadable.Load(Mod mod)
     {

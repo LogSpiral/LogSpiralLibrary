@@ -25,8 +25,8 @@ public partial class SequenceEditUI
                 instance.SwitchToEdit();
                 page.BackgroundColor = Color.Black * .135f;
                 var index = instance.PagePanel.GetInnerChildIndex(page);
-                instance.PagePanel.PendingChildren[index - 1].BackgroundColor = default;
-                instance.PagePanel.PendingChildren[index + 1].BackgroundColor = default;
+                instance.PagePanel.Children[index - 1].BackgroundColor = default;
+                instance.PagePanel.Children[index + 1].BackgroundColor = default;
                 Recents.Remove(name);
                 Recents.Insert(0, name);
                 SaveRecentListAsFile();

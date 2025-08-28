@@ -34,8 +34,8 @@ public partial class SequenceEditHelperUI : BasicBody
             if (value != field && HintTextTitle != null)
             {
                 var key = value ?? "HelpPanel";
-                HintTextTitle.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.Sequence.Help.{key}.DisplayName");
-                HintTextContent.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.Sequence.Help.{key}.Tooltip");
+                HintTextTitle.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.Help.{key}.DisplayName");
+                HintTextContent.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.Help.{key}.Tooltip");
             }
             field = value;
         }
@@ -60,14 +60,14 @@ public partial class SequenceEditHelperUI : BasicBody
         CloseButton.CrossBorderHoverColor = SUIColor.Highlight;
         CloseButton.CrossBackgroundHoverColor = SUIColor.Warn;
         TitlePanel.ControlTarget = this;
-        Title.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.Help");
+        Title.Text = Language.GetTextValue("Mods.LogSpiralLibrary.SequenceUI.Help.Help");
         Title.UseDeathText();
         CloseButton.LeftMouseClick += delegate
         {
             Close();
         };
-        HintTextTitle.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.HelpPanel.DisplayName");
-        HintTextContent.Text = Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.Help.HelpPanel.Tooltip");
+        HintTextTitle.Text = Language.GetTextValue("Mods.LogSpiralLibrary.SequenceUI.Help.HelpPanel.DisplayName");
+        HintTextContent.Text = Language.GetTextValue("Mods.LogSpiralLibrary.SequenceUI.Help.HelpPanel.Tooltip");
     }
 
     private void ReloadContent()

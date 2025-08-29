@@ -13,7 +13,7 @@ public static class SequenceSaveHelper
         if (folders.Length > 1)
             Directory.CreateDirectory(Path.Combine(modPath, Path.Combine(folders[..^1])));
 
-        var finalPath = Path.Combine(modPath, $"{loadingSequence.Data.FileName}_Resaved.xml");
+        var finalPath = Path.Combine(modPath, $"{loadingSequence.Data.FileName}.xml");
         using XmlWriter writer = XmlWriter.Create(finalPath, SequenceGlobalManager.WriterSettings);
         loadingSequence.Data.ModifyTime = DateTime.Now;
         SequenceGlobalManager.Serializer.Serialize(writer, loadingSequence);

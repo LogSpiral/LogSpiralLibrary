@@ -25,6 +25,30 @@ public static class InsertablePanelUtils
     static Color ElementColor { get; } = Color.Cyan * .1f;
     static Color SequenceColor { get; } = Color.MediumPurple * .1f;
     static Color GroupColor { get; } = Color.Blue * .1f;
+    public static CombinedFiller InsertablePanelToFiller(InsPanel panel)
+    {
+        List<IPropertyOptionFiller> fillers = [];
+        if (panel.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
+        {
+            fillers.Add(new GroupFiller(single));
+        }
+        if (panel.DecoratorManager.TryFindFirst<MultiGroupDecorator>(out var multi))
+        {
+            fillers.Add(new GroupFiller(multi));
+        }
+        if (panel.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
+        {
+            fillers.Add(new GroupFiller(arg.Argument));
+        }
+        if (panel.DecoratorManager.TryFindFirst<WrapperDecorator>(out var wrapper) && wrapper.Wrapper.Element is { } element)
+        {
+            fillers.Add(new SequenceElementFiller(element));
+            // TODO 添加一个转到目标序列页面的选项
+            // 使用装饰器实现？还是填充器？
+        }
+        if (fillers.Count == 0) return null;
+        return new CombinedFiller(fillers);
+    }
     public static Vector2 InsertablePanelLeftCenter(InsPanel panel)
     {
         if (panel is GroupPanel)
@@ -100,16 +124,16 @@ public static class InsertablePanelUtils
                 // L & T: 剩余方继承
                 if (container.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
                 {
-                    if (!left.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var leftArg))
+                    if (left.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var leftArg))
                         leftArg.Argument = arg.Argument;
                     else
-                        left.DecoratorManager += new GroupArgumentDecorator() { Argument = leftArg.Argument };
+                        left.DecoratorManager += new GroupArgumentDecorator() { Argument = arg.Argument };
 
 
                     if (left.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
                         left.DecoratorManager -= single;
 
-                    if(draggingOut.DecoratorManager.TryFindFirst(out single))
+                    if (draggingOut.DecoratorManager.TryFindFirst(out single))
                         left.DecoratorManager -= single;
 
                 }
@@ -146,14 +170,20 @@ public static class InsertablePanelUtils
 
             // A: 直接插入
             // E: 组参数决定单组类型后插入
-            if (panel is not GroupPanel && panel.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
+            if (panel.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
             {
-                if (!SequenceGlobalManager.GroupArgToSingleGroup.TryGetValue(arg.Argument.GetType(), out var singleType))
-                    singleType = typeof(SingleWrapperGroup);
-                var groupDummy = Activator.CreateInstance(singleType) as IGroup;
-                arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
-                panel.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                if (panel is not GroupPanel)
+                {
+                    if (!SequenceGlobalManager.GroupArgToSingleGroup.TryGetValue(arg.Argument.GetType(), out var singleType))
+                        singleType = typeof(SingleWrapperGroup);
+                    var groupDummy = Activator.CreateInstance(singleType) as IGroup;
+                    arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
+                    panel.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                }
+                else
+                    panel.DecoratorManager -= arg;
             }
+
         };
         sequence.OnDeconstructContainer += (container, draggingOut, left) =>
         {
@@ -164,7 +194,7 @@ public static class InsertablePanelUtils
                 // K & S: 剩余方继承，有单组则移除
                 if (container.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
                 {
-                    if (!left.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var leftArg))
+                    if (left.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var leftArg))
                         leftArg.Argument = arg.Argument;
                     else
                         left.DecoratorManager += new GroupArgumentDecorator() { Argument = leftArg.Argument };
@@ -191,29 +221,11 @@ public static class InsertablePanelUtils
         {
             if (evt.Source != elem) return;
             if (!UI.SequenceEditUI.SequenceEditUI.Active) return;
-            List<IPropertyOptionFiller> fillers = [];
-            if (panel.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
-            {
-                fillers.Add(new GroupFiller(single));
-            }
-            if (panel.DecoratorManager.TryFindFirst<MultiGroupDecorator>(out var multi))
-            {
-                fillers.Add(new GroupFiller(multi));
-            }
-            if (panel.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
-            {
-                fillers.Add(new GroupFiller(arg.Argument));
-            }
-            if (panel.DecoratorManager.TryFindFirst<WrapperDecorator>(out var wrapper) && wrapper.Wrapper.Element is { } element)
-            {
-                fillers.Add(new SequenceElementFiller(element));
-                // TODO 添加一个转到目标序列页面的选项
-                // 使用装饰器实现？还是填充器？
-            }
-            if (fillers.Count == 0) return;
 
+            var combinedFiller = InsertablePanelToFiller(panel);
+            if (combinedFiller == null) return;
             var instance = UI.SequenceEditUI.SequenceEditUI.Instance;
-            instance.PropertyPanelConfig.Filler = new CombinedFiller(fillers);
+            instance.PropertyPanelConfig.Filler = combinedFiller;
             instance.CurrentEditTarget = panel;
         };
         panel.OnDraggingOut += (elem, evt) =>
@@ -243,12 +255,13 @@ public static class InsertablePanelUtils
             }
             else if (insPanel is GroupPanel)
             {
-                if (elem is GroupPanel)
-                {
-                    // D: 移除组参数后移除
-                    if (elem is InsPanel ins && ins.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
-                        ins.DecoratorManager -= arg;
-                }
+                //if (elem is GroupPanel)
+                //{
+                //    // D: 移除组参数后移除
+                //    if (elem is InsPanel ins && ins.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
+                //        ins.DecoratorManager -= arg;
+                //}
+                // D: 直接移除
                 // H: 直接移除
             }
 
@@ -268,7 +281,7 @@ public static class InsertablePanelUtils
             if (insParent is GroupPanel)
             {
                 // J & R: 目标的组参数转交新组
-                group.DecoratorManager += arg;
+                group.DecoratorManager += new GroupArgumentDecorator() { Argument = arg.Argument };
                 self.DecoratorManager -= arg;
 
                 // 新组使用默认条件组，内部元素使用默认参数
@@ -278,6 +291,9 @@ public static class InsertablePanelUtils
             }
             else if (insParent is SequencePanel && self.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
             {
+                self.DecoratorManager -= single;
+
+
                 // N: 目标单组转多组，自身转换类型后插入
                 var singleType = single.Definition.GroupType;
 
@@ -314,8 +330,8 @@ public static class InsertablePanelUtils
         var insParent = self.Parent?.Parent?.Parent;
         if (insParent is GroupPanel && self.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
         {
-            // I & Q: 目标的组参数转交新序列
-            sequence.DecoratorManager += arg;
+            // I: 目标的组参数转交新序列
+            sequence.DecoratorManager += new GroupArgumentDecorator() { Argument = arg.Argument };
             self.DecoratorManager -= arg;
 
             if (!self.DecoratorManager.TryFindFirst<MultiGroupDecorator>(out var multi))
@@ -323,8 +339,8 @@ public static class InsertablePanelUtils
 
             self.DecoratorManager += new GroupArgumentDecorator() { Argument = NoneArg.Instance };
 
-
-            if (pending is not GroupPanel && pending.DecoratorManager.TryFindFirst(out  arg))
+            // Q: 目标的组参数转交新序列, 自身添加单组装饰器
+            if (pending is not GroupPanel && pending.DecoratorManager.TryFindFirst(out arg))
             {
                 if (!SequenceGlobalManager.GroupArgToSingleGroup.TryGetValue(arg.Argument.GetType(), out var singleType))
                     singleType = typeof(SingleWrapperGroup);
@@ -335,7 +351,8 @@ public static class InsertablePanelUtils
         }
         if (insParent is SequencePanel)
         {
-            // U: 组参数决定单组而后插入
+            // M: 序列面板加上单组装饰器，使用默认单组
+            // U: 序列面板加上单组装饰器，使用默认单组, 组参数决定单组而后插入
             if (pending is not GroupPanel && pending.DecoratorManager.TryFindFirst(out arg))
             {
                 if (!SequenceGlobalManager.GroupArgToSingleGroup.TryGetValue(arg.Argument.GetType(), out var singleType))
@@ -344,8 +361,9 @@ public static class InsertablePanelUtils
                 arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
                 pending.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
             }
+            if (!sequence.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
+                sequence.DecoratorManager += new SingleGroupDecorator() { Definition = new(nameof(SingleWrapperGroup)) };
         }
-        // M: 直接构造，不进一步处理
 
         SequencePanelCommonSet(sequence);
     }
@@ -402,6 +420,7 @@ public static class InsertablePanelUtils
         {
             TextTitledInsertablePanel insertablePanel = new() { BackgroundColor = Color.Gray * .25f };
             insertablePanel.TitleText.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.Unload{(wrapper.IsUnload ? "Element" : "Sequence")}");
+            insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = wrapper };
             InsertablePanelCommonSet(insertablePanel);
             panel = insertablePanel;
         }
@@ -434,18 +453,14 @@ public static class InsertablePanelUtils
         else if (group.Contents.Count == 1)
         {
             var result = WrapperPairToPanel(group.Contents[0]);
-            SingleGroupDecorator singleGroupDecorator = new() { Definition = new SingleGroupDefinition(group) };
-            result.DecoratorManager += singleGroupDecorator;
+            result.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(group) };
             return result;
         }
         else
         {
             GroupPanel groupPanel = new();
             GroupPanelCommonSet(groupPanel);
-            groupPanel.DecoratorManager += new GroupLineDecorator();
-            MultiGroupDecorator groupDecorator = new MultiGroupDecorator();
-            groupDecorator.Definition = new MultiGroupDefinition(group);
-            groupPanel.DecoratorManager += groupDecorator;
+            groupPanel.DecoratorManager += new MultiGroupDecorator() { Definition = new MultiGroupDefinition(group) };
             foreach (var pair in group.Contents)
                 groupPanel.InsertContainerPanel.Add(WrapperPairToPanel(pair));
             InsertablePanelCommonSet(groupPanel);

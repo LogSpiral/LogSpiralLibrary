@@ -39,6 +39,7 @@
 			<Image Name="OpenFolderIcon" ImageAlign="0.5" Top="50#" />
 			<Image Name="HomePageIcon" ImageAlign="0.5" Top="50#" />
 			<Image Name="HelperIcon" ImageAlign="0.5" Top="50#" />
+			<Image Name="ReloadIcon" ImageAlign="0.5" Top="50#" />
 		</ElementGroup>
 	</ElementGroup>
 </Body>

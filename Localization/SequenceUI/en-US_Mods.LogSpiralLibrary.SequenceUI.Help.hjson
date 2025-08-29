@@ -79,6 +79,17 @@ HelpPanelOpener: {
 	Tooltip: 也许我该加个打开帮助面板的帮助信息？
 }
 
+ReloadSequences: {
+	DisplayName: 重新加载
+	Tooltip:
+		'''
+		重新加载当前元素类型的所有序列
+		正常情况下是加载模组的时候会读取本地加载
+		这里编辑写入文件的同时也会修改加载到的对象
+		但是万一有手动改了文件需要直接重新加载的时候呢...?
+		'''
+}
+
 Menu: {
 	DisplayName: PagePanel
 	Tooltip:

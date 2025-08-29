@@ -4,8 +4,10 @@ GroupArgs: {
 	ConditionWeight: Condition: {0}, Random weight: {1}
 }
 
-SingleWrapperGroup: None
-ConditionalSingleGroup: Conditional
-ConditionalMultiGroup: Conditional
-WeightedRandomGroup: Weighted
-ConditionalWeightedGroup: Conditional-Weighted
+Groups: {
+	SingleWrapperGroup: None
+	ConditionalSingleGroup: Conditional
+	ConditionalMultiGroup: Conditional
+	WeightedRandomGroup: Weighted
+	ConditionalWeightedGroup: Conditional-Weighted
+}

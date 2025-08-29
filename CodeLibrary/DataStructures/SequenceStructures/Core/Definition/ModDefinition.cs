@@ -85,7 +85,7 @@ public class ModDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
     {
-        var proxyOptionChoice = OptionChoice = new SUIDefinitionIconOption() { Definition = metaData.GetValue() as EntityDefinition };
+        var proxyOptionChoice = OptionChoice = new ModDefinitionOption() { Definition = metaData.GetValue() as EntityDefinition };
         proxyOptionChoice.SetTop(2);
         proxyOptionChoice.SetLeft(-4, 0, 0);
         proxyOptionChoice.SetPadding(0);

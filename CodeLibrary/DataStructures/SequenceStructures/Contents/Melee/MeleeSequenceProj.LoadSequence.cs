@@ -64,6 +64,7 @@ public partial class MeleeSequenceProj
                     Description = "Auto Spawn By LogSpiralLibrary.",
                     FileName = Name,
                     DisplayName = Name,
+                    // LoadTimeElementTypeName = nameof(MeleeAction),
                     ModDefinition = new ModDefinition(Mod.Name),
                     CreateTime = DateTime.Now,
                     ModifyTime = DateTime.Now,
@@ -81,7 +82,6 @@ public partial class MeleeSequenceProj
 
     public virtual void InitializeSequence(string modName, string fileName)
     {
-        Main.NewText("111");
         if (!LabeledAsCompleted
             && IsLocalProj
             && SequenceManager<MeleeAction>

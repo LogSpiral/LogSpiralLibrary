@@ -62,9 +62,13 @@ public partial class Sequence
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteStartElement("Data");
-        Data?.WriteXml(writer);
-        writer.WriteEndElement();
+        if (Data != null) 
+        {
+            writer.WriteStartElement("Data");
+            Data.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
         foreach (var group in Groups)
         {
             bool single = group.ReadSingleWrapper || Groups.Count == 1;

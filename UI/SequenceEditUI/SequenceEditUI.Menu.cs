@@ -48,6 +48,10 @@ public partial class SequenceEditUI
                     page.Remove();
                     vr.Remove();
                     instance.OpenedPages.Remove(name);
+                    instance.OpenedPanels.Remove(name);
+                    instance.OpenedSequences.Remove(name);
+                    instance.PendingPanels.Remove(name);
+                    instance.PendingSequences.Remove(name);
                     if (instance._currentPageFullName == name)
                         instance.SwitchToMenu();
                 };

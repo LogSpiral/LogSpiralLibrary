@@ -89,7 +89,7 @@ public partial class SequenceEditUI
                 msg = GetText("InvalidFileNameException");
                 return false;
             }
-            else if (SequenceGlobalManager.SequenceLookup.ContainsKey($"{data.ModDefinition.Name}/{data.FileName}")) 
+            else if (SequenceGlobalManager.SequenceLookup.ContainsKey(data.GetSequenceKeyName(CurrentCategory.ElementName))) 
             {
                 msg = GetText("InvalidFileNameException");
                 return false;

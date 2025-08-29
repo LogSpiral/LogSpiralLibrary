@@ -33,7 +33,7 @@ public partial class SequenceEditUI : BasicBody
         if (!Active)
             SoundEngine.PlaySound(SoundID.MenuOpen);
         Active = true;
-        foreach (var pair in Instance.PendingSequences) 
+        foreach (var pair in Instance.PendingSequences)
         {
             if (!CurrentCategory.Maganger.Sequences.ContainsKey(pair.Key)) continue;
             var page = MenuHelper.AppendPage(Instance, pair.Key, pair.Value, false);

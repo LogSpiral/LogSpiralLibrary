@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helper
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using PropertyPanelLibrary.EntityDefinition;
+using System.IO;
 using System.Xml;
 using Terraria.ModLoader;
 using static Terraria.Localization.NetworkText;
@@ -21,7 +22,23 @@ public class SequenceData : ILoadable
     public DateTime CreateTime { get; set; }
     public DateTime ModifyTime { get; set; }
     public bool Finished { get; set; } = true;
-
+    public string GetSequenceKeyName(string elementTypeName)
+    {
+        return $"{ModDefinition.Name}/{elementTypeName}/{FileName}";
+    }
+    public static bool ParseKeyName(string keyName, out string modName, out string elementTypeName, out string fileName)
+    {
+        var subs = keyName.Split('/');
+        if (subs.Length < 3)
+        {
+            modName = elementTypeName = fileName = "";
+            return false;
+        }
+        modName = subs[0];
+        elementTypeName = subs[1];
+        fileName = Path.Combine(subs[2..]).Replace("\\", "/");
+        return true;
+    }
     public override string ToString() => $"DisplayName{DisplayName},AuthorName{AuthorName},Description{Description},CreateTime{CreateTime},ModifyTime{ModifyTime},Finished{Finished}";
 
     public void ReadXml(XmlReader reader)

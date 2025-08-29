@@ -61,7 +61,8 @@ public partial class Wrapper
             else
                 writer.WriteStartElement("Sequence");
         }
-        writer.WriteStartElement("Element");
+        else
+            writer.WriteStartElement("Element");
 
         if (attributes != null)
             foreach (var (key, value) in attributes)

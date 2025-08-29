@@ -170,6 +170,8 @@ public partial class SequenceEditHelperUI : BasicBody
                 SetHelpHintKey("LSHomePage");
             else if (instance.HelperIcon.ContainsPoint(mousePosition))
                 SetHelpHintKey("HelpPanelOpener");
+            else if (instance.ReloadIcon.ContainsPoint(mousePosition))
+                SetHelpHintKey("ReloadSequences");
             else
                 SetHelpHintKey("ButtonPanel");
         }

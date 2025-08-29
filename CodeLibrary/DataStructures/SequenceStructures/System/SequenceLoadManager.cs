@@ -69,6 +69,8 @@ public abstract class SequenceManager
         Sequences[fullName] = sequence;
         SequenceGlobalManager.SequenceLookup[fullName] = sequence;
     }
+
+    public abstract void ReloadSequences();
 }
 
 public class SequenceManager<T> : SequenceManager where T : ISequenceElement
@@ -126,7 +128,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
                 continue;
             using FileStream stream = new(file.FullName, FileMode.Open);
             var sequence = RegisterSingleSequence(fullPath, stream);
-            sequence.Data.ModDefinition = new(modName);
+            sequence?.Data?.ModDefinition = new(modName);
         }
 
         #endregion 加载本地文件夹目录文件
@@ -134,15 +136,28 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
 
     public static Sequence RegisterSingleSequence(string fullName, Stream stream)
     {
-        SequenceGlobalManager.UnloadSequences.Remove(fullName);
         if (!SequenceGlobalManager.SequenceLookup.TryGetValue(fullName, out Sequence sequence))
             sequence = new Sequence();
 
         try
         {
             var loadedSequence = (Sequence)SequenceGlobalManager.Serializer.Deserialize(stream);
+            if (sequence == null) return null;
+            SequenceGlobalManager.UnloadSequences.Remove(fullName);
             sequence.Groups = loadedSequence.Groups;
             sequence.Data = loadedSequence.Data;
+            var folders = fullName.Split("/");
+            if (folders.Length > 1)
+            {
+                sequence.Data.ModDefinition = new(folders[0]);
+                sequence.Data.FileName = Path.Combine(folders[1..]).Replace('\\', '/');
+            }
+            else
+            {
+                sequence.Data.FileName = fullName;
+                // 按说不应该会出现这种情况
+            }
+            // sequence.Data.LoadTimeElementTypeName = typeof(T).Name;
             Instance.Sequences[fullName] = sequence;
             SequenceGlobalManager.SequenceLookup[fullName] = sequence;
             return sequence;
@@ -155,6 +170,12 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
     }
 
     public static void RegisterSingleSequence(string fullName, Sequence sequence) => Instance.RegisterSingleSequence_Instance(fullName, sequence);
+
+    public override void ReloadSequences()
+    {
+        _loaded = false;
+        Load();
+    }
 }
 
 internal static class SequenceLoadingHelper

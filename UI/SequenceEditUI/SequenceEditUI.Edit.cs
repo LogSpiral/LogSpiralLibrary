@@ -1,7 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
@@ -17,7 +16,6 @@ using SilkyUIFramework.Animation;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Terraria.Localization;
 
@@ -43,6 +41,7 @@ public partial class SequenceEditUI
     public AnimationTimer BlackMaskTimer { get; private set; } = new();
     public UIView BlackMask { get; private set; }
     public static HashSet<char> InvalidPathChars { get; } = [];
+
     public void SetupElementLib()
     {
         if (!_pendingUpdateElementLib) return;
@@ -148,7 +147,6 @@ public partial class SequenceEditUI
             OpenedSequences[sequenceName] = sequence = SequenceGlobalManager.SequenceLookup[sequenceName].Clone();
         PropertyPanelData.Filler = new ObjectMetaDataFiller(sequence.Data);
 
-
         AutoLoadingPanels = true;
         if (!OpenedPanels.TryGetValue(sequenceName, out var rootPanel))
             OpenedPanels[sequenceName] = rootPanel = InsertablePanelUtils.SequenceToInsertablePanel(sequence);
@@ -168,14 +166,17 @@ public partial class SequenceEditUI
             page.PendingModified = true;
             PendingSequences.TryAdd(_currentPageFullName, sequence);
             PendingPanels.TryAdd(_currentPageFullName, rootPanel);
-            if (value is SingleGroupDefinition or MultiGroupDefinition)
-                PropertyPanelConfig?.ForceReload();
+            if (value is SingleGroupDefinition or MultiGroupDefinition && CurrentEditTarget is { } panel) 
+            {
+                var combinedFiller = InsertablePanelUtils.InsertablePanelToFiller(panel);
+                if (combinedFiller == null) return;
+                PropertyPanelConfig.Filler = combinedFiller;
+            }
         };
 
         var pendingWriter = new CombinedWriter(DefaultWriter.Instance, delegateWriter);
         PropertyPanelData.Writer = pendingWriter;
         PropertyPanelConfig.Writer = pendingWriter;
-
     }
 
     private void SwitchToEdit()
@@ -190,10 +191,9 @@ public partial class SequenceEditUI
         SetupRootElement();
     }
 
-
     public void AppendNewPageFromData(SequenceData data, bool isFromSaveAs)
     {
-        string dataFullName = $"{data.ModDefinition.Name}/{data.FileName}";
+        string dataFullName = data.GetSequenceKeyName(CurrentCategory.ElementName);
         Sequence sequence;
         if (isFromSaveAs)
         {
@@ -215,7 +215,6 @@ public partial class SequenceEditUI
         }
         CurrentCategory.Maganger.RegisterSingleSequence_Instance(dataFullName, sequence);
         MenuHelper.AppendPage(this, dataFullName, sequence, true);
-
 
         InsertPanelToSequenceUtils.RefillSequenceViaInsertablePanel(OpenedPanels[_currentPageFullName], sequence);
         SequenceSaveHelper.SaveSequence(sequence, CurrentCategory.ElementName);

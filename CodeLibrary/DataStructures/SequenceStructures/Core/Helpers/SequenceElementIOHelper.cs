@@ -25,10 +25,17 @@ public static class SequenceElementIOHelper
         {
             if (variableInfo.GetCustomAttribute<ElementCustomDataAttribute>() == null || variableInfo.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
                 continue;
-
+            
             object dummy = variableInfo.GetValue(element);
             if (variableInfo.GetCustomAttribute<DefaultValueAttribute>() is DefaultValueAttribute defaultValueAttribute && dummy.Equals(defaultValueAttribute.Value))
                 continue;
+            if (true) 
+            {
+                var defInstance = Activator.CreateInstance(element.GetType());
+                var defDummy = variableInfo.GetValue(defInstance);
+                if (Equals(dummy, defDummy))
+                    continue;
+            }
             if (dummy is IXmlSerializable serializable)
             {
                 xmlWriter.WriteStartElement(variableInfo.Name);

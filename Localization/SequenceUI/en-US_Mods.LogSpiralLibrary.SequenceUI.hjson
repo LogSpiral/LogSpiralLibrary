@@ -46,3 +46,5 @@ CreateNew: CreateNew
 UnloadSequence: Unload Sequence
 UnloadGroup: Unload Group
 UnloadElement: Unload Element
+ReloadInMenuOnly: Can ONLY Reload when None page is opened.
+ReloadSucceed: Reload sequences successfully.

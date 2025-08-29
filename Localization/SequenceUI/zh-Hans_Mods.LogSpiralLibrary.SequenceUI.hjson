@@ -46,3 +46,5 @@ CreateNew: 新建
 UnloadSequence: 未加载序列
 UnloadGroup: 未加载组
 UnloadElement: 未加载元素
+ReloadInMenuOnly: 仅能在未打开任何页面时重新加载
+ReloadSucceed: 成功重新加载序列

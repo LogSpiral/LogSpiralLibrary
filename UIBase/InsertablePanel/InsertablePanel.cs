@@ -27,11 +27,12 @@ public class InsertablePanel : UIElementGroup
     public InsertPanelDecoratorManager DecoratorManager
     {
         get;
-        set
-        {
-            _pendingUpdateDecorate = true;
-            field = value;
-        }
+        set;
+        //set
+        //{
+        //    _pendingUpdateDecorate = true;
+        //    field = value;
+        //}
     } = new();
 
     /// <summary>
@@ -80,7 +81,7 @@ public class InsertablePanel : UIElementGroup
 
     #region fields
 
-    private bool _pendingUpdateDecorate;
+    // private bool _pendingUpdateDecorate;
 
     /// <summary>
     /// 外部预览容器，仅上下左右四个方向插入的时候会有
@@ -213,10 +214,14 @@ public class InsertablePanel : UIElementGroup
     }
     private void UpdateDecorate()
     {
+        /*
         if (!_pendingUpdateDecorate) return;
         _pendingUpdateDecorate = false;
         // TODO 也许要卸之前的装饰？但是目前应该没问题，先不管了
         DecoratorManager.Apply(this);
+        */
+        if (!DecoratorManager.PendingModified) return;
+        DecoratorManager.Update(this);
     }
 
     private void UpdateDragging()

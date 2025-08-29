@@ -32,7 +32,8 @@ public class WeightArg(float weight) : IGroupArgument
 
     public void WriteAttributes(Dictionary<string, string> attributes)
     {
-        attributes["wWeight"] = Weight.ToString("0.00");
+        if (Weight != 1)
+            attributes["weight"] = Weight.ToString("0.00");
     }
 
     public IGroupArgument Clone() => new WeightArg(Weight);

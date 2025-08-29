@@ -1,4 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
@@ -82,21 +84,26 @@ public partial class SequenceEditUI
         HomePageIcon.Texture2D = ModAsset.Rose;
         OpenFolderIcon.Texture2D = ModAsset.Folder;
         HelperIcon.Texture2D = ModAsset.Helper;
+        ReloadIcon.Texture2D = ModAsset.Reload;
         SequenceTypeIcon.OnUpdateStatus += delegate
         {
-            SequenceTypeIcon.ImageColor = Color.White * SequenceTypeIcon.HoverTimer.Lerp(0.5f, 1f);
+            SequenceTypeIcon.ImageColor = Color.White * SequenceTypeIcon.HoverTimer.Lerp(.5f, 1f);
         };
         HomePageIcon.OnUpdateStatus += delegate
         {
-            HomePageIcon.ImageColor = Color.White * HomePageIcon.HoverTimer.Lerp(0.5f, 1f);
+            HomePageIcon.ImageColor = Color.White * HomePageIcon.HoverTimer.Lerp(.5f, 1f);
         };
         OpenFolderIcon.OnUpdateStatus += delegate
         {
-            OpenFolderIcon.ImageColor = Color.White * OpenFolderIcon.HoverTimer.Lerp(0.5f, 1f);
+            OpenFolderIcon.ImageColor = Color.White * OpenFolderIcon.HoverTimer.Lerp(.5f, 1f);
         };
         HelperIcon.OnUpdateStatus += delegate
         {
-            HelperIcon.ImageColor = Color.White * HelperIcon.HoverTimer.Lerp(0.5f, 1f);
+            HelperIcon.ImageColor = Color.White * HelperIcon.HoverTimer.Lerp(.5f, 1f);
+        };
+        ReloadIcon.OnUpdateStatus += delegate
+        {
+            ReloadIcon.ImageColor = Color.White * ReloadIcon.HoverTimer.Lerp(.5f, 1f);
         };
     }
 
@@ -124,6 +131,17 @@ public partial class SequenceEditUI
                 SequenceEditHelperUI.Close();
             else
                 SequenceEditHelperUI.Open();
+        };
+        ReloadIcon.LeftMouseClick += delegate
+        {
+            if (OpenedPages.Count > 0)
+            {
+                Main.NewText(SequenceEditUIHelper.GetText("ReloadInMenuOnly"), Color.Red);
+                return;
+            }
+            CurrentCategory.Maganger.ReloadSequences();
+            SwitchToMenu();
+            Main.NewText(SequenceEditUIHelper.GetText("ReloadSucceed"), Color.Green);
         };
     }
 
@@ -201,21 +219,48 @@ public partial class SequenceEditUI
 
         SaveButton.LeftMouseClick += delegate
         {
+
             if (_currentPageFullName == null || CurrentPage is not { } page) return;
+
+
+
             page.PendingModified = false;
-            OpenedPanels.Remove(_currentPageFullName);
             if (PendingSequences.TryGetValue(_currentPageFullName, out var sequence) && PendingPanels.TryGetValue(_currentPageFullName, out var panel))
             {
-                PendingSequences.Remove(_currentPageFullName);
-                PendingPanels.Remove(_currentPageFullName);
+
 
                 var loadingSequence = CurrentCategory.Maganger.Sequences[_currentPageFullName];
+                bool renamed = loadingSequence.Data.GetSequenceKeyName(CurrentCategory.ElementName) != sequence.Data.GetSequenceKeyName(CurrentCategory.ElementName);
+
+
+                var msg = SequenceEditUIHelper.GetText("SaveSucceed");
+                if (renamed)
+                {
+                    // 发生重命名或者更换所属模组时删除原来的
+                    if (!SequenceEditUIHelper.SequenceDataSaveCheck(loadingSequence.Data, out msg))
+                    {
+                        Main.NewText(msg, Color.Red);
+                        return;
+                    }
+
+                    var origPath = Path.Combine(SequenceSystem.SequenceSavePath, CurrentCategory.ElementName, loadingSequence.Data.ModDefinition.Name, $"{loadingSequence.Data.FileName}.xml");
+                    if (File.Exists(origPath))
+                        File.Delete(origPath);
+                }
                 loadingSequence.Data = sequence.Data;
+
                 InsertPanelToSequenceUtils.RefillSequenceViaInsertablePanel(panel, loadingSequence);
 
                 SequenceSaveHelper.SaveSequence(loadingSequence, CurrentCategory.ElementName);
+
+                Main.NewText(msg, Color.Green);
+
+                PendingSequences.Remove(_currentPageFullName);
+                PendingPanels.Remove(_currentPageFullName);
             }
-            PendingPanels.Remove(_currentPageFullName);
+            OpenedSequences.Remove(_currentPageFullName);
+            OpenedPanels.Remove(_currentPageFullName);
+            SwitchToEdit();
         };
 
         RevertButton.LeftMouseClick += delegate

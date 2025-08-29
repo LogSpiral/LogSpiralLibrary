@@ -103,11 +103,10 @@ public class SequenceSystem : ModSystem
         SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(ConditionalMultiGroup), typeof(ConditionalSingleGroup));
         SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(ConditionalWeightedGroup), typeof(ConditionalSingleGroup));
         SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(WeightedRandomGroup), typeof(SingleWrapperGroup));
-        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(NoneArg), typeof(SingleWrapperGroup));
-        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(WeightArg), typeof(SingleWrapperGroup));
-        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionArg), typeof(ConditionalSingleGroup));
-        SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionWeightArg), typeof(ConditionalSingleGroup));
-
+        SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(NoneArg), typeof(SingleWrapperGroup));
+        SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(WeightArg), typeof(SingleWrapperGroup));
+        SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(ConditionArg), typeof(ConditionalSingleGroup));
+        SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(ConditionWeightArg), typeof(ConditionalSingleGroup));
         foreach (var type in AvailableElementBaseTypes)
             LoadSequenceWithType(type);
 

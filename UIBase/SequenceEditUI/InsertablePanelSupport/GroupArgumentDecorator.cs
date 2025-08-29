@@ -1,30 +1,30 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase.InsertablePanel;
-using Microsoft.Build.Utilities;
+using ReLogic.Graphics;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.BasicComponents;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
 internal class GroupArgumentDecorator : IInsertPanelDecorator
 {
-    AnimationTimer HiddenTimer { get; } = new();
+    private AnimationTimer HiddenTimer { get; } = new();
     public IGroupArgument Argument { get; set; }
     public HorizontalRule HorizontalRule { get; set; }
     public UITextView ArgumentText { get; set; }
     public UIElementGroup Mask { get; set; }
     public UIElementGroup InnerContainer { get; set; }
+
+    public InsertablePanel.InsertablePanel InsertablePanel { get; set; }
+
     public void Decorate(InsertablePanel.InsertablePanel panel)
     {
+        InsertablePanel = panel;
         panel.FlexDirection = FlexDirection.Column;
         HorizontalRule = new()
         {
@@ -54,7 +54,7 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         };
         if (Argument != null)
         {
-            ArgumentText.Text = $"->{Argument.ToString()}";
+            ArgumentText.Text = $"->{Argument}";
             if (Argument.IsHidden)
                 HiddenTimer.ImmediateReverseCompleted();
             else
@@ -66,7 +66,6 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         };
         ArgumentText.OnUpdateStatus += (gameTime) =>
         {
-
             HiddenTimer.Update(gameTime);
             if (Argument != null)
             {
@@ -75,7 +74,7 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
                 if (Argument.IsHidden && HiddenTimer.IsForward)
                     HiddenTimer.StartReverseUpdate();
 
-                ArgumentText.Text = $"->{Argument.ToString()}";
+                ArgumentText.Text = $"->{Argument}";
             }
             UpdateVisuals();
 
@@ -84,6 +83,10 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         container.Add(ArgumentText);
 
         panel.Add(mask);
+
+        //panel.DrawAction += DrawGroupArg;
+
+
     }
 
     private void UpdateVisuals()
@@ -99,7 +102,15 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
     {
         HorizontalRule.Remove();
         ArgumentText.Remove();
+        //panel.DrawAction -= DrawGroupArg;
     }
 
-
+    private void DrawGroupArg(GameTime gameTime, SpriteBatch spriteBatch)
+    {
+#if true
+        spriteBatch.DrawString(FontAssets.MouseText.Value, Argument.ToString(), InsertablePanel.Bounds.GetPercentedCoord(0, .33f), Color.Lime);
+#else
+        spriteBatch.DrawString(FontAssets.MouseText.Value, "□", InsertablePanel.Bounds.GetPercentedCoord(0, .33f), Color.Lime);
+#endif
+    }
 }

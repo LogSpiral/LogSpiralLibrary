@@ -32,7 +32,8 @@ public class ConditionArg(ConditionDefinition definition) : IGroupArgument
 
     public void WriteAttributes(Dictionary<string, string> attributes)
     {
-        attributes["condition"] = Name;
+        if (ConditionDefinition.Type != 0)
+            attributes["condition"] = Name;
     }
 
     public IGroupArgument Clone() => new ConditionArg(new ConditionDefinition(ConditionDefinition.Mod, ConditionDefinition.Name));

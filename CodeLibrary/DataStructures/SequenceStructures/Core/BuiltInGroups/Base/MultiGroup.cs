@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interf
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Xml;
 using Terraria.ModLoader;
 
@@ -27,7 +28,6 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
 
     public void WriteXml(XmlWriter writer)
     {
-        _attributeDict.Clear();
 
         var type = GetType();
         var mod = (MiscMethods.GetInstanceViaType(type) as MultiGroup<T>).Mod;
@@ -38,6 +38,7 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
         foreach (var pair in DataList)
         {
             var (wrapper, argument) = pair.Deconstruct();
+            _attributeDict.Clear();
             argument.WriteAttributes(_attributeDict);
             wrapper.WriteXml(writer, argument.IsHidden ? [] : _attributeDict);
         }

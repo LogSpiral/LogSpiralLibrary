@@ -19,4 +19,6 @@ public class NoneArg : IGroupArgument
     {
     }
     public IGroupArgument Clone() => this;
+
+    public override string ToString() => "None";
 }

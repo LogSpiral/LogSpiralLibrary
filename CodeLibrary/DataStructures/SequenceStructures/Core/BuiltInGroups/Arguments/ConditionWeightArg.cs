@@ -46,8 +46,10 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     public void WriteAttributes(Dictionary<string, string> attributes)
     {
-        attributes["condition"] = Name;
-        attributes["weight"] = Weight.ToString("0.00");
+        if (ConditionDefinition.Type != 0)
+            attributes["condition"] = Name;
+        if (Weight != 1)
+            attributes["weight"] = Weight.ToString("0.00");
     }
 
     public IGroupArgument Clone() => new ConditionWeightArg(new ConditionDefinition(ConditionDefinition.Mod, ConditionDefinition.Name), Weight);

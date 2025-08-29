@@ -116,8 +116,12 @@ public static class InsertablePanelUtils
         };
         group.OnDeconstructContainer += (container, draggingOut, left) =>
         {
-            SwitchCurrentPageRoot(container, left);
-
+            var instance = UI.SequenceEditUI.SequenceEditUI.Instance;
+            if (instance.CurrentEditTarget == container)
+            {
+                instance.PropertyPanelConfig.Filler = NoneFiller.Instance;
+                instance.CurrentEditTarget = null;
+            }
             var insParent = container.Parent?.Parent;
             if (insParent is GroupPanel)
             {
@@ -155,6 +159,7 @@ public static class InsertablePanelUtils
                 left.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
 
             }
+            SwitchCurrentPageRoot(container, left);
         };
     }
     static void SequencePanelCommonSet(SequencePanel sequence)
@@ -187,6 +192,12 @@ public static class InsertablePanelUtils
         };
         sequence.OnDeconstructContainer += (container, draggingOut, left) =>
         {
+            var instance = UI.SequenceEditUI.SequenceEditUI.Instance;
+            if (instance.CurrentEditTarget == container)
+            {
+                instance.PropertyPanelConfig.Filler = NoneFiller.Instance;
+                instance.CurrentEditTarget = null;
+            }
             // 第一个是MultiPanel的内部容器，第二个才是MultiPanel自身
             var insParent = container.Parent?.Parent;
             if (insParent is GroupPanel)

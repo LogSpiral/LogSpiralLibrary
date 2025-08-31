@@ -9,11 +9,11 @@ public partial class MeleeSequenceProj
         if (CurrentElement == null) return;
         //target.life = target.lifeMax;
         var data = CurrentElement.ModifyData;
-        modifiers.SourceDamage *= data.actionOffsetDamage * CurrentElement.offsetDamage;
-        modifiers.Knockback *= data.actionOffsetKnockBack;
+        modifiers.SourceDamage *= data.Damage * CurrentElement.offsetDamage;
+        modifiers.Knockback *= data.KnockBack;
         var _crit = Player.GetWeaponCrit(Player.HeldItem);
-        _crit += data.actionOffsetCritAdder;
-        _crit = (int)(_crit * data.actionOffsetCritMultiplyer);
+        _crit += data.CritAdder;
+        _crit = (int)(_crit * data.CritMultiplyer);
         if (Main.rand.Next(100) < _crit)
         {
             modifiers.SetCrit();
@@ -30,8 +30,8 @@ public partial class MeleeSequenceProj
     {
         if (CurrentElement == null) return;
         var data = CurrentElement.ModifyData;
-        modifiers.SourceDamage *= data.actionOffsetDamage * CurrentElement.offsetDamage;
-        modifiers.Knockback *= data.actionOffsetKnockBack;
+        modifiers.SourceDamage *= data.Damage * CurrentElement.offsetDamage;
+        modifiers.Knockback *= data.KnockBack;
         base.ModifyHitPlayer(target, ref modifiers);
     }
 

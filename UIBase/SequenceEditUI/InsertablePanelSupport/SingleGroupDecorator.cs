@@ -3,11 +3,13 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Defini
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UIBase.InsertablePanel;
 using PropertyPanelLibrary.EntityDefinition;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using ReLogic.Graphics;
+using System.Collections.Generic;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
-public class SingleGroupDecorator : IInsertPanelDecorator
+public class SingleGroupDecorator : IInsertPanelDecorator, IMemberLocalized
 {
     [CustomEntityDefinitionHandler<SingleGroupDefinitionHandler>]
     public SingleGroupDefinition Definition
@@ -39,4 +41,8 @@ public class SingleGroupDecorator : IInsertPanelDecorator
     {
         //panel.DrawAction -= DrawImGroup;
     }
+
+    string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.SingleGroup";
+    private static string[] Suffixes { get; } = ["Label"];
+    IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
 }

@@ -32,7 +32,7 @@ public class EruptionInfo : VanillaMelee
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, !Flip, alpha, StandardInfo.frame);
+        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, drawCen, !Flip, alpha, StandardInfo.frame);
         List<CustomVertexInfo> result = [];
         Vector2 offVec = vtxs[4].Position - vtxs[0].Position;
         float angle = offVec.ToRotation();
@@ -62,9 +62,9 @@ public class EruptionInfo : VanillaMelee
             bool flag = n != 0 && n != 9;
             CustomVertexInfo[] curGroup;
             if (flag)
-                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, StandardInfo.standardRotation, 0, angle + MathHelper.PiOver2, texture, .5f, ModifyData.actionOffsetSize * sc * .5f, drawCen + off2, !Flip, alpha, StandardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(.5f * Vector2.One, StandardInfo.standardRotation, 0, angle + MathHelper.PiOver2, texture, .5f, ModifyData.Size * sc * .5f, drawCen + off2, !Flip, alpha, StandardInfo.frame);
             else
-                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, 0, angle, texture, 1f, ModifyData.actionOffsetSize * sc * 1f, drawCen - (n == 9 ? off2 : default), !Flip, alpha, StandardInfo.frame);
+                curGroup = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, 0, angle, texture, 1f, ModifyData.Size * sc * 1f, drawCen - (n == 9 ? off2 : default), !Flip, alpha, StandardInfo.frame);
 
             if (flag)
             {

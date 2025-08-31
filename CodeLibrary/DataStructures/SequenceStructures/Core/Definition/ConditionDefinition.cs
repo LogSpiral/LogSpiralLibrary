@@ -37,7 +37,7 @@ public class ConditionDefinition : EntityDefinition
     {
     }
 
-    public ConditionDefinition(int type) : base(SequenceSystem.Conditions.ToList()[type].Key)
+    public ConditionDefinition(int type) : base(SequenceSystem.Conditions.Count == 0 ? "" : SequenceSystem.Conditions.ToList()[type].Key)
     {
     }
 

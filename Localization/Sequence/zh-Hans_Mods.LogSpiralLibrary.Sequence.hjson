@@ -2,7 +2,18 @@ GroupArgs: {
 	Condition: 条件: {0}
 	Weight: 随机权重: {0}
 	ConditionWeight: 条件: {0}, 随机权重: {1}
+	ConditionArg.ConditionDefinition.Label: 执行条件
+
+	ConditionWeightArg: {
+		ConditionDefinition.Label: 执行条件
+		Weight.Label: 随机权重
+	}
+
+	WeightArg.Weight.Label: 随机权重
 }
+
+MultiGroup.Definition.Label: 多元组类型
+SingleGroup.Definition.Label: 单元组类型
 
 Groups: {
 	SingleWrapperGroup: 无
@@ -10,4 +21,172 @@ Groups: {
 	ConditionalMultiGroup: 条件组
 	WeightedRandomGroup: 权重组
 	ConditionalWeightedGroup: 条件权重组
+}
+
+MeleeAction: {
+	ActionModifyData: {
+		Size: {
+			Label: 大小系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		TimeScaler: {
+			Label: 时长系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		KnockBack: {
+			Label: 击退系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		Damage: {
+			Label: 伤害系数
+			Tooltip: 基于原来的进行缩放
+		}
+
+		CritAdder: {
+			Label: 暴击率增加值
+			Tooltip: 加在面板值上
+		}
+
+		CritMultiplyer: {
+			Label: 暴击率系数
+			Tooltip: 加完增加值再乘上这个
+		}
+	}
+
+	Category: {
+		LsLibrary: 标准近战
+		Vanilla: 原版低仿
+		Extended: 拓展近战
+	}
+
+	MeleeAction: {
+		ModifyData.Label: 调整数据
+		CounterMax.Label: 执行次数
+		OnEndAttackDelegate.Label: 结束攻击
+		OnStartAttackDelegate.Label: 开始攻击
+		OnAttackDelegate.Label: 攻击期间
+		OnChargeDelegate.Label: 前后摇间
+		OnActiveDelegate.Label: 切换上时
+		OnDeactiveDelegate.Label: 切换下时
+		OnEndSingleDelegate.Label: 单次结束
+		OnStartSingleDelegate.Label: 单次开始
+		OnHitTargetDelegate.Label: 命中目标时
+		// DisplayName: MeleeAction
+	}
+
+	StabInfo: {
+		DisplayName: 突刺
+		minKValue.Label: 最小扁平程度
+		KValueRange.Label: 扁平范围
+		visualCentered.Label: 中心突刺
+		randAngleRange.Label: 角度偏移范围
+	}
+
+	SwooshInfo: {
+		DisplayName: 挥砍
+		minKValue.Label: 最小扁平程度
+		KValueRange.Label: 扁平范围
+		mode.Label: 模式
+		randAngleRange.Label: 角度偏移范围
+	}
+
+	RapidlyStabInfo: {
+		DisplayName: 高频突刺
+		rangeOffsetMax.Label: 执行次数偏移上界
+		rangeOffsetMin.Label: 执行次数偏移下界
+		givenCycle.Label: 执行次数基值
+	}
+
+	ConvoluteInfo.DisplayName: 回旋
+
+	ChargingInfo: {
+		DisplayName: 蓄力
+		AutoNext.Label: 自动切换到下一个
+		ChargingRotation.Label: 蓄力角度偏移
+		StartRotation.Label: 起始角度偏移
+	}
+
+	ArkhalisInfo.DisplayName: 真空剑
+	BoardSwordInfo.DisplayName: 宽剑
+	BoomerangInfo.DisplayName: 回旋镖
+	EruptionInfo.DisplayName: 爆发
+	FistInfo.DisplayName: 拳击
+	FlailInfo.DisplayName: 链球
+	HammerInfo.DisplayName: 飞锤
+	KnivesInfo.DisplayName: 飞刀
+	LanceInfo.DisplayName: 骑枪
+	RotatingInfo.DisplayName: 旋转
+	ShockingDashInfo.DisplayName: 猛冲
+	ShortSwordInfo.DisplayName: 短剑
+	SpearInfo.DisplayName: 长枪
+	StarlightInfo.DisplayName: 星光
+	TerraprismaInfo.DisplayName: 泰拉棱镜
+	YoyoInfo.DisplayName: 悠悠
+	ZenithInfo.DisplayName: 天顶
+	TestBladeSwooshInfo.DisplayName: 测试挥砍
+	TestBladeGrayStabInfo.DisplayName: 测试突刺
+	TestBladeConvoluteInfo.DisplayName: 测试回旋
+	CutInfo.DisplayName: 横斩
+	ExtendedMelee.DisplayName: ExtendedMelee
+	PunctureInfo.DisplayName: 下砸穿刺
+
+	StormInfo: {
+		DisplayName: 风暴回旋
+		// angleRange.Label: angleRange
+		// xScaler.Label: xScaler
+	}
+}
+
+SequenceData: {
+	AuthorName: {
+		Label: 作者
+		Tooltip: 制作这个序列的人
+	}
+
+	Description: {
+		Label: 描述
+		Tooltip: 介绍一下你的作品吧
+	}
+
+	FileName: {
+		Label: 文件名
+		Tooltip:
+			'''
+			实际存储路径用到的名字
+			最好不要有特殊字符
+			'''
+	}
+
+	DisplayName: {
+		Label: 显示名
+		Tooltip: 显示在UI界面中的名字
+	}
+
+	ModDefinition: {
+		Label: 所属模组
+		Tooltip: 下次我会要求必须依赖于LSL的(
+	}
+
+	CreateTime: {
+		Label: 创建日期
+		Tooltip: 序列诞生之日！
+	}
+
+	ModifyTime: {
+		Label: 修改日期
+		Tooltip: 序列上次被修改的日期
+	}
+
+	passWord: {
+		Label: 密码
+		Tooltip: 密码就是密码
+	}
+
+	Finished: {
+		Label: 是否标记为成品
+		Tooltip: 没有本质区别，仅供方便分类
+	}
 }

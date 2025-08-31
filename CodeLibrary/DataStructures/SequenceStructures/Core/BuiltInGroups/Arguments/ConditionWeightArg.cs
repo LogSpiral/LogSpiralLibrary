@@ -1,12 +1,13 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using PropertyPanelLibrary.EntityDefinition;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using System.Collections.Generic;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 
-public class ConditionWeightArg(ConditionDefinition definition, float weight) : IGroupArgument
+public class ConditionWeightArg(ConditionDefinition definition, float weight) : IGroupArgument,IMemberLocalized
 {
     public ConditionWeightArg() : this(new ConditionDefinition(0), 1)
     {
@@ -56,4 +57,9 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     public Condition Condition => ConditionDefinition.ToCondition();
     public string Name => ConditionDefinition.Name;
+
+
+    string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.GroupArgs.ConditionWeightArg";
+    private static string[] Suffixes { get; } = ["Label"];
+    IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
 }

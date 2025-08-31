@@ -2,7 +2,18 @@ GroupArgs: {
 	Condition: Condition: {0}
 	Weight: Random weight: {0}
 	ConditionWeight: Condition: {0}, Random weight: {1}
+	ConditionArg.ConditionDefinition.Label: Condition
+
+	ConditionWeightArg: {
+		ConditionDefinition.Label: Condition
+		Weight.Label: Random weight
+	}
+
+	WeightArg.Weight.Label: Random weight
 }
+
+MultiGroup.Definition.Label: MultiGroup Type
+SingleGroup.Definition.Label: SingleGroup Type
 
 Groups: {
 	SingleWrapperGroup: None
@@ -10,4 +21,168 @@ Groups: {
 	ConditionalMultiGroup: Conditional
 	WeightedRandomGroup: Weighted
 	ConditionalWeightedGroup: Conditional-Weighted
+}
+
+MeleeAction: {
+	ActionModifyData: {
+		Size: {
+			Label: Size Scaler
+			Tooltip: Scaled based on the original value
+		}
+
+		TimeScaler: {
+			Label: Time Scaler
+			Tooltip: Scaled based on the original value
+		}
+
+		KnockBack: {
+			Label: Knockback Scaler
+			Tooltip: Scaled based on the original value
+		}
+
+		Damage: {
+			Label: Damage Scaler
+			Tooltip: Scaled based on the original value
+		}
+
+		CritAdder: {
+			Label: Additional Crit
+			Tooltip: Add on the original value
+		}
+
+		CritMultiplyer: {
+			Label: Crit Scaler
+			Tooltip: Scaled based on the added value
+		}
+	}
+
+	Category: {
+		LsLibrary: Standard
+		Vanilla: Vanilla-Like
+		Extended: Extended
+	}
+
+	MeleeAction: {
+		ModifyData.Label: Modify Data
+		CounterMax.Label: Executions count
+		OnEndAttackDelegate.Label: On End Attack
+		OnStartAttackDelegate.Label: On Start Attack
+		OnAttackDelegate.Label: On Attack
+		OnChargeDelegate.Label: On Charge
+		OnActiveDelegate.Label: On Active
+		OnDeactiveDelegate.Label: On Deactive
+		OnEndSingleDelegate.Label: On End Single
+		OnStartSingleDelegate.Label: On Start Single
+		OnHitTargetDelegate.Label: On Hit Target
+		DisplayName: MeleeAction
+	}
+
+	StabInfo: {
+		DisplayName: Stab
+		minKValue.Label: min Flat visual
+		KValueRange.Label: Flat Range
+		visualCentered.Label: stab centered
+		randAngleRange.Label: randAngleRange
+	}
+
+	SwooshInfo: {
+		DisplayName: Swoosh
+		minKValue.Label: min Flat visual
+		KValueRange.Label: Flat Range
+		mode.Label: mode
+		randAngleRange.Label: randAngleRange
+	}
+
+	RapidlyStabInfo: {
+		DisplayName: RapidlyStab
+		rangeOffsetMax.Label: Executions count upper offset bound
+		rangeOffsetMin.Label: Executions count lower offset bound
+		givenCycle.Label: Executions count basic value
+	}
+
+	ConvoluteInfo.DisplayName: Convolute
+
+	ChargingInfo: {
+		DisplayName: Charging
+		AutoNext.Label: Auto switch to Next
+		ChargingRotation.Label: End Rotation
+		StartRotation.Label: Start Rotation
+	}
+
+	ArkhalisInfo.DisplayName: Arkhalis
+	BoardSwordInfo.DisplayName: BoardSword
+	BoomerangInfo.DisplayName: Boomerang
+	EruptionInfo.DisplayName: Eruption
+	FistInfo.DisplayName: Fist
+	FlailInfo.DisplayName: Flail
+	HammerInfo.DisplayName: Hammer
+	KnivesInfo.DisplayName: Knives
+	LanceInfo.DisplayName: Lance
+	RotatingInfo.DisplayName: Rotating
+	ShockingDashInfo.DisplayName: ShockingDash
+	ShortSwordInfo.DisplayName: ShortSword
+	SpearInfo.DisplayName: Spear
+	StarlightInfo.DisplayName: Starlight
+	TerraprismaInfo.DisplayName: Terraprisma
+	YoyoInfo.DisplayName: Yoyo
+	ZenithInfo.DisplayName: Zenith
+	TestBladeSwooshInfo.DisplayName: TestSwoosh
+	TestBladeGrayStabInfo.DisplayName: TestStab
+	TestBladeConvoluteInfo.DisplayName: TestConvolute
+	CutInfo.DisplayName: Cut
+	ExtendedMelee.DisplayName: ExtendedMelee
+	PunctureInfo.DisplayName: PunctureInfo
+
+	StormInfo: {
+		DisplayName: StormInfo
+		angleRange.Label: angleRange
+		xScaler.Label: xScaler
+	}
+}
+
+SequenceData: {
+	AuthorName: {
+		Label: Author
+		Tooltip: The one who creates this Sequence
+	}
+
+	Description: {
+		Label: Description
+		Tooltip: Write sth. here to introduce your Sequence
+	}
+
+	FileName: {
+		Label: File Name
+		Tooltip: The Name in Directory\n you'd better make this without special characters
+	}
+
+	DisplayName: {
+		Label: Display Name
+		Tooltip: The Name shown in the UI Panel.
+	}
+
+	ModDefinition: {
+		Label: Belonged Mod
+		Tooltip: Belonged Mod
+	}
+
+	CreateTime: {
+		Label: Create Date
+		Tooltip: The Birthday of the Sequence!!(
+	}
+
+	ModifyTime: {
+		Label: Modify Date
+		Tooltip: The Date the sequence last modified
+	}
+
+	passWord: {
+		Label: PassWord
+		Tooltip: The Password is 'Password'(JK
+	}
+
+	Finished: {
+		Label: Labeled as finished
+		Tooltip: __
+	}
 }

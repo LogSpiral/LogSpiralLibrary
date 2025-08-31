@@ -219,25 +219,17 @@ public partial class SequenceEditUI
 
         SaveButton.LeftMouseClick += delegate
         {
-
             if (_currentPageFullName == null || CurrentPage is not { } page) return;
-
-
-
-            page.PendingModified = false;
             if (PendingSequences.TryGetValue(_currentPageFullName, out var sequence) && PendingPanels.TryGetValue(_currentPageFullName, out var panel))
             {
-
-
                 var loadingSequence = CurrentCategory.Maganger.Sequences[_currentPageFullName];
                 bool renamed = loadingSequence.Data.GetSequenceKeyName(CurrentCategory.ElementName) != sequence.Data.GetSequenceKeyName(CurrentCategory.ElementName);
-
 
                 var msg = SequenceEditUIHelper.GetText("SaveSucceed");
                 if (renamed)
                 {
                     // 发生重命名或者更换所属模组时删除原来的
-                    if (!SequenceEditUIHelper.SequenceDataSaveCheck(loadingSequence.Data, out msg))
+                    if (!SequenceEditUIHelper.SequenceDataSaveCheck(sequence.Data, out msg))
                     {
                         Main.NewText(msg, Color.Red);
                         return;
@@ -258,6 +250,7 @@ public partial class SequenceEditUI
                 PendingSequences.Remove(_currentPageFullName);
                 PendingPanels.Remove(_currentPageFullName);
             }
+            page.PendingModified = false;
             OpenedSequences.Remove(_currentPageFullName);
             OpenedPanels.Remove(_currentPageFullName);
             SwitchToEdit();

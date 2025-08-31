@@ -17,6 +17,7 @@ EmptyFileNameException: 文件名不可为空
 EmptyDisplayNameException: 显示名不可空
 InvalidFileNameException: 文件名不可用
 FileNameAlreadyExistsException: 同名文件已存在
+EmptyFolderNameException: 路径存在空名文件夹
 UnknownModException: 不存在的模组
 SaveSucceed: 保存成功!!
 RepeatedNameHint: 但是建议避免显示名的重复

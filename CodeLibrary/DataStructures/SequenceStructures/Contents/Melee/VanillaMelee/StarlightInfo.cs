@@ -62,7 +62,7 @@ public class StarlightInfo : VanillaMelee
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.actionOffsetSize * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
+        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.Size * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
     }
 
     //public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

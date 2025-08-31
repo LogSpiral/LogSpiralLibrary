@@ -84,21 +84,27 @@ public partial class SequenceEditUI
                 msg = GetText("EmptyFileNameException");
                 return false;
             }
-            else if (data.FileName.Any(InvalidPathChars.Contains))
-            {
-                msg = GetText("InvalidFileNameException");
-                return false;
-            }
-            else if (SequenceGlobalManager.SequenceLookup.ContainsKey(data.GetSequenceKeyName(CurrentCategory.ElementName))) 
-            {
-                msg = GetText("InvalidFileNameException");
-                return false;
-            }
             else if (string.IsNullOrEmpty(data.DisplayName))
             {
                 msg = GetText("EmptyDisplayNameException");
                 return false;
             }
+            else if (SequenceGlobalManager.SequenceLookup.ContainsKey(data.GetSequenceKeyName(CurrentCategory.ElementName)))
+            {
+                msg = GetText("FileNameAlreadyExistsException");
+                return false;
+            }
+            else if (data.FileName.Any(InvalidPathChars.Contains))
+            {
+                msg = GetText("InvalidFileNameException");
+                return false;
+            }
+            else if (data.FileName.Split('/').Any(sub => sub.Length == 0))
+            {
+                msg = GetText("EmptyFolderNameException");
+                return false;
+            }
+
             msg = GetText("SaveSucceed");
             return true;
         }

@@ -86,7 +86,7 @@ public class StabInfo : LSLMelee
             UltraStab u;
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
-                float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
+                float size = verS.scaler * ModifyData.Size * offsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
                 u.negativeDir = Flip;
@@ -112,7 +112,7 @@ public class StabInfo : LSLMelee
             }
             else
             {
-                float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f;
+                float size = verS.scaler * ModifyData.Size * offsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = verS.heatMap;
                 u.negativeDir = Flip;
@@ -165,7 +165,7 @@ public class StabInfo : LSLMelee
             int dmg = CurrentDamage;
             if (StandardInfo.standardShotCooldown > 0)
             {
-                float delta = StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax;
+                float delta = StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax;
                 seqPlr.cachedTime += delta + 1;
                 int count = (int)(seqPlr.cachedTime / StandardInfo.standardShotCooldown);
                 seqPlr.cachedTime -= count * StandardInfo.standardShotCooldown;

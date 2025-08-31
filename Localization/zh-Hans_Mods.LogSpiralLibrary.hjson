@@ -61,44 +61,6 @@ Items: {
 	}
 }
 
-MeleeAction: {
-	Category: {
-		LsLibrary: 标准近战
-		Vanilla: 原版低仿
-		Extended: 拓展近战
-	}
-
-	StabInfo.DisplayName: 突刺
-	SwooshInfo.DisplayName: 挥砍
-	RapidlyStabInfo.DisplayName: 高频突刺
-	ConvoluteInfo.DisplayName: 回旋
-	ChargingInfo.DisplayName: 蓄力
-	ArkhalisInfo.DisplayName: 真空剑
-	BoardSwordInfo.DisplayName: 宽剑
-	BoomerangInfo.DisplayName: 回旋镖
-	EruptionInfo.DisplayName: 爆发
-	FistInfo.DisplayName: 拳击
-	FlailInfo.DisplayName: 链球
-	HammerInfo.DisplayName: 飞锤
-	KnivesInfo.DisplayName: 飞刀
-	LanceInfo.DisplayName: 骑枪
-	RotatingInfo.DisplayName: 旋转
-	ShockingDashInfo.DisplayName: 猛冲
-	ShortSwordInfo.DisplayName: 短剑
-	SpearInfo.DisplayName: 长枪
-	StarlightInfo.DisplayName: 星光
-	TerraprismaInfo.DisplayName: 泰拉棱镜
-	YoyoInfo.DisplayName: 悠悠
-	ZenithInfo.DisplayName: 天顶
-	TestBladeSwooshInfo.DisplayName: 测试挥砍
-	TestBladeGrayStabInfo.DisplayName: 测试突刺
-	TestBladeConvoluteInfo.DisplayName: 测试回旋
-	CutInfo.DisplayName: 横斩
-	ExtendedMelee.DisplayName: ExtendedMelee
-	PunctureInfo.DisplayName: 下砸穿刺
-	StormInfo.DisplayName: 风暴回旋
-}
-
 Configs: {
 	StringInputHint: 点击以输入
 
@@ -231,233 +193,16 @@ Configs: {
 		}
 	}
 
-	RapidlyStabInfo: {
-		rangeOffsetMax: {
-			Label: 执行次数偏移上界
-			Tooltip: _
-		}
-
-		rangeOffsetMin: {
-			Label: 执行次数偏移下界
-			Tooltip: _
-		}
-
-		givenCycle: {
-			Label: 执行次数基值
-			Tooltip: _
-		}
-	}
-
-	ChargingInfo: {
-		AutoNext: {
-			Label: 自动切换到下一个
-			Tooltip: _
-		}
-
-		ChargingRotation: {
-			Label: 蓄力角度偏移
-			Tooltip: _
-		}
-
-		StartRotation: {
-			Label: 起始角度偏移
-			Tooltip: _
-		}
-	}
-
-	SwooshInfo: {
-		minKValue: {
-			Label: 最小扁平程度
-			Tooltip: _
-		}
-
-		KValueRange: {
-			Label: 扁平范围
-			Tooltip: _
-		}
-
-		mode: {
-			Label: 模式
-			Tooltip: _
-		}
-
-		randAngleRange.Label: 角度偏移范围
-	}
-
-	StabInfo: {
-		minKValue: {
-			Label: 最小扁平程度
-			Tooltip: _
-		}
-
-		KValueRange: {
-			Label: 扁平范围
-			Tooltip: _
-		}
-
-		visualCentered: {
-			Label: 中心突刺
-			Tooltip: _
-		}
-
-		randAngleRange.Label: 角度偏移范围
-	}
-
 	SwooshMode: {
 		Chop.Label: 重斩
 		Slash.Label: 横批
 		Storm.Label: 风暴
 	}
 
-	MeleeAction: {
-		ModifyData: {
-			Label: 调整数据
-			Tooltip: _
-		}
-
-		CounterMax: {
-			Label: 执行次数
-			Tooltip: _
-		}
-
-		OnEndAttackDelegate: {
-			Label: 结束攻击
-			Tooltip: _
-		}
-
-		OnStartAttackDelegate: {
-			Label: 开始攻击
-			Tooltip: _
-		}
-
-		OnAttackDelegate: {
-			Label: 攻击期间
-			Tooltip: _
-		}
-
-		OnChargeDelegate: {
-			Label: 前后摇间
-			Tooltip: _
-		}
-
-		OnActiveDelegate: {
-			Label: 切换上时
-			Tooltip: _
-		}
-
-		OnDeactiveDelegate: {
-			Label: 切换下时
-			Tooltip: _
-		}
-
-		OnEndSingleDelegate: {
-			Label: 单次结束
-			Tooltip: _
-		}
-
-		OnStartSingleDelegate: {
-			Label: 单次开始
-			Tooltip: _
-		}
-
-		OnHitTargetDelegate: {
-			Label: 命中目标时
-			Tooltip: _
-		}
-	}
-
 	WraperBase: {
 		conditionDefinition: {
 			Label: 执行条件
 			Tooltip: _
-		}
-	}
-
-	ActionModifyData: {
-		sizeScaler: {
-			Label: 大小系数
-			Tooltip: 基于原来的进行缩放
-		}
-
-		timeScaler: {
-			Label: 时长系数
-			Tooltip: 基于原来的进行缩放
-		}
-
-		knockBack: {
-			Label: 击退系数
-			Tooltip: 基于原来的进行缩放
-		}
-
-		damage: {
-			Label: 伤害系数
-			Tooltip: 基于原来的进行缩放
-		}
-
-		critAdd: {
-			Label: 暴击率增加值
-			Tooltip: 加在面板值上
-		}
-
-		critMul: {
-			Label: 暴击率系数
-			Tooltip: 加完增加值再乘上这个
-		}
-	}
-
-	SequenceBasicInfo: {
-		AuthorName: {
-			Label: 作者
-			Tooltip: 制作这个序列的人
-		}
-
-		Description: {
-			Label: 描述
-			Tooltip: 介绍一下你的作品吧
-		}
-
-		FileName: {
-			Label: 文件名
-			Tooltip:
-				'''
-				实际存储路径用到的名字
-				最好不要有特殊字符
-				'''
-		}
-
-		DisplayName: {
-			Label: 显示名
-			Tooltip: 显示在UI界面中的名字
-		}
-
-		ModName: {
-			Label: 所属模组
-			Tooltip: 下次我会把填空题改成选择题的
-		}
-
-		ModDefinition: {
-			Label: 所属模组
-			Tooltip: 下次我会要求必须依赖于LSL的(
-		}
-
-		createDate: {
-			Label: 创建日期
-			Tooltip: 序列诞生之日！
-		}
-
-		lastModifyDate: {
-			Label: 修改日期
-			Tooltip: 序列上次被修改的日期
-		}
-
-		passWord: {
-			Label: 密码
-			Tooltip: 密码就是密码
-		}
-
-		Finished: {
-			Label: 是否标记为成品
-			Tooltip: 没有本质区别，仅供方便分类
 		}
 	}
 
@@ -533,9 +278,8 @@ Configs: {
 }
 
 Keybinds: {
-	ShowSequenceModifier.DisplayName: 打开序列编辑器
 	ShowScreenProjector.DisplayName: 显示屏幕变换顶点(可拖动，只是为了好玩)
-	// OpenSequenceEditor.DisplayName: Open Sequence Editor
+	OpenSequenceEditor.DisplayName: 打开序列编辑器
 }
 
 Condition: {

@@ -43,7 +43,7 @@ public class CutInfo : LSLMelee
             swoosh = subSwoosh = null;
             var range = (.625f, -.75f);
             bool f = false;
-            float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
+            float size = verS.scaler * ModifyData.Size * offsetSize;
             var pair = StandardInfo.VertexStandard.swooshTexIndex;
             UltraSwoosh u;
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
@@ -153,7 +153,7 @@ public class CutInfo : LSLMelee
             int dmg = CurrentDamage;
             if (StandardInfo.standardShotCooldown > 0)
             {
-                float delta = StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax;
+                float delta = StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax;
                 bool canShoot = plr.HeldItem.shoot > ProjectileID.None;
 
                 float m = Math.Max(StandardInfo.standardShotCooldown, delta);

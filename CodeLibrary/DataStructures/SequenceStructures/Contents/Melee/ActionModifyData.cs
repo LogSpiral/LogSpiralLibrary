@@ -1,40 +1,46 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
-using PropertyPanelLibrary.PropertyPanelComponents.BuiltInElements.Object;
-using PropertyPanelLibrary.PropertyPanelComponents.Core;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using Terraria.Localization;
+using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
-public struct ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1) : IXmlSerializable
+
+public struct ActionModifyData(float size = 1, float timeScaler = 1, float knockBack = 1, float damage = 1, int critAdder = 0, float critMultiplyer = 1) : IXmlSerializable, IMemberLocalized
 {
-    public float actionOffsetSize = size;
-    public float actionOffsetTimeScaler = timeScaler;
-    public float actionOffsetKnockBack = knockBack;
-    public float actionOffsetDamage = damage;
-    public int actionOffsetCritAdder = critAdder;
-    public float actionOffsetCritMultiplyer = critMultiplyer;
+    public float Size { get; set; } = size;
+    public float TimeScaler { get; set; } = timeScaler;
+    public float KnockBack { get; set; } = knockBack;
+    public float Damage { get; set; } = damage;
+    public int CritAdder { get; set; } = critAdder;
+    public float CritMultiplyer { get; set; } = critMultiplyer;
+
+    readonly string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.MeleeAction.ActionModifyData";
+    private static string[] Suffixes { get; } = ["Label", "Tooltip"];
+    readonly IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
 
     /// <summary>
     /// 将除了速度以外的值赋给目标
     /// </summary>
     /// <param name="target"></param>
-    public void SetActionValue(ref ActionModifyData target)
+    public readonly void SetActionValue(ref ActionModifyData target)
     {
-        float speed = target.actionOffsetTimeScaler;
-        target = this with { actionOffsetTimeScaler = speed };
+        float speed = target.TimeScaler;
+        target = this with { TimeScaler = speed };
     }
 
-    public void SetActionSpeed(ref ActionModifyData target) => target.actionOffsetTimeScaler = actionOffsetTimeScaler;
+    public readonly void SetActionSpeed(ref ActionModifyData target) => target.TimeScaler = TimeScaler;
 
-    public override string ToString()
+    public override readonly string ToString()
     {
         //return (actionOffsetSize, actionOffsetTimeScaler, actionOffsetKnockBack, actionOffsetDamage, actionOffsetCritAdder, actionOffsetCritMultiplyer).ToString();
         var cultureInfo = GameCulture.KnownCultures.First().CultureInfo;
-        var result = $"({actionOffsetSize.ToString("0.00", cultureInfo)}|{actionOffsetTimeScaler.ToString("0.00", cultureInfo)}|{actionOffsetKnockBack.ToString("0.00", cultureInfo)}|{actionOffsetDamage.ToString("0.00", cultureInfo)}|{actionOffsetCritAdder.ToString(cultureInfo)}|{actionOffsetCritMultiplyer.ToString("0.00", cultureInfo)})";
+        var result = $"({Size.ToString("0.00", cultureInfo)}|{TimeScaler.ToString("0.00", cultureInfo)}|{KnockBack.ToString("0.00", cultureInfo)}|{Damage.ToString("0.00", cultureInfo)}|{CritAdder.ToString(cultureInfo)}|{CritMultiplyer.ToString("0.00", cultureInfo)})";
         return result;
     }
 
@@ -53,28 +59,28 @@ public struct ActionModifyData(float size = 1, float timeScaler = 1, float knock
     {
         reader.ReadStartElement();
         XmlElementReader elementReader = new(reader);
-        actionOffsetSize = float.TryParse(elementReader["Size"]?.Value ?? "1.0", out var size) ? size : 1;
-        actionOffsetTimeScaler = float.TryParse(elementReader["TimeScaler"]?.Value ?? "1.0", out var timeScaler) ? timeScaler : 1;
-        actionOffsetKnockBack = float.TryParse(elementReader["KnockBack"]?.Value ?? "1.0", out var knockBack) ? knockBack : 1;
-        actionOffsetDamage = float.TryParse(elementReader["Damage"]?.Value ?? "1.0", out var damage) ? damage : 1;
-        actionOffsetCritAdder = int.TryParse(elementReader["CritAdder"]?.Value ?? "0", out var critAdder) ? critAdder : 0;
-        actionOffsetCritMultiplyer = float.TryParse(elementReader["CritMultiplier"]?.Value ?? "1.0", out var critMultiplier) ? critMultiplier : 1;
+        Size = float.TryParse(elementReader["Size"]?.Value ?? "1.0", out var size) ? size : 1;
+        TimeScaler = float.TryParse(elementReader["TimeScaler"]?.Value ?? "1.0", out var timeScaler) ? timeScaler : 1;
+        KnockBack = float.TryParse(elementReader["KnockBack"]?.Value ?? "1.0", out var knockBack) ? knockBack : 1;
+        Damage = float.TryParse(elementReader["Damage"]?.Value ?? "1.0", out var damage) ? damage : 1;
+        CritAdder = int.TryParse(elementReader["CritAdder"]?.Value ?? "0", out var critAdder) ? critAdder : 0;
+        CritMultiplyer = float.TryParse(elementReader["CritMultiplier"]?.Value ?? "1.0", out var critMultiplier) ? critMultiplier : 1;
         reader.ReadEndElement();
     }
 
     readonly void IXmlSerializable.WriteXml(XmlWriter writer)
     {
-        if (actionOffsetSize != 1)
-            writer.WriteElementString("Size", actionOffsetSize.ToString("0.0"));
-        if (actionOffsetTimeScaler != 1)
-            writer.WriteElementString("TimeScaler", actionOffsetTimeScaler.ToString("0.0"));
-        if (actionOffsetKnockBack != 1)
-            writer.WriteElementString("KnockBack", actionOffsetKnockBack.ToString("0.0"));
-        if (actionOffsetDamage != 1)
-            writer.WriteElementString("Damage", actionOffsetDamage.ToString("0.0"));
-        if (actionOffsetCritAdder != 1)
-            writer.WriteElementString("CritAdder", actionOffsetCritAdder.ToString());
-        if (actionOffsetCritMultiplyer != 1)
-            writer.WriteElementString("CritMultiplier", actionOffsetCritMultiplyer.ToString("0.0"));
+        if (Size != 1)
+            writer.WriteElementString("Size", Size.ToString("0.0"));
+        if (TimeScaler != 1)
+            writer.WriteElementString("TimeScaler", TimeScaler.ToString("0.0"));
+        if (KnockBack != 1)
+            writer.WriteElementString("KnockBack", KnockBack.ToString("0.0"));
+        if (Damage != 1)
+            writer.WriteElementString("Damage", Damage.ToString("0.0"));
+        if (CritAdder != 1)
+            writer.WriteElementString("CritAdder", CritAdder.ToString());
+        if (CritMultiplyer != 1)
+            writer.WriteElementString("CritMultiplier", CritMultiplyer.ToString("0.0"));
     }
 }

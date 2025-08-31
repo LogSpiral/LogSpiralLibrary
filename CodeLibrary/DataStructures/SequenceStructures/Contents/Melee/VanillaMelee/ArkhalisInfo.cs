@@ -33,7 +33,7 @@ public class ArkhalisInfo : VanillaMelee
         {
             var range = (1.625f * Main.rand.NextFloat(.5f, 1.25f), -.75f);
             bool f = Flip;
-            float size = verS.scaler * ModifyData.actionOffsetSize * offsetSize;
+            float size = verS.scaler * ModifyData.Size * offsetSize;
             var pair = StandardInfo.VertexStandard.swooshTexIndex;
             float randK = KValue * Main.rand.NextFloat(1f, 1.75f);
             float randR = Rotation + Main.rand.NextFloat(-MathHelper.Pi / 6, MathHelper.Pi / 6) * Main.rand.NextFloat(0, 1);

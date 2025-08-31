@@ -45,44 +45,6 @@ Items: {
 	}
 }
 
-MeleeAction: {
-	Category: {
-		LsLibrary: Standard
-		Vanilla: Vanilla-Like
-		Extended: Extended
-	}
-
-	StabInfo.DisplayName: Stab
-	SwooshInfo.DisplayName: Swoosh
-	RapidlyStabInfo.DisplayName: RapidlyStab
-	ConvoluteInfo.DisplayName: Convolute
-	ChargingInfo.DisplayName: Charging
-	ArkhalisInfo.DisplayName: Arkhalis
-	BoardSwordInfo.DisplayName: BoardSword
-	BoomerangInfo.DisplayName: Boomerang
-	EruptionInfo.DisplayName: Eruption
-	FistInfo.DisplayName: Fist
-	FlailInfo.DisplayName: Flail
-	HammerInfo.DisplayName: Hammer
-	KnivesInfo.DisplayName: Knives
-	LanceInfo.DisplayName: Lance
-	RotatingInfo.DisplayName: Rotating
-	ShockingDashInfo.DisplayName: ShockingDash
-	ShortSwordInfo.DisplayName: ShortSword
-	SpearInfo.DisplayName: Spear
-	StarlightInfo.DisplayName: Starlight
-	TerraprismaInfo.DisplayName: Terraprisma
-	YoyoInfo.DisplayName: Yoyo
-	ZenithInfo.DisplayName: Zenith
-	TestBladeSwooshInfo.DisplayName: TestSwoosh
-	TestBladeGrayStabInfo.DisplayName: TestStab
-	TestBladeConvoluteInfo.DisplayName: TestConvolute
-	CutInfo.DisplayName: Cut
-	ExtendedMelee.DisplayName: ExtendedMelee
-	PunctureInfo.DisplayName: PunctureInfo
-	StormInfo.DisplayName: StormInfo
-}
-
 Configs: {
 	StringInputHint: Type Here
 
@@ -215,229 +177,16 @@ Configs: {
 		}
 	}
 
-	RapidlyStabInfo: {
-		rangeOffsetMax: {
-			Label: Executions count upper offset bound
-			Tooltip: _
-		}
-
-		rangeOffsetMin: {
-			Label: Executions count lower offset bound
-			Tooltip: _
-		}
-
-		givenCycle: {
-			Label: Executions count basic value
-			Tooltip: _
-		}
-	}
-
-	ChargingInfo: {
-		AutoNext: {
-			Label: Auto switch to Next
-			Tooltip: _
-		}
-
-		ChargingRotation: {
-			Label: End Rotation
-			Tooltip: _
-		}
-
-		StartRotation: {
-			Label: Start Rotation
-			Tooltip: _
-		}
-	}
-
-	SwooshInfo: {
-		minKValue: {
-			Label: min Flat visual
-			Tooltip: _
-		}
-
-		KValueRange: {
-			Label: Flat Range
-			Tooltip: _
-		}
-
-		mode: {
-			Label: mode
-			Tooltip: _
-		}
-
-		randAngleRange.Label: randAngleRange
-	}
-
-	StabInfo: {
-		minKValue: {
-			Label: min Flat visual
-			Tooltip: _
-		}
-
-		KValueRange: {
-			Label: Flat Range
-			Tooltip: _
-		}
-
-		visualCentered: {
-			Label: stab centered
-			Tooltip: _
-		}
-
-		randAngleRange.Label: randAngleRange
-	}
-
 	SwooshMode: {
 		Chop.Label: Chop
 		Slash.Label: Slash
 		Storm.Label: Storm
 	}
 
-	MeleeAction: {
-		ModifyData: {
-			Label: Modify Data
-			Tooltip: _
-		}
-
-		CounterMax: {
-			Label: Executions count
-			Tooltip: _
-		}
-
-		OnEndAttackDelegate: {
-			Label: On End Attack
-			Tooltip: _
-		}
-
-		OnStartAttackDelegate: {
-			Label: On Start Attack
-			Tooltip: _
-		}
-
-		OnAttackDelegate: {
-			Label: On Attack
-			Tooltip: _
-		}
-
-		OnChargeDelegate: {
-			Label: On Charge
-			Tooltip: _
-		}
-
-		OnActiveDelegate: {
-			Label: On Active
-			Tooltip: _
-		}
-
-		OnDeactiveDelegate: {
-			Label: On Deactive
-			Tooltip: _
-		}
-
-		OnEndSingleDelegate: {
-			Label: On End Single
-			Tooltip: _
-		}
-
-		OnStartSingleDelegate: {
-			Label: On Start Single
-			Tooltip: _
-		}
-
-		OnHitTargetDelegate: {
-			Label: On Hit Target
-			Tooltip: _
-		}
-	}
-
 	WraperBase: {
 		conditionDefinition: {
 			Label: Execution condition
 			Tooltip: _
-		}
-	}
-
-	ActionModifyData: {
-		sizeScaler: {
-			Label: Size Scaler
-			Tooltip: 基于原来的进行缩放
-		}
-
-		timeScaler: {
-			Label: Time Scaler
-			Tooltip: 基于原来的进行缩放
-		}
-
-		knockBack: {
-			Label: Knockback Scaler
-			Tooltip: 基于原来的进行缩放
-		}
-
-		damage: {
-			Label: Damage Scaler
-			Tooltip: 基于原来的进行缩放
-		}
-
-		critAdd: {
-			Label: Additional Crit
-			Tooltip: 加在面板值上
-		}
-
-		critMul: {
-			Label: Crit Scaler
-			Tooltip: 加完增加值再乘上这个
-		}
-	}
-
-	SequenceBasicInfo: {
-		AuthorName: {
-			Label: Author
-			Tooltip: The one who creates this Sequence
-		}
-
-		Description: {
-			Label: Description
-			Tooltip: Write sth. here to introduce your Sequence
-		}
-
-		FileName: {
-			Label: File Name
-			Tooltip: The Name in Directory\n you'd better make this without special characters
-		}
-
-		DisplayName: {
-			Label: Display Name
-			Tooltip: The Name shown in the UI Panel.
-		}
-
-		ModName: {
-			Label: Belonged Mod
-			Tooltip: __
-		}
-
-		ModDefinition: {
-			Label: Belonged Mod
-			Tooltip: 下次我会要求必须依赖于LSL的(
-		}
-
-		createDate: {
-			Label: Create Date
-			Tooltip: The Birthday of the Sequence!!(
-		}
-
-		lastModifyDate: {
-			Label: Modify Date
-			Tooltip: The Date the sequence last modified
-		}
-
-		passWord: {
-			Label: PassWord
-			Tooltip: The Password is 'Password'(JK
-		}
-
-		Finished: {
-			Label: Labeled as finished
-			Tooltip: __
 		}
 	}
 
@@ -513,7 +262,6 @@ Configs: {
 }
 
 Keybinds: {
-	ShowSequenceModifier.DisplayName: Show Sequence Modifier
 	ShowScreenProjector.DisplayName: Show Screen Transforming Vertex(Draggable, Just for fun)
 	OpenSequenceEditor.DisplayName: Open Sequence Editor
 }

@@ -1,6 +1,8 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using PropertyPanelLibrary.PropertyPanelComponents.Attributes;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
+using System.Collections.Generic;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
@@ -20,7 +22,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 // 其中重写函数按如下顺序排序
 // Update -> Active -> Single -> Charge -> Attack -> Collide -> Draw -> Net(目前无效)
 // Start -> End
-public abstract partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType, ILoadable
+public partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType, ILoadable, IMemberLocalized
 {
     #region 参数属性
 
@@ -133,12 +135,17 @@ public abstract partial class MeleeAction : ModType, ISequenceElement, ILocalize
     /// </summary>
     public StandardInfo StandardInfo { get; set; }
 
-    public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.actionOffsetDamage * offsetDamage) : Projectile.damage;
-    public string LocalizationCategory => nameof(MeleeAction);
+    public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.Damage * offsetDamage) : Projectile.damage;
+    public string LocalizationCategory => $"Sequence.{nameof(MeleeAction)}";
     public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
-    public abstract string Category { get; }
+    public virtual string Category { get; } = "";
 
     #endregion 辅助属性
 
     public override string ToString() => DisplayName.ToString();
+
+
+    string IMemberLocalized.LocalizationRootPath => Mod.GetLocalizationKey($"{LocalizationCategory}.{Name}");
+    private static string[] Suffixes { get; } = ["Label"];
+    IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
 }

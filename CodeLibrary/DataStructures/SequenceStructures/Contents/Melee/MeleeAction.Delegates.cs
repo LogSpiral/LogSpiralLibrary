@@ -8,14 +8,14 @@ public partial class MeleeAction
 {
     #region 辅助字段
 
-    public Action<MeleeAction> _OnActive;
-    public Action<MeleeAction> _OnAttack;
-    public Action<MeleeAction> _OnCharge;
-    public Action<MeleeAction> _OnDeactive;
-    public Action<MeleeAction> _OnEndAttack;
-    public Action<MeleeAction> _OnEndSingle;
-    public Action<MeleeAction> _OnStartAttack;
-    public Action<MeleeAction> _OnStartSingle;
+    public event Action<MeleeAction> OnActiveEvent;
+    public event Action<MeleeAction> OnAttackEvent;
+    public event Action<MeleeAction> OnChargeEvent;
+    public event Action<MeleeAction> OnDeactiveEvent;
+    public event Action<MeleeAction> OnEndAttackEvent;
+    public event Action<MeleeAction> _OnEndSingle;
+    public event Action<MeleeAction> _OnStartAttack;
+    public event Action<MeleeAction> _OnStartSingle;
     //上面这些也许大概已经过时了？
     //毕竟现在都是直接操作xml文件了
     //当然要是愿意直接用代码搭建序列剑，也是可以用这些的

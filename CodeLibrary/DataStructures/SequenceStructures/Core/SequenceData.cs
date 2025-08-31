@@ -3,14 +3,14 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helper
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using PropertyPanelLibrary.EntityDefinition;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using Terraria.ModLoader;
-using static Terraria.Localization.NetworkText;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
-public class SequenceData : ILoadable
+public class SequenceData : IMemberLocalized
 {
     public string FileName { get; set; } = "";
     public string DisplayName { get; set; } = "";
@@ -79,18 +79,20 @@ public class SequenceData : ILoadable
     {
     }
     private Mod Mod { get; set; }
+
+    string IMemberLocalized.LocalizationRootPath => $"Mods.{nameof(LogSpiralLibrary)}.Sequence.SequenceData";
+
+    private static string[] Suffixes { get; } = ["Label", "Tooltip"];
+    IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
+
     void ILoadable.Load(Mod mod)
     {
+        IMemberLocalized.AutoRegister(this);
         Mod = mod;
         var type = GetType();
         //var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
         SequenceGlobalManager.DataTypeLookup.Add(GetFullName(mod), type);
     }
-
-    void ILoadable.Unload()
-    {
-    }
-
     protected virtual void HandleClone(SequenceData target)
     {
 

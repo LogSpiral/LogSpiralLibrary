@@ -133,7 +133,7 @@ public class TerraprismaInfo : VanillaMelee
             var f = i / 44f;
             var realColor = StandardInfo.standardColor;
             realColor.A = (byte)(f.HillFactor2(1) * 255);//96
-            vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * offsetSize * ModifyData.actionOffsetSize + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
+            vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * offsetSize * ModifyData.Size + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
             vertex[2 * i + 1] = new CustomVertexInfo(oldCenters[i] + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(0, 0, 1));
         }
 
@@ -233,7 +233,7 @@ public class TerraprismaInfo : VanillaMelee
             float sc = 1;
             if (Owner is Player plr)
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
-            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, oldRotations[n], Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, oldCenters[n], !Flip, (n == 0 ? 1 : (45f - n) / 90f) * k, StandardInfo.frame);
+            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, oldRotations[n], Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, oldCenters[n], !Flip, (n == 0 ? 1 : (45f - n) / 90f) * k, StandardInfo.frame);
             result = result.Concat(currentVertex);
         }
         return [.. result];

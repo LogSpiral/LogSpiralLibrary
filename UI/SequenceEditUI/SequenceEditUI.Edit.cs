@@ -75,7 +75,7 @@ public partial class SequenceEditUI
             mask.Padding = new(0);
             factory.Join(mask);
             string categoryTitleName = dummy.Category;
-            string key = $"Mods.{dummy.Mod.Name}.{CurrentCategory.ElementName}.Category.{dummy.Category}";
+            string key = $"Mods.{dummy.Mod.Name}.Sequence.{CurrentCategory.ElementName}.Category.{dummy.Category}";
             if (Language.Exists(key))
                 categoryTitleName = Language.GetTextValue(key);
             List<KeyValuePair<string, string>> path;

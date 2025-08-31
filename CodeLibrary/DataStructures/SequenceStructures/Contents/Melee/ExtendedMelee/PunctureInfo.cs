@@ -35,7 +35,7 @@ public class PunctureInfo : ExtendedMelee
         if (verS.active)
         {
             var pair = StandardInfo.VertexStandard.stabTexIndex;
-            var scaler = verS.scaler * ModifyData.actionOffsetSize * offsetSize * 1.25f * 4f / fallFac;
+            var scaler = verS.scaler * ModifyData.Size * offsetSize * 1.25f * 4f / fallFac;
             var center = Owner.Center - Vector2.UnitY * StandardInfo.VertexStandard.scaler / fallFac * 2f;
             UltraStab u = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, scaler, center);
             u.heatMap = verS.heatMap;

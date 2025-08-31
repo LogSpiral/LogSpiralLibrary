@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using System.Linq;
 using System.Reflection;
 using Terraria.Localization;
@@ -34,7 +35,7 @@ public partial class MeleeAction
                     OnActive();
                 else OnEndSingle();
                 OnStartSingle();
-                var result = (int)(StandardInfo.standardTimer * ModifyData.actionOffsetTimeScaler / CounterMax);
+                var result = (int)(StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax);
                 TimerMax = Timer = result;
                 Counter++;
                 if (Attacktive)
@@ -89,7 +90,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnActiveDelegate.Key].Invoke(this);
         }
-        _OnActive?.Invoke(this);
+        OnActiveEvent?.Invoke(this);
         Projectile.ownerHitCheck = OwnerHitCheek;
     }
 
@@ -99,7 +100,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnDeactiveDelegate.Key].Invoke(this);
         }
-        _OnDeactive?.Invoke(this);
+        OnDeactiveEvent?.Invoke(this);
     }
 
     public virtual void OnStartSingle()
@@ -137,7 +138,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnChargeDelegate.Key].Invoke(this);
         }
-        _OnCharge?.Invoke(this);
+        OnChargeEvent?.Invoke(this);
     }
 
     public virtual void OnStartAttack()
@@ -155,7 +156,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnAttackDelegate.Key].Invoke(this);
         }
-        _OnAttack?.Invoke(this);
+        OnAttackEvent?.Invoke(this);
     }
 
     public virtual void OnEndAttack()
@@ -164,7 +165,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnEndAttackDelegate.Key].Invoke(this);
         }
-        _OnEndAttack?.Invoke(this);
+        OnEndAttackEvent?.Invoke(this);
     }
 
     public virtual bool Collide(Rectangle rectangle)
@@ -189,7 +190,7 @@ public partial class MeleeAction
             {
                 k = StandardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
             }
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.actionOffsetSize * sc * k, drawCen, !Flip);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.Size * sc * k, drawCen, !Flip);
 
             float point = 0f;
             //Vector2 tar = c[4].Position - drawCen;
@@ -238,7 +239,7 @@ public partial class MeleeAction
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
             drawCen += plr.gfxOffY * Vector2.UnitY;
         }
-        return DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.actionOffsetSize * sc, drawCen, Flip, alpha, StandardInfo.frame);
+        return DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, drawCen, Flip, alpha, StandardInfo.frame);
     }
 
     public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
@@ -317,23 +318,39 @@ public partial class MeleeAction
 
     public override sealed void Register()
     {
+        IMemberLocalized.InitializeCachedData(this);
         ModTypeLookup<MeleeAction>.Register(this);
         Language.GetOrRegister(this.GetLocalizationKey("DisplayName"), () => GetType().Name);
         var type = GetType();
-        SequenceGlobalManager.ElementTypeLookup[FullName] = type;
-        SequenceManager<MeleeAction>.Instance.ElementTypeLookup[FullName] = type;
+        if (Name != nameof(MeleeAction)) 
+        {
+            // MeleeAction自身原本作为抽象类使用，不参与元素库
+            SequenceGlobalManager.ElementTypeLookup[FullName] = type;
+            SequenceManager<MeleeAction>.Instance.ElementTypeLookup[FullName] = type;
+        }
+
         foreach (var fld in type.GetFields())
         {
-            if (type != fld.DeclaringType || fld.GetCustomAttribute<ElementCustomDataAttribute>() == null || fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
+            if (type != fld.DeclaringType
+                || fld.GetCustomAttribute<ElementCustomDataAttribute>() == null 
+                || fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
                 continue;
-            Language.GetOrRegister(this.GetLocalizationKey(fld.Name + ".Label").Replace(nameof(MeleeAction), "Configs"), () => fld.Name);
+
+            // 自动注册字段键
+            Language.GetOrRegister(this.GetLocalizationKey(fld.Name + ".Label"), () => fld.Name);
         }
         foreach (var property in type.GetProperties())
         {
-            if (type != property.DeclaringType || property.GetCustomAttribute<ElementCustomDataAttribute>() == null || property.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
+            if (type != property.DeclaringType
+                || property.GetCustomAttribute<ElementCustomDataAttribute>() == null 
+                || property.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
                 continue;
-            Language.GetOrRegister(this.GetLocalizationKey(property.Name + ".Label").Replace(nameof(MeleeAction), "Configs"), () => property.Name);
+
+            // 自动注册属性键
+            Language.GetOrRegister(this.GetLocalizationKey(property.Name + ".Label"), () => property.Name);
         }
+
+        // 自动注册分类键
         var categoryKey = $"Mods.{Mod.Name}.{LocalizationCategory}.Category.{Category}";
         //if (!Language.Exists(categoryKey))
 

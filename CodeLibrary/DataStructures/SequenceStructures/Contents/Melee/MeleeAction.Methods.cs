@@ -1,71 +1,55 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
-using System.Linq;
-using System.Reflection;
-using Terraria.Localization;
+using System.Diagnostics;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 public partial class MeleeAction
 {
-    public MeleeAction()
+    public sealed override void Update()
     {
-        var type = GetType();
-        var dummy = ModTypeLookup<MeleeAction>.dict.Values.FirstOrDefault(element => element.GetType() == type);
-        if (dummy != null)
-            Mod = dummy.Mod;
-        //else if (SequenceManager<MeleeAction>._loaded)
-        //    LogSpiralLibraryMod.Instance.Logger.Error($"Instance of the element:{type.FullName} not found.");
-    }
-
-    public void Update()
-    {
-        if (Timer <= 0)//计时器小于等于0时
+        // 开始单次循环
+        if (Timer <= 0 && (Counter < CounterMax || CounterMax == 0))
         {
-            if (Counter < CounterMax || CounterMax == 0)//如果没执行完所有次数
-            {
-                // Owner = entity;
-                // Projectile = projectile; // 外部赋值
-                // standardInfo = standardInfo; // 外部赋值
-                if (Counter == 0)//标志着刚切换上
-                    OnActive();
-                else OnEndSingle();
-                OnStartSingle();
-                var result = (int)(StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax);
-                TimerMax = Timer = result;
-                Counter++;
-                if (Attacktive)
-                    OnStartAttack();
-            }
-            //迁移至下方
-            else
-            {
-                OnEndSingle();
-                OnDeactive();
-                OnEndAttack();
-            }
+            if (Counter == 0)
+                OnActive();
+            OnStartSingle();
+            var result = (int)(StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax);
+            TimerMax = Timer = result;
+            Counter++;
+            if (Attacktive)
+                OnStartAttack();
         }
 
-        //bool oldValue = Attacktive;
-        //Attacktive = Attacktive;
-        //if (!oldValue && Attacktive)
-        //{
-        //    OnStartAttack();//TODO Attack相关钩子合理化挂载位置
-        //}
-        //if (oldValue && !Attacktive)
-        //{
-        //    OnEndAttack();
-        //}
+        bool oldValue = Attacktive;
+
+        UpdateStatus(Owner is Player plr && (plr.controlUseItem || plr.controlUseTile));
         if (Attacktive) OnAttack();
         else OnCharge();
-        Update(false);
+
+        if (!oldValue && Attacktive)
+        {
+            OnStartAttack();
+        }
+        if (oldValue && !Attacktive)
+        {
+            OnEndAttack();
+        }
+
+        // 结束单次循环
+        if (Timer <= 0) 
+        {
+            OnEndSingle();
+            if (Attacktive)
+                OnEndAttack();
+
+            if (IsCompleted)
+                OnDeactive();
+        }
     }
 
-    public virtual void Update(bool triggered)
+    public virtual void UpdateStatus(bool triggered)
     {
         Timer--;
         switch (Owner)
@@ -79,7 +63,7 @@ public partial class MeleeAction
         }
     }
 
-    public virtual void Initialize()
+    public override void Initialize()
     {
         Counter = 0;
     }
@@ -313,50 +297,4 @@ public partial class MeleeAction
 
         #endregion 显示弹幕碰撞区域
     }
-
-    // TODO: 修改默认判定逻辑，现在这样还是太暴力了
-
-    public override sealed void Register()
-    {
-        IMemberLocalized.InitializeCachedData(this);
-        ModTypeLookup<MeleeAction>.Register(this);
-        Language.GetOrRegister(this.GetLocalizationKey("DisplayName"), () => GetType().Name);
-        var type = GetType();
-        if (Name != nameof(MeleeAction)) 
-        {
-            // MeleeAction自身原本作为抽象类使用，不参与元素库
-            SequenceGlobalManager.ElementTypeLookup[FullName] = type;
-            SequenceManager<MeleeAction>.Instance.ElementTypeLookup[FullName] = type;
-        }
-
-        foreach (var fld in type.GetFields())
-        {
-            if (type != fld.DeclaringType
-                || fld.GetCustomAttribute<ElementCustomDataAttribute>() == null 
-                || fld.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
-                continue;
-
-            // 自动注册字段键
-            Language.GetOrRegister(this.GetLocalizationKey(fld.Name + ".Label"), () => fld.Name);
-        }
-        foreach (var property in type.GetProperties())
-        {
-            if (type != property.DeclaringType
-                || property.GetCustomAttribute<ElementCustomDataAttribute>() == null 
-                || property.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
-                continue;
-
-            // 自动注册属性键
-            Language.GetOrRegister(this.GetLocalizationKey(property.Name + ".Label"), () => property.Name);
-        }
-
-        // 自动注册分类键
-        var categoryKey = $"Mods.{Mod.Name}.{LocalizationCategory}.Category.{Category}";
-        //if (!Language.Exists(categoryKey))
-
-        if (!string.IsNullOrEmpty(Category))
-            Language.GetOrRegister(categoryKey, () => Category);
-    }
-
-    public virtual ISequenceElement CloneInstance() => MemberwiseClone() as ISequenceElement;
 }

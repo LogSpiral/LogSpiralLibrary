@@ -1,8 +1,9 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.MIDI.BasicNotes;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.MIDI.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UI.SequenceEditUI;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ public class SequenceSystem : ModSystem
     public static SequenceSystem Instance { get; private set; }
     public static Dictionary<string, Condition> Conditions { get; } = [];
     public static Condition AlwaysCondition { get; private set; }
-    public static HashSet<Type> AvailableElementBaseTypes { get; } = [];
     public static SequenceElementCategory MeleeActionCategoryInstance { get; private set; }
 
     public const string NoneDelegateKey = $"{nameof(LogSpiralLibrary)}/None";
@@ -33,6 +33,7 @@ public class SequenceSystem : ModSystem
         Conditions.Add(Name, result);
         return result;
     }
+    public static readonly Dictionary<string, SequenceElementCategory> CategoryLookup = [];
 
     public static LocalMod[] LocalMods { get; private set; }
     public static LocalMod ModToLocal(Mod mod)
@@ -63,7 +64,7 @@ public class SequenceSystem : ModSystem
             Directory.CreateDirectory(Path.Combine(Main.SavePath, "Mods", "LogSpiralLibrary"));
             Directory.Move(path, SequenceSavePath);
         }
-        #endregion
+        #endregion 旧版位置转移至新版
 
         Instance = this;
 
@@ -74,8 +75,8 @@ public class SequenceSystem : ModSystem
         AlwaysCondition = FastRegisterCondition("Always", () => true);
 
         // TODO 改为使用实体条件，兼容更多实体的判定
-        FastRegisterCondition("MouseLeft", () => Main.LocalPlayer.controlUseItem);
-        FastRegisterCondition("MouseRight", () => Main.LocalPlayer.controlUseTile);
+        FastRegisterCondition("MouseLeft", () => Main.LocalPlayer.controlUseItem && Main.LocalPlayer.altFunctionUse != 2);
+        FastRegisterCondition("MouseRight", () => Main.LocalPlayer.controlUseTile || Main.LocalPlayer.altFunctionUse == 2);
         FastRegisterCondition("ControlUp", () => Main.LocalPlayer.controlUp);
         FastRegisterCondition("ControlDown", () => Main.LocalPlayer.controlDown);
         FastRegisterCondition("SurroundThreat", () => Main.LocalPlayer.GetModPlayer<SurroundStatePlayer>().state == SurroundState.SurroundThreat);
@@ -95,9 +96,9 @@ public class SequenceSystem : ModSystem
 
     public override void PostSetupContent()
     {
-        // TODO 加入基本序列类型的专用注册
-        AvailableElementBaseTypes.Add(typeof(MeleeAction));
         MeleeActionCategoryInstance = SequenceElementCategory.RegisterCategory<MeleeAction>(Mod, TextureAssets.Item[ItemID.WarriorEmblem], new SwooshInfo());
+        SequenceElementCategory.RegisterCategory<NoteElement>(Mod, TextureAssets.Projectile[ProjectileID.QuarterNote], new GuitarNote(), Color.LightPink * .5f);
+
         SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(ConditionalSingleGroup), typeof(ConditionalMultiGroup));
         SequenceGlobalManager.SingleGroupToMultiGroup.Add(typeof(SingleWrapperGroup), typeof(ConditionalMultiGroup));
         SequenceGlobalManager.MultiGroupToSingleGroup.Add(typeof(ConditionalMultiGroup), typeof(ConditionalSingleGroup));
@@ -107,8 +108,8 @@ public class SequenceSystem : ModSystem
         SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(WeightArg), typeof(SingleWrapperGroup));
         SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(ConditionArg), typeof(ConditionalSingleGroup));
         SequenceGlobalManager.GroupArgToSingleGroup.Add(typeof(ConditionWeightArg), typeof(ConditionalSingleGroup));
-        foreach (var type in AvailableElementBaseTypes)
-            LoadSequenceWithType(type);
+        foreach (var category in CategoryLookup.Values)
+            LoadSequenceWithType(category.ElementType);
 
         base.PostSetupContent();
     }
@@ -121,7 +122,6 @@ public class SequenceSystem : ModSystem
 
     public override void Unload()
     {
-        AvailableElementBaseTypes?.Clear();
         Instance = null;
         base.Unload();
     }

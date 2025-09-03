@@ -7,7 +7,7 @@ using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 
-public class ConditionArg(ConditionDefinition definition) : IGroupArgument,IMemberLocalized
+public class ConditionArg(ConditionDefinition definition) : IGroupArgument, IMemberLocalized
 {
     public ConditionArg() : this(new ConditionDefinition(0))
     {
@@ -19,6 +19,7 @@ public class ConditionArg(ConditionDefinition definition) : IGroupArgument,IMemb
 
     [CustomEntityDefinitionHandler<ConditionDefinitionHandler>]
     public ConditionDefinition ConditionDefinition { get => field ??= new ConditionDefinition(0); set; } = definition;
+
     public bool IsHidden => ConditionDefinition.Type == 0;
 
     public void SetDefault() => ConditionDefinition = new(0);

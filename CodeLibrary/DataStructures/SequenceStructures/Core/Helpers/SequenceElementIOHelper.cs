@@ -2,7 +2,6 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using ReLogic.Content.Readers;
 using System.ComponentModel;
 using System.Reflection;
 using System.Xml;
@@ -25,11 +24,11 @@ public static class SequenceElementIOHelper
         {
             if (variableInfo.GetCustomAttribute<ElementCustomDataAttribute>() == null || variableInfo.GetCustomAttribute<ElementCustomDataAbabdonedAttribute>() != null)
                 continue;
-            
+
             object dummy = variableInfo.GetValue(element);
             if (variableInfo.GetCustomAttribute<DefaultValueAttribute>() is DefaultValueAttribute defaultValueAttribute && dummy.Equals(defaultValueAttribute.Value))
                 continue;
-            if (true) 
+            if (true)
             {
                 var defInstance = Activator.CreateInstance(element.GetType());
                 var defDummy = variableInfo.GetValue(defInstance);

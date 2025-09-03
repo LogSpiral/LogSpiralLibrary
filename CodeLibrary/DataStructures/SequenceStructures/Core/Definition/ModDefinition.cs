@@ -2,15 +2,12 @@
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using ReLogic.Content;
-using SilkyUIFramework.BasicComponents;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
-using Terraria.ModLoader.IO;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 
@@ -43,7 +40,7 @@ public class ModDefinition : EntityDefinition
         : ModLoader.GetMod(Name).DisplayName;
 }
 
-public class ModDefinitionOption : SUIDefinitionIconOption 
+public class ModDefinitionOption : SUIDefinitionIconOption
 {
     public override void OnSetDefinition(EntityDefinition current, EntityDefinition previous)
     {

@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.CommonElement;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
@@ -54,7 +55,7 @@ public partial class SequenceEditUI
             var type = pair.Value;
             var strs = name.Split("/");
             var modName = strs[0];
-            var dummy = ModContent.Find<MeleeAction>(name);
+            var dummy = SequenceGlobalManager.ElementInstances[type] as CommonElement;
             InsertablePanelFactory factory = new()
             {
                 PanelFactory = delegate
@@ -166,7 +167,7 @@ public partial class SequenceEditUI
             page.PendingModified = true;
             PendingSequences.TryAdd(_currentPageFullName, sequence);
             PendingPanels.TryAdd(_currentPageFullName, rootPanel);
-            if (value is SingleGroupDefinition or MultiGroupDefinition && CurrentEditTarget is { } panel) 
+            if (value is SingleGroupDefinition or MultiGroupDefinition && CurrentEditTarget is { } panel)
             {
                 var combinedFiller = InsertablePanelUtils.InsertablePanelToFiller(panel);
                 if (combinedFiller == null) return;

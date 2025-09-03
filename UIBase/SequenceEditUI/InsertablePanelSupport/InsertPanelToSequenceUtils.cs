@@ -12,10 +12,9 @@ public static class InsertPanelToSequenceUtils
     {
         var result = InsertablePanelToSequence(panel);
         sequence.Groups = result.Groups;
-
     }
 
-    static Sequence InsertablePanelToSequence(InsertablePanel.InsertablePanel panel)
+    private static Sequence InsertablePanelToSequence(InsertablePanel.InsertablePanel panel)
     {
         var result = new Sequence();
         if (panel is SequencePanel sequencePanel)
@@ -25,9 +24,8 @@ public static class InsertPanelToSequenceUtils
         return result;
     }
 
-    static IGroup InsertablePanelToGroup(InsertablePanel.InsertablePanel panel)
+    private static IGroup InsertablePanelToGroup(InsertablePanel.InsertablePanel panel)
     {
-
         // 如果是多组面板则获取多组类型装饰器，构建之后解析组内的每一个元素
         if (panel is GroupPanel groupPanel && panel.DecoratorManager.TryFindFirst<MultiGroupDecorator>(out var multiDecorator))
         {
@@ -67,7 +65,7 @@ public static class InsertPanelToSequenceUtils
         }
     }
 
-    static Wrapper InsertablePanelToWrapper(InsertablePanel.InsertablePanel panel)
+    private static Wrapper InsertablePanelToWrapper(InsertablePanel.InsertablePanel panel)
     {
         // 序列面板和组面板都读取为序列
         if (panel is SequencePanel || panel is GroupPanel)

@@ -28,7 +28,7 @@ public class YoyoInfo : VanillaMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         Vector2 tarVec = Owner switch
         {

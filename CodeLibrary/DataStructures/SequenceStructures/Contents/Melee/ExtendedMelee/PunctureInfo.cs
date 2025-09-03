@@ -51,7 +51,7 @@ public class PunctureInfo : ExtendedMelee
         SoundEngine.PlaySound(SoundID.Item92);
     }
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         Flip = Owner.direction == 1;
 
@@ -66,7 +66,7 @@ public class PunctureInfo : ExtendedMelee
         if (Timer == (int)(TimerMax * fallFac))
             OnBurst(fallFac);
 
-        base.Update(triggered);
+        base.UpdateStatus(triggered);
     }
 
     public override void OnStartSingle()

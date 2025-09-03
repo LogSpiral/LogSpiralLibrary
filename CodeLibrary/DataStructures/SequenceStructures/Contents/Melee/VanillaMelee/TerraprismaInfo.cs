@@ -49,7 +49,7 @@ public class TerraprismaInfo : VanillaMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         var verS = StandardInfo.VertexStandard;
         if (Owner is Player plr)

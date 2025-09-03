@@ -1652,14 +1652,29 @@ public static class DrawingMethods
 
     #region 总算，这次不是特效线了
 
-    public static void DrawLine(this SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float width = 4f, bool offset = false, Vector2 drawOffset = default)
+    public static void DrawLine(
+        this SpriteBatch spriteBatch,
+        Vector2 start,
+        Vector2 end,
+        Color color,
+        float width = 4f,
+        bool offset = false,
+        Vector2 drawOffset = default)
     {
         if (offset)
         {
             end += start;
         }
 
-        spriteBatch.Draw(TextureAssets.MagicPixel.Value, (start + end) * .5f + drawOffset, new Rectangle(0, 0, 1, 1), color, (end - start).ToRotation(), new Vector2(.5f, .5f), new Vector2((start - end).Length(), width), 0, 0);
+        spriteBatch.Draw(
+            TextureAssets.MagicPixel.Value,
+            (start + end) * .5f + drawOffset,
+            new Rectangle(0, 0, 1, 1),
+            color,
+            (end - start).ToRotation(),
+            new Vector2(.5f, .5f),
+            new Vector2((start - end).Length(), width),
+            0, 0);
     }
 
     public static void DrawLine(this SpriteBatch spriteBatch, Vector3 start, Vector3 end, Color color, float height, float width = 4f, bool offset = false, Vector2 drawOffset = default, Vector2 projCenter = default)

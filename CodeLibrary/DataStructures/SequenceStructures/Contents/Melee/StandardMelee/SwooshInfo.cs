@@ -190,7 +190,7 @@ public class SwooshInfo : LSLMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         if (Timer > (TimerMax - cutTime) * k)
         {
@@ -204,7 +204,7 @@ public class SwooshInfo : LSLMelee
             swoosh = null;
             subSwoosh = null;
         }
-        base.Update(triggered);
+        base.UpdateStatus(triggered);
     }
 
     public override void OnActive()

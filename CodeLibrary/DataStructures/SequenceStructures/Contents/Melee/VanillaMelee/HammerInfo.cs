@@ -22,7 +22,7 @@ public class HammerInfo : VanillaMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         Timer--;
         if ((int)LogSpiralLibraryMod.ModTime2 % 6 == 0)

@@ -31,7 +31,7 @@ public class ZenithInfo : VanillaMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         if (Main.dedServ) return;
         if (Timer == TimerMax)

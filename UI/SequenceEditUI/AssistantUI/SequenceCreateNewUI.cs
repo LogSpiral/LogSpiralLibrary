@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
@@ -7,7 +6,6 @@ using SilkyUIFramework.Attributes;
 using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
-using System.IO;
 using System.Linq;
 using Terraria.Audio;
 using Terraria.Localization;
@@ -35,6 +33,7 @@ public partial class SequenceCreateNewUI : BasicBody
     public UIElementGroup CancelButton { get; set; }
     public static SequenceData SequenceData { get; set; }
     public static bool IsFromSaveAs { get; set; }
+
     #region 初始化 开启关闭
 
     protected override void OnInitialize()
@@ -57,7 +56,7 @@ public partial class SequenceCreateNewUI : BasicBody
             Title.Text = Language.GetTextValue("Mods.LogSpiralLibrary.SequenceUI.SaveAs");
             CreateNewButton = SequenceEditUI.SequenceEditUIHelper.FastIconTextButton(ModAsset.SaveAs_Transparent_Premultiplied, "SaveAs");
         }
-        else 
+        else
         {
             Title.Text = Language.GetTextValue("Mods.LogSpiralLibrary.SequenceUI.CreateNew");
             CreateNewButton = SequenceEditUI.SequenceEditUIHelper.FastIconTextButton(ModAsset.CreateNew_Transparent_Premultiplied, "CreateNew");
@@ -115,7 +114,6 @@ public partial class SequenceCreateNewUI : BasicBody
             SoundEngine.PlaySound(SoundID.MenuClose);
         Active = false;
         SequenceEditUI.Instance.BlackMaskTimer.StartReverseUpdate();
-
     }
 
     #endregion 初始化 开启关闭
@@ -164,8 +162,4 @@ public partial class SequenceCreateNewUI : BasicBody
     }
 
     #endregion 毛玻璃效果
-
-
-
-
 }

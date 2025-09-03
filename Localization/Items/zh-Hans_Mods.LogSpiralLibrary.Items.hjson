@@ -1,0 +1,69 @@
+FractalSpawnItem: {
+	DisplayName: 分形生成测试物品
+	Tooltip: 丢出去来看看会发生什么，请保证你能捡回来
+}
+
+GeogebraShin: {
+	DisplayName: 圆神
+	Tooltip: 你知道我要说什么的对吧
+}
+
+TestBlade: {
+	DisplayName: 测试剑
+	Tooltip:
+		'''
+		序列类的测试剑，测试模组动作执行序列，点击Y查看序列
+		由杜格Doggo提供贴图(诡异妖刀)！
+		'''
+}
+
+TestBlade2: {
+	DisplayName: 测试剑2
+	Tooltip:
+		'''
+		序列类的测试剑2，测试原版手持弹幕ai低仿，点击Y查看序列
+		由杜格Doggo提供贴图(无名青空)！
+		'''
+}
+
+TestBlade3: {
+	DisplayName: 测试剑3
+	Tooltip:
+		'''
+		序列类的测试剑3，调用了测试剑及测试剑2的序列，标志着序列类型导出与加载的成功实现
+		由杜格Doggo提供贴图(瞬移的咒法刺刀)！
+		'''
+}
+
+TestBlade3V2: {
+	// DisplayName: Test Blade3 V2
+	// Tooltip: ""
+}
+
+HyperCube: {
+	// DisplayName: Hyper Cube
+	// Tooltip: ""
+}
+
+BCurveTestItem: {
+	// DisplayName: B Curve Test Item
+	// Tooltip: ""
+}
+
+ColorfulMushroom: {
+	DisplayName: 鲜艳菌子
+	Tooltip:
+		'''
+		菌子动口不动手
+		话说回来，吃第二口就能以毒攻毒来着
+		'''
+}
+
+MIDIPlayer: {
+	DisplayName: 序列演奏者
+	Tooltip:
+		'''
+		右键开启界面选择要演奏的乐谱
+		左键开始演奏
+		'''
+}

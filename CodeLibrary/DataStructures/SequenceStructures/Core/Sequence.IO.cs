@@ -62,7 +62,7 @@ public partial class Sequence
 
     public void WriteXml(XmlWriter writer)
     {
-        if (Data != null) 
+        if (Data != null)
         {
             writer.WriteStartElement("Data");
             Data.WriteXml(writer);
@@ -103,7 +103,6 @@ public partial class Sequence
 
     private void ParseGroup(XmlReader reader)
     {
-
         if (ParseGroupToInstance(reader) is { } group)
             Groups.Add(group);
     }
@@ -196,7 +195,9 @@ public partial class Sequence
             var modName = reader["Mod"];
             if (modName != null)
             {
-                var fullName = $"{modName}/{reader.ReadElementContentAsString()}";
+                // 为了适应新的序列引用键格式，手动补了MeleeAction
+                // 虽然引用起来比之前麻烦了但是毕竟有UI编辑
+                var fullName = $"{modName}/{nameof(MeleeAction)}/{reader.ReadElementContentAsString()}";
                 Datas.Add((new Wrapper(fullName), condition));
             }
             else

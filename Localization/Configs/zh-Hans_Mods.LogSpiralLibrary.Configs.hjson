@@ -1,0 +1,224 @@
+StringInputHint: 点击以输入
+
+AirDistortConfigs: {
+	// Tooltip: ""
+	
+	Intensity: {
+		Label: 扭曲强度
+		Tooltip: 拉得越大越明显
+	}
+
+	Rotation: {
+		Label: 角偏移量
+		Tooltip: 不是很重要的莫名奇妙的设置
+	}
+
+	ColorOffset: {
+		Label: 色差距离
+		Tooltip: 你可以试试拉满或者拉一半
+	}
+
+	Available: {
+		Label: 启用
+		Tooltip: 空气扭曲，启动！
+	}
+
+	// Tooltip: ""
+}
+
+BloomConfigs: {
+	// Tooltip: ""
+	
+	Threshold: {
+		Label: 阈值
+		Tooltip: 亮度高于这个值的像素会进行外发光
+	}
+
+	Intensity: {
+		Label: 强度
+		Tooltip: 要瞎了要瞎了
+	}
+
+	Range: {
+		Label: 范围
+		Tooltip: 点亮一大片！
+	}
+
+	Times: {
+		Label: 迭代次数
+		Tooltip: 迭代太多次绝对会亮瞎眼而卡爆的吧
+	}
+
+	DownSampleLevel: {
+		Label: 降采样等级
+		Tooltip:
+			'''
+			等级越高范围越大，性能消耗越低
+			代价是没那么细腻清新
+			'''
+	}
+
+	UseModeMK: {
+		Label: 采用精细采样
+		Tooltip: ""
+	}
+
+	Available: {
+		Label: 启用
+		Tooltip: 外发光，启动！
+	}
+
+	// Tooltip: ""
+}
+
+MaskConfigs: {
+	// Tooltip: ""
+	
+	SkyStyle: {
+		Label: 星空样式
+		Tooltip: 现在你可以两种星空里切换了(x
+	}
+
+	GlowColor: {
+		Label: 主体颜色
+		Tooltip: ""
+	}
+
+	BoundColor: {
+		Label: 边界颜色
+		Tooltip: ""
+	}
+
+	Tier1: {
+		Label: 边界阈值
+		Tooltip: 低于这个值的会替换为主体颜色
+	}
+
+	Tier2: {
+		Label: 遮罩阈值
+		Tooltip: 高于这个值的会替换为星空遮罩
+	}
+
+	LightAsAlpha: {
+		Label: 是否让亮度参与透明度的生成
+		Tooltip: 你可以关了试试，我也不知道为什么我要你选这个
+	}
+
+	Inverse: {
+		Label: 亮度反向
+		Tooltip: 现在最暗的被换成星空了
+	}
+
+	Available: {
+		Label: 启用
+		Tooltip: 星空遮罩，启动！
+	}
+
+	// Tooltip: ""
+}
+
+DyeConfigs: {
+	Dye: {
+		Label: 使用染料
+		Tooltip: ""
+	}
+
+	Available: {
+		Label: 启用
+		Tooltip: 护甲染料，启动！
+	}
+}
+
+SwooshMode: {
+	Chop.Label: 重斩
+	Slash.Label: 横批
+	Storm.Label: 风暴
+}
+
+NoteTimeValue: {
+	Whole.Label: 全音符
+	Half.Label: 二分音符
+	Quarter.Label: 四分音符
+	Eighth.Label: 八分音符
+	Sixteenth.Label: 十六分音符
+}
+
+NotePitch: {
+	C.Label: C
+	Cs.Label: "#C"
+	D.Label: D
+	Ds.Label: "#D"
+	E.Label: E
+	F.Label: F
+	Fs.Label: "#F"
+	G.Label: G
+	Gs.Label: "#G"
+	A.Label: A
+	As.Label: "#A"
+	B.Label: B
+}
+
+SurroundStateConfig: {
+	DisplayName: 环境状态设置
+
+	CheckCycleLength: {
+		Label: 检测周期
+		Tooltip: 单位为帧,默认是每帧刷新
+	}
+}
+
+SequenceConfig: {
+	DisplayName: 序列设置
+
+	ShowWrapBox: {
+		Label: 是否显示打包器边框
+		Tooltip: ""
+	}
+
+	ShowGroupBox: {
+		Label: 是否显示组边框
+		Tooltip: ""
+	}
+
+	ShowSequenceBox: {
+		Label: 是否显示序列边框
+		Tooltip: ""
+	}
+
+	Step: {
+		Label: 步长/间距
+		Tooltip: ""
+	}
+}
+
+LogSpiralLibraryMiscConfig: {
+	DisplayName: 其它设置
+
+	screenShakingSetting: {
+		Label: 震屏设置
+		Tooltip: 参考挥刀
+	}
+
+	WTHConfig: {
+		Label: 神秘设置！
+		Tooltip:
+			'''
+			这个其实源自一个忘记删调试代码的测试版
+			有朋友觉得这样挺好玩，就保留了
+			'''
+	}
+}
+
+ShakingSetting: {
+	// Tooltip: ""
+
+	strength: {
+		Label: 震动强度
+		Tooltip: 早餐要吐出来了
+	}
+
+	Available: {
+		Label: 启用
+		Tooltip: 震屏，启动！！
+	}
+}

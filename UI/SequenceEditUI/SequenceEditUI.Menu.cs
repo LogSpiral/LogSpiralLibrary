@@ -136,8 +136,9 @@ public partial class SequenceEditUI
             };
             List<KeyValuePair<string, string>> path = [new(modName, ModLoader.GetMod(modName).DisplayName)];
             int c = pathArray.Length;
-            for (int n = 1; n < c - 1; n++)
-                path.Add(new(pathArray[n], pathArray[n]));
+            if (c > 2)
+                for (int n = 2; n < c - 1; n++)
+                    path.Add(new(pathArray[n], pathArray[n]));
             return new(mask, path);
         }
     }

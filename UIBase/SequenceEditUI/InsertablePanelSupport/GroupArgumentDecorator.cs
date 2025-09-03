@@ -85,8 +85,6 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         panel.Add(mask);
 
         //panel.DrawAction += DrawGroupArg;
-
-
     }
 
     private void UpdateVisuals()

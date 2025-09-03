@@ -29,7 +29,7 @@ public class BoomerangInfo : VanillaMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         if (Factor <= .5f)
         {

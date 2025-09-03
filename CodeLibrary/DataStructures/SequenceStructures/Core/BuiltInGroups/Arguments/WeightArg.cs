@@ -5,7 +5,7 @@ using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 
-public class WeightArg(float weight) : IGroupArgument,IMemberLocalized
+public class WeightArg(float weight) : IGroupArgument, IMemberLocalized
 {
     public WeightArg() : this(1)
     {
@@ -38,7 +38,6 @@ public class WeightArg(float weight) : IGroupArgument,IMemberLocalized
     }
 
     public IGroupArgument Clone() => new WeightArg(Weight);
-
 
     string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.GroupArgs.WeightArg";
     private static string[] Suffixes { get; } = ["Label"];

@@ -31,7 +31,7 @@ public partial class SequenceEditUI
             return mask;
         }
 
-        public static void HoverColor(UIView view,Color From,Color To)
+        public static void HoverColor(UIView view, Color From, Color To)
         {
             if (view.HoverTimer.IsCompleted) return;
             view.BackgroundColor = view.HoverTimer.Lerp(From, To);
@@ -39,7 +39,7 @@ public partial class SequenceEditUI
 
         public static string GetText(string suffix) => Language.GetTextValue($"Mods.{nameof(LogSpiralLibrary)}.SequenceUI.{suffix}");
 
-        public static void RecoverPreviousActivePageColor(SequenceEditUI instance) 
+        public static void RecoverPreviousActivePageColor(SequenceEditUI instance)
         {
             if (instance._currentPageFullName != null && instance.OpenedPages.TryGetValue(instance._currentPageFullName, out var previous))
             {
@@ -50,7 +50,7 @@ public partial class SequenceEditUI
             }
         }
 
-        public static UIElementGroup FastIconTextButton(Asset<Texture2D> icon,string localizationSuffix) 
+        public static UIElementGroup FastIconTextButton(Asset<Texture2D> icon, string localizationSuffix)
         {
             var result = new UIElementGroup()
             {
@@ -77,7 +77,7 @@ public partial class SequenceEditUI
             return result;
         }
 
-        public static bool SequenceDataSaveCheck(SequenceData data,out string msg) 
+        public static bool SequenceDataSaveCheck(SequenceData data, out string msg)
         {
             if (string.IsNullOrEmpty(data.FileName))
             {

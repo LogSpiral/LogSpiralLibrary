@@ -7,7 +7,7 @@ using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 
-public class ConditionWeightArg(ConditionDefinition definition, float weight) : IGroupArgument,IMemberLocalized
+public class ConditionWeightArg(ConditionDefinition definition, float weight) : IGroupArgument, IMemberLocalized
 {
     public ConditionWeightArg() : this(new ConditionDefinition(0), 1)
     {
@@ -23,6 +23,7 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     [CustomEntityDefinitionHandler<ConditionDefinitionHandler>]
     public ConditionDefinition ConditionDefinition { get; set; } = definition;
+
     public float Weight { get; set; } = weight;
     public bool IsHidden => false;
 
@@ -57,7 +58,6 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     public Condition Condition => ConditionDefinition.ToCondition();
     public string Name => ConditionDefinition.Name;
-
 
     string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.GroupArgs.ConditionWeightArg";
     private static string[] Suffixes { get; } = ["Label"];

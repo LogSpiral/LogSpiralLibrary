@@ -134,10 +134,25 @@ MeleeAction: {
 	PunctureInfo.DisplayName: PunctureInfo
 
 	StormInfo: {
-		DisplayName: StormInfo
+		DisplayName: Storm
 		angleRange.Label: angleRange
 		xScaler.Label: xScaler
 	}
+}
+
+NoteElement: {
+	GuitarNote.DisplayName: Guitar
+
+	NoteElement: {
+		DisplayName: Instrument
+		TimeValue.Label: TimeValue
+		Pitch.Label: Pitch
+		Octave.Label: Octave
+		Volume.Label: Volume
+		Dot.Label: Dot
+	}
+
+	PipesNote.DisplayName: Pipes
 }
 
 SequenceData: {

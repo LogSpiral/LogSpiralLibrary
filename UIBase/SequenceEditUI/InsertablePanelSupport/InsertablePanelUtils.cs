@@ -1,15 +1,11 @@
-﻿using Humanizer;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
-using LogSpiralLibrary.UI.SequenceEditUI;
-using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.InsertablePanel;
 using LogSpiralLibrary.UIBase.SequenceEditUI.PropertyPanelSupport;
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
@@ -112,7 +108,6 @@ public static class InsertablePanelUtils
                 else
                     panel.DecoratorManager += new GroupArgumentDecorator() { Argument = Activator.CreateInstance(groupDummy.ArgType) as IGroupArgument };
             }
-
         };
         group.OnDeconstructContainer += (container, draggingOut, left) =>
         {
@@ -133,13 +128,11 @@ public static class InsertablePanelUtils
                     else
                         left.DecoratorManager += new GroupArgumentDecorator() { Argument = arg.Argument };
 
-
                     if (left.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
                         left.DecoratorManager -= single;
 
                     if (draggingOut.DecoratorManager.TryFindFirst(out single))
                         left.DecoratorManager -= single;
-
                 }
             }
             else if (insParent is SequencePanel)
@@ -157,7 +150,6 @@ public static class InsertablePanelUtils
 
                 leftArg.Argument = GroupArgumentUtils.ConvertArgument(leftArg.Argument, groupDummy.ArgType);
                 left.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
-
             }
             SwitchCurrentPageRoot(container, left);
         };
@@ -170,7 +162,6 @@ public static class InsertablePanelUtils
 
         sequence.OnInsertPanelToInnerContainer += (container, panel) =>
         {
-
             MarkPending();
 
             // A: 直接插入
@@ -188,7 +179,6 @@ public static class InsertablePanelUtils
                 else
                     panel.DecoratorManager -= arg;
             }
-
         };
         sequence.OnDeconstructContainer += (container, draggingOut, left) =>
         {
@@ -275,7 +265,6 @@ public static class InsertablePanelUtils
                 // D: 直接移除
                 // H: 直接移除
             }
-
         };
         MarkPending();
     }
@@ -303,7 +292,6 @@ public static class InsertablePanelUtils
             else if (insParent is SequencePanel && self.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
             {
                 self.DecoratorManager -= single;
-
 
                 // N: 目标单组转多组，自身转换类型后插入
                 var singleType = single.Definition.GroupType;
@@ -494,6 +482,4 @@ public static class InsertablePanelUtils
             return sequencePanel;
         }
     }
-
-
 }

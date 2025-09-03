@@ -17,14 +17,13 @@ public partial class Sequence(params List<IGroup> groups) : ISequence
 
     Wrapper ISequence.GetWrapperAt(int index) => Groups[index].GetWrapper();
 
-
-    public Sequence Clone() 
+    public Sequence Clone()
     {
         var result = new Sequence()
         {
             Data = Data?.Clone()
         };
-        foreach (var group in Groups) 
+        foreach (var group in Groups)
             result.Groups.Add(group.Clone());
         return result;
     }

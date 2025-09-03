@@ -36,7 +36,7 @@ public class ChargingInfo : ExtendedMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
         Flip = Owner.direction == 1;
@@ -51,7 +51,7 @@ public class ChargingInfo : ExtendedMelee
                     break;
                 }
         }
-        base.Update(triggered);
+        base.UpdateStatus(triggered);
         if (Timer > 0)
             for (int n = 0; n < 4; n++)
             {

@@ -2,7 +2,6 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using ReLogic.Content;
 using SilkyUIFramework;
-using System.Collections.Generic;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
@@ -18,9 +17,9 @@ public class SequenceElementCategory
     public string ElementName { get; init; }
     public SequenceManager Maganger { get; init; }
     public ISequenceElement DefaultElement { get; init; }
-    #region Statics
+    public Type ElementType { get; init; }
 
-    public static readonly Dictionary<string, SequenceElementCategory> CategoryLookup = [];
+    #region Statics
 
     public static SequenceElementCategory RegisterCategory<T>(Mod mod, Asset<Texture2D> icon, T defaultElement, Color? themeColor = null) where T : ISequenceElement
     {
@@ -32,9 +31,10 @@ public class SequenceElementCategory
             ThemeColor = themeColor ?? SUIColor.Background * .25f,
             ElementName = name,
             Maganger = SequenceManager<T>.Instance,
-            DefaultElement = defaultElement
+            DefaultElement = defaultElement,
+            ElementType = typeof(T)
         };
-        CategoryLookup.TryAdd(name, result);
+        SequenceSystem.CategoryLookup.TryAdd(name, result);
         return result;
     }
 

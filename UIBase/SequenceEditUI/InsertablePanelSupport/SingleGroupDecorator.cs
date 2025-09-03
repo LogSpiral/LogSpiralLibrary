@@ -26,11 +26,13 @@ public class SingleGroupDecorator : IInsertPanelDecorator, IMemberLocalized
         }
     }
 
-    void DrawImGroup(GameTime gameTime, SpriteBatch spriteBatch)
+    private void DrawImGroup(GameTime gameTime, SpriteBatch spriteBatch)
     {
         spriteBatch.DrawString(FontAssets.MouseText.Value, "□", PendingPanel.Bounds.LeftBottom, Color.Red);
     }
-    InsertablePanel.InsertablePanel PendingPanel { get; set; }
+
+    private InsertablePanel.InsertablePanel PendingPanel { get; set; }
+
     public void Decorate(InsertablePanel.InsertablePanel panel)
     {
         PendingPanel = panel;

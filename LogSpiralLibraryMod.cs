@@ -7,9 +7,11 @@ global using Terraria.GameContent;
 global using Terraria.ID;
 global using Terraria.ModLoader;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
+using Microsoft.Xna.Framework.Audio;
 using NetSimplified;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.UI;
 
@@ -44,6 +46,30 @@ public partial class LogSpiralLibraryMod : Mod
         AddOnResolutionChangedHook();
         FuckSDKCheck();
         LocalizationFix();
+
+
+        //MonoModHooks.Add(
+        //    typeof(SoundEffectInstance)
+        //    .GetMethod(nameof(SoundEffectInstance.UpdatePitch), BindingFlags.NonPublic | BindingFlags.Instance),
+        //    (Action<SoundEffectInstance> orig, SoundEffectInstance self) =>
+        //    {
+        //        float doppler;
+        //        float dopplerScale = SoundEffect.Device().DopplerScale;
+        //        if (!self.is3D || dopplerScale == 0.0f)
+        //        {
+        //            doppler = 1.0f;
+        //        }
+        //        else
+        //        {
+        //            doppler = self.dspSettings.DopplerFactor * dopplerScale;
+        //        }
+        //        Console.WriteLine((self.Pitch, self.INTERNAL_pitch));
+        //        var result = FAudio.FAudioSourceVoice_SetFrequencyRatio(
+        //            self.handle,
+        //            (float)Math.Pow(2.0, self.INTERNAL_pitch) * doppler,
+        //            0
+        //        );
+        //    });
     }
 
     public override void Unload() => Instance = null;

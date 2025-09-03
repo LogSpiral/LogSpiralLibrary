@@ -1,18 +1,12 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 using SilkyUIFramework;
-using SilkyUIFramework.BasicElements;
 using SilkyUIFramework.Extensions;
 using System.IO;
-using System.Text;
-using System.Xml;
 using Terraria.Audio;
-using Terraria.UI.Chat;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
 
@@ -277,7 +271,6 @@ public partial class SequenceEditUI
             SequenceCreateNewUI.Open();
         };
 
-
         Mask.OnUpdateStatus += (gameTime) =>
         {
             if (EditButtonMask.Parent is null && CurrentPage is { PendingModified: true })
@@ -323,5 +316,4 @@ public partial class SequenceEditUI
 
         SwitchToMenu();
     }
-
 }

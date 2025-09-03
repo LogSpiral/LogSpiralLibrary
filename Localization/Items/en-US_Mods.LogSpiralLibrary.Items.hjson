@@ -1,0 +1,49 @@
+FractalSpawnItem: {
+	DisplayName: Fractal Spawn Item
+	Tooltip: ""
+}
+
+GeogebraShin: {
+	DisplayName: Geogebra Shin
+	Tooltip: ""
+}
+
+TestBlade: {
+	DisplayName: Test Blade
+	Tooltip: ""
+}
+
+TestBlade2: {
+	DisplayName: Test Blade2
+	Tooltip: ""
+}
+
+TestBlade3: {
+	DisplayName: Test Blade3
+	Tooltip: ""
+}
+
+TestBlade3V2: {
+	DisplayName: Test Blade3 V2
+	Tooltip: ""
+}
+
+HyperCube: {
+	DisplayName: Hyper Cube
+	Tooltip: ""
+}
+
+BCurveTestItem: {
+	DisplayName: B Curve Test Item
+	Tooltip: ""
+}
+
+ColorfulMushroom: {
+	DisplayName: Colorful Mushroom
+	Tooltip: ""
+}
+
+MIDIPlayer: {
+	DisplayName: MIDI Player
+	Tooltip: ""
+}

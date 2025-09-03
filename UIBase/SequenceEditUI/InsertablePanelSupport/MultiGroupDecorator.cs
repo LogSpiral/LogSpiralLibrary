@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UIBase.InsertablePanel;
@@ -7,6 +6,7 @@ using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using ReLogic.Graphics;
 using System.Collections.Generic;
+
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
 public class MultiGroupDecorator : IInsertPanelDecorator, IMemberLocalized
@@ -27,11 +27,14 @@ public class MultiGroupDecorator : IInsertPanelDecorator, IMemberLocalized
             }
         }
     }
-    void DrawImGroup(GameTime gameTime, SpriteBatch spriteBatch)
+
+    private void DrawImGroup(GameTime gameTime, SpriteBatch spriteBatch)
     {
         spriteBatch.DrawString(FontAssets.MouseText.Value, "□", PendingPanel.Bounds.LeftTop, Color.Cyan);
     }
-    InsertablePanel.InsertablePanel PendingPanel { get; set; }
+
+    private InsertablePanel.InsertablePanel PendingPanel { get; set; }
+
     public void Decorate(InsertablePanel.InsertablePanel panel)
     {
         PendingPanel = panel;
@@ -42,7 +45,6 @@ public class MultiGroupDecorator : IInsertPanelDecorator, IMemberLocalized
     {
         //panel.DrawAction -= DrawImGroup;
     }
-
 
     string IMemberLocalized.LocalizationRootPath => "Mods.LogSpiralLibrary.Sequence.MultiGroup";
     private static string[] Suffixes { get; } = ["Label"];

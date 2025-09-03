@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.UIBase.SequenceEditUI;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using LogSpiralLibrary.UIBase.SequenceEditUI;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
@@ -39,7 +40,7 @@ public partial class SequenceTypeSelectUI : BasicBody
         BackgroundColor = SUIColor.Background * .25f;
         BorderColor = SUIColor.Border;
 
-        foreach (var category in SequenceElementCategory.CategoryLookup.Values)
+        foreach (var category in SequenceSystem.CategoryLookup.Values)
         {
             var panel = new SequenceElementCategoryPanel(category);
             panel.LeftMouseClick += delegate

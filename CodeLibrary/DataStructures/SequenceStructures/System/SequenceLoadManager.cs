@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Unloads;
 using System.Collections.Generic;
@@ -52,17 +51,21 @@ public static class SequenceGlobalManager
     /// 序列化和反序列化器
     /// </summary>
     public static XmlSerializer Serializer => field ??= new(typeof(Sequence));
+
     public static XmlWriterSettings WriterSettings => field ??= new() { Indent = true, Encoding = new UTF8Encoding(false) };
     public static Dictionary<Type, Type> SingleGroupToMultiGroup { get; } = [];
     public static Dictionary<Type, Type> MultiGroupToSingleGroup { get; } = [];
 
     public static Dictionary<Type, Type> GroupArgToSingleGroup { get; } = [];
+
+    public static Dictionary<Type, ISequenceElement> ElementInstances { get; } = [];
 }
 
 public abstract class SequenceManager
 {
     public Dictionary<string, Sequence> Sequences { get; } = [];
     public Dictionary<string, Type> ElementTypeLookup { get; } = [];
+
     public void RegisterSingleSequence_Instance(string fullName, Sequence sequence)
     {
         SequenceGlobalManager.UnloadSequences.Remove(fullName);
@@ -107,7 +110,6 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
                 var fullName = $"{modName}/{Path.GetFileNameWithoutExtension(name)}";
                 using MemoryStream stream = new(mod.GetFileBytes(name));
                 var sequence = RegisterSingleSequence(fullName, stream);
-                sequence.Data.ModDefinition = new(modName);
             }
         }
 
@@ -127,8 +129,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
             if (!ModLoader.TryGetMod(modName, out var mod))
                 continue;
             using FileStream stream = new(file.FullName, FileMode.Open);
-            var sequence = RegisterSingleSequence(fullPath, stream);
-            sequence?.Data?.ModDefinition = new(modName);
+            RegisterSingleSequence(fullPath, stream);
         }
 
         #endregion 加载本地文件夹目录文件
@@ -136,30 +137,26 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
 
     public static Sequence RegisterSingleSequence(string fullName, Stream stream)
     {
-        if (!SequenceGlobalManager.SequenceLookup.TryGetValue(fullName, out Sequence sequence))
+        string realName = fullName;
+        var folders = fullName.Split("/");
+        if (folders.Length < 2) return null;
+        var modName = folders[0];
+        var fileName = Path.Combine(folders[1..]).Replace('\\', '/');
+        realName = Path.Combine(folders[0], typeof(T).Name, fileName).Replace('\\', '/');
+        if (!SequenceGlobalManager.SequenceLookup.TryGetValue(realName, out Sequence sequence))
             sequence = new Sequence();
 
         try
         {
             var loadedSequence = (Sequence)SequenceGlobalManager.Serializer.Deserialize(stream);
             if (sequence == null) return null;
-            SequenceGlobalManager.UnloadSequences.Remove(fullName);
+            SequenceGlobalManager.UnloadSequences.Remove(realName);
             sequence.Groups = loadedSequence.Groups;
             sequence.Data = loadedSequence.Data;
-            var folders = fullName.Split("/");
-            if (folders.Length > 1)
-            {
-                sequence.Data.ModDefinition = new(folders[0]);
-                sequence.Data.FileName = Path.Combine(folders[1..]).Replace('\\', '/');
-            }
-            else
-            {
-                sequence.Data.FileName = fullName;
-                // 按说不应该会出现这种情况
-            }
-            // sequence.Data.LoadTimeElementTypeName = typeof(T).Name;
-            Instance.Sequences[fullName] = sequence;
-            SequenceGlobalManager.SequenceLookup[fullName] = sequence;
+            sequence.Data.ModDefinition = new(modName);
+            sequence.Data.FileName = fileName;
+            Instance.Sequences[realName] = sequence;
+            SequenceGlobalManager.SequenceLookup[realName] = sequence;
             return sequence;
         }
         catch (Exception e)

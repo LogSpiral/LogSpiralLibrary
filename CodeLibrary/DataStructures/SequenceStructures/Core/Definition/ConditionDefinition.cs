@@ -2,15 +2,13 @@
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
-using Terraria.ModLoader.Config.UI;
 using Terraria.ModLoader.IO;
-using Terraria.ModLoader.UI;
-using SilkyUIFramework.Extensions;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 
@@ -207,7 +205,9 @@ public class ConditionDefinitionOptionElement : SUIEntityDefinitionOption
         };
         NameText.Join(this);
     }
-    UITextView NameText { get; set; }
+
+    private UITextView NameText { get; set; }
+
     public override void OnSetDefinition(EntityDefinition current, EntityDefinition previous)
     {
         base.OnSetDefinition(current, previous);

@@ -6,10 +6,7 @@ namespace LogSpiralLibrary.ForFun.HyperCube
     {
         public override string Texture => $"Terraria/Images/Item_{ItemID.LunarBrick}";
 
-        public override bool IsLoadingEnabled(Mod mod)
-        {
-            return false;
-        }
+        public override bool IsLoadingEnabled(Mod mod) => false;
 
         /// <summary>
         /// 获取立方体顶点坐标

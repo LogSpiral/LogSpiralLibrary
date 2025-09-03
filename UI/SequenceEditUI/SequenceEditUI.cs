@@ -39,6 +39,7 @@ public partial class SequenceEditUI : BasicBody
             var page = MenuHelper.AppendPage(Instance, pair.Key, pair.Value, false);
             page.PendingModified = true;
         }
+        Instance?.CurrentEditTarget = null;
     }
 
     public static void Close(bool silent = false)

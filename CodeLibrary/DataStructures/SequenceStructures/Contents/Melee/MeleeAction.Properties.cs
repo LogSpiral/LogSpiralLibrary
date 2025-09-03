@@ -1,9 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using PropertyPanelLibrary.PropertyPanelComponents.Attributes;
-using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
-using System.Collections.Generic;
-using Terraria.Localization;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 // 以如下标准整理
@@ -22,7 +18,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 // 其中重写函数按如下顺序排序
 // Update -> Active -> Single -> Charge -> Attack -> Collide -> Draw -> Net(目前无效)
 // Start -> End
-public partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType, ILoadable, IMemberLocalized
+public partial class MeleeAction
 {
     #region 参数属性
 
@@ -69,7 +65,7 @@ public partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType,
     /// </summary>
     public bool Flip { get; set; }
 
-    bool ISequenceElement.IsCompleted => Timer == 0 && Counter == CounterMax;
+    public override sealed bool IsCompleted => Timer == 0 && Counter == CounterMax;
 
     #endregion 逻辑属性
 
@@ -136,16 +132,8 @@ public partial class MeleeAction : ModType, ISequenceElement, ILocalizedModType,
     public StandardInfo StandardInfo { get; set; }
 
     public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.Damage * offsetDamage) : Projectile.damage;
-    public string LocalizationCategory => $"Sequence.{nameof(MeleeAction)}";
-    public virtual LocalizedText DisplayName => this.GetLocalization("DisplayName", () => GetType().Name);
-    public virtual string Category { get; } = "";
+    public override string LocalizationCategory => $"Sequence.{nameof(MeleeAction)}";
+    public override string Category { get; } = "";
 
     #endregion 辅助属性
-
-    public override string ToString() => DisplayName.ToString();
-
-
-    string IMemberLocalized.LocalizationRootPath => Mod.GetLocalizationKey($"{LocalizationCategory}.{Name}");
-    private static string[] Suffixes { get; } = ["Label"];
-    IReadOnlyList<string> IMemberLocalized.LocalizationSuffixes => Suffixes;
 }

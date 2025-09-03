@@ -41,11 +41,11 @@ public class StormInfo : ExtendedMelee
 
     #region 重写函数
 
-    public override void Update(bool triggered)
+    public override void UpdateStatus(bool triggered)
     {
         if (!float.IsNaN(targetedVector.X))
             Owner.direction = Math.Sign(targetedVector.X);
-        base.Update(triggered);
+        base.UpdateStatus(triggered);
     }
 
     public override void OnStartAttack()

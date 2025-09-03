@@ -6,12 +6,15 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.He
 
 public static class SequenceSaveHelper
 {
-    public static void SaveSequence(Sequence loadingSequence,string elementName) 
+    public static void SaveSequence(Sequence loadingSequence, string elementName)
     {
         var modPath = Path.Combine(SequenceSystem.SequenceSavePath, elementName, loadingSequence.Data.ModDefinition.Mod);
         var folders = loadingSequence.Data.FileName.Split('/');
         if (folders.Length > 1)
             Directory.CreateDirectory(Path.Combine(modPath, Path.Combine(folders[..^1])));
+        else
+            Directory.CreateDirectory(modPath);
+
 
         var finalPath = Path.Combine(modPath, $"{loadingSequence.Data.FileName}.xml");
         using XmlWriter writer = XmlWriter.Create(finalPath, SequenceGlobalManager.WriterSettings);

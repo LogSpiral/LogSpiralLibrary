@@ -135,9 +135,24 @@ MeleeAction: {
 
 	StormInfo: {
 		DisplayName: 风暴回旋
-		// angleRange.Label: angleRange
-		// xScaler.Label: xScaler
+		angleRange.Label: 回旋圈数
+		xScaler.Label: 扁平程度
 	}
+}
+
+NoteElement: {
+	GuitarNote.DisplayName: 吉他
+
+	NoteElement: {
+		DisplayName: 乐器
+		TimeValue.Label: 时值
+		Pitch.Label: 音高
+		Octave.Label: 八度
+		Volume.Label: 音量
+		Dot.Label: 附点
+	}
+
+	PipesNote.DisplayName: 钢管
 }
 
 SequenceData: {

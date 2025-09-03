@@ -19,13 +19,16 @@ public class SequenceData : IMemberLocalized
 
     [CustomEntityDefinitionHandler<LSLRefedModDefinitionHandler>]
     public ModDefinition ModDefinition { get; set; }
+
     public DateTime CreateTime { get; set; }
     public DateTime ModifyTime { get; set; }
     public bool Finished { get; set; } = true;
+
     public string GetSequenceKeyName(string elementTypeName)
     {
         return $"{ModDefinition.Name}/{elementTypeName}/{FileName}";
     }
+
     public static bool ParseKeyName(string keyName, out string modName, out string elementTypeName, out string fileName)
     {
         var subs = keyName.Split('/');
@@ -39,6 +42,7 @@ public class SequenceData : IMemberLocalized
         fileName = Path.Combine(subs[2..]).Replace("\\", "/");
         return true;
     }
+
     public override string ToString() => $"DisplayName{DisplayName},AuthorName{AuthorName},Description{Description},CreateTime{CreateTime},ModifyTime{ModifyTime},Finished{Finished}";
 
     public void ReadXml(XmlReader reader)
@@ -78,6 +82,7 @@ public class SequenceData : IMemberLocalized
     protected virtual void Save(XmlWriter writer)
     {
     }
+
     private Mod Mod { get; set; }
 
     string IMemberLocalized.LocalizationRootPath => $"Mods.{nameof(LogSpiralLibrary)}.Sequence.SequenceData";
@@ -93,10 +98,11 @@ public class SequenceData : IMemberLocalized
         //var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
         SequenceGlobalManager.DataTypeLookup.Add(GetFullName(mod), type);
     }
+
     protected virtual void HandleClone(SequenceData target)
     {
-
     }
+
     public SequenceData Clone()
     {
         var result = MemberwiseClone() as SequenceData;

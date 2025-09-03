@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using System.Collections.Generic;
@@ -27,6 +28,23 @@ public partial class MeleeSequenceProj
     protected Sequence meleeSequence = null;
     public SequenceModel SequenceModel { get; protected set; }
 
+
+    private static void LoadLocalLibrarySequences(Sequence sequence, string inModDirectoryPath, Mod mod)
+    {
+        var unloads = SequenceCheckHelper.GetUnloadWrapperList(sequence);
+        foreach (var unloadWrapper in unloads)
+        {
+            var fullName = unloadWrapper.RefSequenceFullName;
+            SequenceData.ParseKeyName(fullName, out _, out _, out string unloadFileName);
+            var path = $"{inModDirectoryPath}/{unloadFileName}.xml";
+            if (!mod.FileExists(path)) continue;
+            using MemoryStream stream = new(mod.GetFileBytes(path));
+            var libSequence = SequenceManager<MeleeAction>.RegisterSingleSequence($"{mod.Name}/{unloadFileName}", stream);
+
+            LoadLocalLibrarySequences(libSequence, inModDirectoryPath, mod);
+        }
+    }
+
     //这两个函数是用来初始化执行的逻辑序列的
     //因为之前还没有UI编辑制作或者XML文件记录序列，所以之前是重写SetUpSequence来写入序列的具体内容
     public virtual void SetUpSequence(Sequence sequence, string modName, string fileName)
@@ -39,7 +57,9 @@ public partial class MeleeSequenceProj
                 var fullName = FullName;
                 using MemoryStream stream = new(Mod.GetFileBytes($"{inModDirectoryPath}/{Name}.xml"));
                 LocalMeleeSequence[Type] = localSeq = SequenceManager<MeleeAction>.RegisterSingleSequence(fullName, stream);
-                localSeq.Data.ModDefinition = new(Mod.Name);
+
+                LoadLocalLibrarySequences(localSeq, inModDirectoryPath, Mod);
+
             }
             meleeSequence = localSeq;
             return;
@@ -87,7 +107,7 @@ public partial class MeleeSequenceProj
             && SequenceManager<MeleeAction>
                 .Instance
                 .Sequences
-                .TryGetValue($"{modName}/{fileName}",
+                .TryGetValue($"{modName}/{nameof(MeleeAction)}/{fileName}",
                 out var value)
             && value is Sequence sequence)
         {

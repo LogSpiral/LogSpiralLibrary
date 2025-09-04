@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.StandardMelee;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
@@ -27,7 +28,6 @@ public partial class MeleeSequenceProj
     public static Dictionary<int, Sequence> LocalMeleeSequence { get; } = [];
     protected Sequence meleeSequence = null;
     public SequenceModel SequenceModel { get; protected set; }
-
 
     private static void LoadLocalLibrarySequences(Sequence sequence, string inModDirectoryPath, Mod mod)
     {
@@ -59,7 +59,6 @@ public partial class MeleeSequenceProj
                 LocalMeleeSequence[Type] = localSeq = SequenceManager<MeleeAction>.RegisterSingleSequence(fullName, stream);
 
                 LoadLocalLibrarySequences(localSeq, inModDirectoryPath, Mod);
-
             }
             meleeSequence = localSeq;
             return;
@@ -131,7 +130,6 @@ public partial class MeleeSequenceProj
     public override void OnSpawn(IEntitySource source)
     {
         InitializeSequence(Mod.Name, Name);
-
         base.OnSpawn(source);
     }
 

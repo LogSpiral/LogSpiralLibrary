@@ -1,6 +1,7 @@
 ﻿using Terraria.Audio;
+using Terraria.Graphics.Shaders;
 
-namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 
 /// <summary>
 /// 不同物品有自己独有的标准值
@@ -107,4 +108,8 @@ public class VertexDrawStandardInfo
 
     public (int, int)? swooshTexIndex;
     public (int, int)? stabTexIndex;
+
+    public int? dyeShaderID;
+
+    public void SetDyeShaderID(int itemID) => dyeShaderID = GameShaders.Armor.GetShaderIdFromItemId(itemID);
 }

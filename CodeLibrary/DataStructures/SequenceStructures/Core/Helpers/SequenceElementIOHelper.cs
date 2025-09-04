@@ -1,4 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
@@ -68,8 +68,12 @@ public static class SequenceElementIOHelper
                 if (xmlElement.HasElements)
                 {
                     using XmlReader reader = xmlElement.CreateReader();
-                    if (variableInfo.GetValue(element) is IXmlSerializable serializable)
+                    if (variableInfo.GetValue(element) is IXmlSerializable serializable) 
+                    {
                         serializable.ReadXml(reader);
+                        if (variableInfo.Type.IsValueType)
+                            variableInfo.SetValue(element, serializable);
+                    }
                     else
                     {
                         var obj = Activator.CreateInstance(variableInfo.Type) as IXmlSerializable;

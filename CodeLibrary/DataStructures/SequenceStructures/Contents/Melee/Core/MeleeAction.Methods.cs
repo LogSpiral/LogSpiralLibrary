@@ -1,13 +1,12 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using System.Diagnostics;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
 public partial class MeleeAction
 {
-    public sealed override void Update()
+    public override sealed void Update()
     {
         // 开始单次循环
         if (Timer <= 0 && (Counter < CounterMax || CounterMax == 0))
@@ -24,6 +23,7 @@ public partial class MeleeAction
 
         bool oldValue = Attacktive;
 
+        // TODO 修改triggered的逻辑，让非玩家实体也能使用
         UpdateStatus(Owner is Player plr && (plr.controlUseItem || plr.controlUseTile));
         if (Attacktive) OnAttack();
         else OnCharge();
@@ -38,7 +38,7 @@ public partial class MeleeAction
         }
 
         // 结束单次循环
-        if (Timer <= 0) 
+        if (Timer <= 0)
         {
             OnEndSingle();
             if (Attacktive)
@@ -66,6 +66,7 @@ public partial class MeleeAction
     public override void Initialize()
     {
         Counter = 0;
+        Timer = 0;
     }
 
     public virtual void OnActive()

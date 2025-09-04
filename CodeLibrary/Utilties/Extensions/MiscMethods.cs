@@ -1,6 +1,8 @@
-﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
+using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
 using System.Reflection;
+using Terraria.Graphics.Shaders;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using static Terraria.Utils;
 
@@ -17,7 +19,7 @@ public static class MiscMethods
         return GetInstanceMethod?.MakeGenericMethod(type)?.Invoke(null, []);
     }
 
-    public static void FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler)
+    public static Dust FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler,int? shaderID = null)
     {
         var hsl = Main.rgbToHsl(color);//Color.MediumPurple
         var dustColor = Color.Lerp(Main.hslToRgb(Vector3.Clamp(hsl * new Vector3(1, 2, Main.rand.NextFloat(0.85f, 1.15f)), default, Vector3.One)), Color.White, Main.rand.NextFloat(0, 0.3f));
@@ -27,9 +29,12 @@ public static class MiscMethods
         dust.fadeIn = 0.4f + Main.rand.NextFloat() * 0.3f;
         dust.fadeIn *= .5f;
         dust.noGravity = true;
+        if (shaderID is > 0)
+            dust.shader = GameShaders.Armor._shaderData[shaderID.Value - 1];
+        return dust;
     }
 
-    public static void FastDust(Vector2 Center, Vector2 velocity, Color color) => FastDust(Center, velocity, color, 1f);
+    public static Dust FastDust(Vector2 Center, Vector2 velocity, Color color) => FastDust(Center, velocity, color, 1f);
 
     public static T HardmodeValue<T>(T normalValue, T expertValue, T masterValue)
     {

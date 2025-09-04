@@ -1,5 +1,7 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using PropertyPanelLibrary.PropertyPanelComponents.Attributes;
+using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 // 以如下标准整理
@@ -28,12 +30,13 @@ public partial class MeleeAction
     /// </summary>
     [ElementCustomData]
     [LabelPresentValue(false)]
-    public ActionModifyData ModifyData { get; set; } = new ActionModifyData(1);
+    public ActionModifyData ModifyData { get; set; } = new ActionModifyData();
 
     /// <summary>
     /// 执行次数
     /// </summary>
     [ElementCustomData]
+    [Range(1, 6)]
     public virtual int CounterMax { get; set; } = 1;
 
     #endregion 参数属性

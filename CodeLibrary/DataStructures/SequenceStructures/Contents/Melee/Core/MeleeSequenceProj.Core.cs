@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
@@ -90,23 +91,27 @@ public abstract partial class MeleeSequenceProj : ModProjectile
             Projectile.Kill();
         }
 
-        bool flag1 = Player.controlUseItem || Player.controlUseTile || CurrentElement == null;//首要-触发条件
+        bool triggered = Player.controlUseItem || Player.controlUseTile || CurrentElement == null;//首要-触发条件
+
+        if (triggered)
+            SequenceModel.IsCompleted = false;
+
+        SequenceModel.Update();
+
         if (Player.GetModPlayer<SequencePlayer>().PendingForcedNext)
         {
-            flag1 = true;
+            triggered = true;
             Player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
         }
-        if (flag1)
-            SequenceModel.IsCompleted = false;
-        SequenceModel.Update();
+
         if (CurrentElement == null) return;
-        if (!SequenceModel.IsCompleted || !IsLocalProj)
-            Projectile.timeLeft = 4;
+        if (!CurrentElement.IsCompleted || triggered || !IsLocalProj)
+            Projectile.timeLeft = 2;
         //依旧是常规赋值，但是要中间那段执行正常才应当执行
         Projectile.Center = Player.Center + CurrentElement.offsetCenter + Player.gfxOffY * Vector2.UnitY;
-        if (Player.itemAnimation < 2)
+        if (Player.itemAnimation != 2)
             Player.itemAnimation = 2;
-        if (Player.itemTime < 2)
+        if (Player.itemTime != 2)
             Player.itemTime = 2;
         base.AI();
     }

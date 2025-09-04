@@ -12,10 +12,10 @@ public static class SequenceCheckHelper
             foreach (var pair in group.Contents) 
             {
                 var wrapper = pair.Wrapper;
-                if (wrapper.Sequence != null) 
+                if (wrapper.Sequence is Sequence { } subSequence) 
                 {
                     if (wrapper.RefSequenceFullName == null)
-                        FillUnloadWrapperList(sequence, wrappers);
+                        FillUnloadWrapperList(subSequence, wrappers);
                     else if (SequenceGlobalManager.UnloadSequences.Contains(wrapper.RefSequenceFullName))
                         wrappers.Add(wrapper);
                 }

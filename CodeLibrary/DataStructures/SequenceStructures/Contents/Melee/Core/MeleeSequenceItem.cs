@@ -1,4 +1,4 @@
-﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
+﻿namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 
 /// <summary>
 /// 基剑必需品

@@ -45,6 +45,16 @@ public class StormInfo : ExtendedMelee
     {
         if (!float.IsNaN(targetedVector.X))
             Owner.direction = Math.Sign(targetedVector.X);
+
+        if (swoosh != null)
+        {
+            swoosh.timeLeft = Math.Max((int)(swoosh.timeLeftMax * (1 - Math.Abs(0.5f - Factor) * 2)), 2);
+            swoosh.angleRange = (offsetRotation / MathHelper.Pi - 1f + .25f * (Flip ? -1 : 1), offsetRotation / MathHelper.Pi + .25f * (Flip ? -1 : 1));
+            if (Flip)
+                swoosh.angleRange = (1 - swoosh.angleRange.to, 1 - swoosh.angleRange.from);
+
+            swoosh.center = Owner.Center;
+        }
         base.UpdateStatus(triggered);
     }
 
@@ -53,7 +63,8 @@ public class StormInfo : ExtendedMelee
         if (Main.netMode != NetmodeID.Server)
         {
             var verS = StandardInfo.VertexStandard;
-            var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler, Owner.Center, (0, 1));
+
+            var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler, Owner.Center, (0, 0));
             u.negativeDir = Flip;
             u.rotation = Rotation;
             u.xScaler = KValue;
@@ -63,21 +74,6 @@ public class StormInfo : ExtendedMelee
         SoundEngine.PlaySound(SoundID.DD2_BookStaffCast);
 
         base.OnStartAttack();
-    }
-
-    public override void OnAttack()
-    {
-        if (swoosh != null)
-        {
-            swoosh.timeLeft = (int)(swoosh.timeLeftMax * (1 - Math.Abs(0.5f - Factor) * 2));
-            swoosh.angleRange = (offsetRotation / MathHelper.Pi - 1f + .25f * (Flip ? -1 : 1), offsetRotation / MathHelper.Pi + .25f * (Flip ? -1 : 1));
-            if (Flip)
-            {
-                swoosh.angleRange = (1 - swoosh.angleRange.to, 1 - swoosh.angleRange.from);
-            }
-            swoosh.center = Owner.Center;
-        }
-        base.OnAttack();
     }
 
     public override void OnStartSingle()

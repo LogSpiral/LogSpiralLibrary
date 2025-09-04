@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
@@ -29,7 +30,7 @@ public class ChargingInfo : ExtendedMelee
     #region 重写属性
 
     public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
-    public override float offsetSize => base.offsetSize;
+    public override float offsetSize => Timer == 0 ? 0 : 1;
     public override bool Attacktive => Timer == 1;
 
     #endregion 重写属性
@@ -38,6 +39,7 @@ public class ChargingInfo : ExtendedMelee
 
     public override void UpdateStatus(bool triggered)
     {
+        var shaderID = StandardInfo.VertexStandard.dyeShaderID;
         StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
         Flip = Owner.direction == 1;
         switch (Owner)
@@ -52,25 +54,44 @@ public class ChargingInfo : ExtendedMelee
                 }
         }
         base.UpdateStatus(triggered);
+
+        #region 蓄力粒子效果
+
         if (Timer > 0)
             for (int n = 0; n < 4; n++)
             {
                 Vector2 unit = (MathHelper.PiOver2 * n + 4 * Factor).ToRotationVector2();
-                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 2f);
+                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 2f, shaderID);
 
-                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1.5f);
+                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1.5f, shaderID);
             }
-        if (Timer == 1 && Counter == CounterMax)
+
+        #endregion 蓄力粒子效果
+
+        #region 蓄力完全完成时的粒子爆发
+
+        if (Timer == 1)
         {
-            Timer = 0;
-            SoundEngine.PlaySound(SoundID.Item84);
-            for (int n = 0; n < 40; n++)
+            bool max = Counter == CounterMax;
+            // 此处将计时器从1设为了0
+            // 避免了Timer == 1的反复触发
+            if (max)
+                Timer = 0;
+            SoundEngine.PlaySound(SoundID.Item84 with { Volume = max ? 1.0f : .5f });
+            int dustAmount = max ? 40 : 10;
+            for (int n = 0; n < dustAmount; n++)
             {
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4));
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2));
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4), shaderID);
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2), shaderID);
             }
         }
-        if (!AutoNext && Timer < 2 && Counter == CounterMax)
+
+        #endregion 蓄力完全完成时的粒子爆发
+
+        #region 蓄力锁更新进程
+
+        // 话说现在没有强绑定计时器了是不是可以直接魔改IsCompleted
+        if (!AutoNext && IsCompleted)
         {
             if (triggered)
                 Timer++;
@@ -80,28 +101,37 @@ public class ChargingInfo : ExtendedMelee
                     case Player plr:
                         SequencePlayer mplr = plr.GetModPlayer<SequencePlayer>();
                         mplr.PendingForcedNext = true;
-                        Timer = 0;
                         break;
                 }
         }
+
+        #endregion 蓄力锁更新进程
+
         if (!triggered && Timer != 0)
         {
+            if (Counter == 1)
+                SoundEngine.PlaySound(MySoundID.MagicStaff);
+            else if (!AutoNext)
+                switch (Owner)
+                {
+                    case Player plr:
+                        SequencePlayer mplr = plr.GetModPlayer<SequencePlayer>();
+                        mplr.PendingForcedNext = true;
+                        break;
+                }
+
+
             Timer = 0;
-            SoundEngine.PlaySound(MySoundID.MagicStaff);
+            Counter = CounterMax;
+
+
         }
     }
 
-    public override void OnEndSingle()
+    public override void OnDeactive()
     {
-        if (!AutoNext)
-            switch (Owner)
-            {
-                case Player plr:
-                    SequencePlayer mplr = plr.GetModPlayer<SequencePlayer>();
-                    mplr.PendingForcedNext = true;
-                    break;
-            }
-        base.OnEndSingle();
+
+        base.OnDeactive();
     }
 
     public override bool Collide(Rectangle rectangle) => false;

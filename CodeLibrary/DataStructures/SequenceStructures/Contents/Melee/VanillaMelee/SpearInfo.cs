@@ -12,9 +12,9 @@ public class SpearInfo : VanillaMelee
 
     public override float Factor => MathF.Pow(base.Factor, 3);
 
-    public override float offsetRotation => MathF.Sin(Factor * MathHelper.TwoPi) * .25f;
+    public override float OffsetRotation => MathF.Sin(Factor * MathHelper.TwoPi) * .25f;
 
-    public override Vector2 offsetCenter
+    public override Vector2 OffsetCenter
     {
         get
         {

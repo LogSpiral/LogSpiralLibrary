@@ -69,8 +69,8 @@ public class StabInfo : LSLMelee
         }
     }
 
-    public override Vector2 offsetOrigin => new Vector2(Factor * .4f - .4f, 0).RotatedBy(StandardInfo.standardRotation);
-    public override float offsetDamage => MathF.Pow(.75f, hitCounter);
+    public override Vector2 OffsetOrigin => new Vector2(Factor * .4f - .4f, 0).RotatedBy(StandardInfo.standardRotation);
+    public override float OffsetDamage => MathF.Pow(.75f, hitCounter);
     public override bool Attacktive => Timer <= MathF.Sqrt(TimerMax);
 
     #endregion 重写属性
@@ -86,7 +86,7 @@ public class StabInfo : LSLMelee
             UltraStab u;
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
-                float size = verS.scaler * ModifyData.Size * offsetSize * 1.25f;
+                float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
                 u.negativeDir = Flip;
@@ -112,7 +112,7 @@ public class StabInfo : LSLMelee
             }
             else
             {
-                float size = verS.scaler * ModifyData.Size * offsetSize * 1.25f;
+                float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
                 u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = verS.heatMap;
                 u.negativeDir = Flip;
@@ -199,7 +199,7 @@ public class StabInfo : LSLMelee
                 {
                     var flag = k == 0;
                     var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
-                    var Center = Owner.Center + offsetCenter + targetedVector * .75f;
+                    var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
                     var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
                     velocity *= 2;
                     MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);

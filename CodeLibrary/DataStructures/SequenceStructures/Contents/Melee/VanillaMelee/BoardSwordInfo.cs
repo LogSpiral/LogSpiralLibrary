@@ -13,7 +13,7 @@ public class BoardSwordInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override float offsetRotation => MathHelper.SmoothStep(0.15f, -0.75f, Factor * Factor) * MathHelper.Pi * Owner.direction;
+    public override float OffsetRotation => MathHelper.SmoothStep(0.15f, -0.75f, Factor * Factor) * MathHelper.Pi * Owner.direction;
     public override bool Attacktive => Factor < .75f;
 
     #endregion 重写属性

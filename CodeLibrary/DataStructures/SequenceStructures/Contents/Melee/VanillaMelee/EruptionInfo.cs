@@ -16,8 +16,8 @@ public class EruptionInfo : VanillaMelee
     //public override float offsetSize => (-MathF.Pow(0.5f - Factor, 2) * 28 + 8) * .75f;
     //public override float offsetRotation => MathHelper.Lerp(1f, -1f, Factor) * (flip ? -1 : 1) * MathHelper.Pi / 3;
 
-    public override float offsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
-    public override float offsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
+    public override float OffsetRotation => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).ToRotation();
+    public override float OffsetSize => ((MathHelper.Lerp(1f, -1f, Factor) * (Flip ? -1 : 1) * MathHelper.Pi).ToRotationVector2() * new Vector2(1, 1f / KValue) + Vector2.UnitX * 1.05f).Length() * 2;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
 
@@ -27,12 +27,12 @@ public class EruptionInfo : VanillaMelee
 
     private CustomVertexInfo[] EruptionVertex(Texture2D texture, float alpha)
     {
-        Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
-        Vector2 drawCen = offsetCenter + Owner.Center;
+        Vector2 finalOrigin = OffsetOrigin + StandardInfo.standardOrigin;
+        Vector2 drawCen = OffsetCenter + Owner.Center;
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, drawCen, !Flip, alpha, StandardInfo.frame);
+        var vtxs = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, OffsetRotation, Rotation, texture, KValue, OffsetSize * ModifyData.Size * sc, drawCen, !Flip, alpha, StandardInfo.frame);
         List<CustomVertexInfo> result = [];
         Vector2 offVec = vtxs[4].Position - vtxs[0].Position;
         float angle = offVec.ToRotation();

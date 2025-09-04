@@ -13,7 +13,7 @@ public class FistInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2) * 512;
+    public override Vector2 OffsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * Factor - 1), 2) * 512;
     public override bool Attacktive => Factor < .65f;
     public override bool OwnerHitCheek => false;
 
@@ -26,9 +26,9 @@ public class FistInfo : VanillaMelee
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
         if (Owner is Player plr)
         {
-            plr.Center += offsetCenter;
+            plr.Center += OffsetCenter;
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-            plr.Center -= offsetCenter;
+            plr.Center -= OffsetCenter;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
                 SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);

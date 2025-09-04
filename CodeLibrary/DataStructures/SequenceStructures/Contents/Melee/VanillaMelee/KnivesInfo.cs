@@ -11,8 +11,8 @@ public class KnivesInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override float offsetRotation => base.offsetRotation + MathF.Pow(1 - Factor, 4) * MathHelper.Pi * 4;
-    public override Vector2 offsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 1024 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 256);
+    public override float OffsetRotation => base.OffsetRotation + MathF.Pow(1 - Factor, 4) * MathHelper.Pi * 4;
+    public override Vector2 OffsetCenter => Rotation.ToRotationVector2() * (1 - Factor) * 1024 + new Vector2(0, MathF.Pow(1 - Factor, 2) * 256);
     public override bool Attacktive => true;
 
     #endregion 重写属性
@@ -30,7 +30,7 @@ public class KnivesInfo : VanillaMelee
         if (Owner is Player plr && Main.rand.NextBool(10))
         {
             Vector2 orig = plr.Center;
-            plr.Center = offsetCenter + Owner.Center;
+            plr.Center = OffsetCenter + Owner.Center;
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)

@@ -22,8 +22,8 @@ public class ZenithInfo : VanillaMelee
 
     #region 重写属性
 
-    public override float offsetRotation => MathHelper.SmoothStep(1f, -1f, MathHelper.Clamp((1 - Factor) * 2, 0, 1)) * (Flip ? 1 : -1) * MathHelper.Pi;
-    public override Vector2 offsetCenter => Rotation.ToRotationVector2() * dist * .5f + (offsetRotation.ToRotationVector2() * new Vector2(dist * .5f, 100 / KValue)).RotatedBy(Rotation);
+    public override float OffsetRotation => MathHelper.SmoothStep(1f, -1f, MathHelper.Clamp((1 - Factor) * 2, 0, 1)) * (Flip ? 1 : -1) * MathHelper.Pi;
+    public override Vector2 OffsetCenter => Rotation.ToRotationVector2() * dist * .5f + (OffsetRotation.ToRotationVector2() * new Vector2(dist * .5f, 100 / KValue)).RotatedBy(Rotation);
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
 
@@ -137,7 +137,7 @@ public class ZenithInfo : VanillaMelee
         if (Owner is Player plr && Main.rand.NextBool(5))
         {
             Vector2 orig = plr.Center;
-            plr.Center += offsetCenter;
+            plr.Center += OffsetCenter;
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)

@@ -74,7 +74,11 @@ public class RenderCanvasSystem : ModSystem
             _renderingCanvases.Remove(pendingName);
     }
 
-    public override void PostUpdateEverything() => UpdateCanvases();
+    public override void PostUpdateEverything() 
+    {
+        if(!Main.dedServ)
+            UpdateCanvases();
+    }
 
     public override void Load()
     {

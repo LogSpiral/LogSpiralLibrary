@@ -33,7 +33,7 @@ public class StormInfo : ExtendedMelee
 
     #region 重写属性
 
-    public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.TwoPi * angleRange, Factor) * (Flip ? 1 : -1);
+    public override float OffsetRotation => MathHelper.SmoothStep(0, MathHelper.TwoPi * angleRange, Factor) * (Flip ? 1 : -1);
 
     public override bool Attacktive => Math.Abs(Factor - 0.5f) < 0.45f;
 
@@ -49,7 +49,7 @@ public class StormInfo : ExtendedMelee
         if (swoosh != null)
         {
             swoosh.timeLeft = Math.Max((int)(swoosh.timeLeftMax * (1 - Math.Abs(0.5f - Factor) * 2)), 2);
-            swoosh.angleRange = (offsetRotation / MathHelper.Pi - 1f + .25f * (Flip ? -1 : 1), offsetRotation / MathHelper.Pi + .25f * (Flip ? -1 : 1));
+            swoosh.angleRange = (OffsetRotation / MathHelper.Pi - 1f + .25f * (Flip ? -1 : 1), OffsetRotation / MathHelper.Pi + .25f * (Flip ? -1 : 1));
             if (Flip)
                 swoosh.angleRange = (1 - swoosh.angleRange.to, 1 - swoosh.angleRange.from);
 
@@ -71,7 +71,7 @@ public class StormInfo : ExtendedMelee
             (u.aniTexIndex, u.baseTexIndex) = verS.swooshTexIndex ?? (3, 7);
             u.ApplyStdValueToVtxEffect(StandardInfo);
         }
-        SoundEngine.PlaySound(SoundID.DD2_BookStaffCast);
+        SoundEngine.PlaySound(SoundID.DD2_BookStaffCast,Owner.Center);
 
         base.OnStartAttack();
     }

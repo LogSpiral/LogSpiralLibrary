@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System.IO;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
@@ -29,8 +30,8 @@ public class ChargingInfo : ExtendedMelee
 
     #region 重写属性
 
-    public override float offsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
-    public override float offsetSize => Timer == 0 ? 0 : 1;
+    public override float OffsetRotation => Main.rand.NextFloat(-1, 1) * Main.rand.NextFloat(0, 1) * Factor * .5f + MathHelper.Lerp(StartRotation, ChargingRotation, MathHelper.SmoothStep(1, 0, MathF.Pow(Factor, 3))) * Owner.direction;
+    public override float OffsetSize => Timer == 0 ? 0 : 1;
     public override bool Attacktive => Timer == 1;
 
     #endregion 重写属性
@@ -77,12 +78,12 @@ public class ChargingInfo : ExtendedMelee
             // 避免了Timer == 1的反复触发
             if (max)
                 Timer = 0;
-            SoundEngine.PlaySound(SoundID.Item84 with { Volume = max ? 1.0f : .5f });
+            SoundEngine.PlaySound(SoundID.Item84 with { Volume = max ? 1.0f : .5f }, Owner.Center);
             int dustAmount = max ? 40 : 10;
             for (int n = 0; n < dustAmount; n++)
             {
                 MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4), shaderID);
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + offsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2), shaderID);
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + OffsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2), shaderID);
             }
         }
 
@@ -110,7 +111,7 @@ public class ChargingInfo : ExtendedMelee
         if (!triggered && Timer != 0)
         {
             if (Counter == 1)
-                SoundEngine.PlaySound(MySoundID.MagicStaff);
+                SoundEngine.PlaySound(MySoundID.MagicStaff, Owner.Center);
             else if (!AutoNext)
                 switch (Owner)
                 {
@@ -130,11 +131,32 @@ public class ChargingInfo : ExtendedMelee
 
     public override void OnDeactive()
     {
-
+        if (!AutoNext)
+            switch (Owner)
+            {
+                case Player plr:
+                    if (!plr.GetModPlayer<SequencePlayer>().PendingForcedNext)
+                        Projectile.Kill();
+                    break;
+            }
         base.OnDeactive();
     }
 
     public override bool Collide(Rectangle rectangle) => false;
+
+    public override void NetSend(BinaryWriter writer)
+    {
+        base.NetSend(writer);
+        writer.Write(ChargingRotation);
+        writer.Write(StartRotation);
+    }
+
+    public override void NetReceive(BinaryReader reader)
+    {
+        base.NetReceive(reader);
+        ChargingRotation = reader.ReadSingle();
+        StartRotation = reader.ReadSingle();
+    }
 
     #endregion 重写函数
 }

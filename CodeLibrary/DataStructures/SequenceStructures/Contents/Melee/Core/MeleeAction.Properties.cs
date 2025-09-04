@@ -83,24 +83,24 @@ public partial class MeleeAction
     /// <summary>
     /// 中心偏移量，默认零向量
     /// </summary>
-    public virtual Vector2 offsetCenter => default;
+    public virtual Vector2 OffsetCenter => default;
 
     /// <summary>
     /// 原点偏移量，默认为零向量,取值范围[0,1]
     /// </summary>
-    public virtual Vector2 offsetOrigin => default;
+    public virtual Vector2 OffsetOrigin => default;
 
     /// <summary>
     /// 旋转量
     /// </summary>
-    public virtual float offsetRotation { get; }
+    public virtual float OffsetRotation { get; }
 
     public virtual float CompositeArmRotation => targetedVector.ToRotation() - MathHelper.PiOver2;
 
     /// <summary>
     /// 大小
     /// </summary>
-    public virtual float offsetSize => 1f;
+    public virtual float OffsetSize => 1f;
 
     /// <summary>
     /// 是否具有攻击性
@@ -110,7 +110,7 @@ public partial class MeleeAction
     /// <summary>
     /// 伤害
     /// </summary>
-    public virtual float offsetDamage => 1f;
+    public virtual float OffsetDamage => 1f;
 
     public virtual bool OwnerHitCheek => true;
 
@@ -134,7 +134,7 @@ public partial class MeleeAction
     /// </summary>
     public StandardInfo StandardInfo { get; set; }
 
-    public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.Damage * offsetDamage) : Projectile.damage;
+    public int CurrentDamage => Owner is Player plr ? (int)(plr.GetWeaponDamage(plr.HeldItem) * ModifyData.Damage * OffsetDamage) : Projectile.damage;
     public override string LocalizationCategory => $"Sequence.{nameof(MeleeAction)}";
     public override string Category { get; } = "";
 

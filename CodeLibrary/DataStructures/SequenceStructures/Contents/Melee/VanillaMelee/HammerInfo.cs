@@ -13,8 +13,8 @@ public class HammerInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override float offsetRotation => Factor * MathHelper.TwoPi + (float)LogSpiralLibraryMod.ModTime2 * .025f;
-    public override Vector2 offsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
+    public override float OffsetRotation => Factor * MathHelper.TwoPi + (float)LogSpiralLibraryMod.ModTime2 * .025f;
+    public override Vector2 OffsetCenter => Rotation.ToRotationVector2() * MathF.Pow(1 - MathF.Abs(2 * (Factor * 2 % 1) - 1), 2) * 256;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
 
@@ -34,9 +34,9 @@ public class HammerInfo : VanillaMelee
         base.OnHitEntity(victim, damageDone, context);
         if (Owner is Player plr && Main.rand.NextBool(3))
         {
-            plr.Center += offsetCenter;
+            plr.Center += OffsetCenter;
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-            plr.Center -= offsetCenter;
+            plr.Center -= OffsetCenter;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
                 SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);

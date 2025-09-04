@@ -4,5 +4,5 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 
 public partial class MeleeAction : CommonElement
 {
-    protected override void RootRegister() => CommonRegister(this);
+    protected sealed override void RootRegister() => CommonRegister(this);
 }

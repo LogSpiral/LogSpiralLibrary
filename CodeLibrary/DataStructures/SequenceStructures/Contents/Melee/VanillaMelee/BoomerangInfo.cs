@@ -20,8 +20,8 @@ public class BoomerangInfo : VanillaMelee
 
     #region 重写属性
 
-    public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.25f;
-    public override Vector2 offsetCenter => realCenter - Owner.Center;
+    public override float OffsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.25f;
+    public override Vector2 OffsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => true;
     public override bool OwnerHitCheek => false;
 
@@ -40,14 +40,14 @@ public class BoomerangInfo : VanillaMelee
         {
             back = true;
             Collision.HitTiles(realCenter, default, 32, 32);
-            SoundEngine.PlaySound(MySoundID.ProjectileHit);
+            SoundEngine.PlaySound(MySoundID.ProjectileHit, realCenter);
         }
-        if (back && offsetCenter.Length() >= 32f)
+        if (back && OffsetCenter.Length() >= 32f)
         {
             Timer = 2;
         }
         if ((int)LogSpiralLibraryMod.ModTime2 % 7 == 0)
-            SoundEngine.PlaySound(MySoundID.BoomerangRotating);
+            SoundEngine.PlaySound(MySoundID.BoomerangRotating, realCenter);
         //if (back)
         //{
         //    //realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.05f);

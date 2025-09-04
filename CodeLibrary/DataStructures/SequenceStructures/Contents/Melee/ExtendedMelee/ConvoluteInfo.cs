@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Audio;
 
@@ -11,15 +12,15 @@ public class ConvoluteInfo : ExtendedMelee
 {
     #region 辅助字段
 
-    public Vector2 unit;
+    private Vector2 _unit;
 
     #endregion 辅助字段
 
     #region 重写属性
 
-    public override float offsetRotation => Factor * MathHelper.TwoPi * 2 + (float)LogSpiralLibraryMod.ModTime2 * .025f;
+    public override float OffsetRotation => Factor * MathHelper.TwoPi * 2 + (float)LogSpiralLibraryMod.ModTime2 * .025f;
     public override float CompositeArmRotation => Owner.direction;
-    public override Vector2 offsetCenter => unit * Factor.CosFactor() * 512;
+    public override Vector2 OffsetCenter => _unit * Factor.CosFactor() * 512;
     public override bool Attacktive => Factor >= .25f;
     public override bool OwnerHitCheek => false;
 
@@ -31,16 +32,16 @@ public class ConvoluteInfo : ExtendedMelee
     {
         base.OnStartSingle();
         KValue = 1.5f;
-        unit = Rotation.ToRotationVector2();
+        _unit = Rotation.ToRotationVector2();
     }
 
     public override void OnStartAttack()
     {
         if (Owner is Player plr)
         {
-            plr.Center += offsetCenter;
+            plr.Center += OffsetCenter;
             plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-            plr.Center -= offsetCenter;
+            plr.Center -= OffsetCenter;
         }
         base.OnStartAttack();
     }
@@ -66,5 +67,16 @@ public class ConvoluteInfo : ExtendedMelee
         return [.. result];
     }
 
+    public override void NetSend(BinaryWriter writer)
+    {
+        base.NetSend(writer);
+        writer.WriteVector2(_unit);
+    }
+
+    public override void NetReceive(BinaryReader reader)
+    {
+        base.NetReceive(reader);
+        _unit = reader.ReadVector2();
+    }
     #endregion 重写函数
 }

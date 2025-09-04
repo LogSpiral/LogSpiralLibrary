@@ -2,6 +2,7 @@
 using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
@@ -105,5 +106,27 @@ public struct ActionModifyData(float size, float timeScaler, float knockBack, fl
             writer.WriteElementString("CritAdder", CritAdder.ToString());
         if (CritMultiplyer != 1)
             writer.WriteElementString("CritMultiplier", CritMultiplyer.ToString("0.0"));
+    }
+
+
+
+    public readonly void WriteBinary(BinaryWriter writer) 
+    {
+        writer.Write(Size);
+        writer.Write(TimeScaler);
+        writer.Write(KnockBack);
+        writer.Write(Damage);
+        writer.Write((byte)CritAdder);
+        writer.Write(CritMultiplyer);
+    }
+
+    public void ReadBinary(BinaryReader reader)
+    {
+        Size = reader.ReadSingle();
+        TimeScaler = reader.ReadSingle();
+        KnockBack = reader.ReadSingle();
+        Damage = reader.ReadSingle();
+        CritAdder = reader.ReadByte();
+        CritMultiplyer = reader.ReadSingle();
     }
 }

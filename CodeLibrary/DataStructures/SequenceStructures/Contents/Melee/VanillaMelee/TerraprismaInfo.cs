@@ -26,8 +26,8 @@ public class TerraprismaInfo : VanillaMelee
 
     #region 重写属性
 
-    public override float offsetRotation => realRotation;
-    public override Vector2 offsetCenter => realCenter - Owner.Center;
+    public override float OffsetRotation => realRotation;
+    public override Vector2 OffsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => target != null;
     public override bool OwnerHitCheek => true;
 
@@ -100,7 +100,7 @@ public class TerraprismaInfo : VanillaMelee
                     float sc = 1;
                     if (Owner is Player plr2)
                         sc = plr2.GetAdjustedItemScale(plr2.HeldItem);
-                    if (Vector2.Distance(target.Center, realCenter) > verS.scaler * offsetSize * sc)
+                    if (Vector2.Distance(target.Center, realCenter) > verS.scaler * OffsetSize * sc)
                         assistParas[0] = 9;
                 }
             }
@@ -133,7 +133,7 @@ public class TerraprismaInfo : VanillaMelee
             var f = i / 44f;
             var realColor = StandardInfo.standardColor;
             realColor.A = (byte)(f.HillFactor2(1) * 255);//96
-            vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * offsetSize * ModifyData.Size + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
+            vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * OffsetSize * ModifyData.Size + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
             vertex[2 * i + 1] = new CustomVertexInfo(oldCenters[i] + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(0, 0, 1));
         }
 
@@ -202,7 +202,7 @@ public class TerraprismaInfo : VanillaMelee
             if (Owner is Player plr)
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
             var flag = Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), oldCenters[n],
-                    oldCenters[n] + oldRotations[n].ToRotationVector2() * StandardInfo.VertexStandard.scaler * offsetSize * sc, 48f, ref point1);
+                    oldCenters[n] + oldRotations[n].ToRotationVector2() * StandardInfo.VertexStandard.scaler * OffsetSize * sc, 48f, ref point1);
             if (flag)
             {
                 if (Owner is Player player && Main.rand.NextBool(5))
@@ -226,14 +226,14 @@ public class TerraprismaInfo : VanillaMelee
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
         IEnumerable<CustomVertexInfo> result = [];
-        Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
+        Vector2 finalOrigin = OffsetOrigin + StandardInfo.standardOrigin;
         float k = MathF.Pow(Factor, 0.5f);
         for (int n = 20; n >= 0; n -= 5)
         {
             float sc = 1;
             if (Owner is Player plr)
                 sc = plr.GetAdjustedItemScale(plr.HeldItem);
-            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, oldRotations[n], Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, oldCenters[n], !Flip, (n == 0 ? 1 : (45f - n) / 90f) * k, StandardInfo.frame);
+            var currentVertex = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, oldRotations[n], Rotation, texture, KValue, OffsetSize * ModifyData.Size * sc, oldCenters[n], !Flip, (n == 0 ? 1 : (45f - n) / 90f) * k, StandardInfo.frame);
             result = result.Concat(currentVertex);
         }
         return [.. result];

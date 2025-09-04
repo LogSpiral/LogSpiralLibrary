@@ -27,13 +27,13 @@ public class FlailInfo : VanillaMelee
 
     #region 重写属性
 
-    public override float offsetRotation => state switch
+    public override float OffsetRotation => state switch
     {
         3 => assistTimer * .5f,
         _ => (float)LogSpiralLibraryMod.ModTime2
     };
 
-    public override Vector2 offsetCenter => state switch
+    public override Vector2 OffsetCenter => state switch
     {
         0 => (new Vector2(64, 16) * ((float)LogSpiralLibraryMod.ModTime2 / 4f).ToRotationVector2()).RotatedBy(Rotation),
         2 or 4 => Vector2.SmoothStep(default, realPos - Owner.Center, Factor),
@@ -58,7 +58,7 @@ public class FlailInfo : VanillaMelee
             };
             Rotation = (tarVec - Owner.Center).ToRotation();
             if ((int)LogSpiralLibraryMod.ModTime2 % 10 == 0)
-                SoundEngine.PlaySound(SoundID.Item7);
+                SoundEngine.PlaySound(SoundID.Item7, Owner.Center);
         }
 
         switch (state)
@@ -67,7 +67,7 @@ public class FlailInfo : VanillaMelee
                 {
                     if (!triggered)
                     {
-                        realPos = offsetCenter + Owner.Center;
+                        realPos = OffsetCenter + Owner.Center;
                         state = 1;
                     }
                     break;
@@ -85,7 +85,7 @@ public class FlailInfo : VanillaMelee
                     assistTimer++;
                     var tile = Framing.GetTileSafely(realPos.ToTileCoordinates16());
 
-                    if (assistTimer > 30 || offsetCenter.Length() > 512 || tile.HasTile && Main.tileSolid[tile.TileType])
+                    if (assistTimer > 30 || OffsetCenter.Length() > 512 || tile.HasTile && Main.tileSolid[tile.TileType])
                     {
                         state = 2;
                         assistTimer = TimerMax;
@@ -97,7 +97,7 @@ public class FlailInfo : VanillaMelee
                 {
                     if (triggered)
                     {
-                        Vector2 pos = offsetCenter + Owner.position;
+                        Vector2 pos = OffsetCenter + Owner.position;
                         state = 3;
                         Timer = TimerMax = assistTimer * 10;
                         realPos = pos;
@@ -111,7 +111,7 @@ public class FlailInfo : VanillaMelee
             case 3:
                 {
                     Timer--;
-                    if (Timer <= 10 || !triggered || offsetCenter.Length() > 512)
+                    if (Timer <= 10 || !triggered || OffsetCenter.Length() > 512)
                     {
                         Timer = TimerMax = 10;
                         state = 4;

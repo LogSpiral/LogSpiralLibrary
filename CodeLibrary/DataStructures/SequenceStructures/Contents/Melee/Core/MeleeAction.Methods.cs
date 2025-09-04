@@ -106,6 +106,8 @@ public partial class MeleeAction
                     break;
                 }
         }
+        if (Projectile.owner == Main.myPlayer)
+            Projectile.netUpdate = true;
     }
 
     public virtual void OnEndSingle()
@@ -166,16 +168,16 @@ public partial class MeleeAction
         for (int n = 0; n < 5; n++)
         {
             fTimer = t + n * .2f;
-            Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
-            float finalRotation = offsetRotation + StandardInfo.standardRotation;
-            Vector2 drawCen = offsetCenter + Owner.Center;
+            Vector2 finalOrigin = OffsetOrigin + StandardInfo.standardOrigin;
+            float finalRotation = OffsetRotation + StandardInfo.standardRotation;
+            Vector2 drawCen = OffsetCenter + Owner.Center;
 
             float k = 1f;
             if (StandardInfo.VertexStandard.scaler > 0)
             {
                 k = StandardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
             }
-            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, offsetSize * ModifyData.Size * sc * k, drawCen, !Flip);
+            CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, OffsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, OffsetSize * ModifyData.Size * sc * k, drawCen, !Flip);
 
             float point = 0f;
             //Vector2 tar = c[4].Position - drawCen;
@@ -215,16 +217,16 @@ public partial class MeleeAction
 
     public virtual CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
     {
-        Vector2 finalOrigin = offsetOrigin + StandardInfo.standardOrigin;
+        Vector2 finalOrigin = OffsetOrigin + StandardInfo.standardOrigin;
         //float finalRotation = offsetRotation + standardInfo.standardRotation;
-        Vector2 drawCen = offsetCenter + Owner.Center;
+        Vector2 drawCen = OffsetCenter + Owner.Center;
         float sc = 1;
         if (Owner is Player plr)
         {
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
             drawCen += plr.gfxOffY * Vector2.UnitY;
         }
-        return DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, offsetRotation, Rotation, texture, KValue, offsetSize * ModifyData.Size * sc, drawCen, Flip, alpha, StandardInfo.frame);
+        return DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, OffsetRotation, Rotation, texture, KValue, OffsetSize * ModifyData.Size * sc, drawCen, Flip, alpha, StandardInfo.frame);
     }
 
     public virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
@@ -257,7 +259,7 @@ public partial class MeleeAction
         Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, sampler, DepthStencilState.Default, RasterizerState.CullNone, null, trans);
         ItemEffect.Parameters["uTransform"].SetValue(result);
         ItemEffect.Parameters["uTime"].SetValue((float)LogSpiralLibraryMod.ModTime / 60f % 1);
-        ItemEffect.Parameters["uItemColor"].SetValue(Lighting.GetColor((Owner.Center + offsetCenter).ToTileCoordinates()).ToVector4());
+        ItemEffect.Parameters["uItemColor"].SetValue(Lighting.GetColor((Owner.Center + OffsetCenter).ToTileCoordinates()).ToVector4());
         ItemEffect.Parameters["uItemGlowColor"].SetValue(Vector4.One);
         if (StandardInfo.frame != null)
         {
@@ -284,7 +286,7 @@ public partial class MeleeAction
 
         #endregion 好久前的绘制代码，直接搬过来用用试试
 
-        targetedVector = c[4].Position - (offsetCenter + Owner.Center);
+        targetedVector = c[4].Position - (OffsetCenter + Owner.Center);
         //if (standardInfo.vertexStandard.scaler > 0)
         //{
         //    targetedVector.Normalize();

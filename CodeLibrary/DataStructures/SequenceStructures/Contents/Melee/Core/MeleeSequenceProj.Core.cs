@@ -18,7 +18,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         get
         {
             if (IsLocalProj)
-                field = SequenceModel.CurrentElement as MeleeAction ?? null;
+                field = SequenceModel?.CurrentElement as MeleeAction ?? null;
             return field;
         }
         set;
@@ -94,9 +94,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         bool triggered = Player.controlUseItem || Player.controlUseTile || CurrentElement == null;//首要-触发条件
 
         if (triggered)
-            SequenceModel.IsCompleted = false;
-
-        SequenceModel.Update();
+            SequenceModel?.IsCompleted = false;
 
         if (Player.GetModPlayer<SequencePlayer>().PendingForcedNext)
         {
@@ -104,15 +102,30 @@ public abstract partial class MeleeSequenceProj : ModProjectile
             Player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
         }
 
+        if (triggered || !CurrentElement.IsCompleted)
+            SequenceModel?.Update();
+
+        if (!IsLocalProj && CurrentElement is { IsCompleted : false})
+            CurrentElement.Update();
+
         if (CurrentElement == null) return;
-        if (!CurrentElement.IsCompleted || triggered || !IsLocalProj)
-            Projectile.timeLeft = 2;
+
+        //if (!IsLocalProj)
+        //    Main.NewText((CurrentElement.Counter, CurrentElement.CounterMax, CurrentElement.TimerMax, CurrentElement.Timer));
+
+        if (!CurrentElement.IsCompleted || triggered)
+            Projectile.timeLeft = 32;
         //依旧是常规赋值，但是要中间那段执行正常才应当执行
-        Projectile.Center = Player.Center + CurrentElement.offsetCenter + Player.gfxOffY * Vector2.UnitY;
+        Projectile.Center = Player.Center + CurrentElement.OffsetCenter + Player.gfxOffY * Vector2.UnitY;
         if (Player.itemAnimation != 2)
             Player.itemAnimation = 2;
         if (Player.itemTime != 2)
             Player.itemTime = 2;
+
+        if (CurrentElement.IsCompleted)
+            Player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, 0);
+
+
         base.AI();
     }
 

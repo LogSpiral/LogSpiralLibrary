@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System.IO;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.ExtendedMelee;
@@ -14,9 +15,9 @@ public class PunctureInfo : ExtendedMelee
 
     #region 重写属性
 
-    public override float offsetRotation => MathHelper.SmoothStep(0, MathHelper.PiOver2 - (Rotation < -MathHelper.PiOver2 ? Rotation + MathHelper.TwoPi : Rotation), MathF.Pow(MathHelper.Clamp((1 - Factor) * 2, 0, 1), 2));
+    public override float OffsetRotation => MathHelper.SmoothStep(0, MathHelper.PiOver2 - (Rotation < -MathHelper.PiOver2 ? Rotation + MathHelper.TwoPi : Rotation), MathF.Pow(MathHelper.Clamp((1 - Factor) * 2, 0, 1), 2));
     public override float CompositeArmRotation => base.CompositeArmRotation + MathHelper.SmoothStep(0, -MathHelper.PiOver2 * .75f * Owner.direction, MathF.Pow(MathHelper.Clamp((1 - Factor) * 3, 0, 1), 2));
-    public override Vector2 offsetOrigin => base.offsetOrigin + Vector2.SmoothStep(default, new Vector2(-.25f, .05f).RotatedBy(StandardInfo.standardRotation + MathHelper.PiOver4), MathHelper.Clamp((1 - Factor) * 2, 0, 1));
+    public override Vector2 OffsetOrigin => base.OffsetOrigin + Vector2.SmoothStep(default, new Vector2(-.25f, .05f).RotatedBy(StandardInfo.standardRotation + MathHelper.PiOver4), MathHelper.Clamp((1 - Factor) * 2, 0, 1));
     public override bool Attacktive => Factor < .85f;
 
     #endregion 重写属性
@@ -35,7 +36,7 @@ public class PunctureInfo : ExtendedMelee
         if (verS.active)
         {
             var pair = StandardInfo.VertexStandard.stabTexIndex;
-            var scaler = verS.scaler * ModifyData.Size * offsetSize * 1.25f * 4f / fallFac;
+            var scaler = verS.scaler * ModifyData.Size * OffsetSize * 1.25f * 4f / fallFac;
             var center = Owner.Center - Vector2.UnitY * StandardInfo.VertexStandard.scaler / fallFac * 2f;
             UltraStab u = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, scaler, center);
             u.heatMap = verS.heatMap;
@@ -79,6 +80,18 @@ public class PunctureInfo : ExtendedMelee
         }
         deltaH = 16 * t;
         base.OnStartSingle();
+    }
+
+
+    public override void NetSend(BinaryWriter writer)
+    {
+        base.NetSend(writer);
+        writer.Write(deltaH);
+    }
+    public override void NetReceive(BinaryReader reader)
+    {
+        base.NetReceive(reader);
+        deltaH = reader.ReadSingle();
     }
 
     #endregion 重写函数

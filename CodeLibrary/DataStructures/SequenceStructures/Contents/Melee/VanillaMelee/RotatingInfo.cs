@@ -12,8 +12,8 @@ public class RotatingInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (Flip ? -1 : 1);
-    public override Vector2 offsetOrigin => base.offsetOrigin;
+    public override float OffsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f * (Flip ? -1 : 1);
+    public override Vector2 OffsetOrigin => base.OffsetOrigin;
     public override bool Attacktive => true;
 
     #endregion 重写属性

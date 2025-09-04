@@ -19,8 +19,8 @@ public class YoyoInfo : VanillaMelee
 
     #region 重写属性
 
-    public override float offsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
-    public override Vector2 offsetCenter => realCenter - Owner.Center;
+    public override float OffsetRotation => (float)LogSpiralLibraryMod.ModTime2 * 0.45f;
+    public override Vector2 OffsetCenter => realCenter - Owner.Center;
     public override bool Attacktive => Factor > 0.05f;
     public override bool OwnerHitCheek => false;
 

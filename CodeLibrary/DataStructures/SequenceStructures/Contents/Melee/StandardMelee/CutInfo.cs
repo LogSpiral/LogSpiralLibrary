@@ -25,10 +25,10 @@ public class CutInfo : LSLMelee
     #region 重写属性
 
     public override float Factor => Adjusted ? MathHelper.SmoothStep(0, 1, MathHelper.SmoothStep(0, 1, 1 - MathF.Pow(1 - base.Factor / .75f, 2))) : (base.Factor - .75f) / .25f;
-    public override float offsetRotation => (Adjusted ? MathHelper.SmoothStep(.03125f * MathHelper.Pi, -0.0625f * MathHelper.Pi, Factor) : MathHelper.SmoothStep(-0.0625f * MathHelper.Pi, .625f * MathHelper.Pi, Factor)) * Owner.direction;
-    public override Vector2 offsetCenter => base.offsetCenter - (Adjusted ? Rotation.ToRotationVector2() * (1 - Factor) * 16 : default);
-    public override Vector2 offsetOrigin => base.offsetOrigin + (Adjusted ? new Vector2(0.1f, -0.1f) * (1 - Factor) : default);
-    public override float offsetDamage => base.offsetDamage * MathF.Pow(.75f, hitCounter);
+    public override float OffsetRotation => (Adjusted ? MathHelper.SmoothStep(.03125f * MathHelper.Pi, -0.0625f * MathHelper.Pi, Factor) : MathHelper.SmoothStep(-0.0625f * MathHelper.Pi, .625f * MathHelper.Pi, Factor)) * Owner.direction;
+    public override Vector2 OffsetCenter => base.OffsetCenter - (Adjusted ? Rotation.ToRotationVector2() * (1 - Factor) * 16 : default);
+    public override Vector2 OffsetOrigin => base.OffsetOrigin + (Adjusted ? new Vector2(0.1f, -0.1f) * (1 - Factor) : default);
+    public override float OffsetDamage => base.OffsetDamage * MathF.Pow(.75f, hitCounter);
     public override bool Attacktive => base.Factor < .5f;
 
     #endregion 重写属性
@@ -43,7 +43,7 @@ public class CutInfo : LSLMelee
             swoosh = subSwoosh = null;
             var range = (.625f, -.75f);
             bool f = false;
-            float size = verS.scaler * ModifyData.Size * offsetSize;
+            float size = verS.scaler * ModifyData.Size * OffsetSize;
             var pair = StandardInfo.VertexStandard.swooshTexIndex;
             UltraSwoosh u;
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
@@ -214,7 +214,7 @@ public class CutInfo : LSLMelee
             {
                 var flag = k == 0;
                 var unit = Rotation.ToRotationVector2();//((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
-                var Center = Owner.Center + offsetCenter + targetedVector * .75f;
+                var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
                 var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
                 velocity *= 2;
                 MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);

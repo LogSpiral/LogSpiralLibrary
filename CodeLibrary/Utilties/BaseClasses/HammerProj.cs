@@ -58,7 +58,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
             if (Charged)
             {
                 projectile.damage = (int)(Player.GetWeaponDamage(Player.HeldItem) * (3 * Factor * Factor));
-                SoundEngine.PlaySound(SoundID.Item71);
+                SoundEngine.PlaySound(SoundID.Item71, Player.Center);
             }
         }
         projectile.ai[1]++;
@@ -651,7 +651,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         }
         if ((int)projectile.ai[0] == MaxTime / 4 && left)
         {
-            SoundEngine.PlaySound(SoundID.Item71);
+            SoundEngine.PlaySound(SoundID.Item71, Player.Center);
         }
     }
 
@@ -667,7 +667,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
             }
             if ((int)projectile.ai[0] == MaxTime / 4 && left)
             {
-                SoundEngine.PlaySound(SoundID.Item71);
+                SoundEngine.PlaySound(SoundID.Item71, Player.Center);
             }
         }
         else
@@ -684,7 +684,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
                 projectile.damage = 0;
                 if (Charged)
                 {
-                    SoundEngine.PlaySound(SoundID.Item71);
+                    SoundEngine.PlaySound(SoundID.Item71, Player.Center);
 
                     projectile.damage = (int)(Player.GetWeaponDamage(Player.HeldItem) * (3 * factor * factor));
                 }

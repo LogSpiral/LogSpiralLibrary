@@ -22,7 +22,7 @@ public partial class CommonElement
         ModTypeLookup<T>.Register(instance);
         if (instance.Name != typeof(T).Name)
         {
-            // MeleeAction自身原本作为抽象类使用，不参与元素库
+            // T自身原本作为抽象类使用，不参与元素库
             SequenceGlobalManager.ElementTypeLookup[instance.FullName] = type;
             SequenceGlobalManager.ElementInstances[type] = instance;
             SequenceManager<T>.Instance.ElementTypeLookup[instance.FullName] = type;

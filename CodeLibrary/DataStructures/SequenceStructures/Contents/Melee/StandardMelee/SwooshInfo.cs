@@ -69,8 +69,8 @@ public class SwooshInfo : LSLMelee
 
     #region 重写属性
 
-    public override float offsetRotation => TimeToAngle(fTimer);
-    public override float offsetDamage => MathF.Pow(.75f, hitCounter);
+    public override float OffsetRotation => TimeToAngle(fTimer);
+    public override float OffsetDamage => MathF.Pow(.75f, hitCounter);
 
     public override bool Attacktive
     {
@@ -126,7 +126,7 @@ public class SwooshInfo : LSLMelee
                 SwooshMode.Chop => !Flip,
                 _ => Flip
             };
-            float size = verS.scaler * ModifyData.Size * offsetSize;
+            float size = verS.scaler * ModifyData.Size * OffsetSize;
             var pair = StandardInfo.VertexStandard.swooshTexIndex;
             UltraSwoosh u;
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
@@ -195,8 +195,8 @@ public class SwooshInfo : LSLMelee
         if (Timer > (TimerMax - cutTime) * k)
         {
             Timer--;
-            UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, offsetRotation / MathF.PI));
-            UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, offsetRotation / MathF.PI));
+            UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, OffsetRotation / MathF.PI));
+            UpdateSwoosh(subSwoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, OffsetRotation / MathF.PI));
             Timer++;
         }
         else
@@ -307,7 +307,7 @@ public class SwooshInfo : LSLMelee
     {
         for (int n = 0; n < 30 * (1 - Factor) * StandardInfo.dustAmount; n++)
         {
-            var Center = Owner.Center + offsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
+            var Center = Owner.Center + OffsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
             var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (Flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
             MiscMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, StandardInfo.standardColor);
         }

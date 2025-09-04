@@ -9,7 +9,7 @@ public class LanceInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override Vector2 offsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, 1 - MathHelper.Clamp(MathHelper.SmoothStep(1, 0, Factor) * 4, 0, 1));
+    public override Vector2 OffsetOrigin => Vector2.Lerp(new Vector2(-0.3f, 0.3f), default, 1 - MathHelper.Clamp(MathHelper.SmoothStep(1, 0, Factor) * 4, 0, 1));
     public override bool Attacktive => Factor < 0.75f;
 
     #endregion 重写属性

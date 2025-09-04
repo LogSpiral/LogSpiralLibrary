@@ -11,8 +11,8 @@ public class StarlightInfo : VanillaMelee
 {
     #region 重写属性
 
-    public override float offsetRotation => Main.rand.NextFloat(-1f, 1f) * MathHelper.Pi / 12f;
-    public override Vector2 offsetCenter => (Main.rand.NextVector2Unit() * new Vector2(16, 4) + 16 * Vector2.UnitX).RotatedBy(Rotation);
+    public override float OffsetRotation => Main.rand.NextFloat(-1f, 1f) * MathHelper.Pi / 12f;
+    public override Vector2 OffsetCenter => (Main.rand.NextVector2Unit() * new Vector2(16, 4) + 16 * Vector2.UnitX).RotatedBy(Rotation);
     public override bool Attacktive => true;
 
     #endregion 重写属性
@@ -39,7 +39,7 @@ public class StarlightInfo : VanillaMelee
         Rotation = (tarVec - Owner.Center).ToRotation();
         if (Timer % 3 == 0)
         {
-            SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1) with { MaxInstances = -1 });
+            SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1) with { MaxInstances = -1 }, Owner?.Center);
         }
         base.OnAttack();
     }
@@ -62,7 +62,7 @@ public class StarlightInfo : VanillaMelee
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.Size * sc * offsetSize * texture.Size().Length() * 3, 1, 1f);
+        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.Size * sc * OffsetSize * texture.Size().Length() * 3, 1, 1f);
     }
 
     //public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

@@ -18,11 +18,13 @@ public partial class MeleeAction
 
     public event Action<MeleeAction> OnEndAttackEvent;
 
-    public event Action<MeleeAction> _OnEndSingle;
+    public event Action<MeleeAction> OnEndSingleEvent;
 
-    public event Action<MeleeAction> _OnStartAttack;
+    public event Action<MeleeAction> OnStartAttackEvent;
 
-    public event Action<MeleeAction> _OnStartSingle;
+    public event Action<MeleeAction> OnStartSingleEvent;
+
+    public event Action<MeleeAction> OnShootExtraProjectile;
 
     //上面这些也许大概已经过时了？
     //毕竟现在都是直接操作xml文件了

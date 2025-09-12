@@ -26,10 +26,8 @@ public class ShortSwordInfo : VanillaMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
-        if (Owner is Player plr)
-        {
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-        }
+        ShootExtraProjectile();
+
         base.OnStartAttack();
     }
 

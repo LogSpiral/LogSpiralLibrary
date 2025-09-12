@@ -35,7 +35,7 @@ public class HammerInfo : VanillaMelee
         if (Owner is Player plr && Main.rand.NextBool(3))
         {
             plr.Center += OffsetCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center -= OffsetCenter;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {

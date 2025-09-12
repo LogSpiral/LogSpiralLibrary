@@ -33,7 +33,7 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
         var mod = (MiscMethods.GetInstanceViaType(type) as MultiGroup<T>).Mod;
         var key = mod.Name == nameof(LogSpiralLibrary) ? type.Name : $"{mod.Name}/{type.Name}";
 
-        writer.WriteAttributeString("FullName", GetType().Name);
+        writer.WriteAttributeString("FullName", key);
 
         foreach (var pair in DataList)
         {

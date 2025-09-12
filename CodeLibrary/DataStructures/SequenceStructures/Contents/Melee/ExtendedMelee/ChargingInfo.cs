@@ -43,17 +43,20 @@ public class ChargingInfo : ExtendedMelee
         var shaderID = StandardInfo.VertexStandard.dyeShaderID;
         StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
         Flip = Owner.direction == 1;
-        switch (Owner)
-        {
-            case Player player:
-                {
-                    //SoundEngine.PlaySound(SoundID.Item71);
-                    var tarpos = player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition;
-                    player.direction = Math.Sign(tarpos.X - player.Center.X);
-                    Rotation = (tarpos - Owner.Center).ToRotation();
-                    break;
-                }
-        }
+        if (Projectile.owner == Main.myPlayer)
+            switch (Owner)
+            {
+                case Player player:
+                    {
+                        //SoundEngine.PlaySound(SoundID.Item71);
+                        var tarpos = Main.MouseWorld;
+                        player.direction = Math.Sign(tarpos.X - player.Center.X);
+                        Rotation = (tarpos - Owner.Center).ToRotation();
+                        if ((int)LogSpiralLibraryMod.ModTime % 10 == 0)
+                            NetUpdateNeeded = true;
+                        break;
+                    }
+            }
         base.UpdateStatus(triggered);
 
         #region 蓄力粒子效果
@@ -144,19 +147,18 @@ public class ChargingInfo : ExtendedMelee
 
     public override bool Collide(Rectangle rectangle) => false;
 
-    public override void NetSend(BinaryWriter writer)
+    public override void NetSendInitializeElement(BinaryWriter writer)
     {
-        base.NetSend(writer);
+        base.NetSendInitializeElement(writer);
         writer.Write(ChargingRotation);
         writer.Write(StartRotation);
     }
 
-    public override void NetReceive(BinaryReader reader)
+    public override void NetReceiveInitializeElement(BinaryReader reader)
     {
-        base.NetReceive(reader);
+        base.NetReceiveInitializeElement(reader);
         ChargingRotation = reader.ReadSingle();
         StartRotation = reader.ReadSingle();
     }
-
     #endregion 重写函数
 }

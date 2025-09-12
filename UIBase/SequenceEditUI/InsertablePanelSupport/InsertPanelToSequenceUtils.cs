@@ -32,7 +32,8 @@ public static class InsertPanelToSequenceUtils
             var multiGroup = Activator.CreateInstance(multiDecorator.Definition.GroupType) as IGroup;
             foreach (var inners in groupPanel.SubInsertablePanels)
             {
-                if (!inners.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var argumentDecorator)) continue;
+                if (!inners.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var argumentDecorator)) 
+                    continue;
                 var attributes = new Dictionary<string, string>();
                 argumentDecorator.Argument.WriteAttributes(attributes);
                 multiGroup.AppendWrapper(InsertablePanelToWrapper(inners), attributes);

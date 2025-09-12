@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.ComponentModel;
+using System.IO;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
 
@@ -60,7 +61,7 @@ public class StormInfo : ExtendedMelee
 
     public override void OnStartAttack()
     {
-        if (Main.netMode != NetmodeID.Server)
+        if (!Main.dedServ)
         {
             var verS = StandardInfo.VertexStandard;
 
@@ -89,5 +90,18 @@ public class StormInfo : ExtendedMelee
         Projectile.localNPCHitCooldown /= 4;
     }
 
+    public override void NetSendInitializeElement(BinaryWriter writer)
+    {
+        base.NetSendInitializeElement(writer);
+        writer.Write(xScaler);
+        writer.Write(angleRange);
+    }
+
+    public override void NetReceiveInitializeElement(BinaryReader reader)
+    {
+        base.NetReceiveInitializeElement(reader);
+        xScaler = reader.ReadSingle();
+        angleRange = reader.ReadSingle();
+    }
     #endregion 重写函数
 }

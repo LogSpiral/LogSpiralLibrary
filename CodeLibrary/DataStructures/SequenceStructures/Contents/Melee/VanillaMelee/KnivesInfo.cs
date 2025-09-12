@@ -31,7 +31,7 @@ public class KnivesInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center = OffsetCenter + Owner.Center;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {

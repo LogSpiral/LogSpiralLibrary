@@ -24,10 +24,7 @@ public class LanceInfo : VanillaMelee
 
     public override void OnStartAttack()
     {
-        if (Owner is Player plr)
-        {
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-        }
+        ShootExtraProjectile();
         SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartAttack();
     }

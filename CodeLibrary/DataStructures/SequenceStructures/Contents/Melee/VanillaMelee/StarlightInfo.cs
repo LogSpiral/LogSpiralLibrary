@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using System.IO;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.VanillaMelee;
@@ -22,21 +23,25 @@ public class StarlightInfo : VanillaMelee
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
-        if (Owner is Player plr)
-        {
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-        }
+        ShootExtraProjectile();
+
         base.OnStartSingle();
     }
 
     public override void OnAttack()
     {
-        Vector2 tarVec = Owner switch
+        if (Projectile.owner == Main.myPlayer)
         {
-            Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
-            _ => default
-        };
-        Rotation = (tarVec - Owner.Center).ToRotation();
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => Main.MouseWorld,
+                _ => default
+            };
+            Rotation = (tarVec - Owner.Center).ToRotation();
+        }
+
+        if ((int)LogSpiralLibraryMod.ModTime % 10 == 0)
+            NetUpdateNeeded = true;
         if (Timer % 3 == 0)
         {
             SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1) with { MaxInstances = -1 }, Owner?.Center);
@@ -76,6 +81,5 @@ public class StarlightInfo : VanillaMelee
     //        sc = plr.GetAdjustedItemScale(plr.HeldItem);
     //    return DrawingMethods.GetItemVertexes(finalOrigin, TODO, finalRotation, Rotation, texture, KValue, ModifyData.actionOffsetSize * sc, drawCen, !flip, alpha, standardInfo.frame);
     //}
-
     #endregion 重写函数
 }

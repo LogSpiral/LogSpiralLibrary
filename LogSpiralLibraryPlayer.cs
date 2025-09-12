@@ -3,7 +3,7 @@
 public class LogSpiralLibraryPlayer : ModPlayer
 {
     public bool ultraFallEnable;
-    public Vector2 targetedMousePosition;
+    //public Vector2 targetedMousePosition;
     public float strengthOfShake;
 
     public override void ResetEffects()
@@ -17,12 +17,12 @@ public class LogSpiralLibraryPlayer : ModPlayer
         if (ultraFallEnable)
             Player.maxFallSpeed = 214514;
 
-        if (Main.myPlayer == Player.whoAmI)
-        {
-            targetedMousePosition = Main.MouseWorld;
-            if ((int)Main.time % 10 == 0)
-                SyncMousePosition.Get(Player.whoAmI, targetedMousePosition).Send();
-        }
+        //if (Main.myPlayer == Player.whoAmI)
+        //{
+        //    targetedMousePosition = Main.MouseWorld;
+        //    if ((int)Main.time % 10 == 0)
+        //        SyncMousePosition.Get(Player.whoAmI, targetedMousePosition).Send();
+        //}
         base.PreUpdate();
     }
 

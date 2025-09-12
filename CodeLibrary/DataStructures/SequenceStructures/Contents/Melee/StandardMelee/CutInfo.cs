@@ -38,7 +38,7 @@ public class CutInfo : LSLMelee
     public void NewSwoosh()
     {
         var verS = StandardInfo.VertexStandard;
-        if (verS.active)
+        if (verS.active && !Main.dedServ)
         {
             swoosh = subSwoosh = null;
             var range = (.625f, -.75f);
@@ -146,64 +146,6 @@ public class CutInfo : LSLMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1 }, Owner?.Center);
-        if (Owner is Player plr)
-        {
-            SequencePlayer seqPlayer = plr.GetModPlayer<SequencePlayer>();
-
-            int dmg = CurrentDamage;
-            if (StandardInfo.standardShotCooldown > 0)
-            {
-                float delta = StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax;
-                bool canShoot = plr.HeldItem.shoot > ProjectileID.None;
-
-                float m = Math.Max(StandardInfo.standardShotCooldown, delta);
-                if (canShoot || seqPlayer.cachedTime < m)
-                    seqPlayer.cachedTime += delta + 1;
-                if (seqPlayer.cachedTime > m)
-                    seqPlayer.cachedTime = m;
-                int count = (int)(seqPlayer.cachedTime / StandardInfo.standardShotCooldown);
-                if (canShoot)
-                {
-                    seqPlayer.cachedTime -= StandardInfo.standardShotCooldown * count;
-                    if (count > 0)
-                    {
-                        count--;
-                        ShootProjCall(plr, dmg);
-                    }
-                }
-
-                Vector2 orig = Main.MouseWorld;
-                Vector2 unit = orig - plr.Center;//.SafeNormalize(default) * 32f;
-                float angleMax = MathHelper.Pi / 6;
-                if (count % 2 == 1)
-                {
-                    count--;
-                    Vector2 target = plr.Center + unit.RotatedBy(angleMax * Main.rand.NextFloat(-.5f, .5f));
-                    Main.mouseX = (int)(target.X - Main.screenPosition.X);
-                    Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                    ShootProjCall(plr, dmg);
-                }
-                count /= 2;
-                for (int i = 0; i < count; i++)
-                {
-                    float angle = angleMax * MathF.Pow((i + 1f) / count, 2);
-
-                    Vector2 target = plr.Center + unit.RotatedBy(angle);
-                    Main.mouseX = (int)(target.X - Main.screenPosition.X);
-                    Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                    ShootProjCall(plr, dmg);
-
-                    target = plr.Center + unit.RotatedBy(-angle);
-                    Main.mouseX = (int)(target.X - Main.screenPosition.X);
-                    Main.mouseY = (int)(target.Y - Main.screenPosition.Y);
-                    ShootProjCall(plr, dmg);
-                }
-                Main.mouseX = (int)(orig.X - Main.screenPosition.X);
-                Main.mouseY = (int)(orig.Y - Main.screenPosition.Y);
-            }
-            else
-                ShootProjCall(plr, dmg);
-        }
         base.OnStartAttack();
     }
 

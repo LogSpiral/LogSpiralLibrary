@@ -23,10 +23,9 @@ public class RotatingInfo : VanillaMelee
     public override void OnStartSingle()
     {
         Flip = Owner.direction != 1;
-        if (Owner is Player plr)
-        {
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-        }
+        ShootExtraProjectile();
+
+
         SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartSingle();
     }

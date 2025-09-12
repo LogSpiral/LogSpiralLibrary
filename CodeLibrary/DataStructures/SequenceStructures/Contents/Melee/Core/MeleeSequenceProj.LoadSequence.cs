@@ -124,6 +124,7 @@ public partial class MeleeSequenceProj
             action.Owner = Player;
             action.Projectile = Projectile;
             Projectile.netUpdate = true;
+            InitializeElement(action);
         };
     }
 
@@ -131,6 +132,10 @@ public partial class MeleeSequenceProj
     {
         InitializeSequence(Mod.Name, Name);
         base.OnSpawn(source);
+    }
+
+    protected virtual void InitializeElement(ISequenceElement element)
+    {
     }
 
     public override void Load()

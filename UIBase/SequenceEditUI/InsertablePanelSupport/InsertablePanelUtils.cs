@@ -135,7 +135,7 @@ public static class InsertablePanelUtils
                         left.DecoratorManager -= single;
                 }
             }
-            else if (insParent is SequencePanel)
+            else // if (insParent is SequencePanel)
             {
                 // P & X: 剩余组转单组，自身保留组参数装饰器
                 if (!left.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var leftArg))
@@ -276,44 +276,81 @@ public static class InsertablePanelUtils
 
         // 第一个Parent是预览容器，第二个是MultiPanel的内部容器，第三个才是MultiPanel自身
         var insParent = self.Parent?.Parent?.Parent;
-        if (insParent is MultiPanel && self.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg))
+        if (true/*insParent is MultiPanel && *//*self.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg)*/)
         {
+            bool noArg = !self.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var arg);
             if (insParent is GroupPanel)
             {
                 // J & R: 目标的组参数转交新组
-                group.DecoratorManager += new GroupArgumentDecorator() { Argument = arg.Argument };
-                self.DecoratorManager -= arg;
+                // 理论上不应当在此处存在无条件参数的情况
+                // 但是懒得处理成默认条件了
+                group.DecoratorManager += new GroupArgumentDecorator() { Argument = noArg ? NoneArg.Instance : arg.Argument };
+                if (!noArg)
+                    self.DecoratorManager -= arg;
 
                 // 新组使用默认条件组，内部元素使用默认参数
                 group.DecoratorManager += new MultiGroupDecorator() { Definition = new(nameof(ConditionalMultiGroup)) };
                 self.DecoratorManager += new GroupArgumentDecorator() { Argument = new ConditionArg() };
                 pending.DecoratorManager += new GroupArgumentDecorator() { Argument = new ConditionArg() };
             }
-            else if (insParent is SequencePanel && self.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
+            else // if (/*insParent is SequencePanel && */self.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
             {
-                self.DecoratorManager -= single;
+                if (self.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
+                    self.DecoratorManager -= single;
 
                 // N: 目标单组转多组，自身转换类型后插入
-                var singleType = single.Definition.GroupType;
+                var singleType = single?.Definition?.GroupType;
 
                 // V：目标方优先，都无参则条件组
                 if (pending is not GroupPanel
-                    && singleType == typeof(SingleWrapperGroup)
-                    && pending.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var pendingSingle)
-                    && pendingSingle.Definition.GroupType != typeof(SingleWrapperGroup))
-                    singleType = pendingSingle.Definition.GroupType;
+                    && (singleType == typeof(SingleWrapperGroup) || singleType == null)
+                    && pending.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var pendingArgument)
+                    && SequenceGlobalManager.GroupArgToSingleGroup.TryGetValue(pendingArgument.Argument.GetType(), out var pendingSingleType))
+                    singleType = pendingSingleType;
+
+                if (singleType == null)
+                    singleType = typeof(SingleWrapperGroup);
 
                 if (!SequenceGlobalManager.SingleGroupToMultiGroup.TryGetValue(singleType, out var multiType))
                     multiType = typeof(ConditionalMultiGroup);
                 var groupDummy = Activator.CreateInstance(multiType) as IGroup;
                 group.DecoratorManager += new MultiGroupDecorator() { Definition = new(groupDummy) };
-                arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
+                if (noArg)
+                {
+                    self.DecoratorManager += 
+                        new GroupArgumentDecorator() 
+                        {
+                            Argument = 
+                            Activator.CreateInstance(groupDummy.ArgType) 
+                            as IGroupArgument 
+                        };
+                }
+                else 
+                {
+                    arg.Argument = 
+                        GroupArgumentUtils
+                        .ConvertArgument(
+                            arg.Argument,
+                            groupDummy.ArgType);
+                }
                 if (!pending.DecoratorManager.TryFindFirst<GroupArgumentDecorator>(out var pendingArg))
                 {
-                    pending.DecoratorManager += new GroupArgumentDecorator() { Argument = Activator.CreateInstance(groupDummy.ArgType) as IGroupArgument };
+                    pending.DecoratorManager +=
+                        new GroupArgumentDecorator()
+                        {
+                            Argument = 
+                            Activator.CreateInstance(groupDummy.ArgType) 
+                            as IGroupArgument
+                        };
                 }
-                else
-                    pendingArg.Argument = GroupArgumentUtils.ConvertArgument(pendingArg.Argument, groupDummy.ArgType);
+                else 
+                {
+                    pendingArg.Argument = 
+                        GroupArgumentUtils
+                        .ConvertArgument(
+                            pendingArg.Argument,
+                            groupDummy.ArgType);
+                }
             }
         }
 
@@ -348,7 +385,8 @@ public static class InsertablePanelUtils
                 pending.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
             }
         }
-        if (insParent is SequencePanel)
+        else
+        //if (insParent is SequencePanel)
         {
             // M: 序列面板加上单组装饰器，使用默认单组
             // U: 序列面板加上单组装饰器，使用默认单组, 组参数决定单组而后插入

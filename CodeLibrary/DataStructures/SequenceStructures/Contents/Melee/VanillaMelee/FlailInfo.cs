@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Audio;
 
@@ -51,12 +52,18 @@ public class FlailInfo : VanillaMelee
     {
         if (state != 3)
         {
-            Vector2 tarVec = Owner switch
+            if (Projectile.owner == Main.myPlayer)
             {
-                Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
-                _ => default
-            };
-            Rotation = (tarVec - Owner.Center).ToRotation();
+                Vector2 tarVec = Owner switch
+                {
+                    Player plr => Main.MouseWorld,
+                    _ => default
+                };
+                Rotation = (tarVec - Owner.Center).ToRotation();
+                if ((int)LogSpiralLibraryMod.ModTime % 10 == 0)
+                    NetUpdateNeeded = true;
+            }
+
             if ((int)LogSpiralLibraryMod.ModTime2 % 10 == 0)
                 SoundEngine.PlaySound(SoundID.Item7, Owner.Center);
         }
@@ -157,7 +164,7 @@ public class FlailInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center = Projectile.Center;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
@@ -190,5 +197,15 @@ public class FlailInfo : VanillaMelee
         return [.. result];
     }
 
+    public override void NetSendUpdateElement(BinaryWriter writer)
+    {
+        base.NetSendUpdateElement(writer);
+        writer.Write(Rotation);
+    }
+    public override void NetReceiveUpdateElement(BinaryReader reader)
+    {
+        base.NetReceiveUpdateElement(reader);
+        Rotation = reader.ReadSingle();
+    }
     #endregion 重写函数
 }

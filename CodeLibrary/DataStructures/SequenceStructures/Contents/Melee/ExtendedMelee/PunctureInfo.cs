@@ -33,7 +33,7 @@ public class PunctureInfo : ExtendedMelee
             MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) - Vector2.UnitY * 40 * Main.rand.NextFloat(0, 1) / fallFac * .5f, StandardInfo.standardColor, 2);
 
         var verS = StandardInfo.VertexStandard;
-        if (verS.active)
+        if (verS.active && !Main.dedServ)
         {
             var pair = StandardInfo.VertexStandard.stabTexIndex;
             var scaler = verS.scaler * ModifyData.Size * OffsetSize * 1.25f * 4f / fallFac;
@@ -72,25 +72,29 @@ public class PunctureInfo : ExtendedMelee
 
     public override void OnStartSingle()
     {
-        int t = 0;
-        Point point = Owner.Bottom.ToTileCoordinates();
-        while (point.Y + t < Main.maxTilesY && t < 100 && !Framing.GetTileSafely(point.X, point.Y + t).HasTile)
+        if (Projectile.owner == Main.myPlayer) 
         {
-            t++;
+            int t = 0;
+            Point point = Owner.Bottom.ToTileCoordinates();
+            while (point.Y + t < Main.maxTilesY && t < 100 && !Framing.GetTileSafely(point.X, point.Y + t).HasTile)
+            {
+                t++;
+            }
+            deltaH = 16 * t;
         }
-        deltaH = 16 * t;
+
         base.OnStartSingle();
     }
 
 
-    public override void NetSend(BinaryWriter writer)
+    public override void NetSendUpdateElement(BinaryWriter writer)
     {
-        base.NetSend(writer);
+        base.NetSendUpdateElement(writer);
         writer.Write(deltaH);
     }
-    public override void NetReceive(BinaryReader reader)
+    public override void NetReceiveUpdateElement(BinaryReader reader)
     {
-        base.NetReceive(reader);
+        base.NetReceiveUpdateElement(reader);
         deltaH = reader.ReadSingle();
     }
 

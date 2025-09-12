@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
+using System.Diagnostics.Metrics;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
@@ -83,7 +84,10 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         Player.heldProj = Projectile.whoAmI;
         Projectile.damage = Player.GetWeaponDamage(Player.HeldItem);
         Projectile.direction = Player.direction;
-        Projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - Player.Center).SafeNormalize(default);
+
+        // TODO 支持其它实体使用
+        if (Projectile.owner == Main.myPlayer)
+            Projectile.velocity = (Main.MouseWorld - Player.Center).SafeNormalize(default);
         UpdateStandardInfo(StandardInfo, StandardInfo.VertexStandard);
         if (Player.DeadOrGhost)
         {
@@ -105,11 +109,13 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         if (triggered || !CurrentElement.IsCompleted)
             SequenceModel?.Update();
 
-        if (!IsLocalProj && CurrentElement is { IsCompleted : false})
+        if (!IsLocalProj && CurrentElement is { IsCompleted: false } or { TimerMax: 0 })
+        {
             CurrentElement.Update();
-
+        }
         if (CurrentElement == null) return;
 
+        // Main.NewText((CurrentElement.Timer, CurrentElement.TimerMax));
         //if (!IsLocalProj)
         //    Main.NewText((CurrentElement.Counter, CurrentElement.CounterMax, CurrentElement.TimerMax, CurrentElement.Timer));
 

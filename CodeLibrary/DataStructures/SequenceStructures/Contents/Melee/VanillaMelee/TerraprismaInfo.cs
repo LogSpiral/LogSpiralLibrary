@@ -52,9 +52,10 @@ public class TerraprismaInfo : VanillaMelee
     public override void UpdateStatus(bool triggered)
     {
         var verS = StandardInfo.VertexStandard;
-        if (Owner is Player plr)
-            plr.direction = Math.Sign(plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition.X - plr.Center.X);
-        if (ultra != null) ultra.autoUpdate = false;
+        if (Projectile.owner == Main.myPlayer)
+            if (Owner is Player plr)
+                plr.direction = Math.Sign(Main.MouseWorld.X - plr.Center.X);
+        ultra?.autoUpdate = false;
         if (target == null || !target.CanBeChasedBy())
         {
             FindTarget();
@@ -155,7 +156,7 @@ public class TerraprismaInfo : VanillaMelee
     {
         var verS = StandardInfo.VertexStandard;
         var pair = verS.swooshTexIndex ?? (3, 7);
-        if (Main.netMode != NetmodeID.Server)
+        if (!Main.dedServ)
         {
             var u = ultra = UltraSwoosh.NewUltraSwoosh(verS.canvasName, TimerMax, 1f, default, (0, 0));
             u.heatMap = verS.heatMap;
@@ -184,8 +185,11 @@ public class TerraprismaInfo : VanillaMelee
         Array.Clear(oldCenters);
         Array.Clear(oldRotations);
         Array.Clear(assistParas);
-        ultra.timeLeft = -1;
-        ultra = null;
+        if (ultra != null)
+        {
+            ultra.timeLeft = -1;
+            ultra = null;
+        }
         //Array.Clear(LogSpiralLibrarySystem.vertexEffects);
         Projectile.ownerHitCheck = true;
         base.OnEndSingle();
@@ -204,23 +208,26 @@ public class TerraprismaInfo : VanillaMelee
             var flag = Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), oldCenters[n],
                     oldCenters[n] + oldRotations[n].ToRotationVector2() * StandardInfo.VertexStandard.scaler * OffsetSize * sc, 48f, ref point1);
             if (flag)
-            {
-                if (Owner is Player player && Main.rand.NextBool(5))
-                {
-                    Vector2 orig = player.Center;
-                    player.Center = realCenter;
-                    player.ItemCheck_Shoot(player.whoAmI, player.HeldItem, CurrentDamage);
-                    player.Center = orig;
-                    if (Main.myPlayer == player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(player.whoAmI, player.position).Send(-1, player.whoAmI);
-                    }
-                }
                 return true;
-            }
         }
 
         return false;
+    }
+    public override void OnHitEntity(Entity victim, int damageDone, object[] context)
+    {
+        if (Owner is Player player && Main.rand.NextBool(5))
+        {
+            Vector2 orig = player.Center;
+            player.Center = realCenter;
+            ShootExtraProjectile();
+
+            player.Center = orig;
+            if (Main.myPlayer == player.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                SyncPlayerPosition.Get(player.whoAmI, player.position).Send(-1, player.whoAmI);
+            }
+        }
+        base.OnHitEntity(victim, damageDone, context);
     }
 
     public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

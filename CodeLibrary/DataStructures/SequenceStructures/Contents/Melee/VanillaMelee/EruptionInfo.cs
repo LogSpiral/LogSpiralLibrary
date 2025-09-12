@@ -98,9 +98,13 @@ public class EruptionInfo : VanillaMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
-        KValue = Main.rand.NextFloat(1.5f, 2f);
-        Rotation += Main.rand.NextFloat(-1, 1) * MathHelper.PiOver2 / 12;
-        Flip = Main.rand.NextBool();
+        if (Projectile.owner == Main.myPlayer) 
+        {
+            KValue = Main.rand.NextFloat(1.5f, 2f);
+            Rotation += Main.rand.NextFloat(-1, 1) * MathHelper.PiOver2 / 12;
+            Flip = Main.rand.NextBool();
+        }
+
         SoundEngine.PlaySound(SoundID.Item116, Owner.Center);
     }
 
@@ -111,7 +115,8 @@ public class EruptionInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center = victim.Hitbox.Center();
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
+
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {

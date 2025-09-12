@@ -120,13 +120,15 @@ public struct ActionModifyData(float size, float timeScaler, float knockBack, fl
         writer.Write(CritMultiplyer);
     }
 
-    public void ReadBinary(BinaryReader reader)
+    public static ActionModifyData ReadBinary(BinaryReader reader)
     {
-        Size = reader.ReadSingle();
-        TimeScaler = reader.ReadSingle();
-        KnockBack = reader.ReadSingle();
-        Damage = reader.ReadSingle();
-        CritAdder = reader.ReadByte();
-        CritMultiplyer = reader.ReadSingle();
+        return new() {
+            Size = reader.ReadSingle(),
+            TimeScaler = reader.ReadSingle(),
+            KnockBack = reader.ReadSingle(),
+            Damage = reader.ReadSingle(),
+            CritAdder = reader.ReadByte(),
+            CritMultiplyer = reader.ReadSingle()
+        };
     }
 }

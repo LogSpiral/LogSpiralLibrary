@@ -183,7 +183,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         Player.RotatedRelativePoint(Player.MountedCenter, true);
         Player.itemTime = 2;
         Player.itemAnimation = 2;
-        Player.ChangeDir(Math.Sign((Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).X));
+        Player.ChangeDir(Math.Sign((Main.MouseWorld - projCenter).X));
         Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
 
         projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
@@ -836,9 +836,10 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
         Player.RotatedRelativePoint(Player.MountedCenter, true);
         Player.itemTime = 2;
         Player.itemAnimation = 2;
-        Player.ChangeDir(Math.Sign((Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).X));
+        if (Projectile.owner != Main.myPlayer) return;
+        Player.ChangeDir(Math.Sign((Main.MouseWorld - projCenter).X));
         Player.SetCompositeArmFront(enabled: true, Player.CompositeArmStretchAmount.Full, Rotation - (Player.direction == -1 ? MathHelper.Pi : MathHelper.PiOver2));// -MathHelper.PiOver2
-        projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - projCenter).SafeNormalize(default);
+        projectile.velocity = (Main.MouseWorld - projCenter).SafeNormalize(default);
         projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
     }
 

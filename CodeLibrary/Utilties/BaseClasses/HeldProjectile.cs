@@ -116,8 +116,12 @@ public abstract class RangedHeldProjectile : HeldProjectile
         {
             Projectile.timeLeft = 2;
             Projectile.ai[0]++;
-            Projectile.velocity = (Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition - HeldCenter).SafeNormalize(Vector2.One);
-            Projectile.rotation = Projectile.velocity.ToRotation();
+            if (Projectile.owner == Main.myPlayer) 
+            {
+                Projectile.velocity = (Main.MouseWorld - HeldCenter).SafeNormalize(Vector2.One);
+                Projectile.rotation = Projectile.velocity.ToRotation();
+            }
+
             Projectile.ai[1] = Player.controlUseItem ? 1 : 0;
             if (Player.controlUseItem)
             {

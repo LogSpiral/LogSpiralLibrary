@@ -37,10 +37,11 @@ public class ConvoluteInfo : ExtendedMelee
 
     public override void OnStartAttack()
     {
-        if (Owner is Player plr)
+        if (Owner is Player plr && Projectile.owner == Main.myPlayer)
         {
             plr.Center += OffsetCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
+
             plr.Center -= OffsetCenter;
         }
         base.OnStartAttack();
@@ -67,15 +68,15 @@ public class ConvoluteInfo : ExtendedMelee
         return [.. result];
     }
 
-    public override void NetSend(BinaryWriter writer)
+    public override void NetSendUpdateElement(BinaryWriter writer)
     {
-        base.NetSend(writer);
+        base.NetSendUpdateElement(writer);
         writer.WriteVector2(_unit);
     }
 
-    public override void NetReceive(BinaryReader reader)
+    public override void NetReceiveUpdateElement(BinaryReader reader)
     {
-        base.NetReceive(reader);
+        base.NetReceiveUpdateElement(reader);
         _unit = reader.ReadVector2();
     }
     #endregion 重写函数

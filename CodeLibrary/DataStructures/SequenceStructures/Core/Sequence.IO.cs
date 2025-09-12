@@ -72,7 +72,7 @@ public partial class Sequence
 
         foreach (var group in Groups)
         {
-            bool single = group.ReadSingleWrapper || Groups.Count == 1;
+            bool single = group.ReadSingleWrapper || group.Contents.Count == 1;
             if (!single)
                 writer.WriteStartElement("Group");
             group.WriteXml(writer);

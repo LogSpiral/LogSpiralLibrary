@@ -23,13 +23,10 @@ public class ArkhalisInfo : VanillaMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
-        if (Owner is Player plr)
-        {
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
-        }
+        ShootExtraProjectile();
         Flip ^= true;
         var verS = StandardInfo.VertexStandard;
-        if (verS.active)
+        if (verS.active && !Main.dedServ)
         {
             var range = (1.625f * Main.rand.NextFloat(.5f, 1.25f), -.75f);
             bool f = Flip;

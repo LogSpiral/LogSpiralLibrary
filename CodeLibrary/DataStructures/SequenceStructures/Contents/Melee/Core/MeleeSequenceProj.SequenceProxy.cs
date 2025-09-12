@@ -61,11 +61,12 @@ public partial class MeleeSequenceProj
         var elementName = reader.ReadString();
         if (!SequenceGlobalManager.ElementTypeLookup.TryGetValue(elementName, out var elementType)) return;
         var element = Activator.CreateInstance(elementType) as MeleeAction;
-        element.NetReceive(reader);
-
+        element.NetReceiveInitializeElement(reader);
+        int timer = reader.ReadUInt16();
         if (IsLocalProj) return;
         CurrentElement = element;
         CurrentElement.StandardInfo = StandardInfo;
+        StandardInfo.standardTimer = timer;
         CurrentElement.Owner = Player;
         CurrentElement.Projectile = Projectile;
         base.ReceiveExtraAI(reader);
@@ -76,7 +77,8 @@ public partial class MeleeSequenceProj
         if (CurrentElement != null)
         {
             writer.Write(CurrentElement.FullName);
-            CurrentElement.NetSend(writer);
+            CurrentElement.NetSendInitializeElement(writer);
+            writer.Write((ushort)StandardInfo.standardTimer);
         }
         else
         {

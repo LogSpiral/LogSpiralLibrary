@@ -24,10 +24,10 @@ public class FistInfo : VanillaMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
-        if (Owner is Player plr)
+        if (Owner is Player plr && Projectile.owner == Main.myPlayer)
         {
             plr.Center += OffsetCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center -= OffsetCenter;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {

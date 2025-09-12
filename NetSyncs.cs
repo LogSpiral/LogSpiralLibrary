@@ -4,29 +4,29 @@ using System.IO;
 
 namespace LogSpiralLibrary;
 
-[AutoSync]
-public class SyncMousePosition : NetModule
-{
-    private int whoAmI;
-    private Vector2 pos;
+//[AutoSync]
+//public class SyncMousePosition : NetModule
+//{
+//    private int whoAmI;
+//    private Vector2 pos;
 
-    public static SyncMousePosition Get(int whoAmI, Vector2 position)
-    {
-        var result = NetModuleLoader.Get<SyncMousePosition>();
-        result.pos = position;
-        result.whoAmI = whoAmI;
-        return result;
-    }
+//    public static SyncMousePosition Get(int whoAmI, Vector2 position)
+//    {
+//        var result = NetModuleLoader.Get<SyncMousePosition>();
+//        result.pos = position;
+//        result.whoAmI = whoAmI;
+//        return result;
+//    }
 
-    public override void Receive()
-    {
-        Main.player[whoAmI].GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition = pos;
-        if (Main.dedServ)
-        {
-            Get(whoAmI, pos).Send(-1, whoAmI);
-        }
-    }
-}
+//    public override void Receive()
+//    {
+//        Main.player[whoAmI].GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition = pos;
+//        if (Main.dedServ)
+//        {
+//            Get(whoAmI, pos).Send(-1, whoAmI);
+//        }
+//    }
+//}
 
 [AutoSync]
 public class SyncPlayerPosition : NetModule

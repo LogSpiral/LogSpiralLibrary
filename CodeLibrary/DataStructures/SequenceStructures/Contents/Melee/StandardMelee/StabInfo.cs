@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using MonoMod.Utils.Interop;
 using System.ComponentModel;
 using System.IO;
 using Terraria.Audio;
@@ -84,10 +85,11 @@ public class StabInfo : LSLMelee
         {
             var pair = StandardInfo.VertexStandard.stabTexIndex;
             UltraStab u;
+            var unit = Rotation.ToRotationVector2();
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
                 float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
-                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center + unit * size);
                 u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
                 u.negativeDir = Flip;
                 u.rotation = Rotation;
@@ -96,7 +98,7 @@ public class StabInfo : LSLMelee
                 u.baseTexIndex = pair?.Item2 ?? 0;
                 u.ColorVector = verS.colorVec;
 
-                var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + Rotation.ToRotationVector2() * size * .2f);
+                var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + unit * size * 1.2f);
                 su.heatMap = verS.heatMap;
                 su.negativeDir = !Flip;
                 su.rotation = Rotation;
@@ -113,7 +115,7 @@ public class StabInfo : LSLMelee
             else
             {
                 float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
-                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center + unit * size);
                 u.heatMap = verS.heatMap;
                 u.negativeDir = Flip;
                 u.rotation = Rotation;
@@ -136,6 +138,7 @@ public class StabInfo : LSLMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
+        if (Projectile.owner != Main.myPlayer) return;
         hitCounter = 0;
         KValue = minKValue + Main.rand.NextFloat(0, KValueRange);
         if (randAngleRange > 0)
@@ -159,39 +162,6 @@ public class StabInfo : LSLMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
-        if (Owner is Player plr)
-        {
-            SequencePlayer seqPlr = plr.GetModPlayer<SequencePlayer>();
-            int dmg = CurrentDamage;
-            if (StandardInfo.standardShotCooldown > 0)
-            {
-                float delta = StandardInfo.standardTimer * ModifyData.TimeScaler / CounterMax;
-                seqPlr.cachedTime += delta + 1;
-                int count = (int)(seqPlr.cachedTime / StandardInfo.standardShotCooldown);
-                seqPlr.cachedTime -= count * StandardInfo.standardShotCooldown;
-                if (count > 0)
-                {
-                    count--;
-                    ShootProjCall(plr, dmg);
-                }
-                Vector2 orig = plr.Center;
-                Vector2 unit = (Main.MouseWorld - orig).SafeNormalize(default) * 64;
-                for (int i = 0; i < count; i++)
-                {
-                    plr.Center += unit.RotatedBy(MathHelper.Pi / count * (i - (count - 1) * .5f));
-                    ShootProjCall(plr, dmg);
-
-                    plr.Center = orig;
-                }
-                if (count > 0)
-                    if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
-                    {
-                        SyncPlayerPosition.Get(plr.whoAmI, plr.position).Send(-1, plr.whoAmI);
-                    }
-            }
-            else
-                ShootProjCall(plr, dmg);
-        }
         for (int n = 0; n < 30; n++)
         {
             if (Main.rand.NextFloat(0, 1) < StandardInfo.dustAmount)
@@ -205,12 +175,34 @@ public class StabInfo : LSLMelee
                     MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
                 }
         }
+        if (!Main.dedServ)
+            UltraStab = NewStab();
         base.OnStartAttack();
+    }
+
+    UltraStab UltraStab { get; set; }
+
+    private void UpdateStab()
+    {
+        var verS = StandardInfo.VertexStandard;
+        if (!verS.active)
+            return;
+
+        float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
+        var unit = Rotation.ToRotationVector2();
+        UltraStab.center = Owner.Center + unit * size;
+    }
+
+    public override void OnAttack()
+    {
+        if (UltraStab != null)
+            UpdateStab();
+        base.OnAttack();
     }
 
     public override void OnEndAttack()
     {
-        NewStab();
+
         //Projectile.NewProjectile(Owner.GetSource_FromThis(), Owner.Center, Rotation.ToRotationVector2() * 16, ProjectileID.TerraBeam, 100, 1, Owner.whoAmI);
         base.OnEndAttack();
     }
@@ -221,18 +213,20 @@ public class StabInfo : LSLMelee
         base.OnHitEntity(victim, damageDone, context);
     }
 
-    public override void NetSend(BinaryWriter writer)
+    public override void NetSendInitializeElement(BinaryWriter writer)
     {
-        writer.Write(Rotation);
-        writer.Write(KValue);
-        base.NetSend(writer);
+        writer.Write(minKValue);
+        writer.Write(KValueRange);
+        writer.Write(visualCentered);
+        writer.Write(randAngleRange);
     }
 
-    public override void NetReceive(BinaryReader reader)
+    public override void NetReceiveInitializeElement(BinaryReader reader)
     {
-        Rotation = reader.ReadSingle();
-        KValue = reader.ReadSingle();
-        base.NetReceive(reader);
+        minKValue = reader.ReadSingle();
+        KValueRange = reader.ReadSingle();
+        visualCentered = reader.ReadBoolean();
+        randAngleRange = reader.ReadSingle();
     }
 
     #endregion 重写函数
@@ -282,9 +276,8 @@ public class RapidlyStabInfo : StabInfo
     #region 重写属性
 
     [ElementCustomDataAbabdoned]
-    public override int CounterMax { get => realCycle; set => givenCycle = value; }
+    public override int CounterMax { get; set; }
 
-    public int realCycle;
 
     #endregion 重写属性
 
@@ -292,7 +285,7 @@ public class RapidlyStabInfo : StabInfo
 
     private void ResetCycle()
     {
-        realCycle = Math.Clamp(rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
+        CounterMax = Math.Clamp(rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
 
         //if (Projectile.owner == Main.myPlayer)
         //{
@@ -307,21 +300,9 @@ public class RapidlyStabInfo : StabInfo
 
     public override void OnActive()
     {
-        ResetCycle();
+        if (Projectile.owner == Main.myPlayer)
+            ResetCycle();
         base.OnActive();
     }
-
-    public override void NetSend(BinaryWriter writer)
-    {
-        writer.Write((byte)realCycle);
-        base.NetSend(writer);
-    }
-
-    public override void NetReceive(BinaryReader reader)
-    {
-        realCycle = reader.ReadByte();
-        base.NetReceive(reader);
-    }
-
     #endregion 重写函数
 }

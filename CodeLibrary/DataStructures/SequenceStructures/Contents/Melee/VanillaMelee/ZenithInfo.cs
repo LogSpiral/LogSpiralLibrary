@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Audio;
 
@@ -83,17 +84,21 @@ public class ZenithInfo : VanillaMelee
 
     public override void OnStartSingle()
     {
-        Vector2 tarVec = Owner switch
+        if (Projectile.owner == Main.myPlayer) 
         {
-            Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
-            _ => default
-        };
-        dist = (tarVec - Owner.Center).Length();
-        if (dist < 100) dist = 100;
-        KValue = Main.rand.NextFloat(1, 2);
-        Flip = Main.rand.NextBool();
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => Main.MouseWorld,
+                _ => default
+            };
+            dist = (tarVec - Owner.Center).Length();
+            if (dist < 100) dist = 100;
+            KValue = Main.rand.NextFloat(1, 2);
+            Flip = Main.rand.NextBool();
+        }
+
         var verS = StandardInfo.VertexStandard;
-        if (Main.netMode != NetmodeID.Server)
+        if (!Main.dedServ)
         {
             for (int n = 0; n < 3; n++)
             {
@@ -138,7 +143,7 @@ public class ZenithInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center += OffsetCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
@@ -172,6 +177,15 @@ public class ZenithInfo : VanillaMelee
         fTimer = origf;
         return [.. result];
     }
-
+    public override void NetSendUpdateElement(BinaryWriter writer)
+    {
+        writer.Write(dist);
+        base.NetSendUpdateElement(writer);
+    }
+    public override void NetReceiveUpdateElement(BinaryReader reader)
+    {
+        dist = reader.ReadSingle();
+        base.NetReceiveUpdateElement(reader);
+    }
     #endregion 重写函数
 }

@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Audio;
 
@@ -30,30 +31,40 @@ public class YoyoInfo : VanillaMelee
 
     public override void UpdateStatus(bool triggered)
     {
-        Vector2 tarVec = Owner switch
+        if (Projectile.owner == Main.myPlayer)
         {
-            Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
-            _ => default
-        };
-        if (!triggered) Timer = 1;
-        if (Timer > 10)
-            realCenter = Vector2.Lerp(realCenter, tarVec, 0.05f);
-        else
-        {
-            realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.15f);
-            if ((realCenter - Owner.Center).LengthSquared() < 256f)
-                Timer = 1;
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => Main.MouseWorld,
+                _ => default
+            };
+            if (!triggered) Timer = 1;
+            if (Timer > 10)
+                realCenter = Vector2.Lerp(realCenter, tarVec, 0.05f);
+            else
+            {
+                realCenter = Vector2.Lerp(realCenter, Owner.Center, 0.15f);
+                if ((realCenter - Owner.Center).LengthSquared() < 256f)
+                    Timer = 1;
+            }
+            if ((int)LogSpiralLibraryMod.ModTime2 % 4 == 0)
+                NetUpdateNeeded = true;
         }
+        if (realCenter == default)
+            realCenter = Owner.Center;
         Rotation += 0.05f;
         if ((int)LogSpiralLibraryMod.ModTime2 % 4 == 0)
             Timer--;
     }
-
     public override void OnStartSingle()
     {
-        realCenter = Owner.Center;
-        KValue = Main.rand.NextFloat(1, 2);
-        Rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+        if (Projectile.owner == Main.myPlayer)
+        {
+            realCenter = Owner.Center;
+            KValue = Main.rand.NextFloat(1, 2);
+            Rotation = Main.rand.NextFloat(0, MathHelper.TwoPi);
+        }
+
         SoundEngine.PlaySound(StandardInfo.soundStyle);
         base.OnStartSingle();
     }
@@ -65,7 +76,7 @@ public class YoyoInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center = realCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
@@ -95,6 +106,15 @@ public class YoyoInfo : VanillaMelee
         GlobalTimeSystem.GlobalTimePaused = origf;
         return [.. result];
     }
-
+    public override void NetSendUpdateElement(BinaryWriter writer)
+    {
+        base.NetSendUpdateElement(writer);
+        writer.WriteVector2(realCenter);
+    }
+    public override void NetReceiveUpdateElement(BinaryReader reader)
+    {
+        base.NetReceiveUpdateElement(reader);
+        realCenter = reader.ReadVector2();
+    }
     #endregion 重写函数
 }

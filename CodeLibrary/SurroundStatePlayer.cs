@@ -44,6 +44,8 @@ public class SurroundStatePlayer : ModPlayer
 
     public void UpdateData()
     {
+        if (Player.whoAmI != Main.myPlayer) return;
+
         #region 环境检测
 
         frontTargets.Clear();
@@ -64,7 +66,7 @@ public class SurroundStatePlayer : ModPlayer
             };
             if (flag && entity.active && distance < distanceMax)
             {
-                if (VectorMethods.Cos(entity.Center, Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition, Player.Center) > 0.5f)
+                if (VectorMethods.Cos(entity.Center, Main.MouseWorld, Player.Center) > 0.5f)
                 {
                     frontTargets.Add(entity);
                     if (distance < distanceMaxF)
@@ -82,7 +84,7 @@ public class SurroundStatePlayer : ModPlayer
         }
         if (frontTargets.Count == 0)
         {
-            targetF = Player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition;
+            targetF = Main.MouseWorld;
         }
         else
         {

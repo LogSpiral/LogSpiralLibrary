@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+using LogSpiralLibrary.ForFun.TestBlade;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
@@ -25,6 +26,11 @@ public partial class MeleeAction
 
         // TODO 修改triggered的逻辑，让非玩家实体也能使用
         UpdateStatus(Owner is Player plr && (plr.controlUseItem || plr.controlUseTile));
+        if (NetUpdateNeeded && !Projectile.netUpdate)
+        {
+            MeleeActionUpdateSync.Get(this).Send();
+            NetUpdateNeeded = false;
+        }
         if (Attacktive) OnAttack();
         else OnCharge();
 
@@ -94,20 +100,19 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnStartSingleDelegate.Key].Invoke(this);
         }
-        _OnStartSingle?.Invoke(this);
+        OnStartSingleEvent?.Invoke(this);
+        if (Projectile.owner != Main.myPlayer) return;
         switch (Owner)
         {
             case Player player:
                 {
                     //SoundEngine.PlaySound(SoundID.Item71);
-                    var tarpos = player.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition;
-                    player.direction = Math.Sign(tarpos.X - player.Center.X);
-                    Rotation = (tarpos - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
+                    player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
+                    Rotation = (Main.MouseWorld - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
                     break;
                 }
         }
-        if (Projectile.owner == Main.myPlayer)
-            Projectile.netUpdate = true;
+        NetUpdateNeeded = true;
     }
 
     public virtual void OnEndSingle()
@@ -116,7 +121,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnEndSingleDelegate.Key].Invoke(this);
         }
-        _OnEndSingle?.Invoke(this);
+        OnEndSingleEvent?.Invoke(this);
     }
 
     public virtual void OnCharge()
@@ -134,7 +139,7 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnStartAttackDelegate.Key].Invoke(this);
         }
-        _OnStartAttack?.Invoke(this);
+        OnStartAttackEvent?.Invoke(this);
     }
 
     public virtual void OnAttack()
@@ -154,7 +159,10 @@ public partial class MeleeAction
         }
         OnEndAttackEvent?.Invoke(this);
     }
-
+    public virtual void ShootExtraProjectile()
+    {
+        OnShootExtraProjectile?.Invoke(this);
+    }
     public virtual bool Collide(Rectangle rectangle)
     {
         if (!Attacktive) return false;

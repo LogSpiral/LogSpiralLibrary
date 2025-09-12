@@ -48,7 +48,6 @@ namespace LogSpiralLibrary.ForFun.TestBlade
             RenderCanvasSystem.RegisterCanvasFactory(CanvasName, () => new RenderingCanvas([[distortEffect], [bloomEffect]]));
             base.Load();
         }
-
         public override void InitializeStandardInfo(StandardInfo standardInfo, VertexDrawStandardInfo vertexStandard)
         {
             standardInfo.standardColor = Color.Red;

@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Terraria.Audio;
 
@@ -65,16 +66,20 @@ public class BoomerangInfo : VanillaMelee
 
     public override void OnStartSingle()
     {
-        Vector2 tarVec = Owner switch
+        if (Projectile.owner == Main.myPlayer)
         {
-            Player plr => plr.GetModPlayer<LogSpiralLibraryPlayer>().targetedMousePosition,
-            _ => default
-        };
-        Vector2 unit = tarVec - Owner.Center;
-        unit.Normalize();
-        realCenter = Owner.Center + unit * 16;
-        Rotation = unit.ToRotation();
-        back = false;
+            Vector2 tarVec = Owner switch
+            {
+                Player plr => Main.MouseWorld,
+                _ => default
+            };
+            Vector2 unit = tarVec - Owner.Center;
+            unit.Normalize();
+            realCenter = Owner.Center + unit * 16;
+            Rotation = unit.ToRotation();
+            back = false;
+        }
+
         base.OnStartSingle();
     }
 
@@ -86,7 +91,7 @@ public class BoomerangInfo : VanillaMelee
         {
             Vector2 orig = plr.Center;
             plr.Center = realCenter;
-            plr.ItemCheck_Shoot(plr.whoAmI, plr.HeldItem, CurrentDamage);
+            ShootExtraProjectile();
             plr.Center = orig;
             if (Main.myPlayer == plr.whoAmI && Main.netMode == NetmodeID.MultiplayerClient)
             {
@@ -109,5 +114,16 @@ public class BoomerangInfo : VanillaMelee
         return [.. result];
     }
 
+    public override void NetSendUpdateElement(BinaryWriter writer)
+    {
+        writer.WriteVector2(realCenter);
+        base.NetSendUpdateElement(writer);
+    }
+
+    public override void NetReceiveUpdateElement(BinaryReader reader)
+    {
+        realCenter = reader.ReadVector2();
+        base.NetReceiveUpdateElement(reader);
+    }
     #endregion 重写函数
 }

@@ -11,6 +11,7 @@ using System.Linq;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 internal class GroupArgumentDecorator : IInsertPanelDecorator
 {
     private AnimationTimer HiddenTimer { get; } = new();

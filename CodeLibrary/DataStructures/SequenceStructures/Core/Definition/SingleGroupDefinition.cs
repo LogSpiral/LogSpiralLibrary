@@ -9,12 +9,12 @@ using Terraria.ModLoader.Config;
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 public class SingleGroupDefinition : EntityDefinition
 {
-    public override int Type 
+    public override int Type
     {
-        get 
+        get
         {
             int counter = 0;
-            foreach (var pair in SequenceGlobalManager.SingleGroupTypeLookup) 
+            foreach (var pair in SequenceGlobalManager.SingleGroupTypeLookup)
             {
                 if (Key == pair.Key)
                     return counter;
@@ -28,7 +28,7 @@ public class SingleGroupDefinition : EntityDefinition
 
     public Type GroupType => SequenceGlobalManager.SingleGroupTypeLookup[Key];
 
-    public override string DisplayName => Language.GetOrRegister($"Mods.{Mod}.Sequence.Groups.{Name}",()=>Key).Value;
+    public override string DisplayName => Language.GetOrRegister($"Mods.{Mod}.Sequence.Groups.{Name}", () => Key).Value;
     public SingleGroupDefinition(string key)
     {
         var datas = key.Split('/');
@@ -69,6 +69,7 @@ public class SingleGroupDefinition : EntityDefinition
         }
     }
 }
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class SingleGroupDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using SilkyUIFramework;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;

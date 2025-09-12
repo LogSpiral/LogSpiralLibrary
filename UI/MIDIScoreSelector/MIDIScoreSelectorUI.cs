@@ -12,6 +12,7 @@ using Terraria.Audio;
 namespace LogSpiralLibrary.UI.MIDIScoreSelector;
 
 [RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(MIDIScoreSelectorUI)}")]
+[JITWhenModsEnabled("SilkyUIFramework")]
 public partial class MIDIScoreSelectorUI : BasicBody
 {
     #region 属性

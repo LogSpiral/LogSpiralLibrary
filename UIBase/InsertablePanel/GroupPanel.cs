@@ -7,6 +7,7 @@ using LogSpiralLibrary.CodeLibrary.Utilties;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
 [XmlElementMapping(nameof(GroupPanel))]
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class GroupPanel : MultiPanel
 {
     public GroupPanel() => InsertContainerPanel.FlexDirection = FlexDirection.Column;

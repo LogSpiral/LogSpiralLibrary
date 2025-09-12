@@ -7,6 +7,7 @@ using LogSpiralLibrary.CodeLibrary.Utilties;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
 [XmlElementMapping(nameof(SequencePanel))]
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class SequencePanel : MultiPanel
 {
     public SequencePanel() => InsertContainerPanel.FlexDirection = FlexDirection.Row;

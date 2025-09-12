@@ -40,6 +40,7 @@ public class ModDefinition : EntityDefinition
         : ModLoader.GetMod(Name).DisplayName;
 }
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class ModDefinitionOption : SUIDefinitionIconOption
 {
     public override void OnSetDefinition(EntityDefinition current, EntityDefinition previous)
@@ -78,6 +79,7 @@ public class ModDefinitionOption : SUIDefinitionIconOption
     }
 }
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class ModDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
@@ -95,6 +97,7 @@ public class ModDefinitionHandler : EntityDefinitionCommonHandler
     }
 }
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class LSLRefedModDefinitionHandler : ModDefinitionHandler
 {
     protected override bool CheckPassOption(SUIEntityDefinitionOption view)

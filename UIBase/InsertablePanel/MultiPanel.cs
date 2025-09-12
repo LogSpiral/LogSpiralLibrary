@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel baseView, UIElementGroup mask) : UIElementGroup
 {
     private List<InsertablePanel> InnerPanels { get; } = innerPanels;
@@ -69,6 +70,7 @@ file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel ba
     public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer;
 
 }
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public abstract class MultiPanel : InsertablePanel
 {
 
@@ -109,7 +111,7 @@ public abstract class MultiPanel : InsertablePanel
 
     public event Action<MultiPanel, InsertablePanel> OnInsertPanelToInnerContainer;
 
-    public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer 
+    public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer
     {
         add => (InsertContainerPanel as InsertContainer).OnDeconstructContainer += value;
         remove => (InsertContainerPanel as InsertContainer).OnDeconstructContainer -= value;

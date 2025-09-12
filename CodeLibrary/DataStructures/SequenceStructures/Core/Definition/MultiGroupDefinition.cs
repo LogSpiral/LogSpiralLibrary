@@ -71,6 +71,7 @@ public class MultiGroupDefinition : EntityDefinition
         }
     }
 }
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class MultiGroupDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

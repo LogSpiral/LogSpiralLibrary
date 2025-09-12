@@ -9,6 +9,7 @@ using Terraria.Localization;
 namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 
 [RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public partial class SequenceEditHelperUI : BasicBody
 {
     #region 属性
@@ -175,7 +176,7 @@ public partial class SequenceEditHelperUI : BasicBody
             else
                 SetHelpHintKey("ButtonPanel");
         }
-        else if (instance.MenuPanel.ContainsPoint(mousePosition) && instance.CurrentPage is null) 
+        else if (instance.MenuPanel.ContainsPoint(mousePosition) && instance.CurrentPage is null)
         {
             if (instance.MenuPanel.RecentList.ContainsPoint(mousePosition))
                 SetHelpHintKey("MenuRecent");

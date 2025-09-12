@@ -44,6 +44,7 @@ public class SequenceDelegateDefinition : EntityDefinition
     public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : Name);
 }
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class SequenceDelegateDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

@@ -1,5 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
-using SilkyUIFramework;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using System.Collections.Generic;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;

@@ -3,6 +3,7 @@ using SilkyUIFramework;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public partial class SequenceElementCategoryPanel : UIElementGroup
 {
     public SequenceElementCategoryPanel(SequenceElementCategory category)

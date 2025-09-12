@@ -40,13 +40,14 @@ public class SequenceDataDefinition : EntityDefinition
             Mod = nameof(LogSpiralLibrary);
             Name = key;
         }
-        else 
+        else
         {
             Mod = datas[0];
             Name = datas[1];
         }
     }
 }
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class SequenceDataDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
@@ -56,7 +57,7 @@ public class SequenceDataDefinitionHandler : EntityDefinitionCommonHandler
 
     protected override void FillingOptionList(List<SUIEntityDefinitionOption> options)
     {
-        foreach(var pair in SequenceGlobalManager.DataTypeLookup)
+        foreach (var pair in SequenceGlobalManager.DataTypeLookup)
             options.Add(new SUIDEfinitionTextOption() { Definition = new SequenceDataDefinition(pair.Key) });
     }
 }

@@ -6,6 +6,7 @@ using SilkyUIFramework.BasicElements;
 namespace LogSpiralLibrary.UIBase;
 
 [XmlElementMapping(nameof(CompressLine))]
+[JITWhenModsEnabled("SilkyUIFramework")]
 public class CompressLine : UIView
 {
     public Direction Direction

@@ -190,6 +190,7 @@ public class ConditionDefinitionElement : DefinitionElement<ConditionDefinition>
 //            UIModConfig.Tooltip = Tooltip;
 //    }
 //}
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class ConditionDefinitionOptionElement : SUIEntityDefinitionOption
 {
     public ConditionDefinitionOptionElement()
@@ -216,6 +217,7 @@ public class ConditionDefinitionOptionElement : SUIEntityDefinitionOption
     }
 }
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class ConditionDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class TextTitledInsertablePanel : InsertablePanel
 {
     public UITextView TitleText { get; set; }
@@ -24,7 +25,7 @@ public class TextTitledInsertablePanel : InsertablePanel
         TitleText = new UITextView()
         {
             Margin = new(8),
-            TextAlign = new(0,.5f),
+            TextAlign = new(0, .5f),
             IgnoreMouseInteraction = true
         };
         TitleText.Join(mask);

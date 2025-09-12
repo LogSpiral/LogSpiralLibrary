@@ -1,13 +1,9 @@
 ﻿using SilkyUIFramework;
 using SilkyUIFramework.BasicElements;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.CodeLibrary.Utilties;
 
+[JITWhenModsEnabled("SilkyUIFramework")]
 public static class SUIExtension
 {
     extension(UIView view)
@@ -24,7 +20,7 @@ public static class SUIExtension
 
         public Vector2 GetBoundPercentedCoord(float percentX, float percentY) => view.Bounds.GetPercentedCoord(percentX, percentY);
     }
-    extension(UIElementGroup elementGroup) 
+    extension(UIElementGroup elementGroup)
     {
         /// <summary>
         /// 在给定子元素前插入子元素

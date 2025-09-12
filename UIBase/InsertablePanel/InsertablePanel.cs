@@ -8,6 +8,7 @@ using LogSpiralLibrary.CodeLibrary.Utilties;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
 [XmlElementMapping(nameof(InsertablePanel))]
+[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 public class InsertablePanel : UIElementGroup
 {
     #region Dragging
@@ -432,7 +433,7 @@ public class InsertablePanel : UIElementGroup
             };
 
             if (_pvState < 2)
-                OnAppendingToSequence?.Invoke(this,PendingPanel, multiPanel as SequencePanel);
+                OnAppendingToSequence?.Invoke(this, PendingPanel, multiPanel as SequencePanel);
             else
                 OnAppendingToGroup?.Invoke(this, PendingPanel, multiPanel as GroupPanel);
 

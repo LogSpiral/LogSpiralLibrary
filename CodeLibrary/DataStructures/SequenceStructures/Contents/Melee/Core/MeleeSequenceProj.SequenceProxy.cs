@@ -36,7 +36,7 @@ public partial class MeleeSequenceProj
             factor = MathF.Sqrt(factor);
             factor = MathHelper.SmoothStep(0, 1, factor);
             var center = Vector2.Lerp(element.OffsetCenter, new Vector2(Player.direction * -16, 8), factor);
-            var offRot = Utils.AngleLerp(element.OffsetRotation,0,factor);
+            var offRot = Utils.AngleLerp(element.OffsetRotation, 0, factor);
             var dirRot = Utils.AngleLerp(element.Rotation, towradsRight ? MathHelper.Pi / 16f : MathHelper.Pi * 15 / 16f, factor);
 
             Main.spriteBatch.Draw(texture,
@@ -46,13 +46,13 @@ public partial class MeleeSequenceProj
                 -StandardInfo.standardRotation,
                 offRot,
                 dirRot,
-                (StandardInfo.standardOrigin + element.OffsetOrigin * (1 - factor)) 
+                (StandardInfo.standardOrigin + element.OffsetOrigin * (1 - factor))
                 * (StandardInfo.frame?.Size() ?? texture.Size()),
                 element.OffsetSize * new Vector2(1, factor + (1 - factor) * (1 / element.KValue)),
                 towradsRight);
 
 
-            Main.spriteBatch.DrawString(FontAssets.MouseText.Value, "Idle", Player.MountedCenter - Vector2.UnitY * 64 - Main.screenPosition, Color.Red);
+            // Main.spriteBatch.DrawString(FontAssets.MouseText.Value, "Idle", Player.MountedCenter - Vector2.UnitY * 64 - Main.screenPosition, Color.Red);
         }
     }
 

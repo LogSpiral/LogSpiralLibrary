@@ -72,7 +72,7 @@ public class PunctureInfo : ExtendedMelee
 
     public override void OnStartSingle()
     {
-        if (Projectile.owner == Main.myPlayer) 
+        if (IsLocalProjectile) 
         {
             int t = 0;
             Point point = Owner.Bottom.ToTileCoordinates();

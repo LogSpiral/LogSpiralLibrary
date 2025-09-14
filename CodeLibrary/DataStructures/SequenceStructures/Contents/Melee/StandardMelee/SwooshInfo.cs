@@ -223,7 +223,7 @@ public class SwooshInfo : LSLMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
-        if (Projectile.owner == Main.myPlayer) 
+        if (IsLocalProjectile) 
         {
             hitCounter = 0;
             if (randAngleRange > 0)
@@ -266,19 +266,19 @@ public class SwooshInfo : LSLMelee
     }
     public override void NetSendInitializeElement(BinaryWriter writer)
     {
+        base.NetSendInitializeElement(writer);
         writer.Write((byte)mode);
         writer.Write(minKValue);
         writer.Write(KValueRange);
         writer.Write(randAngleRange);
-        base.NetSendInitializeElement(writer);
     }
     public override void NetReceiveInitializeElement(BinaryReader reader)
     {
+        base.NetReceiveInitializeElement(reader);
         mode = (SwooshMode)reader.ReadByte();
         minKValue = reader.ReadSingle();
         KValueRange = reader.ReadSingle();
         randAngleRange = reader.ReadSingle();
-        base.NetReceiveInitializeElement(reader);
     }
 
     #endregion 重写函数

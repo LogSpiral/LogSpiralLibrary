@@ -37,7 +37,7 @@ public class ConvoluteInfo : ExtendedMelee
 
     public override void OnStartAttack()
     {
-        if (Owner is Player plr && Projectile.owner == Main.myPlayer)
+        if (Owner is Player plr && IsLocalProjectile)
         {
             plr.Center += OffsetCenter;
             ShootExtraProjectile();

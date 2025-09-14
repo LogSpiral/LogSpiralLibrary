@@ -89,7 +89,7 @@ public class StabInfo : LSLMelee
             if (StandardInfo.itemType == ItemID.TrueExcalibur)
             {
                 float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
-                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center + unit * size);
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = LogSpiralLibraryMod.HeatMap[5].Value;
                 u.negativeDir = Flip;
                 u.rotation = Rotation;
@@ -98,7 +98,7 @@ public class StabInfo : LSLMelee
                 u.baseTexIndex = pair?.Item2 ?? 0;
                 u.ColorVector = verS.colorVec;
 
-                var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + unit * size * 1.2f);
+                var su = UltraStab.NewUltraStab(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center + unit * size * .2f);
                 su.heatMap = verS.heatMap;
                 su.negativeDir = !Flip;
                 su.rotation = Rotation;
@@ -115,7 +115,7 @@ public class StabInfo : LSLMelee
             else
             {
                 float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
-                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center + unit * size);
+                u = UltraStab.NewUltraStab(verS.canvasName, (int)(verS.timeLeft * 1.2f), size, Owner.Center);
                 u.heatMap = verS.heatMap;
                 u.negativeDir = Flip;
                 u.rotation = Rotation;
@@ -138,17 +138,11 @@ public class StabInfo : LSLMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
-        if (Projectile.owner != Main.myPlayer) return;
+        if (!IsLocalProjectile) return;
         hitCounter = 0;
         KValue = minKValue + Main.rand.NextFloat(0, KValueRange);
         if (randAngleRange > 0)
             Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, randAngleRange)) * Main.rand.Next([-1, 1]);
-        //if (Projectile.owner == Main.myPlayer)
-        //{
-        //    KValue = Main.rand.NextFloat(1f, 2.4f);
-        //    Rotation += Main.rand.NextFloat(0, Main.rand.NextFloat(0, MathHelper.Pi / 6)) * Main.rand.Next(new int[] { -1, 1 });
-        //    Projectile.netImportant = true;
-        //}
 
         Flip ^= true;
     }
@@ -184,13 +178,14 @@ public class StabInfo : LSLMelee
 
     private void UpdateStab()
     {
+        return;
         var verS = StandardInfo.VertexStandard;
         if (!verS.active)
             return;
 
         float size = verS.scaler * ModifyData.Size * OffsetSize * 1.25f;
         var unit = Rotation.ToRotationVector2();
-        UltraStab.center = Owner.Center + unit * size;
+        UltraStab.center = Owner.Center + unit * size * .25f;
     }
 
     public override void OnAttack()
@@ -215,6 +210,7 @@ public class StabInfo : LSLMelee
 
     public override void NetSendInitializeElement(BinaryWriter writer)
     {
+        base.NetSendInitializeElement(writer);
         writer.Write(minKValue);
         writer.Write(KValueRange);
         writer.Write(visualCentered);
@@ -223,6 +219,7 @@ public class StabInfo : LSLMelee
 
     public override void NetReceiveInitializeElement(BinaryReader reader)
     {
+        base.NetReceiveInitializeElement(reader);
         minKValue = reader.ReadSingle();
         KValueRange = reader.ReadSingle();
         visualCentered = reader.ReadBoolean();
@@ -285,13 +282,12 @@ public class RapidlyStabInfo : StabInfo
 
     private void ResetCycle()
     {
-        CounterMax = Math.Clamp(rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
-
-        //if (Projectile.owner == Main.myPlayer)
-        //{
-        //    realCycle = rangeOffsetMin == rangeOffsetMax ? givenCycle + rangeOffsetMin : Math.Clamp(givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax), 1, int.MaxValue);
-        //    Projectile.netImportant = true;
-        //}
+        CounterMax = Math.Clamp(
+            rangeOffsetMin == rangeOffsetMax 
+            ? givenCycle + rangeOffsetMin 
+            : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax),
+            1,
+            int.MaxValue);
     }
 
     #endregion 辅助函数
@@ -300,7 +296,7 @@ public class RapidlyStabInfo : StabInfo
 
     public override void OnActive()
     {
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
             ResetCycle();
         base.OnActive();
     }

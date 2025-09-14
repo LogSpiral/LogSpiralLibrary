@@ -52,7 +52,7 @@ public class TerraprismaInfo : VanillaMelee
     public override void UpdateStatus(bool triggered)
     {
         var verS = StandardInfo.VertexStandard;
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
             if (Owner is Player plr)
                 plr.direction = Math.Sign(Main.MouseWorld.X - plr.Center.X);
         ultra?.autoUpdate = false;

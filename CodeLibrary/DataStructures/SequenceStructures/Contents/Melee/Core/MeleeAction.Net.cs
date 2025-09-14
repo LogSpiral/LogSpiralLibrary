@@ -16,7 +16,6 @@ public partial class MeleeAction
         writer.Write(Rotation);
         writer.Write(KValue);
         writer.Write(Flip);
-
     }
 
     public virtual void NetReceiveInitializeElement(BinaryReader reader)
@@ -40,6 +39,7 @@ public partial class MeleeAction
         writer.Write(Rotation);
         writer.Write(KValue);
         writer.Write(Flip);
+        writer.Write((sbyte)Owner.direction);
     }
 
     public virtual void NetReceiveUpdateElement(BinaryReader reader)
@@ -47,6 +47,7 @@ public partial class MeleeAction
         Rotation = reader.ReadSingle();
         KValue = reader.ReadSingle();
         Flip = reader.ReadBoolean();
+        Owner.direction = reader.ReadSByte();
     }
 
     private class MeleeActionUpdateSync : NetModule

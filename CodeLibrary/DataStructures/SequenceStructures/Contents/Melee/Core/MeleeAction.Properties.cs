@@ -138,5 +138,7 @@ public partial class MeleeAction
     public override string LocalizationCategory => $"Sequence.{nameof(MeleeAction)}";
     public override string Category { get; } = "";
 
+    public bool IsLocalProjectile => Projectile.owner == Main.myPlayer;
+
     #endregion 辅助属性
 }

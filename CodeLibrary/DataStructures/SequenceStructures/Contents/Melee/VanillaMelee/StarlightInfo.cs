@@ -30,7 +30,7 @@ public class StarlightInfo : VanillaMelee
 
     public override void OnAttack()
     {
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
         {
             Vector2 tarVec = Owner switch
             {

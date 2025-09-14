@@ -52,7 +52,7 @@ public class FlailInfo : VanillaMelee
     {
         if (state != 3)
         {
-            if (Projectile.owner == Main.myPlayer)
+            if (IsLocalProjectile)
             {
                 Vector2 tarVec = Owner switch
                 {

@@ -57,11 +57,13 @@ public class UltraStab : MeleeVertexInfo
         }
         if (usePSShaderTransform)
         {
-            if (OnSpawn)
+            // if (OnSpawn)
             {
+                center += rotation.ToRotationVector2() * (scaler * .75f / timeLeftMax);
+                xScaler *= MathF.Pow(4, 1f / timeLeftMax);
                 var realColor = Color.White;
                 //Vector2 offsetVec = 20f * new Vector2(8, 3 / xScaler) * scaler;
-                Vector2 offsetVec = new Vector2(1, 3 / xScaler / 8) * scaler;
+                Vector2 offsetVec = new Vector2(1, 3 / xScaler / 8 * 1.5f) * scaler;
 
                 if (negativeDir) offsetVec.Y *= -1;
                 VertexInfos[0] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 1, 1f));
@@ -70,8 +72,8 @@ public class UltraStab : MeleeVertexInfo
                 VertexInfos[1] = new CustomVertexInfo(center + offsetVec.RotatedBy(rotation), realColor, new Vector3(0, 0, 1f));
                 VertexInfos[3] = new CustomVertexInfo(center + (offsetVec with { X = 0 }).RotatedBy(rotation), realColor, new Vector3(1, 0, 1f));
             }
-            for (int n = 0; n < 4; n++)
-                VertexInfos[n].Position += rotation.ToRotationVector2();
+            /*for (int n = 0; n < 4; n++)
+                VertexInfos[n].Position += rotation.ToRotationVector2() * (scaler * .75f / timeLeftMax);*/
         }
         else
         {

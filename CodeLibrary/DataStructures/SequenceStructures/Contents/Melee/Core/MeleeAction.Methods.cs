@@ -101,7 +101,7 @@ public partial class MeleeAction
             SequenceSystem.elementDelegates[OnStartSingleDelegate.Key].Invoke(this);
         }
         OnStartSingleEvent?.Invoke(this);
-        if (Projectile.owner != Main.myPlayer) return;
+        if (!IsLocalProjectile) return;
         switch (Owner)
         {
             case Player player:
@@ -181,10 +181,9 @@ public partial class MeleeAction
             Vector2 drawCen = OffsetCenter + Owner.Center;
 
             float k = 1f;
-            if (StandardInfo.VertexStandard.scaler > 0)
-            {
-                k = StandardInfo.VertexStandard.scaler / TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value.Size().Length();
-            }
+            if (StandardInfo.VertexStandard.scaler > 0 && TextureAssets.Item[Main.LocalPlayer.HeldItem.type] is { } textureAsset)
+                k = StandardInfo.VertexStandard.scaler / textureAsset.Value.Size().Length();
+
             CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, OffsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, OffsetSize * ModifyData.Size * sc * k, drawCen, !Flip);
 
             float point = 0f;

@@ -43,7 +43,7 @@ public class ChargingInfo : ExtendedMelee
         var shaderID = StandardInfo.VertexStandard.dyeShaderID;
         StandardInfo.extraLight = 3 * MathF.Pow(1 - Factor, 4f);
         Flip = Owner.direction == 1;
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
             switch (Owner)
             {
                 case Player player:

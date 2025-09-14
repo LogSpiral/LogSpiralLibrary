@@ -98,7 +98,7 @@ public class EruptionInfo : VanillaMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
-        if (Projectile.owner == Main.myPlayer) 
+        if (IsLocalProjectile) 
         {
             KValue = Main.rand.NextFloat(1.5f, 2f);
             Rotation += Main.rand.NextFloat(-1, 1) * MathHelper.PiOver2 / 12;

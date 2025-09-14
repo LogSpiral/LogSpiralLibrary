@@ -84,7 +84,7 @@ public class ZenithInfo : VanillaMelee
 
     public override void OnStartSingle()
     {
-        if (Projectile.owner == Main.myPlayer) 
+        if (IsLocalProjectile) 
         {
             Vector2 tarVec = Owner switch
             {

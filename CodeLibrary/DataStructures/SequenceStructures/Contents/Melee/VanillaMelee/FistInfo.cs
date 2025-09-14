@@ -24,7 +24,7 @@ public class FistInfo : VanillaMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.Scythe, Owner?.Center);
-        if (Owner is Player plr && Projectile.owner == Main.myPlayer)
+        if (Owner is Player plr && IsLocalProjectile)
         {
             plr.Center += OffsetCenter;
             ShootExtraProjectile();

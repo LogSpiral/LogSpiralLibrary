@@ -31,7 +31,7 @@ public class YoyoInfo : VanillaMelee
 
     public override void UpdateStatus(bool triggered)
     {
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
         {
             Vector2 tarVec = Owner switch
             {
@@ -58,7 +58,7 @@ public class YoyoInfo : VanillaMelee
     }
     public override void OnStartSingle()
     {
-        if (Projectile.owner == Main.myPlayer)
+        if (IsLocalProjectile)
         {
             realCenter = Owner.Center;
             KValue = Main.rand.NextFloat(1, 2);

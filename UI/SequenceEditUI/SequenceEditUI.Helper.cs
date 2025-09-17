@@ -13,7 +13,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI;
 
 public partial class SequenceEditUI
 {
-    [ExtendsFromMod(nameof(SilkyUIFramework))]
+    // [ExtendsFromMod(nameof(SilkyUIFramework))]
     public static class SequenceEditUIHelper
     {
         public static UIElementGroup NewDownlistMask()

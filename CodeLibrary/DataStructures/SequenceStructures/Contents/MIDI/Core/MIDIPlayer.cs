@@ -42,7 +42,7 @@ public class MIDIPlayer : ModItem
     }
     public override bool CanUseItem(Player player)
     {
-        if (ModLoader.HasMod("SilkyUIFramework"))
+        // if (ModLoader.HasMod("SilkyUIFramework"))
             if (player.altFunctionUse == 2)
             {
                 if (MIDIScoreSelectorUI.Active)

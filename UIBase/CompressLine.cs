@@ -5,8 +5,8 @@ using SilkyUIFramework.BasicElements;
 
 namespace LogSpiralLibrary.UIBase;
 
-[JITWhenModsEnabled("SilkyUIFramework")]
-[ExtendsFromMod(nameof(SilkyUIFramework))]
+// [JITWhenModsEnabled("SilkyUIFramework")]
+// [ExtendsFromMod(nameof(SilkyUIFramework))]
 [XmlElementMapping(nameof(CompressLine))]
 public class CompressLine : UIView
 {

@@ -5,8 +5,8 @@ using SilkyUIFramework.Attributes;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
 
-[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
-[ExtendsFromMod(nameof(SilkyUIFramework))]
+// [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+// [ExtendsFromMod(nameof(SilkyUIFramework))]
 [XmlElementMapping(nameof(PageView))]
 public partial class PageView : UIElementGroup
 {

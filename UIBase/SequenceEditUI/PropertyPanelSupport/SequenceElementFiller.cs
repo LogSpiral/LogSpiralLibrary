@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Terraria.ModLoader.Config;
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.PropertyPanelSupport;
 
-[ExtendsFromMod(nameof(PropertyPanelLibrary))]
+// [ExtendsFromMod(nameof(PropertyPanelLibrary))]
 public class SequenceElementFiller(ISequenceElement element) : IPropertyOptionFiller
 {
     public ISequenceElement Element { get; set; } = element;

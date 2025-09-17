@@ -69,8 +69,8 @@ public class SingleGroupDefinition : EntityDefinition
         }
     }
 }
-[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
-[ExtendsFromMod(nameof(PropertyPanelLibrary))]
+// [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+// [ExtendsFromMod(nameof(PropertyPanelLibrary))]
 public class SingleGroupDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

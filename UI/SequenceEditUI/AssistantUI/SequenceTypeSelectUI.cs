@@ -10,8 +10,8 @@ using Terraria.Audio;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 
-[JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
-[ExtendsFromMod(nameof(SilkyUIFramework))]
+// [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+// [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceTypeSelectUI)}")]
 public partial class SequenceTypeSelectUI : BasicBody
 {

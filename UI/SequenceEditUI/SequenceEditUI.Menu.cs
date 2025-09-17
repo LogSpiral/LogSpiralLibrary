@@ -15,7 +15,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI;
 
 public partial class SequenceEditUI
 {
-    [ExtendsFromMod(nameof(SilkyUIFramework))]
+    // [ExtendsFromMod(nameof(SilkyUIFramework))]
     private static class MenuHelper
     {
         public static PageView AppendPage(SequenceEditUI instance, string name, Sequence sequence, bool immediateSwitch)

@@ -26,7 +26,7 @@
 		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">
 			<Visible>true</Visible>
 		</None>
-		<PackageReference Include="Solaestas.tModLoader.ModBuilder" Version="1.6.2" />
+		<PackageReference Include="Solaestas.tModLoader.ModBuilder" Version="1.6.1" />
 		
 		<!-- 项目引用 属性面板 SilkyUIFramework SilkyUIAnalyzer-->
 		<ProjectReference Include="..\PropertyPanel\PropertyPanelLibrary.csproj" />

@@ -13,7 +13,7 @@ using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.PropertyPanelSupport;
 
-[ExtendsFromMod(nameof(PropertyPanelLibrary))]
+// [ExtendsFromMod(nameof(PropertyPanelLibrary))]
 public class GroupFiller(object groupContext) : IPropertyOptionFiller
 {
     public object GroupContext { get; set; } = groupContext;

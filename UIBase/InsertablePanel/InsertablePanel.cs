@@ -7,8 +7,9 @@ using LogSpiralLibrary.CodeLibrary.Utilties;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
-[XmlElementMapping(nameof(InsertablePanel))]
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
+[XmlElementMapping(nameof(InsertablePanel))]
 public class InsertablePanel : UIElementGroup
 {
     #region Dragging

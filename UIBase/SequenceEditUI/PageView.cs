@@ -5,8 +5,9 @@ using SilkyUIFramework.Attributes;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
 
-[XmlElementMapping(nameof(PageView))]
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
+[XmlElementMapping(nameof(PageView))]
 public partial class PageView : UIElementGroup
 {
     private static Asset<Effect> ColorPanelEffect { get; } = ModAsset.PageCorner;

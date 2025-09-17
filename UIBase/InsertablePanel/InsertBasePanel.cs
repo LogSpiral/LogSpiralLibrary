@@ -5,8 +5,9 @@ using Terraria.Audio;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
-[XmlElementMapping("InsertBasePanel")]
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
+[XmlElementMapping("InsertBasePanel")]
 public class InsertBasePanel : UIElementGroup
 {
     public InsertablePanel RootElement

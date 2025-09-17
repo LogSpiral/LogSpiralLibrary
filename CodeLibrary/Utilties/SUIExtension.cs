@@ -4,6 +4,7 @@ using SilkyUIFramework.BasicElements;
 namespace LogSpiralLibrary.CodeLibrary.Utilties;
 
 [JITWhenModsEnabled("SilkyUIFramework")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
 public static class SUIExtension
 {
     extension(UIView view)

@@ -20,7 +20,16 @@ public class SequenceElementCategory
     public Type ElementType { get; init; }
 
     #region Statics
-
+    [JITWhenModsEnabled(nameof(SilkyUIFramework))]
+    private static Color SUIDefault => SUIColor.Background * .25f;
+    private static Color GetDefaultColor() 
+    {
+        if (ModLoader.HasMod(nameof(SilkyUIFramework))) 
+        {
+            return SUIDefault;
+        }
+        return default;
+    }
     public static SequenceElementCategory RegisterCategory<T>(Mod mod, Asset<Texture2D> icon, T defaultElement, Color? themeColor = null) where T : ISequenceElement
     {
         var name = typeof(T).Name;
@@ -28,7 +37,7 @@ public class SequenceElementCategory
         {
             CategoryName = Language.GetOrRegister($"Mods.{mod.Name}.SequenceElements.{name}.DisplayName"),
             Icon = icon,
-            ThemeColor = themeColor ?? SUIColor.Background * .25f,
+            ThemeColor = themeColor ?? GetDefaultColor(),
             ElementName = name,
             Maganger = SequenceManager<T>.Instance,
             DefaultElement = defaultElement,

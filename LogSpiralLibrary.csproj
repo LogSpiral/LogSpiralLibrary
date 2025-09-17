@@ -7,7 +7,6 @@
 	<ItemGroup>
 		
 		<!-- 引用紫幽的nuget包，公有化几个程序集 -->
-		<PackageReference Include="Solaestas.tModLoader.ModBuilder" Version="1.6.1" />
 		<Publicize Include="ReLogic" />
 		<Publicize Include="MonoMod.RuntimeDetour" />
 		<Publicize Include="MonoMod.Utils" />
@@ -27,14 +26,15 @@
 		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">
 			<Visible>true</Visible>
 		</None>
+		<PackageReference Include="Solaestas.tModLoader.ModBuilder" Version="1.6.2" />
 		
 		<!-- 项目引用 属性面板 SilkyUIFramework SilkyUIAnalyzer-->
 		<ProjectReference Include="..\PropertyPanel\PropertyPanelLibrary.csproj" />
-		<ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
 		<ProjectReference Include="..\SilkyUIAnalyzer\SilkyUIAnalyzer.csproj">
 			<OutputItemType>Analyzer</OutputItemType>
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 		</ProjectReference>
+		<ProjectReference Include="..\SilkyUIFramework\SilkyUIFramework.csproj" />
 		
 	</ItemGroup>
 </Project>

@@ -106,7 +106,7 @@ public partial class LogSpiralLibraryMod
     private static void CreateRender()
     {
         var instance = Instance;
-        instance.RenderOrig?.Dispose();
+        instance?.RenderOrig?.Dispose();
         instance.RenderOrig = DirectlyCreateNewRender();
 
         instance.Render?.Dispose();

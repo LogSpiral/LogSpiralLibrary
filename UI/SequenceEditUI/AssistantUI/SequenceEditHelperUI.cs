@@ -8,8 +8,9 @@ using Terraria.Localization;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 
-[RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
+[RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
 public partial class SequenceEditHelperUI : BasicBody
 {
     #region 属性

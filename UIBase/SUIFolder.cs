@@ -9,6 +9,7 @@ using LogSpiralLibrary.CodeLibrary.Utilties;
 namespace LogSpiralLibrary.UIBase;
 
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
 public class SUIFolder : DownSlideListContainer
 {
     public SUIFolder(string folderName)

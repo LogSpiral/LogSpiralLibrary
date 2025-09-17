@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
 public class TextTitledInsertablePanel : InsertablePanel
 {
     public UITextView TitleText { get; set; }

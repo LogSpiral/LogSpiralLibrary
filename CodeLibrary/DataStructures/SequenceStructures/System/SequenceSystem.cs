@@ -38,20 +38,17 @@ public class SequenceSystem : ModSystem
     public static LocalMod[] LocalMods { get; private set; }
     public static LocalMod ModToLocal(Mod mod)
     {
-        string fileName = $"{mod.Name}.tmod";
-        List<LocalMod> targetLocals = [];
+        // string fileName = $"{mod.Name}.tmod";
+        // <LocalMod> targetLocals = [];
         foreach (var localsItem in LocalMods)
         {
             if (localsItem.Name == mod.Name)
-                targetLocals.Add(localsItem);
+                return localsItem;
+                // targetLocals.Add(localsItem);
         }
-        LocalMod localMod = targetLocals[^1];
-        //Main.NewText((targetLocals.Count,localMod.DisplayName,localMod.lastModified));
-        //bool success =
-        //    ModOrganizer.TryReadLocalMod(ModLocation.Modpack, ModOrganizer.ModPackActive+fileName, out localMod) ||
-        //    ModOrganizer.TryReadLocalMod(ModLocation.Local, ModOrganizer.modPath+fileName, out localMod) ||
-        //    ModOrganizer.TryReadLocalMod(ModLocation.Workshop, fileName, out localMod);
-        return localMod;
+        return null;
+        // LocalMod localMod = targetLocals[^1];
+        // return localMod;
     }
     public override void Load()
     {

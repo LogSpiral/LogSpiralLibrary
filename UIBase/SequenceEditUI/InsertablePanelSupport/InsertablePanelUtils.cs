@@ -16,6 +16,7 @@ using InsPanel = LogSpiralLibrary.UIBase.InsertablePanel.InsertablePanel;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
+[JITWhenModsEnabled(nameof(PropertyPanelLibrary))]
 public static class InsertablePanelUtils
 {
     static Color ElementColor { get; } = Color.Cyan * .1f;

@@ -5,8 +5,9 @@ using System.Linq;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
-[XmlElementMapping(nameof(InsertablePanelFactory))]
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
+[XmlElementMapping(nameof(InsertablePanelFactory))]
 public class InsertablePanelFactory : UIElementGroup
 {
     public InsertablePanelFactory()

@@ -5,6 +5,7 @@ using Terraria.GameInput;
 namespace LogSpiralLibrary.UI.SequenceEditUI;
 
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
 public class SequenceUIPlayer : ModPlayer
 {
     private static ModKeybind OpenSequenceEditor { get; set; }

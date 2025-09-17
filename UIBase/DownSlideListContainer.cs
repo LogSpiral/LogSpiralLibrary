@@ -6,6 +6,7 @@ using SilkyUIFramework.BasicElements;
 namespace LogSpiralLibrary.UIBase;
 
 [JITWhenModsEnabled("SilkyUIFramework")]
+[ExtendsFromMod(nameof(SilkyUIFramework))]
 public partial class DownSlideListContainer : UIElementGroup
 {
     public DownSlideListContainer()

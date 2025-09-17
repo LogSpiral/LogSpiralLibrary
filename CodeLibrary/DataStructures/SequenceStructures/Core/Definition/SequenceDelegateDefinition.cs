@@ -45,6 +45,7 @@ public class SequenceDelegateDefinition : EntityDefinition
 }
 
 [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
+[ExtendsFromMod(nameof(PropertyPanelLibrary))]
 public class SequenceDelegateDefinitionHandler : EntityDefinitionCommonHandler
 {
     public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)

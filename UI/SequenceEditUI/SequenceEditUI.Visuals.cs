@@ -1,5 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase.InsertablePanel;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;

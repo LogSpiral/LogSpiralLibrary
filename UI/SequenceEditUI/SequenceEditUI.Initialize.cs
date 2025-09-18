@@ -4,6 +4,7 @@ using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 using SilkyUIFramework;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.IO;
 using Terraria.Audio;

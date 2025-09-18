@@ -1,6 +1,6 @@
 ﻿using LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
@@ -8,7 +8,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI;
 // [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 // [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditUI)}")]
-public partial class SequenceEditUI : BasicBody
+public partial class SequenceEditUI : BaseBody
 {
     public static SequenceEditUI? Instance { get; private set; }
 

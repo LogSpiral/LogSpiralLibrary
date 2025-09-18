@@ -3,7 +3,7 @@ using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fille
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
 using System.Linq;
@@ -15,7 +15,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 // [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 // [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceCreateNewUI)}")]
-public partial class SequenceCreateNewUI : BasicBody
+public partial class SequenceCreateNewUI : BaseBody
 {
     #region 属性
 

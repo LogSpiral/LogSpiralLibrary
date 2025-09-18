@@ -2,8 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using ReLogic.Content;
 using SilkyUIFramework;
-using SilkyUIFramework.BasicComponents;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Linq;
 using Terraria.Audio;

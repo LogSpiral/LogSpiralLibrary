@@ -4,8 +4,7 @@ using LogSpiralLibrary.UIBase.InsertablePanel;
 using ReLogic.Graphics;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
-using SilkyUIFramework.BasicComponents;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Linq;
 

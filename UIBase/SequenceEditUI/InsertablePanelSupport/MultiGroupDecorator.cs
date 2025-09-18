@@ -2,6 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UIBase.InsertablePanel;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using ReLogic.Graphics;

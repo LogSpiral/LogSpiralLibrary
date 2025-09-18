@@ -1,7 +1,8 @@
 ﻿using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
+using SilkyUIFramework.Elements;
 
 namespace LogSpiralLibrary.UIBase;
 

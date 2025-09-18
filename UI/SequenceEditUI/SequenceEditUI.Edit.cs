@@ -14,7 +14,7 @@ using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Option.Writ
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.Linq;

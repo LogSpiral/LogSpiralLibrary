@@ -3,7 +3,7 @@ using LogSpiralLibrary.UIBase.SequenceEditUI;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
 using Terraria.Audio;
@@ -13,7 +13,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 // [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 // [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceTypeSelectUI)}")]
-public partial class SequenceTypeSelectUI : BasicBody
+public partial class SequenceTypeSelectUI : BaseBody
 {
     #region 属性
 

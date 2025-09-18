@@ -1,5 +1,6 @@
 ﻿using LogSpiralLibrary.UI.SequenceEditUI;
 using SilkyUIFramework;
+using SilkyUIFramework.Elements;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
 

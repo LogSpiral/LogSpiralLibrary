@@ -3,7 +3,8 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace LogSpiralLibrary.UI.MIDIScoreSelector;
 // [JITWhenModsEnabled("SilkyUIFramework")]
 // [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Radial Hotbars", $"{nameof(LogSpiralLibrary)}: {nameof(MIDIScoreSelectorUI)}")]
-public partial class MIDIScoreSelectorUI : BasicBody
+public partial class MIDIScoreSelectorUI : BaseBody
 {
     #region 属性
 

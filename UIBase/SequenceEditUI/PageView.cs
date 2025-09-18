@@ -2,6 +2,7 @@
 using ReLogic.Content;
 using SilkyUIFramework;
 using SilkyUIFramework.Attributes;
+using SilkyUIFramework.Elements;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
 

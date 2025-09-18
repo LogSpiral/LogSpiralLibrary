@@ -1,6 +1,6 @@
 ﻿using SilkyUIFramework;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;

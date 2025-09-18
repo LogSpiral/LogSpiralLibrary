@@ -1,7 +1,7 @@
 ﻿using LogSpiralLibrary.UIBase.InsertablePanel;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using SilkyUIFramework;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary.Utilties;

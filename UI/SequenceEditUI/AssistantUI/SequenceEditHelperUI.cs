@@ -1,7 +1,7 @@
 ﻿using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using SilkyUIFramework.Graphics2D;
 using Terraria.Audio;
 using Terraria.Localization;
@@ -11,7 +11,7 @@ namespace LogSpiralLibrary.UI.SequenceEditUI.AssistantUI;
 // [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
 // [ExtendsFromMod(nameof(SilkyUIFramework))]
 [RegisterUI("Vanilla: Mouse Text", $"{nameof(LogSpiralLibrary)}: {nameof(SequenceEditHelperUI)}")]
-public partial class SequenceEditHelperUI : BasicBody
+public partial class SequenceEditHelperUI : BaseBody
 {
     #region 属性
 

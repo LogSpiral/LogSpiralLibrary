@@ -3,7 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using Microsoft.Xna.Framework.Input;
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
-using SilkyUIFramework.BasicElements;
+using SilkyUIFramework.Elements;
 using System.Collections.Generic;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;

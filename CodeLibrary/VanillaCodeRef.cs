@@ -1,5 +1,4 @@
-﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LogSpiralLibrary.CodeLibrary;
 
@@ -724,8 +723,8 @@ internal static class VanillaCodeRef
             longAxis = minLongAxis;//保证半长轴最短是60
         }
         Vector2 center = mountedCenter + projectile.velocity;//椭圆中心
-        Vector2 offset = new Vector2(1f, 0f).RotatedBy(theta, default) * new Vector2(longAxis, shortAxis * MathHelper.Lerp(2f, 1f, lerpValue));//插值生成椭圆轨迹
-        Vector2 stdOffset = center + offset.RotatedBy(rotation, default);//加上弹幕自身旋转量
+        Vector2 offset = new Vector2(1f, 0f).RotatedBy(theta) * new Vector2(longAxis, shortAxis * MathHelper.Lerp(2f, 1f, lerpValue));//插值生成椭圆轨迹
+        Vector2 stdOffset = center + offset.RotatedBy(rotation);//加上弹幕自身旋转量
 
         Vector2 value3 = (1f - Utils.GetLerpValue(0f, 0.5f, factor, true)) *
             new Vector2((projectile.velocity.X > 0f ? 1 : -1) * -longAxis * 0.1f, -projectile.ai[0] * 0.3f);//坐标修改偏移量

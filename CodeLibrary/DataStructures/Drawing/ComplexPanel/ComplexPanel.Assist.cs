@@ -13,7 +13,7 @@ public partial class ComplexPanelInfo
         float lengthScaler = length / 192f / count;
         for (int n = 0; n < count; n++)
         {
-            drawDatas.Add(new(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(336, 0, 192, 40), Color.White, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0, 0));
+            drawDatas.Add(new DrawDataBuffer(texture, Vector2.Lerp(start, end, (n + .5f) / count), new Rectangle(336, 0, 192, 40), Color.White, rotation, new Vector2(96, 18), new Vector2(lengthScaler, widthScaler), 0));
         }
     }
 
@@ -125,7 +125,7 @@ public partial class ComplexPanelInfo
             for (int j = 0; j < countY; j++)
             {
                 if (j == countY - 1) height = (destination.Height - j * sizeY) / sizeY * height;
-                drawDatas.Add(new(texture, destination.TopLeft() + new Vector2(i * sizeX, j * sizeY), new Rectangle(frame.X, frame.Y, (int)width, (int)height), color, 0, default, new Vector2(sizeX, sizeY) / frame.Size() * 1.025f, 0, 0));
+                drawDatas.Add(new DrawDataBuffer(texture, destination.TopLeft() + new Vector2(i * sizeX, j * sizeY), new Rectangle(frame.X, frame.Y, (int)width, (int)height), color, 0, default, new Vector2(sizeX, sizeY) / frame.Size() * 1.025f, 0));
             }
         }
     }
@@ -167,7 +167,7 @@ public partial class ComplexPanelInfo
             for (int j = 0; j < countY; j++)
             {
                 if (j == countY - 1) height = (rectangle.Height - j * size.Y) / size.Y * 40;
-                drawDatas.Add(new(texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0, 0));
+                drawDatas.Add(new DrawDataBuffer(texture, rectangle.TopLeft() + new Vector2(i * size.X, j * size.Y), new Rectangle(210, 0, (int)width, (int)height), Color.White, 0, default, size / 40f * 1.025f, 0));
             }
         }
     }

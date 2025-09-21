@@ -1,7 +1,6 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using LogSpiralLibrary.UIBase.InsertablePanel;
-using LogSpiralLibrary.CodeLibrary.Utilties;
-using ReLogic.Graphics;
+
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
 public class SequenceLineDecorator : IInsertPanelDecorator

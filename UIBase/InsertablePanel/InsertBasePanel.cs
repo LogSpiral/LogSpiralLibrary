@@ -54,7 +54,7 @@ public class InsertBasePanel : UIElementGroup
             RecoverAfterFixing = true;
             if (value != null)
             {
-                _origPosition = new(RootElement.Left.Pixels, RootElement.Top.Pixels);
+                _origPosition = new Vector2(RootElement.Left.Pixels, RootElement.Top.Pixels);
                 FixedPoint = value.Bounds.Position;
             }
 

@@ -1,5 +1,4 @@
 ﻿using LogSpiralLibrary.UI.SequenceEditUI;
-using SilkyUIFramework;
 using SilkyUIFramework.Elements;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI;
@@ -13,7 +12,7 @@ public partial class SequenceElementCategoryPanel : UIElementGroup
         InitializeComponent();
         DisplayName.Text = category.CategoryName.Value;
         IconImage.Texture2D = category.Icon;
-        IconImage.ImageAlign = new(.5f);
+        IconImage.ImageAlign = new Vector2(.5f);
         Category = category;
     }
 

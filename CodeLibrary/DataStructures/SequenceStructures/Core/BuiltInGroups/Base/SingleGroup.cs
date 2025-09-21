@@ -3,7 +3,6 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interf
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Xml;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
@@ -23,7 +22,7 @@ public abstract class SingleGroup<T> : IGroup where T : class, IGroupArgument, n
         attributes.Remove("SingleGroupFullName");
         T argument = new();
         argument.LoadAttributes(attributes);
-        Data = new() { Wrapper = wrapper, Argument = argument };
+        Data = new WrapperArgPair<T> { Wrapper = wrapper, Argument = argument };
     }
 
     private static readonly Dictionary<string, string> _attributeDict = [];

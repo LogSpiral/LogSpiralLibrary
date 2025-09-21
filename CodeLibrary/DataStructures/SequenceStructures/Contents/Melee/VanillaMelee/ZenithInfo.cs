@@ -61,7 +61,7 @@ public class ZenithInfo : VanillaMelee
                 var f = i / (u.Counts - 1f);
                 var realColor = StandardInfo.standardColor;
 
-                realColor.A = (byte)MathHelper.Clamp(f.HillFactor2(1) * 640 * alphaT * alphaG, 0, 255);
+                realColor.A = (byte)MathHelper.Clamp(f.HillFactor2() * 640 * alphaT * alphaG, 0, 255);
                 vertex[2 * i] = new CustomVertexInfo(curTex[4].Position, realColor, new Vector3(f, 1, 1));
                 vertex[2 * i + 1] = new CustomVertexInfo(curTex[0].Position, realColor, new Vector3(0, 0, 1));
 

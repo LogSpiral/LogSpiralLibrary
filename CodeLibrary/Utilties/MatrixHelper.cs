@@ -582,8 +582,10 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties
             if (Width != Height) throw new ArgumentException($"只有方阵能求逆矩阵，当前高宽分别为{Height}和{Width}");
             if (Width == 1)
             {
-                var result = new MatrixEX(1);
-                result[0, 0] = 1 / this[0, 0];
+                var result = new MatrixEX(1)
+                {
+                    [0, 0] = 1 / this[0, 0]
+                };
                 return result;
             }
             var adjugate = Adjugate();

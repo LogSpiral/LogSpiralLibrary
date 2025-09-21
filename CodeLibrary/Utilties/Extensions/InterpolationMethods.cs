@@ -93,7 +93,7 @@ public static class InterpolationMethods
     /// <param name="value">丢进去的变量，取值范围一般是[0,maxTimeWhen]</param>
     /// <param name="maxTimeWhen">什么时候插值结束呢</param>
     /// <returns>自己画函数图像去，真的像是一个小山丘一样(</returns>
-    public static float HillFactor2(this float value, float maxTimeWhen = 1) => MathF.Sqrt(value / maxTimeWhen).CosFactor(1);
+    public static float HillFactor2(this float value, float maxTimeWhen = 1) => MathF.Sqrt(value / maxTimeWhen).CosFactor();
 
     public static float CosFactor(this float value, float maxTimeWhen = 1)
     {

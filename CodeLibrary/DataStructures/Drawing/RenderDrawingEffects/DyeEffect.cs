@@ -84,7 +84,7 @@ public class DyeConfigs : IAvailabilityChangableConfig
     } = new();
 
     [JsonIgnore]
-    public DyeEffect EffectInstance => !Available ? new(0) : new DyeEffect(Dye.Type);
+    public DyeEffect EffectInstance => !Available ? new DyeEffect() : new DyeEffect(Dye.Type);
 
     //  field ??=
 

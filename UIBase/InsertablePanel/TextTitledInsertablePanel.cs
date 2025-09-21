@@ -1,12 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
-using SilkyUIFramework;
+﻿using SilkyUIFramework;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
@@ -25,8 +19,8 @@ public class TextTitledInsertablePanel : InsertablePanel
         };
         TitleText = new UITextView()
         {
-            Margin = new(8),
-            TextAlign = new(0, .5f),
+            Margin = new Margin(8),
+            TextAlign = new Vector2(0, .5f),
             IgnoreMouseInteraction = true
         };
         TitleText.Join(mask);

@@ -9,10 +9,10 @@ public class ConditionalSingleGroup() : SingleGroup<ConditionArg>
 
     public ConditionalSingleGroup(Wrapper wrapper, string conditionKey) : this()
     {
-        Data = new()
+        Data = new WrapperArgPair<ConditionArg>
         {
             Wrapper = wrapper,
-            Argument = new(conditionKey)
+            Argument = new ConditionArg(conditionKey)
         };
     }
 }

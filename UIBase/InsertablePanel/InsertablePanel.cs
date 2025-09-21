@@ -123,33 +123,33 @@ public class InsertablePanel : UIElementGroup
 
     public InsertablePanel()
     {
-        _pvContainer = new()
+        _pvContainer = new UIElementGroup
         {
             FitHeight = true,
             FitWidth = true,
             BackgroundColor = Color.White * .1f,
             BorderColor = Color.White,
-            BorderRadius = new(8f),
-            Padding = new(8f),
-            Margin = new(8f),
+            BorderRadius = new Vector4(8f),
+            Padding = new Margin(8f),
+            Margin = new Margin(8f),
             Border = 1f,
-            Gap = new(16),
+            Gap = new Size(16),
             MainAlignment = MainAlignment.Center,
             CrossAlignment = CrossAlignment.Center
         };
-        _pvView = new()
+        _pvView = new UIView
         {
             BackgroundColor = Color.White * .1f,
             BorderColor = Color.White,
-            BorderRadius = new(8f),
+            BorderRadius = new Vector4(8f),
             Border = 1f,
-            Margin = new(8f),
-            Padding = new(8f),
+            Margin = new Margin(8f),
+            Padding = new Margin(8f),
         };
         BackgroundColor = Color.Black * .1f;
         BorderColor = Color.Black;
-        BorderRadius = new(8f);
-        Margin = new(8f);
+        BorderRadius = new Vector4(8f);
+        Margin = new Margin(8f);
         Border = 1f;
         CrossAlignment = CrossAlignment.Stretch;
     }
@@ -300,7 +300,7 @@ public class InsertablePanel : UIElementGroup
         _pvView.Padding = margin;
 
         _pvContainer.Border = factor;
-        _pvContainer.Gap = new(16 * factor);
+        _pvContainer.Gap = new Size(16 * factor);
         _pvView.Border = factor;
 
         var oldState = _pvState;

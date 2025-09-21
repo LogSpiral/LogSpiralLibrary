@@ -2,7 +2,6 @@
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using SilkyUIFramework.Elements;
-using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.Localization;

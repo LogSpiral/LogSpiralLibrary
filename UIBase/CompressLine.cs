@@ -2,7 +2,6 @@
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Elements;
-using SilkyUIFramework.Elements;
 
 namespace LogSpiralLibrary.UIBase;
 
@@ -82,7 +81,7 @@ public class CompressLine : UIView
     private Dimension TargetDimension { get; set; }
     private Dimension TargetDimensionMax { get; set; }
 
-    private readonly AnimationTimer _expandTimer = new(5);
+    private readonly AnimationTimer _expandTimer = new();
 
     private bool _isCompletedOld;
     protected override void UpdateStatus(GameTime gameTime)

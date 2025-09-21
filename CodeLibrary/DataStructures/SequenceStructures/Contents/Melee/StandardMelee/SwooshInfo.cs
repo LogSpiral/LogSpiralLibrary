@@ -1,6 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.ComponentModel;
@@ -133,7 +132,7 @@ public class SwooshInfo : LSLMelee
             {
                 var eVec = verS.colorVec with { Y = 0 };
                 if (eVec.X == 0 && eVec.Z == 0)
-                    eVec = new(.5f, 0, .5f);
+                    eVec = new Vector3(.5f, 0, .5f);
 
                 u = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, size * .67f, Owner.Center, range);
                 u.heatMap = verS.heatMap;

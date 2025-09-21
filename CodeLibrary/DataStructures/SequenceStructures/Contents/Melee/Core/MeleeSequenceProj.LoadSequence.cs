@@ -71,7 +71,7 @@ public partial class MeleeSequenceProj
             {
                 using FileStream fs = new(path, FileMode.Open);
                 meleeSequence = SequenceManager<MeleeAction>.RegisterSingleSequence(fullName, fs);
-                meleeSequence.Data.ModDefinition = new(Mod.Name);
+                meleeSequence.Data.ModDefinition = new ModDefinition(Mod.Name);
             }
             else
             {
@@ -116,7 +116,7 @@ public partial class MeleeSequenceProj
         {
             SetUpSequence(meleeSequence, modName, fileName);
         }
-        SequenceModel = new(meleeSequence);
+        SequenceModel = new SequenceModel(meleeSequence);
         SequenceModel.OnInitializeElement += element =>
         {
             if (element is not MeleeAction action) return;

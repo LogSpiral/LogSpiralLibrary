@@ -6,7 +6,6 @@ using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
-using System.Linq;
 using Terraria.Audio;
 using Terraria.Localization;
 

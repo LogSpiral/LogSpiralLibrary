@@ -137,7 +137,7 @@ public class MaskConfigs : IAvailabilityChangableConfig
     } = .25f;
 
     [JsonIgnore]
-    public MaskEffect EffectInstance => !Available ? new() : new MaskEffect(LogSpiralLibraryMod.Mask[SkyStyle].Value, GlowColor, Tier1, Tier2, default, true, false);
+    public MaskEffect EffectInstance => !Available ? new MaskEffect() : new MaskEffect(LogSpiralLibraryMod.Mask[SkyStyle].Value, GlowColor, Tier1, Tier2, default, true, false);
 
     // field ??=
 

@@ -732,12 +732,12 @@ Vector2 position,
 
             if (flip)
                 spriteBatch.VertexDraw(texture, vecs[0] + position, vecs[2] + position, vecs[1] + position, vecs[3] + position,
-                     new Vector2(startCoord.X, endCoord.Y), startCoord, endCoord, new(endCoord.X, startCoord.Y),
+                     new Vector2(startCoord.X, endCoord.Y), startCoord, endCoord, new Vector2(endCoord.X, startCoord.Y),
                     color, color, color, color, 0
                     );
             else
                 spriteBatch.VertexDraw(texture, vecs[0] + position, vecs[1] + position, vecs[2] + position, vecs[3] + position,
-                    new Vector2(startCoord.X, endCoord.Y), endCoord, startCoord, new(endCoord.X, startCoord.Y),
+                    new Vector2(startCoord.X, endCoord.Y), endCoord, startCoord, new Vector2(endCoord.X, startCoord.Y),
                     color, color, color, color, 0
                     );
         }

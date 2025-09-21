@@ -6,7 +6,6 @@ using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
-using System.Linq;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 
@@ -27,13 +26,13 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
     {
         InsertablePanel = panel;
         panel.FlexDirection = FlexDirection.Column;
-        HorizontalRule = new()
+        HorizontalRule = new HorizontalRule
         {
-            Margin = new(16, 0, 4, 0),
+            Margin = new Margin(16, 0, 4, 0),
             IgnoreMouseInteraction = true
         };
         panel.Add(HorizontalRule);
-        var mask = Mask = new()
+        var mask = Mask = new UIElementGroup
         {
             OverflowHidden = true,
             IgnoreMouseInteraction = true
@@ -46,11 +45,11 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
         };
         container.Join(mask);
         InnerContainer = container;
-        ArgumentText = new()
+        ArgumentText = new UITextView
         {
-            Margin = new(16, 0, 4, 8),
-            TextAlign = new(0, .5f),
-            Top = new(0, 0, .5f),
+            Margin = new Margin(16, 0, 4, 8),
+            TextAlign = new Vector2(0, .5f),
+            Top = new Anchor(0, 0, .5f),
             IgnoreMouseInteraction = true
         };
         if (Argument != null)

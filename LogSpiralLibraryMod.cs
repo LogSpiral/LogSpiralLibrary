@@ -7,11 +7,9 @@ global using Terraria.GameContent;
 global using Terraria.ID;
 global using Terraria.ModLoader;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
-using Microsoft.Xna.Framework.Audio;
 using NetSimplified;
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.UI;
 

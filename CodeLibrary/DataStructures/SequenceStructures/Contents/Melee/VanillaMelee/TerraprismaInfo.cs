@@ -133,7 +133,7 @@ public class TerraprismaInfo : VanillaMelee
         {
             var f = i / 44f;
             var realColor = StandardInfo.standardColor;
-            realColor.A = (byte)(f.HillFactor2(1) * 255);//96
+            realColor.A = (byte)(f.HillFactor2() * 255);//96
             vertex[2 * i] = new CustomVertexInfo(oldCenters[i] + verS.scaler * oldRotations[i].ToRotationVector2() * OffsetSize * ModifyData.Size + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(f, 1, 1));
             vertex[2 * i + 1] = new CustomVertexInfo(oldCenters[i] + Main.rand.NextVector2Unit() * (i / 4f), realColor, new Vector3(0, 0, 1));
         }

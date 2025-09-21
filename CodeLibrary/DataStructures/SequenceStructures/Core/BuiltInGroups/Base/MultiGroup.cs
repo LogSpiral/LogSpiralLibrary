@@ -3,9 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interf
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Xml;
-using Terraria.ModLoader;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Base;
 
@@ -21,7 +19,7 @@ public abstract class MultiGroup<T> : IGroup where T : class, IGroupArgument, ne
     {
         T argument = new();
         argument.LoadAttributes(attributes);
-        DataList.Add(new() { Wrapper = wrapper, Argument = argument });
+        DataList.Add(new WrapperArgPair<T> { Wrapper = wrapper, Argument = argument });
     }
 
     private static readonly Dictionary<string, string> _attributeDict = [];

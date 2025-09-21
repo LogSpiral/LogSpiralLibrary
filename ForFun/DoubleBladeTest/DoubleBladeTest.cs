@@ -67,8 +67,8 @@ public class DoubleBladeTest : ModItem
 
     public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
     {
-        spriteBatch.Draw(TextureAssets.Item[ItemID.Terragrim].Value, Item.position - Main.screenPosition, null, lightColor, MathHelper.Pi / 6 + rotation, new(0, 32), scale, 0, 0);
-        spriteBatch.Draw(TextureAssets.Item[ItemID.Arkhalis].Value, Item.position - Main.screenPosition, null, lightColor, rotation, new(0, 32), scale, 0, 0);
+        spriteBatch.Draw(TextureAssets.Item[ItemID.Terragrim].Value, Item.position - Main.screenPosition, null, lightColor, MathHelper.Pi / 6 + rotation, new Vector2(0, 32), scale, 0, 0);
+        spriteBatch.Draw(TextureAssets.Item[ItemID.Arkhalis].Value, Item.position - Main.screenPosition, null, lightColor, rotation, new Vector2(0, 32), scale, 0, 0);
         return false;
     }
 }
@@ -87,7 +87,7 @@ public class DoubleBladeTestLeftProj : MeleeSequenceProj
 
         vertexStandard.timeLeft = 15;
         vertexStandard.scaler = 60;
-        vertexStandard.colorVec = new(0, 1, 0);
+        vertexStandard.colorVec = new Vector3(0, 1, 0);
     }
 }
 
@@ -105,6 +105,6 @@ public class DoubleBladeTestRightProj : MeleeSequenceProj
 
         vertexStandard.timeLeft = 15;
         vertexStandard.scaler = 60;
-        vertexStandard.colorVec = new(0, 1, 0);
+        vertexStandard.colorVec = new Vector3(0, 1, 0);
     }
 }

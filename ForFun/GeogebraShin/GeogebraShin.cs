@@ -57,7 +57,7 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
         {
             if (Main.dedServ) return;
             ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad);
-            ScreenTransformData = (GeogebraShinData)new GeogebraShinData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "ConicSection").UseImage(LogSpiralLibraryMod.AniTex[8], 0);//
+            ScreenTransformData = (GeogebraShinData)new GeogebraShinData(ModContent.Request<Effect>("LogSpiralLibrary/Effects/ScreenTransform", AssetRequestMode.ImmediateLoad), "ConicSection").UseImage(LogSpiralLibraryMod.AniTex[8]);//
             Filters.Scene["LogSpiralLibrary:GeogebraShin"] = new Filter(ScreenTransformData, EffectPriority.Medium);
             base.PostSetupContent();
         }

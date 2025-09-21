@@ -101,8 +101,10 @@ public class AvailableConfigElement : ConfigElement<IAvailabilityChangableConfig
         if (separatePage && !ignoreSeparatePage)
         {
             // TODO: UITextPanel doesn't update...
-            separatePageButton = new UITextPanel<FuncStringWrapper>(new FuncStringWrapper(TextDisplayFunction));
-            separatePageButton.HAlign = 0.5f;
+            separatePageButton = new UITextPanel<FuncStringWrapper>(new FuncStringWrapper(TextDisplayFunction))
+                {
+                    HAlign = 0.5f
+                };
             //e.Recalculate();
             //elementHeight = (int)e.GetOuterDimensions().Height;
             separatePageButton.OnLeftClick += (a, c) =>

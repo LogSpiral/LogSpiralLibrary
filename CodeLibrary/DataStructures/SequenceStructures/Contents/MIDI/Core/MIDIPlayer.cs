@@ -28,7 +28,7 @@ public class MIDIPlayer : ModItem
         }
 
         if (player.itemAnimation == player.itemAnimationMax)
-            SequenceModel = new(CurrentScore);
+            SequenceModel = new SequenceModel(CurrentScore);
 
 
         if (SequenceModel == null) return base.UseItem(player);

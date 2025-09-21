@@ -1,14 +1,7 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
-using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
+﻿using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using PropertyPanelLibrary.PropertyPanelComponents.Interfaces.Panel;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria.ModLoader.Config;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.PropertyPanelSupport;

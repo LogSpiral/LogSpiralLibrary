@@ -1,6 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using System.Diagnostics.Metrics;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
 
@@ -39,7 +38,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         {
             if (field == null)
             {
-                field = new(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), 80, Player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
+                field = new StandardInfo(-MathHelper.PiOver4, new Vector2(0.1f, 0.9f), 80, Player.itemAnimationMax, Color.White, null, ItemID.IronBroadsword);
                 InitializeStandardInfo(field, field.VertexStandard);
             }
             return field;

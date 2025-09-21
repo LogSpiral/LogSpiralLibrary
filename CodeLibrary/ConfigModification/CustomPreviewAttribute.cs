@@ -295,8 +295,8 @@ public class ConfigPreviewSystem : ModSystem
 
         var dimension = self.GetDimensions();
         Vector2 topLeft = new(60 + dimension.X + dimension.Width, Main.mouseY);
-        dimension = new(topLeft.X, topLeft.Y, Math.Min(480, Main.screenWidth - topLeft.X - 20), 240);
-        PreviewDrawing(pvAttribute, dimension, new(self.MemberInfo, self.Item, self.List, self.Index, pendingConfig));
+        dimension = new CalculatedStyle(topLeft.X, topLeft.Y, Math.Min(480, Main.screenWidth - topLeft.X - 20), 240);
+        PreviewDrawing(pvAttribute, dimension, new OptionMetaData(self.MemberInfo, self.Item, self.List, self.Index, pendingConfig));
     }
 
     public static void PreviewDrawing(CustomPreviewAttribute previewAttribute, CalculatedStyle dimension, OptionMetaData metaData)

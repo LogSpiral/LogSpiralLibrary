@@ -290,7 +290,7 @@ public class BloomConfigs : IAvailabilityChangableConfig
     } = true;
 
     [JsonIgnore]
-    public BloomEffect EffectInstance => !Available ? new() : new BloomEffect(Threshold, Intensity, Range, Count, Additive, (byte)DownSampleLevel, UseModeMK);
+    public BloomEffect EffectInstance => !Available ? new BloomEffect() : new BloomEffect(Threshold, Intensity, Range, Count, Additive, (byte)DownSampleLevel, UseModeMK);
 
     // field ??=
     public void CopyToInstance(BloomEffect effect)

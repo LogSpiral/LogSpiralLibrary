@@ -101,11 +101,11 @@ public partial class SDFGraphics
     {
         //List<VertexPosCoord> vertices = [];
         //GetSDFVertexInfo(ref vertices, pos, size);
-        VertexPosCoord[] triangles = [  new(pos, new(0, 0)),
-                                        new(pos + new Vector2(size.X, 0), new(size.X, 0)),
-                                        new(pos + new Vector2(0, size.Y), new(0, size.Y)),
-                                        new(pos + new Vector2(0, size.Y), new(0, size.Y)),
-                                        new(pos + new Vector2(size.X, 0), new(size.X, 0)),
+        VertexPosCoord[] triangles = [  new(pos, new Vector2(0, 0)),
+                                        new(pos + new Vector2(size.X, 0), new Vector2(size.X, 0)),
+                                        new(pos + new Vector2(0, size.Y), new Vector2(0, size.Y)),
+                                        new(pos + new Vector2(0, size.Y), new Vector2(0, size.Y)),
+                                        new(pos + new Vector2(size.X, 0), new Vector2(size.X, 0)),
                                         new(pos + size, size)];//.. vertices
         Main.graphics.GraphicsDevice.DrawUserPrimitives(0, triangles, 0, 2);
         Main.spriteBatch.spriteEffectPass.Apply();
@@ -138,9 +138,9 @@ public partial class SDFGraphics
         Color beltColor = new Color(244, 233, 167);
         HasBorderEllipse(position + new Vector2(20, -45), new Vector2(.5f), new Vector2(130, 100), hatColor, border, borderColor, matrix);
 
-        HasBorderEllipse(position + new Vector2(100, -75), new(.5f), new Vector2(40, 20), beltColor, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(150, -110), new(185, -130), new(200, -120), new(190, -100), new(205, -80), new(220, -60), new(210, -30), new(195, -20), new(160, -30)], beltColor, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(110, -90), new(120, -140), new(150, -150), new(140, -120), new(150, -110), new(160, -100), new(170, -70), new(180, -40), new(150, -50)], beltColor, border, borderColor, matrix);
+        HasBorderEllipse(position + new Vector2(100, -75), new Vector2(.5f), new Vector2(40, 20), beltColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(150, -110), new Vector2(185, -130), new Vector2(200, -120), new Vector2(190, -100), new Vector2(205, -80), new Vector2(220, -60), new Vector2(210, -30), new Vector2(195, -20), new Vector2(160, -30)], beltColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(110, -90), new Vector2(120, -140), new Vector2(150, -150), new Vector2(140, -120), new Vector2(150, -110), new Vector2(160, -100), new Vector2(170, -70), new Vector2(180, -40), new Vector2(150, -50)], beltColor, border, borderColor, matrix);
         HasBorderEllipse(position + new Vector2(20, -5), new Vector2(.5f), new Vector2(170, 100), hatColor, border, borderColor, matrix);
 
         #endregion 帽子
@@ -152,7 +152,7 @@ public partial class SDFGraphics
         HasBorderQuadraticCircle(position + new Vector2(20, 260) + new Vector2(-50, -10), new Vector2(.5f), 30, new Color(252, 244, 241), border, borderColor, matrix);
         HasBorderQuadraticCircle(position + new Vector2(20, 260) + new Vector2(50, -10), new Vector2(.5f), 30, new Color(252, 244, 241), border, borderColor, matrix);
 
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 190), [new(-60, 0), new(-70, 45), new(-80, 40), new(0, 100), new(80, 40), new(70, 45), new(60, 0)], clothColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 190), [new Vector2(-60, 0), new Vector2(-70, 45), new Vector2(-80, 40), new Vector2(0, 100), new Vector2(80, 40), new Vector2(70, 45), new Vector2(60, 0)], clothColor, border, borderColor, matrix);
 
         NoBorderRing(position + new Vector2(20, 230), new Vector2(.5f), 80, MathHelper.Pi / 3, 4, Color.White, matrix);
 
@@ -167,15 +167,15 @@ public partial class SDFGraphics
         Color lightHat = new(74, 81, 120);
         HasBorderRound(position + new Vector2(-70, 228), new Vector2(.5f), 50, new Color(252, 244, 241), border, borderColor, matrix);
         HasBorderRound(position + new Vector2(110, 228), new Vector2(.5f), 50, new Color(252, 244, 241), border, borderColor, matrix);
-        HasBorderQuadraticCircle(position + new Vector2(20, 140), new(.5f), 70, beltColor, border, borderColor, matrix);
+        HasBorderQuadraticCircle(position + new Vector2(20, 140), new Vector2(.5f), 70, beltColor, border, borderColor, matrix);
 
-        HasBorderChainedQuadraticBezier(position + new Vector2(-100, 208), [default, new(5, 10), new(-10, 20), new(25, 30), new(60, 20), new(50, 10), new(60, 0)], lightHat, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(140, 208), [default, new(-5, 10), new(10, 20), new(-25, 30), new(-60, 20), new(-50, 10), new(-60, 0)], lightHat, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(-40, 88), [default, new(-80, 60), new(-60, 120), new(-35, 140), new(0, 120), new(20, 90), new(20, 60)], beltColor, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(80, 88), [default, new(80, 60), new(60, 120), new(35, 140), new(0, 120), new(-20, 90), new(-20, 60)], beltColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(-100, 208), [default, new Vector2(5, 10), new Vector2(-10, 20), new Vector2(25, 30), new Vector2(60, 20), new Vector2(50, 10), new Vector2(60, 0)], lightHat, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(140, 208), [default, new Vector2(-5, 10), new Vector2(10, 20), new Vector2(-25, 30), new Vector2(-60, 20), new Vector2(-50, 10), new Vector2(-60, 0)], lightHat, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(-40, 88), [default, new Vector2(-80, 60), new Vector2(-60, 120), new Vector2(-35, 140), new Vector2(0, 120), new Vector2(20, 90), new Vector2(20, 60)], beltColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(80, 88), [default, new Vector2(80, 60), new Vector2(60, 120), new Vector2(35, 140), new Vector2(0, 120), new Vector2(-20, 90), new Vector2(-20, 60)], beltColor, border, borderColor, matrix);
 
-        HasBorderPolygon(position + new Vector2(20, 100), [new(-45, -9), new(-75, -15), new(-50, 20), new(-40, 10)], lightHat, border, borderColor, matrix);
-        HasBorderPolygon(position + new Vector2(20, 100), [new(-45, -9), new(75, -15), new(50, 20), new(40, 10)], lightHat, border, borderColor, matrix);
+        HasBorderPolygon(position + new Vector2(20, 100), [new Vector2(-45, -9), new Vector2(-75, -15), new Vector2(-50, 20), new Vector2(-40, 10)], lightHat, border, borderColor, matrix);
+        HasBorderPolygon(position + new Vector2(20, 100), [new Vector2(-45, -9), new Vector2(75, -15), new Vector2(50, 20), new Vector2(40, 10)], lightHat, border, borderColor, matrix);
         HasBorderTriangle(position + new Vector2(20, 100), position + new Vector2(-20, 110), position + new Vector2(-40, 88), clothColor, border, borderColor, matrix);
         HasBorderTriangle(position + new Vector2(20, 100), position + new Vector2(60, 110), position + new Vector2(80, 88), clothColor, border, borderColor, matrix);
 
@@ -187,7 +187,7 @@ public partial class SDFGraphics
 
         #region 脸
 
-        HasBorderQuadraticCircle(position + new Vector2(20, 0), new(.5f), 100, new Color(252, 244, 241), border, borderColor, matrix);
+        HasBorderQuadraticCircle(position + new Vector2(20, 0), new Vector2(.5f), 100, new Color(252, 244, 241), border, borderColor, matrix);
         //HasBorderEllipse(position + new Vector2(20,10), new Vector2(.5f), new Vector2(110, 90), new Color(252, 244, 241), border, borderColor, matrix);
 
         #endregion 脸
@@ -204,37 +204,37 @@ public partial class SDFGraphics
         Color hairColor = new Color(218, 241, 235);
         Color hairColor_Dark = new Color(177, 215, 226);
         //中
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-45, -60), new(-30, 0), new(5, 10), new(25, -50), new(10, -70)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-45, -60), new Vector2(-30, 0), new Vector2(5, 10), new Vector2(25, -50), new Vector2(10, -70)], hairColor, border, borderColor, matrix);
 
         //左下
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-100, 60), new(-95, 75), new(-100, 90), new(-120, 80), new(-120, 50), new(-135, 65), new(-125, 80), new(-160, 65), new(-110, -10)], hairColor_Dark, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-100, 60), new Vector2(-95, 75), new Vector2(-100, 90), new Vector2(-120, 80), new Vector2(-120, 50), new Vector2(-135, 65), new Vector2(-125, 80), new Vector2(-160, 65), new Vector2(-110, -10)], hairColor_Dark, border, borderColor, matrix);
 
         //左下-正下
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-95, 15), new(-85, 50), new(-50, 60), new(-75, 70), new(-90, 65), new(-95, 75), new(-80, 80), new(-130, 65), new(-110, 10)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-95, 15), new Vector2(-85, 50), new Vector2(-50, 60), new Vector2(-75, 70), new Vector2(-90, 65), new Vector2(-95, 75), new Vector2(-80, 80), new Vector2(-130, 65), new Vector2(-110, 10)], hairColor, border, borderColor, matrix);
 
         //左上
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-45, -60), new(-85, -20), new(-90, 20), new(-115, 20), new(-120, -20)], hairColor, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-120, -20), new(-130, -10), new(-140, -15), new(-120, -30), new(-120, -50), new(-120, -80), new(-90, -100)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-45, -60), new Vector2(-85, -20), new Vector2(-90, 20), new Vector2(-115, 20), new Vector2(-120, -20)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-120, -20), new Vector2(-130, -10), new Vector2(-140, -15), new Vector2(-120, -30), new Vector2(-120, -50), new Vector2(-120, -80), new Vector2(-90, -100)], hairColor, border, borderColor, matrix);
 
         //右下
 
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(80, 70), new(95, 77), new(90, 80), new(110, 70), new(110, 65), new(112, 70), new(120, 75), new(145, 60), new(130, 45)], hairColor_Dark, border, borderColor, matrix);
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(130, 45), new(145, 40), new(150, 30), new(135, 20), new(130, 5), new(125, -10), new(105, -65)], hairColor_Dark, border, borderColor, matrix);
-        NoBorderPolygon(position + new Vector2(20, 10), [new(80, 70), new(132, 47), new(105, -65)], hairColor_Dark, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(80, 70), new Vector2(95, 77), new Vector2(90, 80), new Vector2(110, 70), new Vector2(110, 65), new Vector2(112, 70), new Vector2(120, 75), new Vector2(145, 60), new Vector2(130, 45)], hairColor_Dark, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(130, 45), new Vector2(145, 40), new Vector2(150, 30), new Vector2(135, 20), new Vector2(130, 5), new Vector2(125, -10), new Vector2(105, -65)], hairColor_Dark, border, borderColor, matrix);
+        NoBorderPolygon(position + new Vector2(20, 10), [new Vector2(80, 70), new Vector2(132, 47), new Vector2(105, -65)], hairColor_Dark, matrix);
         //右下-前
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(90, -15), new(95, 40), new(70, 75), new(90, 70), new(100, 50), new(105, 65), new(125, 60), new(110, 20), new(115, -25)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(90, -15), new Vector2(95, 40), new Vector2(70, 75), new Vector2(90, 70), new Vector2(100, 50), new Vector2(105, 65), new Vector2(125, 60), new Vector2(110, 20), new Vector2(115, -25)], hairColor, border, borderColor, matrix);
 
         //右上
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(10, -70), new(50, -20), new(110, -5), new(130, -50), new(90, -90), new(0, -120), new(-90, -100)], hairColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(10, -70), new Vector2(50, -20), new Vector2(110, -5), new Vector2(130, -50), new Vector2(90, -90), new Vector2(0, -120), new Vector2(-90, -100)], hairColor, border, borderColor, matrix);
 
         //填充
-        NoBorderPolygon(position + new Vector2(20, 10), [new(-45, -60), new(10, -70), new(-90, -101), new(-122, -18)], hairColor, matrix);
+        NoBorderPolygon(position + new Vector2(20, 10), [new Vector2(-45, -60), new Vector2(10, -70), new Vector2(-90, -101), new Vector2(-122, -18)], hairColor, matrix);
 
         #endregion 头发
 
         #region 帽子前沿
 
-        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new(-130, -80), new(15, -160), new(140, -70), new(-30, -140), new(-130, -80)], hatColor, border, borderColor, matrix);
+        HasBorderChainedQuadraticBezier(position + new Vector2(20, 10), [new Vector2(-130, -80), new Vector2(15, -160), new Vector2(140, -70), new Vector2(-30, -140), new Vector2(-130, -80)], hatColor, border, borderColor, matrix);
 
         #endregion 帽子前沿
 

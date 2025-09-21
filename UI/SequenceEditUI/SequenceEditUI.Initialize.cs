@@ -7,6 +7,7 @@ using SilkyUIFramework;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.IO;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
@@ -19,10 +20,10 @@ public partial class SequenceEditUI
         Border = 0;
         BorderColor = default;
         BackgroundColor = default;
-        BlackMask = new()
+        BlackMask = new UIView
         {
-            Width = new(0, 1),
-            Height = new(0, 1),
+            Width = new Dimension(0, 1),
+            Height = new Dimension(0, 1),
             Positioning = Positioning.Absolute
         };
 
@@ -173,7 +174,7 @@ public partial class SequenceEditUI
             SequenceCreateNewUI.SequenceData =
             new CodeLibrary.DataStructures.SequenceStructures.Core.SequenceData()
             {
-                ModDefinition = new(nameof(LogSpiralLibrary)),
+                ModDefinition = new ModDefinition(nameof(LogSpiralLibrary)),
                 CreateTime = DateTime.Now,
                 ModifyTime = DateTime.Now
             };
@@ -198,12 +199,12 @@ public partial class SequenceEditUI
         {
             FitHeight = true,
             FitWidth = true,
-            Gap = new(16)
+            Gap = new Size(16)
         };
         EditButtonMask = new UIElementGroup()
         {
-            Left = new(48),
-            Top = new(-48, 0, 1),
+            Left = new Anchor(48),
+            Top = new Anchor(-48, 0, 1),
             Positioning = Positioning.Absolute,
             OverflowHidden = true
         };

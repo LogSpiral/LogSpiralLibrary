@@ -1,23 +1,21 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee;
-using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.CommonElement;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
-using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.UIBase;
 using LogSpiralLibrary.UIBase.InsertablePanel;
 using LogSpiralLibrary.UIBase.SequenceEditUI;
 using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Option.Writers;
 using PropertyPanelLibrary.PropertyPanelComponents.BuiltInProcessors.Panel.Fillers;
-using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using SilkyUIFramework;
 using Terraria.Localization;
 
 namespace LogSpiralLibrary.UI.SequenceEditUI;
@@ -73,7 +71,7 @@ public partial class SequenceEditUI
             {
                 SequenceEditUIHelper.HoverColor(mask, Color.Black * .2f, Color.White * .1f);
             };
-            mask.Padding = new(0);
+            mask.Padding = new Margin(0);
             factory.Join(mask);
             string categoryTitleName = dummy.Category;
             string key = $"Mods.{dummy.Mod.Name}.Sequence.{CurrentCategory.ElementName}.Category.{dummy.Category}";
@@ -83,16 +81,16 @@ public partial class SequenceEditUI
             if (!string.IsNullOrEmpty(dummy.Category))
                 path =
                    [
-                        new(modName,ModLoader.GetMod(modName).DisplayName),
-                        new(dummy.Category,categoryTitleName)
+                        new KeyValuePair<string, string>(modName,ModLoader.GetMod(modName).DisplayName),
+                        new KeyValuePair<string, string>(dummy.Category,categoryTitleName)
                    ];
             else
                 path =
                     [
-                        new(modName,ModLoader.GetMod(modName).DisplayName)
+                        new KeyValuePair<string, string>(modName,ModLoader.GetMod(modName).DisplayName)
                     ];
 
-            return new(mask, path);
+            return new KeyValuePair<UIView, IReadOnlyList<KeyValuePair<string, string>>>(mask, path);
         }
         SUIFolder.BuildFoldersToTarget(ElementLibrary.Container, from pair in CurrentCategory.Maganger.ElementTypeLookup select SpawnContentFromPair(pair));
     }
@@ -127,16 +125,16 @@ public partial class SequenceEditUI
             {
                 SequenceEditUIHelper.HoverColor(mask, Color.Black * .2f, Color.White * .1f);
             };
-            mask.Padding = new(0);
+            mask.Padding = new Margin(0);
             factory.Join(mask);
             List<KeyValuePair<string, string>> path = [new(modName, ModLoader.GetMod(modName).DisplayName)];
             var length = strs.Length;
             for (int i = 1; i < length - 1; i++)
             {
                 var folderName = strs[i];
-                path.Add(new(folderName, folderName));
+                path.Add(new KeyValuePair<string, string>(folderName, folderName));
             }
-            return new(mask, path);
+            return new KeyValuePair<UIView, IReadOnlyList<KeyValuePair<string, string>>>(mask, path);
         }
         SUIFolder.BuildFoldersToTarget(SequenceLibrary.Container, from pair in CurrentCategory.Maganger.Sequences select SpawnContentFromPair(pair));
     }
@@ -210,9 +208,11 @@ public partial class SequenceEditUI
         }
         else
         {
-            sequence = new Sequence();
-            sequence.Data = data;
-            sequence.Groups.Add(new SingleWrapperGroup(new(CurrentCategory.DefaultElement.CloneInstance())));
+            sequence = new Sequence
+            {
+                Data = data
+            };
+            sequence.Groups.Add(new SingleWrapperGroup(new Wrapper(CurrentCategory.DefaultElement.CloneInstance())));
         }
         CurrentCategory.Maganger.RegisterSingleSequence_Instance(dataFullName, sequence);
         MenuHelper.AppendPage(this, dataFullName, sequence, true);

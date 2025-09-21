@@ -9,7 +9,7 @@ public class SingleWrapperGroup() : SingleGroup<NoneArg>
 
     public SingleWrapperGroup(Wrapper wrapper) : this()
     {
-        Data = new()
+        Data = new WrapperArgPair<NoneArg>
         {
             Wrapper = wrapper.Clone(),
             Argument = NoneArg.Instance

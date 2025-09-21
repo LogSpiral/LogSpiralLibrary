@@ -150,7 +150,7 @@ public static class InsertablePanelUtils
                 var groupDummy = Activator.CreateInstance(singleType) as IGroup;
 
                 leftArg.Argument = GroupArgumentUtils.ConvertArgument(leftArg.Argument, groupDummy.ArgType);
-                left.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                left.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(groupDummy) };
             }
             SwitchCurrentPageRoot(container, left);
         };
@@ -175,7 +175,7 @@ public static class InsertablePanelUtils
                         singleType = typeof(SingleWrapperGroup);
                     var groupDummy = Activator.CreateInstance(singleType) as IGroup;
                     arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
-                    panel.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                    panel.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(groupDummy) };
                 }
                 else
                     panel.DecoratorManager -= arg;
@@ -290,7 +290,7 @@ public static class InsertablePanelUtils
                     self.DecoratorManager -= arg;
 
                 // 新组使用默认条件组，内部元素使用默认参数
-                group.DecoratorManager += new MultiGroupDecorator() { Definition = new(nameof(ConditionalMultiGroup)) };
+                group.DecoratorManager += new MultiGroupDecorator() { Definition = new MultiGroupDefinition(nameof(ConditionalMultiGroup)) };
                 self.DecoratorManager += new GroupArgumentDecorator() { Argument = new ConditionArg() };
                 pending.DecoratorManager += new GroupArgumentDecorator() { Argument = new ConditionArg() };
             }
@@ -315,7 +315,7 @@ public static class InsertablePanelUtils
                 if (!SequenceGlobalManager.SingleGroupToMultiGroup.TryGetValue(singleType, out var multiType))
                     multiType = typeof(ConditionalMultiGroup);
                 var groupDummy = Activator.CreateInstance(multiType) as IGroup;
-                group.DecoratorManager += new MultiGroupDecorator() { Definition = new(groupDummy) };
+                group.DecoratorManager += new MultiGroupDecorator() { Definition = new MultiGroupDefinition(groupDummy) };
                 if (noArg)
                 {
                     self.DecoratorManager += 
@@ -372,7 +372,7 @@ public static class InsertablePanelUtils
             self.DecoratorManager -= arg;
 
             if (!self.DecoratorManager.TryFindFirst<MultiGroupDecorator>(out var multi))
-                self.DecoratorManager += new SingleGroupDecorator() { Definition = new(nameof(SingleWrapperGroup)) };
+                self.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(nameof(SingleWrapperGroup)) };
 
             self.DecoratorManager += new GroupArgumentDecorator() { Argument = NoneArg.Instance };
 
@@ -383,7 +383,7 @@ public static class InsertablePanelUtils
                     singleType = typeof(SingleWrapperGroup);
                 var groupDummy = Activator.CreateInstance(singleType) as IGroup;
                 arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
-                pending.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                pending.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(groupDummy) };
             }
         }
         else
@@ -397,10 +397,10 @@ public static class InsertablePanelUtils
                     singleType = typeof(SingleWrapperGroup);
                 var groupDummy = Activator.CreateInstance(singleType) as IGroup;
                 arg.Argument = GroupArgumentUtils.ConvertArgument(arg.Argument, groupDummy.ArgType);
-                pending.DecoratorManager += new SingleGroupDecorator() { Definition = new(groupDummy) };
+                pending.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(groupDummy) };
             }
             if (!sequence.DecoratorManager.TryFindFirst<SingleGroupDecorator>(out var single))
-                sequence.DecoratorManager += new SingleGroupDecorator() { Definition = new(nameof(SingleWrapperGroup)) };
+                sequence.DecoratorManager += new SingleGroupDecorator() { Definition = new SingleGroupDefinition(nameof(SingleWrapperGroup)) };
         }
 
         SequencePanelCommonSet(sequence);
@@ -416,7 +416,7 @@ public static class InsertablePanelUtils
         InsertablePanelCommonSet(insertablePanel);
         insertablePanel.TitleText.Text = element.ToString();
         insertablePanel.DecoratorManager += new GroupArgumentDecorator() { Argument = NoneArg.Instance };
-        insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = new(element) };
+        insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = new Wrapper(element) };
         return insertablePanel;
     }
     public static TextTitledInsertablePanel SequenceRefKeyToPanel(string refName)
@@ -429,7 +429,7 @@ public static class InsertablePanelUtils
         InsertablePanelCommonSet(insertablePanel);
         insertablePanel.TitleText.Text = sequence.Data.DisplayName;
         insertablePanel.DecoratorManager += new GroupArgumentDecorator() { Argument = NoneArg.Instance };
-        insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = new(refName) };
+        insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = new Wrapper(refName) };
         return insertablePanel;
     }
     static TextTitledInsertablePanel BasicToInsertablePanel(Wrapper wrapper)
@@ -437,11 +437,14 @@ public static class InsertablePanelUtils
         var isRef = wrapper.RefSequenceFullName != null;
         TextTitledInsertablePanel insertablePanel = new()
         {
-            BackgroundColor = (isRef ? SequenceColor : ElementColor)
+            BackgroundColor = (isRef ? SequenceColor : ElementColor),
+            TitleText =
+            {
+                Text = isRef
+                    ? (wrapper.Sequence as Sequence).Data.DisplayName
+                    : wrapper.Element.ToString()
+            }
         };
-        insertablePanel.TitleText.Text = isRef
-            ? (wrapper.Sequence as Sequence).Data.DisplayName
-            : wrapper.Element.ToString();
         insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = wrapper };
         InsertablePanelCommonSet(insertablePanel);
         return insertablePanel;
@@ -456,8 +459,14 @@ public static class InsertablePanelUtils
             panel = BasicToInsertablePanel(wrapper);
         else if (wrapper.IsUnload || (isRef && SequenceGlobalManager.UnloadSequences.Contains(wrapper.RefSequenceFullName)))
         {
-            TextTitledInsertablePanel insertablePanel = new() { BackgroundColor = Color.Gray * .25f };
-            insertablePanel.TitleText.Text = Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.Unload{(wrapper.IsUnload ? "Element" : "Sequence")}");
+            TextTitledInsertablePanel insertablePanel = new()
+            {
+                BackgroundColor = Color.Gray * .25f,
+                TitleText =
+                {
+                    Text = Language.GetTextValue($"Mods.LogSpiralLibrary.SequenceUI.Unload{(wrapper.IsUnload ? "Element" : "Sequence")}")
+                }
+            };
             insertablePanel.DecoratorManager += new WrapperDecorator() { Wrapper = wrapper };
             InsertablePanelCommonSet(insertablePanel);
             panel = insertablePanel;

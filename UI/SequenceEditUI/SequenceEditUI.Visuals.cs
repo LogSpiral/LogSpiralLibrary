@@ -63,7 +63,7 @@ public partial class SequenceEditUI
             var start = CurrentEditTarget.InnerBounds.LeftTop;
             if (!BasePanel.ContainsPoint(start)) return;
             var end = PropertyPanelConfig.InnerBounds.RightTop;
-            spriteBatch.DrawHorizonBLine(start, end, Main.DiscoColor with { A = 0 } * factor, 1, 4);
+            spriteBatch.DrawHorizonBLine(start, end, Main.DiscoColor with { A = 0 } * factor);
             spriteBatch.DrawHorizonBLine(start, end, Color.White * factor, 1, 2);
 
         }

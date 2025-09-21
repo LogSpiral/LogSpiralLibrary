@@ -3,7 +3,6 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.IO;
-using System.Linq;
 using Terraria.Audio;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 
@@ -159,7 +158,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
     public override void AI()
     {
         //Projectiles.KluexEnergyCrystal.KluexEnergyZone
-        Player.lastVisualizedSelectedItem = new();
+        Player.lastVisualizedSelectedItem = new Item();
         if (Player.dead) projectile.Kill();
         if (Charging && projectile.ai[1] == 0)
         {

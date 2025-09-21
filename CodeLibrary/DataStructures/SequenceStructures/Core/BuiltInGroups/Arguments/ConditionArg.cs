@@ -22,14 +22,14 @@ public class ConditionArg(ConditionDefinition definition) : IGroupArgument, IMem
 
     public bool IsHidden => ConditionDefinition.Type == 0;
 
-    public void SetDefault() => ConditionDefinition = new(0);
+    public void SetDefault() => ConditionDefinition = new ConditionDefinition(0);
 
     public override string ToString() => Language.GetTextValue("Mods.LogSpiralLibrary.Sequence.GroupArgs.Condition", ConditionDefinition.ToCondition().Description.Value);
 
     public void LoadAttributes(Dictionary<string, string> attributes)
     {
         if (attributes.Remove("condition", out string conditionName))
-            ConditionDefinition = new(conditionName);
+            ConditionDefinition = new ConditionDefinition(conditionName);
     }
 
     public void WriteAttributes(Dictionary<string, string> attributes)

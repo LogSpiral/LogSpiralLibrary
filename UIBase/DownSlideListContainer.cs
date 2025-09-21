@@ -21,7 +21,7 @@ public partial class DownSlideListContainer : UIElementGroup
             else
                 _expandTimer.StartReverseUpdate();
         };
-        List.Container.Padding = new(0, 8, 0, 8);
+        List.Container.Padding = new Margin(0, 8, 0, 8);
     }
 
     protected readonly AnimationTimer _expandTimer = new(3);

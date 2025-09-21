@@ -106,7 +106,7 @@ public class SequenceData : IMemberLocalized
     public SequenceData Clone()
     {
         var result = MemberwiseClone() as SequenceData;
-        result.ModDefinition = new(ModDefinition.Name);
+        result.ModDefinition = new ModDefinition(ModDefinition.Name);
         HandleClone(result);
         return result;
     }

@@ -1,6 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.CommonElement;
-using System.ComponentModel;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
 

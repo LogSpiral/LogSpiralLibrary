@@ -136,8 +136,8 @@ public abstract class MultiPanel : InsertablePanel
             FitWidth = true,
             MainAlignment = MainAlignment.Center,
             CrossAlignment = CrossAlignment.Center,
-            Gap = new(16),
-            Padding = new(8f),
+            Gap = new Size(16),
+            Padding = new Margin(8f),
             IgnoreMouseInteraction = true
         };
         InsertContainerPanel.Join(this);

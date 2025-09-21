@@ -1,6 +1,4 @@
-﻿using LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;

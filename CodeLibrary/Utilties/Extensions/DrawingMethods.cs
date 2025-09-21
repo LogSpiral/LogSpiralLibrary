@@ -2,9 +2,7 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
-using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria.UI;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
 using static Terraria.Utils;
@@ -262,7 +260,7 @@ public static class DrawingMethods
         vector52.X = vector52.Y * num257;
         _ = new Vector2(vector50.X - vector52.X / 2f, vector50.Y);
         Texture2D texture2D29 = TextureAssets.Projectile[projectile.type].Value;
-        Rectangle rectangle14 = texture2D29.Frame(1, 1, 0, 0);
+        Rectangle rectangle14 = texture2D29.Frame();
         Vector2 origin6 = rectangle14.Size() / 2f;
         float num258 = -0.06283186f * num254;
         Vector2 unitY3 = Vector2.UnitY;
@@ -315,7 +313,7 @@ public static class DrawingMethods
         vector56.X = vector56.Y * num267;
         _ = new Vector2(top.X - vector56.X / 2f, top.Y);
         Texture2D texture2D30 = TextureAssets.Projectile[projectile.type].Value;
-        Rectangle rectangle15 = texture2D30.Frame(1, 1, 0, 0);
+        Rectangle rectangle15 = texture2D30.Frame();
         Vector2 origin7 = rectangle15.Size() / 2f;
         float num268 = -0.157079637f * num266 * (projectile.velocity.X > 0f ? -1 : 1);
         SpriteEffects effects2 = projectile.velocity.X > 0f ? SpriteEffects.FlipVertically : SpriteEffects.None;
@@ -884,7 +882,7 @@ public static class DrawingMethods
         Texture2D value3 = TextureAssets.Projectile[projectile.type].Value;
         //new Microsoft.Xna.Framework.Rectangle(0, 0, value3.Width, value3.Height).Size() /= 2f;
         Texture2D value4 = Misc[14].Value;
-        Rectangle rectangle = value4.Frame(1, 1, 0, 0, 0, 0);
+        Rectangle rectangle = value4.Frame();
         Vector2 origin2 = new(rectangle.Width / 2f, 10f);
         //Microsoft.Xna.Framework.Color.Cyan * 0.5f * scale;
         Vector2 value5 = new(0f, projectile.gfxOffY);
@@ -899,9 +897,9 @@ public static class DrawingMethods
         Color color4 = value * scale;
         color4.A = 0;
         float num8 = vector.ToRotation();
-        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7), default), new Microsoft.Xna.Framework.Rectangle?(rectangle), color2, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.5f + num, SpriteEffects.None, 0);
-        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7 + 2.09439516f), default), new Microsoft.Xna.Framework.Rectangle?(rectangle), color3, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.1f + num, SpriteEffects.None, 0);
-        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7 + 4.18879032f), default), new Microsoft.Xna.Framework.Rectangle?(rectangle), color4, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.3f + num, SpriteEffects.None, 0);
+        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7)), new Microsoft.Xna.Framework.Rectangle?(rectangle), color2, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.5f + num, SpriteEffects.None, 0);
+        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7 + 2.09439516f)), new Microsoft.Xna.Framework.Rectangle?(rectangle), color3, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.1f + num, SpriteEffects.None, 0);
+        spriteBatch.Draw(value4, value6 - Main.screenPosition + value5 + spinningpoint.RotatedBy((double)(6.28318548f * num7 + 4.18879032f)), new Microsoft.Xna.Framework.Rectangle?(rectangle), color4, projectile.velocity.ToRotation() + 1.57079637f, origin2, 1.3f + num, SpriteEffects.None, 0);
         Vector2 value8 = value2 - vector * 0.5f;
         for (float num9 = 0f; num9 < 1f; num9 += 0.5f)
         {
@@ -930,7 +928,7 @@ public static class DrawingMethods
             Vector2 position = projectile.Center - Main.screenPosition;
             //Main.instance.LoadItem(75);
             Texture2D value9 = Misc[15].Value;
-            Rectangle rectangle2 = value9.Frame(1, 8, 0, 0, 0, 0);
+            Rectangle rectangle2 = value9.Frame(1, 8);
             Vector2 origin3 = rectangle2.Size() / 2f;
             spriteBatch.Draw(value9, position, new Microsoft.Xna.Framework.Rectangle?(rectangle2), color, rotation, origin3, projectile.scale, SpriteEffects.None, 0);
         }

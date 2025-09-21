@@ -1,10 +1,10 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using ReLogic.Content;
-using SilkyUIFramework;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Linq;
+using SilkyUIFramework;
 using Terraria.Audio;
 using Terraria.Localization;
 
@@ -19,12 +19,12 @@ public partial class SequenceEditUI
         {
             var mask = new UIElementGroup()
             {
-                Width = new(-16, 1),
+                Width = new Dimension(-16, 1),
                 FitHeight = true,
                 BackgroundColor = Color.Black * .2f,
-                BorderRadius = new(16, 0, 0, 16),
-                Padding = new(8),
-                Margin = new(8, 8, 8, 0),
+                BorderRadius = new Vector4(16, 0, 0, 16),
+                Padding = new Margin(8),
+                Margin = new Margin(8, 8, 8, 0),
                 OverflowHidden = true
             };
             mask.MouseEnter += delegate { SoundEngine.PlaySound(SoundID.MenuTick); };
@@ -56,12 +56,12 @@ public partial class SequenceEditUI
             {
                 FitHeight = true,
                 FitWidth = true,
-                BorderRadius = new(8f),
-                Padding = new(8),
+                BorderRadius = new Vector4(8f),
+                Padding = new Margin(8),
                 BackgroundColor = Color.Black * .2f,
                 BorderColor = Color.Black,
                 Border = 1,
-                Gap = new(8)
+                Gap = new Size(8)
             };
             result.OnUpdateStatus += delegate { HoverColor(result, Color.Black * .2f, Color.White * .1f); };
 

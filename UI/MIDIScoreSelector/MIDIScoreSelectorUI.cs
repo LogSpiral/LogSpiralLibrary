@@ -4,10 +4,8 @@ using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Elements;
-using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using SilkyUIFramework.Graphics2D;
-using System.Linq;
 using Terraria.Audio;
 
 namespace LogSpiralLibrary.UI.MIDIScoreSelector;
@@ -52,13 +50,13 @@ public partial class MIDIScoreSelectorUI : BaseBody
             {
                 FitWidth = true,
                 FitHeight = true,
-                BorderRadius = new(8),
+                BorderRadius = new Vector4(8),
                 Border = 1,
                 BackgroundColor = Color.Black * .1f
             };
             UITextView title = new()
             {
-                TextAlign = new(.5f),
+                TextAlign = new Vector2(.5f),
                 Text = pair.Value.Data.DisplayName,
                 IgnoreMouseInteraction = true
             };

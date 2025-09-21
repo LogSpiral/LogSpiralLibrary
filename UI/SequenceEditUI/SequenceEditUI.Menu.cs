@@ -34,12 +34,12 @@ public partial class SequenceEditUI
             var fullName = name;
             if (!instance.OpenedPages.TryGetValue(name, out var page))
             {
-                page = new()
+                page = new PageView
                 {
                     TitleText = sequence.Data?.DisplayName ?? name,
                     NameIndex = name
                 };
-                var vr = new VerticalRule() { Height = new(-16, 0.8f), Top = new(-8f, 0, 1), BackgroundColor = Color.Black * .25f };
+                var vr = new VerticalRule() { Height = new Dimension(-16, 0.8f), Top = new Anchor(-8f, 0, 1), BackgroundColor = Color.Black * .25f };
                 instance.PagePanel.AddBefore(page, instance.CreateNewButton);
                 instance.PagePanel.AddBefore(vr, instance.CreateNewButton);
 
@@ -84,8 +84,8 @@ public partial class SequenceEditUI
             {
                 Text = sequence.Data?.DisplayName ?? name,
                 IgnoreMouseInteraction = true,
-                Top = new(0, 0, .5f),
-                TextAlign = new(0.5f)
+                Top = new Anchor(0, 0, .5f),
+                TextAlign = new Vector2(0.5f)
             };
             textView.Join(mask);
             mask.OnUpdateStatus += delegate
@@ -138,8 +138,8 @@ public partial class SequenceEditUI
             int c = pathArray.Length;
             if (c > 2)
                 for (int n = 2; n < c - 1; n++)
-                    path.Add(new(pathArray[n], pathArray[n]));
-            return new(mask, path);
+                    path.Add(new KeyValuePair<string, string>(pathArray[n], pathArray[n]));
+            return new KeyValuePair<UIView, IReadOnlyList<KeyValuePair<string, string>>>(mask, path);
         }
     }
 
@@ -169,7 +169,7 @@ public partial class SequenceEditUI
             if (!CurrentCategory.Maganger.Sequences.TryGetValue(recents, out var sequence))
                 continue;
 
-            var view = MenuHelper.SpawnViewFromPair(this, new(recents, sequence));
+            var view = MenuHelper.SpawnViewFromPair(this, new KeyValuePair<string, Sequence>(recents, sequence));
             view.Join(MenuPanel.RecentList.Container);
         }
     }
@@ -182,7 +182,7 @@ public partial class SequenceEditUI
             if (!CurrentCategory.Maganger.Sequences.TryGetValue(favorite, out var sequence))
                 continue;
 
-            var view = MenuHelper.SpawnViewFromPair(this, new(favorite, sequence));
+            var view = MenuHelper.SpawnViewFromPair(this, new KeyValuePair<string, Sequence>(favorite, sequence));
             view.Join(MenuPanel.FavoriteList.Container);
         }
     }

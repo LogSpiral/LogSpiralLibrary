@@ -1,10 +1,6 @@
-﻿using LogSpiralLibrary.UIBase.InsertablePanel;
-using LogSpiralLibrary.UIBase.SequenceEditUI;
-using SilkyUIFramework;
+﻿using SilkyUIFramework;
 using SilkyUIFramework.Elements;
-using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
-using LogSpiralLibrary.CodeLibrary.Utilties;
 
 namespace LogSpiralLibrary.UIBase;
 
@@ -16,8 +12,10 @@ public class SUIFolder : DownSlideListContainer
     {
         List.Container.CrossAlignment = CrossAlignment.Start;
         List.Container.MainAlignment = MainAlignment.Start;
-        var title = new UITextView();
-        title.Text = folderName;
+        var title = new UITextView
+        {
+            Text = folderName
+        };
         Title.Add(title);
     }
 
@@ -63,7 +61,7 @@ public class SUIFolder : DownSlideListContainer
         var displayFolderName = pair.Value;
         if (!SubFolders.TryGetValue(folderName, out var folder))
         {
-            folder = new SUIFolder(displayFolderName) { Width = new(-12, 1), Left = new(0, 0, 1) };
+            folder = new SUIFolder(displayFolderName) { Width = new Dimension(-12, 1), Left = new Anchor(0, 0, 1) };
             folder.OnUpdateStatus += delegate
             {
                 if (folder._expandTimer.IsUpdating)

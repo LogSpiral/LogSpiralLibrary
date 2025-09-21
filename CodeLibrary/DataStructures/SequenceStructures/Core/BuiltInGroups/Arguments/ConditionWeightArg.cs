@@ -29,7 +29,7 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
 
     public void SetDefault()
     {
-        ConditionDefinition = new(0);
+        ConditionDefinition = new ConditionDefinition(0);
         Weight = 1;
     }
 
@@ -41,7 +41,7 @@ public class ConditionWeightArg(ConditionDefinition definition, float weight) : 
     public void LoadAttributes(Dictionary<string, string> attributes)
     {
         if (attributes.Remove("condition", out string conditionName))
-            ConditionDefinition = new(conditionName);
+            ConditionDefinition = new ConditionDefinition(conditionName);
         if (attributes.Remove("weight", out string weight) && float.TryParse(weight, out var value))
             Weight = value;
     }

@@ -1,10 +1,8 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
-using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Reflection;
 using Terraria.Graphics.Shaders;
 using static LogSpiralLibrary.LogSpiralLibraryMod;
-using static Terraria.Utils;
 
 namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 
@@ -14,16 +12,16 @@ namespace LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 public static class MiscMethods
 {
     private static MethodInfo GetInstanceMethod => field ??= typeof(ModContent).GetMethod(nameof(ModContent.GetInstance), BindingFlags.Static | BindingFlags.Public);
-    public static object GetInstanceViaType(Type type) 
+    public static object GetInstanceViaType(Type type)
     {
         return GetInstanceMethod?.MakeGenericMethod(type)?.Invoke(null, []);
     }
 
-    public static Dust FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler,int? shaderID = null)
+    public static Dust FastDust(Vector2 Center, Vector2 velocity, Color color, float scaler, int? shaderID = null)
     {
         var hsl = Main.rgbToHsl(color);//Color.MediumPurple
         var dustColor = Color.Lerp(Main.hslToRgb(Vector3.Clamp(hsl * new Vector3(1, 2, Main.rand.NextFloat(0.85f, 1.15f)), default, Vector3.One)), Color.White, Main.rand.NextFloat(0, 0.3f));
-        Dust dust = Dust.NewDustPerfect(Center, 278, velocity, 0, dustColor, 1f);
+        Dust dust = Dust.NewDustPerfect(Center, 278, velocity, 0, dustColor);
         dust.scale = 0.4f + Main.rand.NextFloat(-1, 1) * 0.1f;
         dust.scale *= Main.rand.NextFloat(1, 2f) * scaler;
         dust.fadeIn = 0.4f + Main.rand.NextFloat() * 0.3f;
@@ -47,7 +45,7 @@ public static class MiscMethods
     {
         for (float n = 0; n <= (vec1 - vec2).Length(); n += step)
         {
-            Dust.NewDustPerfect(Vector2.Lerp(vec1, vec2, n / (vec1 - vec2).Length()), type, default, newColor: Color.White).noGravity = true;
+            Dust.NewDustPerfect(Vector2.Lerp(vec1, vec2, n / (vec1 - vec2).Length()), type, newColor: Color.White).noGravity = true;
         }
     }
 
@@ -57,7 +55,7 @@ public static class MiscMethods
         var v2 = vec2.Projectile(height, projCenter);
         for (float n = 0; n <= (v1 - v2).Length(); n += step)
         {
-            Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, default, newColor: Color.White).noGravity = true;
+            Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, newColor: Color.White).noGravity = true;
         }
     }
 
@@ -67,7 +65,7 @@ public static class MiscMethods
         var v2 = vec2.Projectile(heightW, new Vector3(projCenter, 0)).Projectile(heightZ, projCenter);
         for (float n = 0; n <= (v1 - v2).Length(); n += step)
         {
-            Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, default, newColor: Color.White).noGravity = true;
+            Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, newColor: Color.White).noGravity = true;
         }
     }
 
@@ -77,7 +75,7 @@ public static class MiscMethods
         var v2 = vec2.Projectile(heightW, new Vector3(projCenter, 0)).Projectile(heightZ, projCenter);
         for (float n = 0; n <= (v1 - v2).Length(); n += step)
         {
-            var d = Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, default, newColor: Color.White);
+            var d = Dust.NewDustPerfect(Vector2.Lerp(v1, v2, n / (v1 - v2).Length()) + drawOffset, type, newColor: Color.White);
             action?.Invoke(d);
         }
     }
@@ -97,7 +95,7 @@ public static class MiscMethods
             vector.Y = player.bodyFrame.Height - vector.Y;
         }
         vector -= new Vector2(player.bodyFrame.Width - player.width, player.bodyFrame.Height - 42) / 2f;
-        return player.RotatedRelativePoint(player.MountedCenter - new Vector2(20f, 42f) / 2f + vector + Vector2.UnitY * player.gfxOffY, false);
+        return player.RotatedRelativePoint(player.MountedCenter - new Vector2(20f, 42f) / 2f + vector + Vector2.UnitY * player.gfxOffY);
     }
 
     public static void GetBoundPoints(Vector2 vs, ref Vector2 ve, out Vector2 start, out Vector2 end)

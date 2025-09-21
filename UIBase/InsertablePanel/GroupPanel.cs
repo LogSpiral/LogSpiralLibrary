@@ -1,7 +1,6 @@
 ﻿using SilkyUIFramework;
 using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Extensions;
-using System.Linq;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
@@ -58,7 +57,7 @@ public class GroupPanel : MultiPanel
         float gapHeight = InsertContainerPanel.Gap.Height;
         if (index == 0)
         {
-            _pvView.Margin = new(
+            _pvView.Margin = new Margin(
                 _pvMargin.Left * factor,
                 _pvMargin.Top * factor,
                 _pvMargin.Right * factor,
@@ -68,7 +67,7 @@ public class GroupPanel : MultiPanel
         }
         else if (index < InnerPanels.Count)
         {
-            _pvView.Margin = new(
+            _pvView.Margin = new Margin(
                 _pvMargin.Left * factor,
                 _pvMargin.Top * factor - gapHeight * (1 - factor) * .5f,
                 _pvMargin.Right * factor,
@@ -78,7 +77,7 @@ public class GroupPanel : MultiPanel
         }
         else
         {
-            _pvView.Margin = new(
+            _pvView.Margin = new Margin(
                 _pvMargin.Left * factor,
                 _pvMargin.Top * factor - gapHeight * (1 - factor),
                 _pvMargin.Right * factor,

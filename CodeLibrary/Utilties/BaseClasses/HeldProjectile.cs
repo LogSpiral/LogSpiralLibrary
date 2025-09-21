@@ -155,10 +155,10 @@ public abstract class RangedHeldProjectile : HeldProjectile
         Vector2 origin = texSize * new Vector2(0, 1);
         GetDrawInfos(ref texture, ref center, ref frame, ref lightColor, ref rotation, ref origin, ref scale, ref effect);
         FlipOrigin(ref origin, effect, texSize);
-        Main.EntitySpriteDraw(texture, center, frame, lightColor, rotation, origin, scale, effect, 0);
+        Main.EntitySpriteDraw(texture, center, frame, lightColor, rotation, origin, scale, effect);
         if (GlowEffect != null)
         {
-            Main.EntitySpriteDraw(GlowEffect, center, frame, GlowColor, rotation, origin, scale, effect, 0);
+            Main.EntitySpriteDraw(GlowEffect, center, frame, GlowColor, rotation, origin, scale, effect);
         }
 
         return false;

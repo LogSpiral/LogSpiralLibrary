@@ -25,7 +25,7 @@ public class SequenceModel
 
     public SequenceModel(ISequence sequence)
     {
-        SequenceStack.Push(new(sequence));
+        SequenceStack.Push(new SequenceData(sequence));
     }
 
     public void Update()
@@ -58,14 +58,14 @@ public class SequenceModel
             {
                 if (wrapper.Sequence != null)
                 {
-                    SequenceStack.Push(new(wrapper.Sequence));
+                    SequenceStack.Push(new SequenceData(wrapper.Sequence));
                     goto label;
                 }
                 else if (wrapper.Element != null)
                 {
                     var oldElement = CurrentElement;
                     var element = CurrentElement = wrapper.Element.CloneInstance();
-                    OnElementChanged?.Invoke(this, new(oldElement, element));
+                    OnElementChanged?.Invoke(this, new ValueChangedEventArgs<ISequenceElement>(oldElement, element));
                     OnInitializeElement?.Invoke(element);
                     element.Initialize();
                 }

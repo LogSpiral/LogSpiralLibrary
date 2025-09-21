@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Definition;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 
@@ -50,9 +51,9 @@ public static class SequenceGlobalManager
     /// <summary>
     /// 序列化和反序列化器
     /// </summary>
-    public static XmlSerializer Serializer => field ??= new(typeof(Sequence));
+    public static XmlSerializer Serializer => field ??= new XmlSerializer(typeof(Sequence));
 
-    public static XmlWriterSettings WriterSettings => field ??= new() { Indent = true, Encoding = new UTF8Encoding(false) };
+    public static XmlWriterSettings WriterSettings => field ??= new XmlWriterSettings { Indent = true, Encoding = new UTF8Encoding(false) };
     public static Dictionary<Type, Type> SingleGroupToMultiGroup { get; } = [];
     public static Dictionary<Type, Type> MultiGroupToSingleGroup { get; } = [];
 
@@ -78,7 +79,7 @@ public abstract class SequenceManager
 
 public class SequenceManager<T> : SequenceManager where T : ISequenceElement
 {
-    public static SequenceManager<T> Instance => field ??= new();
+    public static SequenceManager<T> Instance => field ??= new SequenceManager<T>();
     private static bool _loaded;
 
     public static void Load()
@@ -153,7 +154,7 @@ public class SequenceManager<T> : SequenceManager where T : ISequenceElement
             SequenceGlobalManager.UnloadSequences.Remove(realName);
             sequence.Groups = loadedSequence.Groups;
             sequence.Data = loadedSequence.Data;
-            sequence.Data.ModDefinition = new(modName);
+            sequence.Data.ModDefinition = new ModDefinition(modName);
             sequence.Data.FileName = fileName;
             Instance.Sequences[realName] = sequence;
             SequenceGlobalManager.SequenceLookup[realName] = sequence;

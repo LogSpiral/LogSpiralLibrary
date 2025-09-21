@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 
@@ -220,7 +221,7 @@ public partial class Sequence
         {
             var group = new ConditionalMultiGroup();
             foreach (var (wrapper, conditionKey) in Datas)
-                group.DataList.Add(new() { Wrapper = wrapper, Argument = new(conditionKey) });
+                group.DataList.Add(new WrapperArgPair<ConditionArg> { Wrapper = wrapper, Argument = new ConditionArg(conditionKey) });
             Groups.Add(group);
         }
 

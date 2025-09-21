@@ -1,6 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.Utilties;
 using ReLogic.Content;
-using SilkyUIFramework;
 using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Elements;
 
@@ -31,7 +30,7 @@ public partial class PageView : UIElementGroup
 
     public PageView()
     {
-        BorderRadius = new(Radius, Radius, 0, 0);
+        BorderRadius = new Vector4(Radius, Radius, 0, 0);
         InitializeComponent();
         CloseButton.Texture2D = ModAsset.Close;
         CloseButton.OnUpdateStatus += delegate

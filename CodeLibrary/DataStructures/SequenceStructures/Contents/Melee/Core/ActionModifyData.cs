@@ -122,7 +122,7 @@ public struct ActionModifyData(float size, float timeScaler, float knockBack, fl
 
     public static ActionModifyData ReadBinary(BinaryReader reader)
     {
-        return new() {
+        return new ActionModifyData {
             Size = reader.ReadSingle(),
             TimeScaler = reader.ReadSingle(),
             KnockBack = reader.ReadSingle(),

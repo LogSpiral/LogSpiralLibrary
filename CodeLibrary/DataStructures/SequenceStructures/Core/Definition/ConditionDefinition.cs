@@ -2,11 +2,11 @@
 using PropertyPanelLibrary.EntityDefinition;
 using PropertyPanelLibrary.PropertyPanelComponents.Core;
 using SilkyUIFramework.Elements;
-using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SilkyUIFramework;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.IO;
@@ -197,14 +197,14 @@ public class ConditionDefinitionOptionElement : SUIEntityDefinitionOption
 {
     public ConditionDefinitionOptionElement()
     {
-        Padding = new(4);
-        BorderRadius = new(8);
+        Padding = new Margin(4);
+        BorderRadius = new Vector4(8);
         FitWidth = true;
         FitHeight = true;
         BackgroundColor = Color.Black * .25f;
-        NameText = new()
+        NameText = new UITextView
         {
-            TextAlign = new(.5f),
+            TextAlign = new Vector2(.5f),
         };
         NameText.Join(this);
     }

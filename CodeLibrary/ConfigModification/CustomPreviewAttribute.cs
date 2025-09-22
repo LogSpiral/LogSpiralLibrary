@@ -1,5 +1,8 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
+using LogSpiralLibrary.CodeLibrary.Utilties;
 using MonoMod.Cil;
+using PropertyPanelLibrary;
+using SilkyUIFramework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -52,20 +55,25 @@ public abstract class SimplePreview<T> : ICustomConfigPreview
 
     public void Draw(SpriteBatch spriteBatch, CalculatedStyle dimension, OptionMetaData metaData)
     {
-        ComplexPanelInfo panel = new()
-        {
-            destination = dimension.ToRectangle(),
-            StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value,
-            glowEffectColor = Color.MediumPurple with { A = 102 },
-            glowShakingStrength = .1f,
-            glowHueOffsetRange = 0.1f,
-            backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value,
-            backgroundFrame = new Rectangle(4, 4, 28, 28),
-            backgroundUnitSize = new Vector2(28, 28) * 2f,
-            backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f
-        };
-        panel.DrawComplexPanel(spriteBatch);
-        //SDFGraphics.HasBorderRoundedBox(dimension.Position(), default, new Vector2(dimension.Width, dimension.Height), new Vector4(12f), UICommon.DefaultUIBlue * .5f, 4, Color.Black, SDFGraphics.GetMatrix(true));
+        //ComplexPanelInfo panel = new()
+        //{
+        //    destination = dimension.ToRectangle(),
+        //    StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value,
+        //    glowEffectColor = Color.MediumPurple with { A = 102 },
+        //    glowShakingStrength = .1f,
+        //    glowHueOffsetRange = 0.1f,
+        //    backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value,
+        //    backgroundFrame = new Rectangle(4, 4, 28, 28),
+        //    backgroundUnitSize = new Vector2(28, 28) * 2f,
+        //    backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f
+        //};
+        //panel.DrawComplexPanel(spriteBatch);
+        SDFGraphics.HasBorderRoundedBox(
+            dimension.Position(), default,
+            new Vector2(dimension.Width, dimension.Height),
+            new Vector4(8f), SUIColor.Background * .5f,
+            1, SUIColor.Border, PropertyPanelLibrary.Graphics2D.SDFGraphics.GetMatrix(true));
+
         if (metaData.Value is T instance)
             Draw(spriteBatch, dimension, instance, metaData);
     }
@@ -305,7 +313,8 @@ public class ConfigPreviewSystem : ModSystem
         var rect = Main.instance.GraphicsDevice.ScissorRectangle;
         Main.spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
-        var drawer = (ICustomConfigPreview)Activator.CreateInstance(previewAttribute.pvType);
+        Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+        var drawer = (ICustomConfigPreview)Activator.CreateInstance(previewAttribute.pvType); // TODO 单例注册式
         if (drawer.UsePreview)
             drawer.Draw(spriteBatch, dimension, metaData);
         Main.spriteBatch.End();

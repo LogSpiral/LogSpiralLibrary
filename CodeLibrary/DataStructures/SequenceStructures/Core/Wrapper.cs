@@ -54,15 +54,10 @@ public partial class Wrapper
 
     public void WriteXml(XmlWriter writer, IReadOnlyDictionary<string, string> attributes)
     {
-        if (Sequence != null)
-        {
-            if (Sequence.Count == 1 && RefSequenceFullName == null)
-                writer.WriteStartElement("Group");
-            else
-                writer.WriteStartElement("Sequence");
-        }
-        else
+        if (Sequence == null)
             writer.WriteStartElement("Element");
+        else if (Sequence.Count != 1 || RefSequenceFullName != null)
+            writer.WriteStartElement("Sequence");
 
         if (attributes != null)
             foreach (var (key, value) in attributes)
@@ -80,7 +75,8 @@ public partial class Wrapper
         else
             WriteUnloadData(writer);
 
-        writer.WriteEndElement();
+        if(Sequence is not { Count: 1 } || RefSequenceFullName != null)
+            writer.WriteEndElement();
     }
 
 

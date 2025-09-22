@@ -96,17 +96,21 @@ public abstract partial class MeleeSequenceProj : ModProjectile
 
         bool triggered = Player.controlUseItem || Player.controlUseTile || CurrentElement == null;//首要-触发条件
 
-        if (triggered)
-            SequenceModel?.IsCompleted = false;
-
-        if (Player.GetModPlayer<SequencePlayer>().PendingForcedNext)
+        if (IsLocalProj)
         {
-            triggered = true;
-            Player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
+            if (triggered)
+                SequenceModel?.IsCompleted = false;
+
+            if (Player.GetModPlayer<SequencePlayer>().PendingForcedNext)
+            {
+                triggered = true;
+                Player.GetModPlayer<SequencePlayer>().PendingForcedNext = false;
+            }
+
+            if (triggered || !CurrentElement.IsCompleted)
+                SequenceModel?.Update();
         }
 
-        if (triggered || !CurrentElement.IsCompleted)
-            SequenceModel?.Update();
 
         if (!IsLocalProj && CurrentElement is { IsCompleted: false } or { TimerMax: 0 })
         {

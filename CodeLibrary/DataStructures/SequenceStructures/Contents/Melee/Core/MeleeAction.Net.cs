@@ -1,4 +1,5 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.Melee.Core;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using NetSimplified;
 using System.IO;
 
@@ -69,23 +70,12 @@ public partial class MeleeAction
         public override void Read(BinaryReader r)
         {
             int index = r.ReadInt16();
+            string name = r.ReadString();
             // TODO 与meleeSequenceProj解耦？
             if (Main.projectile[index].ModProjectile is not MeleeSequenceProj meleeSequenceProj
-                || meleeSequenceProj.CurrentElement is not { } element)
-            {
-                // 读取完多余的再返回
-                if (r.BaseStream.Length > r.BaseStream.Position)
-                    r.ReadBytes((int)(r.BaseStream.Length - r.BaseStream.Position));
-                return;
-            }
-            string name = r.ReadString();
-            if (element.FullName != name)
-            {
-                // 读取完多余的再返回
-                if (r.BaseStream.Length > r.BaseStream.Position)
-                    r.ReadBytes((int)(r.BaseStream.Length - r.BaseStream.Position));
-                return;
-            }
+                || meleeSequenceProj.CurrentElement is not { } element || element.FullName != name)
+                element = Activator.CreateInstance(SequenceGlobalManager.ElementTypeLookup[name]) as MeleeAction;
+
             element.NetReceiveUpdateElement(r);
 
             if (Main.dedServ)

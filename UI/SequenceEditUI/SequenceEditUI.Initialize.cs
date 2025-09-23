@@ -76,31 +76,18 @@ public partial class SequenceEditUI
 
     private void InitializeIconVisuals()
     {
+        static void SetHoverEffect(SUIImage image) => image.OnUpdateStatus += delegate { image.ImageColor = Color.White * image.HoverTimer.Lerp(.5f, 1f); };
+
         SequenceTypeIcon.Texture2D = CurrentCategory?.Icon ?? TextureAssets.Item[ItemID.WireKite]; // TODO 注册序列类型，添加更多图标
         HomePageIcon.Texture2D = ModAsset.Rose;
         OpenFolderIcon.Texture2D = ModAsset.Folder;
         HelperIcon.Texture2D = ModAsset.Helper;
         ReloadIcon.Texture2D = ModAsset.Reload;
-        SequenceTypeIcon.OnUpdateStatus += delegate
-        {
-            SequenceTypeIcon.ImageColor = Color.White * SequenceTypeIcon.HoverTimer.Lerp(.5f, 1f);
-        };
-        HomePageIcon.OnUpdateStatus += delegate
-        {
-            HomePageIcon.ImageColor = Color.White * HomePageIcon.HoverTimer.Lerp(.5f, 1f);
-        };
-        OpenFolderIcon.OnUpdateStatus += delegate
-        {
-            OpenFolderIcon.ImageColor = Color.White * OpenFolderIcon.HoverTimer.Lerp(.5f, 1f);
-        };
-        HelperIcon.OnUpdateStatus += delegate
-        {
-            HelperIcon.ImageColor = Color.White * HelperIcon.HoverTimer.Lerp(.5f, 1f);
-        };
-        ReloadIcon.OnUpdateStatus += delegate
-        {
-            ReloadIcon.ImageColor = Color.White * ReloadIcon.HoverTimer.Lerp(.5f, 1f);
-        };
+        SetHoverEffect(SequenceTypeIcon);
+        SetHoverEffect(HomePageIcon);
+        SetHoverEffect(OpenFolderIcon);
+        SetHoverEffect(HelperIcon);
+        SetHoverEffect(ReloadIcon);
     }
 
     private void InitializeIconFunction()

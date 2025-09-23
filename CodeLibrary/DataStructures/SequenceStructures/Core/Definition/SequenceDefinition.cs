@@ -2,6 +2,9 @@
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using System.Collections.Generic;
 using System.Linq;
+using PropertyPanelLibrary.EntityDefinition;
+using PropertyPanelLibrary.PropertyPanelComponents.Core;
+using SilkyUIFramework.Elements;
 using Terraria.GameContent.UI.Elements;
 using Terraria.Localization;
 using Terraria.ModLoader.Config;
@@ -186,13 +189,16 @@ public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<Sequen
     }
 }
 
-//public class SequenceDefinitionHandler<T> : EntityDefinitionCommonHandler where T : ISequenceElement
-//{
-//    public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
-//    {
-//    }
+public class SequenceDefinitionHandler<T> : EntityDefinitionCommonHandler where T : ISequenceElement
+{
+    public override UIView CreateChoiceView(PropertyOption.IMetaDataHandler metaData)
+    {
+        return OptionChoice = new SUIDEfinitionTextOption() { Definition = metaData.GetValue() as EntityDefinition };
+    }
 
-//    protected override void FillingOptionList(List<SUIEntityDefinitionOption> options)
-//    {
-//    }
-//}
+    protected override void FillingOptionList(List<SUIEntityDefinitionOption> options)
+    {
+        foreach (var pair in SequenceManager<T>.Instance.Sequences)
+            options.Add(new SUIDEfinitionTextOption() { Definition = new SequenceDefinition<T>(pair.Key) });
+    }
+}

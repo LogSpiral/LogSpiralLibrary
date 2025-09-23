@@ -15,7 +15,7 @@ public class SequenceDataDefinition : EntityDefinition
         get
         {
             int counter = 0;
-            foreach (var pair in SequenceGlobalManager.SingleGroupTypeLookup)
+            foreach (var pair in SequenceGlobalManager.DataTypeLookup)
             {
                 if (Key == pair.Key)
                     return counter;

@@ -71,7 +71,7 @@ public abstract class SimplePreview<T> : ICustomConfigPreview
         SDFGraphics.HasBorderRoundedBox(
             dimension.Position(), default,
             new Vector2(dimension.Width, dimension.Height),
-            new Vector4(8f), SUIColor.Background * .5f,
+            new Vector4(8f), Color.MediumPurple * .25f,
             1, SUIColor.Border, PropertyPanelLibrary.Graphics2D.SDFGraphics.GetMatrix(true));
 
         if (metaData.Value is T instance)
@@ -111,6 +111,11 @@ public class ConfigPreviewSystem : ModSystem
     private static List<CustomConfigPreviewDelegate> delegates = [];
     private static List<Func<bool>> useRenderDelegate = [];
     private static HashSet<string> registeredDelegateName = [];
+
+    public static void RegisterRenderOnCondition(Func<bool> useRender) 
+    {
+        useRenderDelegate.Add(useRender);
+    }
 
     public static void ConfigSettingRegister(CustomConfigPreviewDelegate func, Func<bool> useRender, string funcName)
     {

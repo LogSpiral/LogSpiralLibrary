@@ -48,7 +48,8 @@ public partial class MeleeAction
         Rotation = reader.ReadSingle();
         KValue = reader.ReadSingle();
         Flip = reader.ReadBoolean();
-        Owner.direction = reader.ReadSByte();
+        var direction = reader.ReadSByte();
+        Owner?.direction = direction;
     }
 
     private class MeleeActionUpdateSync : NetModule

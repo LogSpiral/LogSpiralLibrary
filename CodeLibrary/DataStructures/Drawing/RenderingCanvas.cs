@@ -162,7 +162,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
     {
         HashSet<HashSet<IRenderEffect>> renderPipeLines = ActiveRenderEffects;
 
-        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender)// || GlobalTimeSystem.GlobalTime % 60 < 30 // 调试用
+        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null || graphicsDevice.GetRenderTargets().Length == 0)
             DirectlyDrawAllGroups(spriteBatch, graphicsDevice);
         else
         {

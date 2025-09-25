@@ -83,15 +83,7 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
 
         #region 绘制内容
 
-        //using (FileStream fs = new FileStream("D:/图片测试/ScreenShot.png", FileMode.Create))
-        //{
-        //    Main.screenTarget.SaveAsPng(fs, Main.screenTarget.Width, Main.screenTarget.Height);
-
-        //}
         spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
-        //graphicsDevice.SetRenderTarget(Main.screenTarget);
-        //graphicsDevice.Clear(Color.Transparent);
-        //spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
 
         #endregion 绘制内容
 

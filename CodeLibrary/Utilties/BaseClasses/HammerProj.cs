@@ -121,7 +121,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         }
     }
 
-    public virtual string HammerName => "做个锤子";
+    public virtual string HammerName => "Make a hammer";
     public virtual float MaxTime => 15;
     public override float Factor => timeCount / MaxTime;
     public virtual Vector2 CollidingSize => new(32);
@@ -775,7 +775,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
     }
 
     public Texture2D projTex => TextureAssets.Projectile[projectile.type].Value;
-    public virtual string ProjName => "做个弹幕";
+    public virtual string ProjName => "Make a damaku";
     public virtual float MaxTime => 15;
     public virtual float factor => timeCount / MaxTime;
     public virtual Vector2 CollidingSize => new(32);

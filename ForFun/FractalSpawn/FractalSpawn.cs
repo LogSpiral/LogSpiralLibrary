@@ -6,9 +6,7 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
     public class FractalSpawnSystem : ModSystem
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
-
-        private static Effect fractal;
-        public static Effect FractalEffect => fractal ??= ModContent.Request<Effect>("LogSpiralLibrary/Effects/Fractal").Value;
+        public static Effect FractalEffect => ModAsset.Fractal.Value;
         public static RenderTarget2D render;
         public static RenderTarget2D renderShift;
 
@@ -62,40 +60,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = Item.useAnimation = 24;
         }
-
-        public override bool? UseItem(Player player)
-        {
-            //if (player.itemAnimation == 1)
-            //{
-            //    FileStream fileStream = new FileStream("C:/图片测试_LogSpiralLibrary/存下图图.png", FileMode.OpenOrCreate);
-            //    FractalSpawnSystem.render.SaveAsPng(fileStream, 1000, 1000);
-            //    fileStream.Dispose();
-            //    Main.NewText("存图");
-            //}
-            //Main.NewText(player.itemAnimation);
-            return base.UseItem(player);
-        }
-
-        public override void UseAnimation(Player player)
-        {
-            base.UseAnimation(player);
-        }
-
-        public override bool CanUseItem(Player player)
-        {
-            return base.CanUseItem(player);
-        }
-
         public static void ResetFractal()
         {
             var gd = Main.instance.GraphicsDevice;
             Color[] colors = new Color[1000000];
             Array.Fill(colors, new Color(0.5f, 0.5f, 0));
-            //Main.RunOnMainThread(() =>
-            //{
-            //    FractalSpawnSystem.render.SetData(colors);
-            //    FractalSpawnSystem.renderShift.SetData(colors);
-            //});
             FractalSpawnSystem.render.SetData(colors);
             FractalSpawnSystem.renderShift.SetData(colors);
         }
@@ -105,11 +74,6 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             SpriteBatch spriteBatch = Main.spriteBatch;
             var gd = Main.instance.GraphicsDevice;
             var effect = FractalSpawnSystem.FractalEffect;
-            if (effect == null)
-            {
-                Main.NewText("螺线你在干什么");
-                return;
-            }
             var render = FractalSpawnSystem.render;
             var renderShift = FractalSpawnSystem.renderShift;
             gd.SetRenderTarget(render);//设置画布，将renderShift计算结果存在里面
@@ -118,9 +82,9 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
             effect.Parameters["uRange"].SetValue(new Vector4(-2, -2, 2, 2));
             Vector2 t = VectorMethods.GetLerpValue(default, Main.ScreenSize.ToVector2(), mouseScreen, true);
-            Main.NewText($"屏幕插值{t}");
+            Main.NewText($"Screen Factor{t}");
             t = VectorMethods.Lerp(new Vector2(-2, 2), new Vector2(2, -2), t, false);
-            Main.NewText($"系数{t}");
+            Main.NewText($"Coefficient{t}");
             effect.Parameters["uM"].SetValue(t);
 
             effect.CurrentTechnique.Passes[0].Apply();
@@ -141,16 +105,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
         {
             if (!LogSpiralLibraryMod.CanUseRender)
             {
-                spriteBatch.DrawString(FontAssets.MouseText.Value, "请使用颜色光照模式，开启水波", Item.position - Main.screenPosition, Color.White);
+                spriteBatch.DrawString(FontAssets.MouseText.Value, "Color light mode required", Item.position - Main.screenPosition, Color.White);
                 return true;
             }
             var gd = Main.instance.GraphicsDevice;
             var effect = FractalSpawnSystem.FractalEffect;
-            if (effect == null)
-            {
-                //Main.NewText("螺线你在干什么");
-                return false;
-            }
 
             var renderShift = FractalSpawnSystem.renderShift;
             bool drawOnly = Main.MouseScreen == mouseScreen;

@@ -65,7 +65,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade
         {
             base.SetUpSequence(meleeSequence, modName, fileName);
             return;
-            //meleeSequence.sequenceName = $"测试剑[i:{ModContent.ItemType<TestBlade>()}]";
+            //meleeSequence.sequenceName = $"TestBlade";
             SwooshInfo swooshInfo = new()
             {
                 Cycle = 4,

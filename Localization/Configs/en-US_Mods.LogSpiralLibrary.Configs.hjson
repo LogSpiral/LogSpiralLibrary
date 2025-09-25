@@ -13,6 +13,11 @@ AirDistortConfigs: {
 		Tooltip: not significant :P
 	}
 
+	Scaler: {
+		Label: Distort Range
+		Tooltip: ""
+	}
+
 	ColorOffset: {
 		Label: color Offset
 		Tooltip: You can try to set it to max value or half
@@ -44,7 +49,7 @@ BloomConfigs: {
 		Tooltip: Lit up a huge range
 	}
 
-	Times: {
+	Count: {
 		Label: Iteration Count
 		Tooltip: It'll be laggy if this value too big
 	}

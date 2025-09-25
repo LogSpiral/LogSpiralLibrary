@@ -151,54 +151,54 @@ public partial class SequenceEditHelperUI : BaseBody
     static void HandleTextManually()
     {
         if (!SequenceEditUI.Active) return;
-        Vector2 mousePosition = Main.MouseScreen;
+        static bool ContainsCheck(UIView view) => view.Parent != null && view.ContainsPoint(Main.MouseScreen);
         var instance = SequenceEditUI.Instance;
-        if (instance.PagePanel.ContainsPoint(mousePosition))
+        if (ContainsCheck(instance.PagePanel))
         {
-            if (instance.MainPageButton.ContainsPoint(mousePosition))
+            if (ContainsCheck(instance.MainPageButton))
                 SetHelpHintKey("MenuButton");
-            else if (instance.CreateNewButton.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.CreateNewButton))
                 SetHelpHintKey("CreateNewButton");
             else
                 SetHelpHintKey("PagePanel");
         }
-        else if (instance.ButtonPanel.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.ButtonPanel))
         {
-            if (instance.SequenceTypeIcon.ContainsPoint(mousePosition))
+            if (ContainsCheck(instance.SequenceTypeIcon))
                 SetHelpHintKey("TypeSelect");
-            else if (instance.OpenFolderIcon.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.OpenFolderIcon))
                 SetHelpHintKey("OpenFolder");
-            else if (instance.HomePageIcon.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.HomePageIcon))
                 SetHelpHintKey("LSHomePage");
-            else if (instance.HelperIcon.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.HelperIcon))
                 SetHelpHintKey("HelpPanelOpener");
-            else if (instance.ReloadIcon.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.ReloadIcon))
                 SetHelpHintKey("ReloadSequences");
             else
                 SetHelpHintKey("ButtonPanel");
         }
-        else if (instance.MenuPanel.ContainsPoint(mousePosition) && instance.CurrentPage is null)
+        else if (ContainsCheck(instance.MenuPanel) && instance.CurrentPage is null)
         {
-            if (instance.MenuPanel.RecentList.ContainsPoint(mousePosition))
+            if (ContainsCheck(instance.MenuPanel.RecentList))
                 SetHelpHintKey("MenuRecent");
-            else if (instance.MenuPanel.FavoriteList.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.MenuPanel.FavoriteList))
                 SetHelpHintKey("MenuFavorite");
-            else if (instance.MenuPanel.FinishedList.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.MenuPanel.FinishedList))
                 SetHelpHintKey("MenuFinished");
-            else if (instance.MenuPanel.LibraryList.ContainsPoint(mousePosition))
+            else if (ContainsCheck(instance.MenuPanel.LibraryList))
                 SetHelpHintKey("MenuLibrary");
             else
                 SetHelpHintKey("Menu");
         }
-        else if (instance.PropertyPanelData.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.PropertyPanelData))
             SetHelpHintKey("PropertyPanelData");
-        else if (instance.PropertyPanelConfig.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.PropertyPanelConfig))
             SetHelpHintKey("PropertyPanelConfig");
-        else if (instance.ElementLibrary.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.ElementLibrary))
             SetHelpHintKey("ElementLibrary");
-        else if (instance.SequenceLibrary.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.SequenceLibrary))
             SetHelpHintKey("SequenceLibrary");
-        else if (instance.BasePanel.ContainsPoint(mousePosition))
+        else if (ContainsCheck(instance.BasePanel))
             SetHelpHintKey("EditPanel");
         else
             SetHelpHintKey(null);

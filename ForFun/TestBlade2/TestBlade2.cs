@@ -69,7 +69,7 @@ namespace LogSpiralLibrary.ForFun.TestBlade2
         {
             base.SetUpSequence(meleeSequence, modName, fileName);
             return;
-            //meleeSequence.sequenceName = $"测试剑2号[i:{ModContent.ItemType<TestBlade2>()}]";
+            //meleeSequence.sequenceName = $"TestBlade2";
 
             //meleeSequence.Add(new StarlightInfo());
             //return;

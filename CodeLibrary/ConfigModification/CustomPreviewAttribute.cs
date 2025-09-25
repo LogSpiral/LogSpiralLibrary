@@ -121,7 +121,7 @@ public class ConfigPreviewSystem : ModSystem
     {
         if (registeredDelegateName.Contains(funcName))
         {
-            throw new Exception("已经添加过了这个委托");
+            throw new Exception("Registered This Delegate");
         }
         delegates.Add(func);
         useRenderDelegate.Add(useRender);

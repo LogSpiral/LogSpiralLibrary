@@ -167,7 +167,6 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
     {
         public static Matrix QuadrangleToMatrix(Vector2[] vecs)
         {
-            if (vecs.Length != 4) throw new ArgumentException($"向量的数量不对，需要四个，当前是{vecs.Length}个");
             Vector2 pos = vecs[0] + vecs[3] - vecs[1] - vecs[2];
             Vector2 i = vecs[1] - vecs[3];
             Vector2 j = vecs[2] - vecs[3];
@@ -220,11 +219,11 @@ namespace LogSpiralLibrary.ForFun.ScreenTransformUI
 
         public override void OnInitialize()
         {
-            //UITextPanel<string> switchState = new UITextPanel<string>("切换状态");
+            //UITextPanel<string> switchState = new UITextPanel<string>("switchState");
             //switchState.OnLeftClick += (evt, e) =>
             //{
             //    selectingOrig ^= true;
-            //    CombatText.NewText(Main.LocalPlayer.Hitbox, Color.White, "已切换为" + (selectingOrig ? "选取标准点" : "选取变换点"));
+            //    CombatText.NewText(Main.LocalPlayer.Hitbox, Color.White, "switch to" + (selectingOrig ? "select Standard point" : "select transform point"));
             //};
             //switchState.Left.Set(50, 0);
             //switchState.Top.Set(500, 0);

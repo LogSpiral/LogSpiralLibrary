@@ -154,11 +154,6 @@ public class SequenceDefinitionOptionElement<T> : DefinitionOptionElement<Sequen
         Scale = scale;
         Width.Set(150 * scale, 0f);
         Height.Set(40 * scale, 0f);
-        if (definition == null)
-        {
-            Main.NewText("定义null了");
-            return;
-        }
         text = new UIAutoScaleTextTextPanel<string>(Definition.DisplayName)
         {
             Width = { Percent = 1f },

@@ -281,7 +281,7 @@ public static class MathMethods
     /// <exception cref="ArgumentException"></exception>
     public static int Factorial(this int n)
     {
-        if (n < 0) throw new ArgumentException("n必须是自然数");
+        if (n < 0) throw new ArgumentException("N must be an unsigned integer.");
         if (n == 0) return 1;
         var result = 1;
         for (int k = 2; k < n + 1; k++) result *= k;

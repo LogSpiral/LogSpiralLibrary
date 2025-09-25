@@ -13,6 +13,11 @@ AirDistortConfigs: {
 		Tooltip: 不是很重要的莫名奇妙的设置
 	}
 
+	Scaler: {
+		Label: 扭曲范围
+		Tooltip: 哇愈发扭曲了
+	}
+
 	ColorOffset: {
 		Label: 色差距离
 		Tooltip: 你可以试试拉满或者拉一半
@@ -44,7 +49,7 @@ BloomConfigs: {
 		Tooltip: 点亮一大片！
 	}
 
-	Times: {
+	Count: {
 		Label: 迭代次数
 		Tooltip: 迭代太多次绝对会亮瞎眼而卡爆的吧
 	}

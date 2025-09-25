@@ -9,12 +9,6 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
     {
         public override bool IsLoadingEnabled(Mod mod) => false;
 
-        public override void SetStaticDefaults()
-        {
-            // DisplayName.SetDefault("圆神");
-            // Tooltip.SetDefault("你知道我要说什么的对吧");
-        }
-
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -31,7 +25,6 @@ namespace LogSpiralLibrary.ForFun.GeogebraShin
                 active = !active;
                 if (active)
                 {
-                    //Main.NewText("圆神，启动！");
                     //foreach (var sequence in SequenceSystem.sequenceBases.Values)
                     //{
                     //    //Main.NewText(sequence == null);

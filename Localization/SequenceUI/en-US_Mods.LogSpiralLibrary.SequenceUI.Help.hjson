@@ -19,163 +19,178 @@ PagePanel: {
 }
 
 MenuButton: {
-	DisplayName: PagePanel
+	DisplayName: Menu Button
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Ruturn to menu by clicking this
+		The menu is much cleaner than before right?
 		'''
 }
 
 CreateNewButton: {
-	DisplayName: PagePanel
+	DisplayName: Create New Button
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Used to create a new Sequence
+		Well, I think create a new xml file in folder is way much easier.
 		'''
 }
 
 ButtonPanel: {
-	DisplayName: PagePanel
+	DisplayName: Function Bar
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		It contains many buttons
+		hover the cursor on them and see what are they.
 		'''
 }
 
 TypeSelect: {
-	DisplayName: 元素类型选择按钮
+	DisplayName: Type select button
 	Tooltip:
 		'''
-		用于切换目前编辑的序列元素
-		默认是近战动作元素，以后会有更多
+		Switch the sequence element type to edit
+		Melee Action by default, and it will be more types later
 		'''
 }
 
 OpenFolder: {
-	DisplayName: 打开文件夹按钮
+	DisplayName: Open Folder
 	Tooltip:
 		'''
-		点击打开存放所有序列的文件夹
-		如果需要更直接的编辑
-		就可以直接在里面找到xml文件然后干坏事啦
+		Click to open the folder
+		If you need to edit more directly
+		You can find the xml files and do something cool
 		'''
 }
 
 LSHomePage: {
-	DisplayName: 联系客服
+	DisplayName: Ask for help
 	Tooltip:
 		'''
-		笨，笨蛋，我一个前置库能有什么客服啦
-		所以这个按钮的功能就是打开螺线子的B站主页
-		然后你可以在私信里面轰炸他问问这玩意怎么用
+		IDK whether you can visit my bilibili homepage or not
+		well, I might need to learn how to use discord.
 		'''
 }
 
 HelpPanelOpener: {
-	DisplayName: 打开帮助面板
-	Tooltip: 也许我该加个打开帮助面板的帮助信息？
+	DisplayName: Open Help Panel
+	Tooltip: May be I need to add an hint for opening this panel?
 }
 
 ReloadSequences: {
-	DisplayName: 重新加载
+	DisplayName: Force reload
 	Tooltip:
 		'''
-		重新加载当前元素类型的所有序列
-		正常情况下是加载模组的时候会读取本地加载
-		这里编辑写入文件的同时也会修改加载到的对象
-		但是万一有手动改了文件需要直接重新加载的时候呢...?
+		Force Reload all current type seuqences
+		It will auto load when loading mods by default.
+		You might to need to use it when modify the xml files with textEditor.
 		'''
 }
 
 Menu: {
-	DisplayName: PagePanel
+	DisplayName: Menu
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		This is the menu page, there's four list in total
+		Recent-List contains the file you open recently
+		Favorited-List contains the file you marked as favorited
+		Finished-List contians the sequence you marked as finished
+		Library-List contains the sequence you marked as a library sequence
 		'''
 }
 
 MenuRecent: {
-	DisplayName: PagePanel
+	DisplayName: Recent-List
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		It contains the recent opened sequences
+		well, it might be all of the sequences without a limit of counts.
 		'''
 }
 
 MenuFavorite: {
-	DisplayName: PagePanel
+	DisplayName: Favorited-List
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		It contains the sequences you marked as favorited
+		Pined the one you needed, but the space is limited
+		Use it sparingly.
+		Middle click to mark.
 		'''
 }
 
 MenuFinished: {
-	DisplayName: PagePanel
+	DisplayName: Finished-List
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		I know "Finished" is a weird name
+		This refers to the sequence you use directly
+		not the purely be a component of other sequences
 		'''
 }
 
 MenuLibrary: {
-	DisplayName: PagePanel
+	DisplayName: Library-List
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		AKA "Assistant"
+		the sequences here should be used as a component of others
+		well, it just a mark, just be free.
 		'''
 }
 
 PropertyPanelData: {
-	DisplayName: PagePanel
+	DisplayName: Sequence Data Panel
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Records some basic information
+		like file name and the creator
 		'''
 }
 
 PropertyPanelConfig: {
-	DisplayName: PagePanel
+	DisplayName: Element Edit Panel
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Set the Property of the elements
+		and you can set group type or parameters as well
 		'''
 }
 
 ElementLibrary: {
-	DisplayName: PagePanel
+	DisplayName: Element Library
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Here is all elements of current sequence element type.
+		It contains the element added from the mod depends on this LibraryMod
+		So if you uses these mod's element 
+		and disable that mod, the element will be missing
 		'''
 }
 
 SequenceLibrary: {
-	DisplayName: PagePanel
+	DisplayName: Sequence Library
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Here is all Sequences of current sequence element type.
+		You can referencs the sequences you created before.
+		It is okay to use it self, but you need to think twice.
 		'''
 }
 
 EditPanel: {
-	DisplayName: PagePanel
+	DisplayName: Edit Panel
 	Tooltip:
 		'''
-		This panel is used to help you know the usage of each component.
-		Hover the cursor on a component for more details.
+		Edit Panel for the sequence's structre
+		you can dragging an element to current sequence or group
+		you can create new sequence or group by combined with other elements
+		press ctrl and scroll to adjust the horizontal position
+		press shift and scroll to adjust the vertical position
+		you can drag the background panel as well
+		right click to find the edit target if you are missing
+		the split line on the left and right can click 
+		to compress the data panel or library panel
 		'''
 }

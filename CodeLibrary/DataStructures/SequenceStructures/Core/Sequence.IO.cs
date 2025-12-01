@@ -36,20 +36,20 @@ public partial class Sequence
                     {
                         case "Element":
                         case "Sequence":
-                            {
-                                ParseSingle(reader);
-                                break;
-                            }
+                        {
+                            ParseSingle(reader);
+                            break;
+                        }
                         case "Group":
-                            {
-                                ParseGroup(reader);
-                                break;
-                            }
+                        {
+                            ParseGroup(reader);
+                            break;
+                        }
                         case "Data":
-                            {
-                                ParseData(reader);
-                                break;
-                            }
+                        {
+                            ParseData(reader);
+                            break;
+                        }
                     }
                 }
                 else
@@ -71,14 +71,21 @@ public partial class Sequence
             writer.WriteEndElement();
         }
 
-        foreach (var group in Groups)
+        if (Groups.Count == 1 && Data == null) // 只有一个组且不是最外层,
         {
-            bool single = group.ReadSingleWrapper || group.Contents.Count == 1;
-            if (!single)
-                writer.WriteStartElement("Group");
-            group.WriteXml(writer);
-            if (!single)
-                writer.WriteEndElement();
+            Groups[0].WriteXml(writer);
+        }
+        else 
+        {
+            foreach (var group in Groups)
+            {
+                bool single = group.ReadSingleWrapper || group.Contents.Count == 1;
+                if (!single)
+                    writer.WriteStartElement("Group");
+                group.WriteXml(writer);
+                if (!single)
+                    writer.WriteEndElement();
+            }
         }
     }
 

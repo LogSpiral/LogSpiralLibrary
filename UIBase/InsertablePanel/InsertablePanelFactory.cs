@@ -2,6 +2,7 @@
 using SilkyUIFramework.Attributes;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
+using System.Collections.Generic;
 
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
@@ -35,8 +36,11 @@ public class InsertablePanelFactory : UIElementGroup
     {
         var mousePanel = PanelFactory.Invoke();
         mousePanel.Bounds = DummyPanel.Bounds;
-        SilkyUI.SetFocus(mousePanel);
-        SilkyUI.MouseElement[MouseButtonType.Left] = mousePanel;
+        //SilkyUI.SetFocus(mousePanel);
+        //SilkyUI.MouseElement[MouseButtonType.Left] = mousePanel;
+        PropertyPanelLibrary.PropertyPanelLibrary.SetFocusMethod?.Invoke(SilkyUI, [mousePanel]);
+        var dictionary = PropertyPanelLibrary.PropertyPanelLibrary.MouseElementProperty?.GetValue(SilkyUI) as Dictionary<MouseButtonType, UIView>;
+        dictionary[MouseButtonType.Left] = mousePanel;
         mousePanel.StartDragging();
         base.OnLeftMouseDown(evt);
     }

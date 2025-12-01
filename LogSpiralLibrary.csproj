@@ -22,6 +22,7 @@
 		<AdditionalFiles Include="**/*.xml;**/*.xnb" Exclude="bin/**/*;obj/**/*" Pack="true" ModPath="%(Identity)" />
 		<AdditionalFiles Remove="Images/Fractal/OrigScreenPrint/*" />
 		<AdditionalFiles Remove="Images/MagicZone/OrigTexturePacket/*" />
+		<AdditionalFiles Remove="effects\HSLOffsetEffect.fx" />
 		
 		<!-- 包含模组描述文件 -->
 		<None Include="./description.txt;./description_workshop.txt;./description_workshop_en.txt">

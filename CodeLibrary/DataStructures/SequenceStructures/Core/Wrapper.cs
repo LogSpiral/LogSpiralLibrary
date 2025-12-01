@@ -58,7 +58,9 @@ public partial class Wrapper
             writer.WriteStartElement("Element");
         else if (Sequence.Count != 1 || RefSequenceFullName != null)
             writer.WriteStartElement("Sequence");
-
+        else
+            writer.WriteStartElement("Group");
+        // 只有一个Group的时候Sequence省略，直接只写一个Group元素，但是这样就没法将特性写给Group
         if (attributes != null)
             foreach (var (key, value) in attributes)
                 writer.WriteAttributeString(key, value);
@@ -75,8 +77,8 @@ public partial class Wrapper
         else
             WriteUnloadData(writer);
 
-        if(Sequence is not { Count: 1 } || RefSequenceFullName != null)
-            writer.WriteEndElement();
+        // if(Sequence is not { Count: 1 } || RefSequenceFullName != null)
+        writer.WriteEndElement();
     }
 
 

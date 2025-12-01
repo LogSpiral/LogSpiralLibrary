@@ -43,7 +43,6 @@ public partial class LogSpiralLibraryMod : Mod
         LoadAllTextures();
         AddOnResolutionChangedHook();
         FuckSDKCheck();
-        LocalizationFix();
 
 
         //MonoModHooks.Add(

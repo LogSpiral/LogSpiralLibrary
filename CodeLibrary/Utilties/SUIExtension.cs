@@ -31,7 +31,7 @@ public static class SUIExtension
 		/// <returns></returns>
 		public int AddBefore(UIView child, UIView target)
 		{
-			var idx = elementGroup.GetInnerChildIndex(target);
+			var idx = elementGroup.IndexOf(target);
 			if (idx != -1)
 				elementGroup.Add(child, idx);
 			return idx;

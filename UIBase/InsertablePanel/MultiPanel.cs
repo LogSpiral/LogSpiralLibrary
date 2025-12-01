@@ -1,4 +1,5 @@
 ﻿using SilkyUIFramework;
+using SilkyUIFramework.Layout;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
@@ -33,11 +34,9 @@ file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel ba
             insertablePanel.Mask = Mask;
         }
     }
-
-    public override void RemoveChild(UIView child)
+    public override void Remove(UIView child)
     {
-        base.RemoveChild(child);
-
+        RemoveChild(child);
         if (InsertablePanel.PreviewProtect) return;
         if (RemoveLock) return;
 

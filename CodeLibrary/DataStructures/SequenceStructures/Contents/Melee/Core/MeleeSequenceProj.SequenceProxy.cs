@@ -34,10 +34,10 @@ public partial class MeleeSequenceProj
             var factor = Utils.GetLerpValue(30, 20, Projectile.timeLeft, true);
             factor = MathF.Sqrt(factor);
             factor = MathHelper.SmoothStep(0, 1, factor);
-            var center = Vector2.Lerp(element.OffsetCenter, new Vector2(Player.direction * -16, 8), factor);
+            var center = Vector2.Lerp(element.OffsetCenter, new Vector2(Player.direction * -16, 8 * Player.gravDir), factor);
             var offRot = Utils.AngleLerp(element.OffsetRotation, 0, factor);
-            var dirRot = Utils.AngleLerp(element.Rotation, towradsRight ? MathHelper.Pi / 16f : MathHelper.Pi * 15 / 16f, factor);
-
+            var dirRot = Utils.AngleLerp(element.Rotation, (towradsRight ? MathHelper.Pi / 16f : MathHelper.Pi * 15 / 16f) * Player.gravDir, factor);
+            towradsRight ^= Player.gravDir < 0;
             Main.spriteBatch.Draw(texture,
                 Player.MountedCenter + center - Main.screenPosition,
                 StandardInfo.frame,

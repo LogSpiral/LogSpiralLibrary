@@ -44,7 +44,7 @@ public partial class SequenceEditUI
             if (instance._currentPageFullName != null && instance.OpenedPages.TryGetValue(instance._currentPageFullName, out var previous))
             {
                 previous.BackgroundColor = default;
-                var prevIndex = instance.PagePanel.GetInnerChildIndex(previous);
+                var prevIndex = instance.PagePanel.IndexOf(previous);
                 instance.PagePanel.Children[prevIndex - 1].BackgroundColor = Color.Black * .25f;
                 instance.PagePanel.Children[prevIndex + 1].BackgroundColor = Color.Black * .25f;
             }

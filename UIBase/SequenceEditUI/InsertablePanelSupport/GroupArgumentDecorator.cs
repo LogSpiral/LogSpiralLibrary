@@ -6,6 +6,7 @@ using SilkyUIFramework;
 using SilkyUIFramework.Animation;
 using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
+using SilkyUIFramework.Layout;
 
 namespace LogSpiralLibrary.UIBase.SequenceEditUI.InsertablePanelSupport;
 

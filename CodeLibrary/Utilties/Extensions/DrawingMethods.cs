@@ -754,8 +754,9 @@ public static class DrawingMethods
     {
         var triangleList = projectile.TailVertexFromProj(Offset, Width, alpha, VeloTri, mainColor);//顶点信息准备
         if (triangleList.Length < 3) return;
+        var matrix = spriteBatch.transformMatrix;
         spriteBatch.End();//调用End以结束先前的绘制，将内容画下   第一个参数是立即绘制不缓存信息 第二个是混合模式 第三个采样模式 第四个深度状态?不熟 第五个不熟 第六个Effect，这里传null因为我们自己搞
-        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
         //RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
         //var projection = Matrix.CreateOrthographicOffCenter(0, Main.screenWidth, Main.screenHeight, 0, 0, 1);
         //var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
@@ -771,14 +772,15 @@ public static class DrawingMethods
         //Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);
         //Main.graphics.GraphicsDevice.RasterizerState = originalState;
         RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-        var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+        var bounds = Main.instance.Window.ClientBounds;
+        var projection = Matrix.CreateOrthographicOffCenter(0, bounds.Width, bounds.Height, 0, 0, 1);
         var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
         var swooshUL = ShaderSwooshUL;
-        swooshUL.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
-                                                                                                                  //这里是依次右乘这些矩阵
-                                                                                                                  //先是model，它的作用和-Main.screenPosition一样
-                                                                                                                  //然后是Main.GameViewMatrix.TransformationMatrix，包括画面缩放翻转之类(我记得有翻转
-                                                                                                                  //最后是projection，这个就是最后进行压缩区间的
+        swooshUL.Parameters["uTransform"].SetValue(model * matrix * projection);//传入坐标变换矩阵，把世界坐标转化到[0,1]单位区间内(屏幕左上角到右下角)
+                                                                                //这里是依次右乘这些矩阵
+                                                                                //先是model，它的作用和-Main.screenPosition一样
+                                                                                //然后是Main.GameViewMatrix.TransformationMatrix，包括画面缩放翻转之类(我记得有翻转
+                                                                                //最后是projection，这个就是最后进行压缩区间的
         swooshUL.Parameters["uTime"].SetValue(-(float)(float)ModTime * 0.03f);
         swooshUL.Parameters["uLighter"].SetValue(0);
         swooshUL.Parameters["checkAir"].SetValue(false);
@@ -804,7 +806,7 @@ public static class DrawingMethods
         Main.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, triangleList, 0, triangleList.Length / 3);//传入绘制信息
         Main.graphics.GraphicsDevice.RasterizerState = originalState;
         spriteBatch.End();
-        spriteBatch.Begin(SpriteSortMode.Deferred, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+        spriteBatch.Begin(SpriteSortMode.Deferred, additive ? BlendState.Additive : BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
     }
 
     /// <summary>
@@ -1328,10 +1330,13 @@ public static class DrawingMethods
     public static void DrawQuadraticLaser_PassNormal(this SpriteBatch spriteBatch, Vector2 start, Vector2 unit, Color color, Texture2D style, float length = 3200, float width = 512, float shakeRadMax = 0, float light = 4, float maxFactor = 0.5f, bool autoAdditive = true)
     {
         Effect effect = EightTrigramsFurnaceEffect; if (effect == null) return;
+
+        var matrix = spriteBatch.transformMatrix;
+
         if (autoAdditive)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
         }
         List<CustomVertexInfo> bars1 = [];
         if (shakeRadMax > 0)
@@ -1357,9 +1362,10 @@ public static class DrawingMethods
                 triangleList1.Add(bars1[i + 3]);
             }
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+            var bounds = Main.instance.Window.ClientBounds;
+            var projection = Matrix.CreateOrthographicOffCenter(0, bounds.Width, bounds.Height, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
-            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTransform"].SetValue(model * matrix * projection);
             effect.Parameters["maxFactor"].SetValue(maxFactor);
             effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
@@ -1373,7 +1379,7 @@ public static class DrawingMethods
         if (autoAdditive)
         {
             spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
         }
     }
 
@@ -1446,16 +1452,17 @@ public static class DrawingMethods
             {
                 return;
             }
-
+            var matrix = spriteBatch.transformMatrix;
             if (autoAdditive)
             {
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
             }
             RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
-            var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+            var bounds = Main.instance.Window.ClientBounds;
+            var projection = Matrix.CreateOrthographicOffCenter(0, bounds.Width, bounds.Height, 0, 0, 1);
             var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
-            effect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+            effect.Parameters["uTransform"].SetValue(model * matrix * projection);
             effect.Parameters["uTime"].SetValue(-(float)ModTime * 0.03f);
             Main.graphics.GraphicsDevice.Textures[0] = BaseTex[8].Value;
             Main.graphics.GraphicsDevice.Textures[1] = style;
@@ -1487,7 +1494,7 @@ public static class DrawingMethods
             if (autoAdditive)
             {
                 spriteBatch.End();
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullNone, null, matrix);
             }
         }
         catch (Exception e)
@@ -2027,7 +2034,7 @@ public static class DrawingMethods
         var effect = spriteBatch.customEffect;
 
         spriteBatch.End();
-        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null);
+        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, matrix);
         CustomVertexInfo[] triangleArry = new CustomVertexInfo[6];
         RasterizerState originalState = Main.graphics.GraphicsDevice.RasterizerState;
         //Color c = Main.hslToRgb((float)LogSpiralLibrary.ModTime / 60 % 1, 1f, 0.75f);
@@ -2059,10 +2066,10 @@ public static class DrawingMethods
         triangleArry[3] = triangleArry[2];
         triangleArry[4] = new CustomVertexInfo(center - new Vector2(scale.X, -scale.Y).RotatedBy(rotation), c, new Vector3(new Vector2(texCoordStart.X, texCoordEnd.Y), light));
         triangleArry[5] = triangleArry[0];
-
-        var projection = Matrix.CreateOrthographicOffCenter(0, Main.gameMenu ? Main.instance.Window.ClientBounds.Width : Main.screenWidth, Main.gameMenu ? Main.instance.Window.ClientBounds.Height : Main.screenHeight, 0, 0, 1);
+        var bounds = Main.instance.Window.ClientBounds;
+        var projection = Matrix.CreateOrthographicOffCenter(0, bounds.Width, bounds.Height, 0, 0, 1);
         var model = Matrix.CreateTranslation(new Vector3(-Main.screenPosition.X, -Main.screenPosition.Y, 0));
-        ItemEffect.Parameters["uTransform"].SetValue(model * Main.GameViewMatrix.TransformationMatrix * projection);
+        ItemEffect.Parameters["uTransform"].SetValue(model * matrix * projection);
         ItemEffect.Parameters["uTime"].SetValue((float)ModTime / 60f);//(float)LogSpiralLibrary.ModTime / 60
         Main.graphics.GraphicsDevice.Textures[0] = texture;
         Main.graphics.GraphicsDevice.Textures[1] = effectTex;

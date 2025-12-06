@@ -509,7 +509,7 @@ public static class InsertablePanelUtils
             GroupPanelCommonSet(groupPanel);
             groupPanel.DecoratorManager += new MultiGroupDecorator() { Definition = new MultiGroupDefinition(group) };
             foreach (var pair in group.Contents)
-                groupPanel.InsertContainerPanel.Add(WrapperPairToPanel(pair));
+                groupPanel.InsertContainerPanel.AddChild(WrapperPairToPanel(pair));
             InsertablePanelCommonSet(groupPanel);
             return groupPanel;
         }
@@ -525,7 +525,7 @@ public static class InsertablePanelUtils
             SequencePanel sequencePanel = new();
             SequencePanelCommonSet(sequencePanel);
             foreach (var group in sequence.Groups)
-                sequencePanel.InsertContainerPanel.Add(GroupToPanel(group));
+                sequencePanel.InsertContainerPanel.AddChild(GroupToPanel(group));
             InsertablePanelCommonSet(sequencePanel);
             return sequencePanel;
         }

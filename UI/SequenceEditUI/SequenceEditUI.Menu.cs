@@ -45,8 +45,8 @@ public partial class SequenceEditUI
 
                 page.CloseButton.LeftMouseClick += delegate
                 {
-                    page.Remove();
-                    vr.Remove();
+                    page.RemoveFromParent();
+                    vr.RemoveFromParent();
                     instance.OpenedPages.Remove(name);
                     instance.OpenedPanels.Remove(name);
                     instance.OpenedSequences.Remove(name);
@@ -154,8 +154,8 @@ public partial class SequenceEditUI
     {
         SequenceEditUIHelper.RecoverPreviousActivePageColor(this);
         _currentPageFullName = null;
-        EditPanel.Remove();
-        MainContainer.Add(MenuPanel, 1);
+        EditPanel.RemoveFromParent();
+        MainContainer.AddChild(MenuPanel, 1);
         SetupMenu();
         // 防止预览过程中退出导致死锁
         InsertablePanel.ForceEnablePV();

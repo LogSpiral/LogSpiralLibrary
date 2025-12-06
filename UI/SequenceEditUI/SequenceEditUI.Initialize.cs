@@ -273,7 +273,7 @@ public partial class SequenceEditUI
                 _buttonContainerTimer.StartReverseUpdate();
                 if (_buttonContainerTimer.IsReverseCompleted)
                 {
-                    EditButtonMask.Remove();
+                    EditButtonMask.RemoveFromParent();
                     return;
                 }
             }

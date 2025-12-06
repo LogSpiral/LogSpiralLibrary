@@ -32,7 +32,7 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
             Margin = new Margin(16, 0, 4, 0),
             IgnoreMouseInteraction = true
         };
-        panel.Add(HorizontalRule);
+        panel.AddChild(HorizontalRule);
         var mask = Mask = new UIElementGroup
         {
             OverflowHidden = true,
@@ -81,9 +81,9 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
 
             // Main.NewText((HorizontalRule.Width, HorizontalRule.Parent.Bounds, HorizontalRule.Bounds));
         };
-        container.Add(ArgumentText);
+        container.AddChild(ArgumentText);
 
-        panel.Add(mask);
+        panel.AddChild(mask);
 
         //panel.DrawAction += DrawGroupArg;
     }
@@ -99,8 +99,8 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
 
     public void UnloadDecorate(InsertablePanel.InsertablePanel panel)
     {
-        HorizontalRule.Remove();
-        ArgumentText.Remove();
+        HorizontalRule.RemoveFromParent();
+        ArgumentText.RemoveFromParent();
         //panel.DrawAction -= DrawGroupArg;
     }
 

@@ -33,7 +33,7 @@ public static class SUIExtension
 		{
 			var idx = elementGroup.IndexOf(target);
 			if (idx != -1)
-				elementGroup.Add(child, idx);
+				elementGroup.AddChild(child, idx);
 			return idx;
 		}
 	}

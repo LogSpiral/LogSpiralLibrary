@@ -17,7 +17,7 @@ public class SUIFolder : DownSlideListContainer
         {
             Text = folderName
         };
-        Title.Add(title);
+        Title.AddChild(title);
     }
 
     Dictionary<string, SUIFolder> SubFolders { get; } = [];
@@ -36,7 +36,7 @@ public class SUIFolder : DownSlideListContainer
             if (!Folders.TryGetValue(folderName, out var folder))
             {
                 folder = new SUIFolder(displayFolderName);
-                targetPanel.Add(folder);
+                targetPanel.AddChild(folder);
                 Folders.Add(folderName, folder);
 
             }
@@ -54,7 +54,7 @@ public class SUIFolder : DownSlideListContainer
     {
         if (depth == maxDepth)
         {
-            List.Container.Add(element);
+            List.Container.AddChild(element);
             return;
         }
         var pair = path[depth];
@@ -68,7 +68,7 @@ public class SUIFolder : DownSlideListContainer
                 if (folder._expandTimer.IsUpdating)
                     ForcedUpdateHeight = true;
             };
-            List.Container.Add(folder, SubFolders.Count);
+            List.Container.AddChild(folder, SubFolders.Count);
             SubFolders.Add(folderName, folder);
         }
 

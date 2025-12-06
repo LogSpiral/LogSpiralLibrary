@@ -180,8 +180,8 @@ public partial class SequenceEditUI
 
     private void SwitchToEdit()
     {
-        MenuPanel.Remove();
-        MainContainer.Add(EditPanel, 1);
+        MenuPanel.RemoveFromParent();
+        MainContainer.AddChild(EditPanel, 1);
         BasePanel.RemoveAllChildren();
         // 防止预览过程中退出导致死锁
         InsertablePanel.ForceEnablePV();

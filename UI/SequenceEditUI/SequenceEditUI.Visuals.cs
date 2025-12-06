@@ -33,7 +33,7 @@ public partial class SequenceEditUI
         if (BlackMaskTimer.IsUpdating)
             BlackMask.BackgroundColor = Color.Black * (.25f * BlackMaskTimer.Schedule);
         if (BlackMaskTimer.IsReverseCompleted && BlackMask.Parent != null)
-            BlackMask.Remove();
+            BlackMask.RemoveFromParent();
         base.UpdateStatus(gameTime);
     }
     protected override void Draw(GameTime gameTime, SpriteBatch spriteBatch)

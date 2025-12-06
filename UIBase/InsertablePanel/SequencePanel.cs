@@ -42,13 +42,13 @@ public class SequencePanel : MultiPanel
     {
         var index = _pvState - 4;
         if (InsertContainerPanel.Children.Count <= index || InsertContainerPanel.Children[index] != _pvView)
-            InsertContainerPanel.Add(_pvView, Math.Min(index, InsertContainerPanel.Children.Count));
+            InsertContainerPanel.AddChild(_pvView, Math.Min(index, InsertContainerPanel.Children.Count));
 
         var factor = _pvTimer.Schedule;
         if (_pvContainer.Parent != null)
         {
             var parent = _pvContainer.Parent;
-            _pvContainer.Remove();
+            _pvContainer.RemoveFromParent();
             this.Join(parent);
         }
         Vector2 deltaSize = _pvSize - _origSize;

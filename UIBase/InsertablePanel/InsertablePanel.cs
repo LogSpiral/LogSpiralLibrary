@@ -180,7 +180,7 @@ public class InsertablePanel : UIElementGroup
         {
             OnDraggingOut?.Invoke(this, evt);
             _isDragging = true;
-            Remove();
+            RemoveFromParent();
             StartDragging();
         }
 
@@ -192,7 +192,7 @@ public class InsertablePanel : UIElementGroup
         if (_isDragging)
         {
             _isDragging = false;
-            Remove();
+            RemoveFromParent();
             if (TargetParent != null)
             {
                 BaseView.PendingRecoverPositionRejected = true;
@@ -269,8 +269,8 @@ public class InsertablePanel : UIElementGroup
             parent?.AddBefore(this, _pvContainer);
             PreviewProtect = false;
             _pvContainer.RemoveAllChildren();
-            _pvContainer.Remove();
-            _pvView.Remove();
+            _pvContainer.RemoveFromParent();
+            _pvView.RemoveFromParent();
             BaseView.PVRoot = null;
             BaseView.FixedTarget = null;
             IsPVExists = false;
@@ -420,7 +420,7 @@ public class InsertablePanel : UIElementGroup
     protected virtual void Inserting(UIMouseEvent evt)
     {
         _pvTimer.ImmediateReverseCompleted();
-        _pvView.Remove();
+        _pvView.RemoveFromParent();
 
         if (_pvContainer.Parent is UIElementGroup parent && _pvState < 4)
         {
@@ -443,18 +443,18 @@ public class InsertablePanel : UIElementGroup
                 mPanel.RemoveFromInnerListManually(this);
             if (_pvState % 2 == 0)
             {
-                multiPanel.InsertContainerPanel.Add(this);
-                multiPanel.InsertContainerPanel.Add(PendingPanel);
+                multiPanel.InsertContainerPanel.AddChild(this);
+                multiPanel.InsertContainerPanel.AddChild(PendingPanel);
             }
             else
             {
-                multiPanel.InsertContainerPanel.Add(PendingPanel);
-                multiPanel.InsertContainerPanel.Add(this);
+                multiPanel.InsertContainerPanel.AddChild(PendingPanel);
+                multiPanel.InsertContainerPanel.AddChild(this);
             }
             multiPanel.Left = _pvContainer.Left;
             multiPanel.Top = _pvContainer.Top;
             parent.AddBefore(multiPanel, _pvContainer);
-            _pvContainer.Remove();
+            _pvContainer.RemoveFromParent();
 
             if (BaseView.RootElement == this)
             {

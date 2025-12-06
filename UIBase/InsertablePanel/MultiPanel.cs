@@ -4,6 +4,7 @@ using SilkyUIFramework.Elements;
 using SilkyUIFramework.Extensions;
 using System.Collections.Generic;
 using LogSpiralLibrary.CodeLibrary.Utilties;
+using System.Diagnostics;
 namespace LogSpiralLibrary.UIBase.InsertablePanel;
 
 // [JITWhenModsEnabled("SilkyUIFramework", "PropertyPanelLibrary")]
@@ -14,57 +15,56 @@ file class InsertContainer(List<InsertablePanel> innerPanels, InsertBasePanel ba
     public InsertBasePanel BaseView { private get; set; } = baseView;
     public UIElementGroup Mask { private get; set; } = mask;
     private static bool RemoveLock { get; set; }
-    public override void Add(UIView child, int? index = null)
+    protected override void OnAddChild(UIView child)
     {
-        base.Add(child, index);
-        if (InsertablePanel.PreviewProtect) return;
-        if (child is InsertablePanel insertablePanel)
+        var index = IndexOf(child); // 虽然添加过后重新获取一次有点蠢，但是似乎只能这样了
+        var count = Elements.Count;
+        if (InsertablePanel.PreviewProtect || child is not InsertablePanel insertablePanel) return;
+
+        if (index != count - 1)
         {
-            if (index != null)
-            {
-                int idx = 0;
-                for (int i = 0; i < index; i++)
-                    if (ElementsCache[i] is InsertablePanel)
-                        idx++;
-                InnerPanels.Insert(idx, insertablePanel);
-            }
-            else
-                InnerPanels.Add(insertablePanel);
-            insertablePanel.BaseView = BaseView;
-            insertablePanel.Mask = Mask;
+            int idx = 0;
+            for (int i = 0; i < index; i++)
+                if (ElementsCache[i] is InsertablePanel)
+                    idx++;
+            InnerPanels.Insert(idx, insertablePanel);
         }
+        else
+            InnerPanels.Add(insertablePanel);
+        insertablePanel.BaseView = BaseView;
+        insertablePanel.Mask = Mask;
     }
-    public override void Remove(UIView child)
+    protected override void OnRemoveChild(UIView child)
     {
+        base.OnRemoveChild(child);
+
         RemoveChild(child);
-        if (InsertablePanel.PreviewProtect) return;
-        if (RemoveLock) return;
+        if (InsertablePanel.PreviewProtect
+            || RemoveLock
+            || child is not InsertablePanel insertablePanel) return;
 
-        if (child is InsertablePanel insertablePanel)
+        InnerPanels.Remove(insertablePanel);
+
+        if (InnerPanels.Count < 2)
         {
-            InnerPanels.Remove(insertablePanel);
-
-            if (InnerPanels.Count < 2)
+            if (InnerPanels.Count == 1)
             {
-                if (InnerPanels.Count == 1)
+                var parent = Parent.Parent;
+                var sub = InnerPanels[0];
+                OnDeconstructContainer?.Invoke(Parent as MultiPanel, insertablePanel, sub);
+                if (parent == BaseView)
                 {
-                    var parent = Parent.Parent;
-                    var sub = InnerPanels[0];
-                    OnDeconstructContainer?.Invoke(Parent as MultiPanel, insertablePanel, sub);
-                    if (parent == BaseView)
-                    {
-                        Vector2 pos = new(Parent.Left.Pixels + Parent.Padding.Left + Parent.Border, Parent.Top.Pixels + Parent.Padding.Top + Parent.Border);
-                        sub.SetLeft(pos.X);
-                        sub.SetTop(pos.Y);
-                        BaseView.RootElement = sub;
-                    }
-                    RemoveLock = true;
-                    parent.AddBefore(sub, Parent);
-                    RemoveLock = false;
-
+                    Vector2 pos = new(Parent.Left.Pixels + Parent.Padding.Left + Parent.Border, Parent.Top.Pixels + Parent.Padding.Top + Parent.Border);
+                    sub.SetLeft(pos.X);
+                    sub.SetTop(pos.Y);
+                    BaseView.RootElement = sub;
                 }
-                Parent?.Remove();
+                RemoveLock = true;
+                parent.AddBefore(sub, Parent);
+                RemoveLock = false;
+
             }
+            Parent.RemoveFromParent();
         }
     }
     public event Action<MultiPanel, InsertablePanel, InsertablePanel> OnDeconstructContainer;

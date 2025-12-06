@@ -95,7 +95,7 @@ public static class DrawingMethods
             if (k > 0)
                 center += Rotation.ToRotationVector2() * 56;
             Vector2 origin = starLight.Size() / 2f;
-            Color mainColor = color with { A = 0 } * 4f * alpha;
+            Color mainColor = color with { A = 0 } * alpha;
             Color whiteLight = Color.White with { A = 0 } * amount * alpha;
             spriteBatch.Draw(starLight, center, null, mainColor, rotation, origin, scalerVector, 0, 0f);
             spriteBatch.Draw(starLight, center, null, whiteLight, rotation, origin, scalerVector * 0.6f, 0, 0f);

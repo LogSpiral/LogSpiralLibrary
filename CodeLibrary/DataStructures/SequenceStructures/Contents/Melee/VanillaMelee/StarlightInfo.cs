@@ -66,7 +66,29 @@ public class StarlightInfo : VanillaMelee
         float sc = 1;
         if (Owner is Player plr)
             sc = plr.GetAdjustedItemScale(plr.HeldItem);
-        spriteBatch.DrawStarLight(Rotation, Owner.Center, StandardInfo.standardColor, ModifyData.Size * sc * OffsetSize * texture.Size().Length() * 3, 1, 1f);
+
+        var hsl = Main.rgbToHsl(StandardInfo.standardColor);
+
+
+        for (int n = 0; n < 3; n++) 
+        {
+            var nhsl = hsl;
+            nhsl.X += Main.rand.NextFloat(-0.1f, 0.1f);
+            nhsl.Y += .2f;
+            nhsl.Y = MathHelper.Clamp(nhsl.Y, 0, 1);
+            if (nhsl.X > 1)
+                nhsl.X %= 1;
+            if (nhsl.X < 0)
+                nhsl.X += 1;
+            spriteBatch.DrawStarLight(
+                Rotation,
+                Owner.Center,
+                Main.hslToRgb(nhsl),
+                ModifyData.Size * sc * OffsetSize * texture.Size().Length() * 3,
+                1,
+                0.5f);
+        }
+
     }
 
     //public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)

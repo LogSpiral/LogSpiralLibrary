@@ -123,7 +123,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         //    Main.NewText((CurrentElement.Counter, CurrentElement.CounterMax, CurrentElement.TimerMax, CurrentElement.Timer));
 
         if (!CurrentElement.IsCompleted || triggered)
-            Projectile.timeLeft = 32;
+            Projectile.timeLeft = 3;
         //依旧是常规赋值，但是要中间那段执行正常才应当执行
         Projectile.Center = Player.Center + CurrentElement.OffsetCenter + Player.gfxOffY * Vector2.UnitY;
         if (Player.itemAnimation != 2)

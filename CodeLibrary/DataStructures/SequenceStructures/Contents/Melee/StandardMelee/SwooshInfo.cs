@@ -1,4 +1,5 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
+﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
+using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
@@ -222,7 +223,7 @@ public class SwooshInfo : LSLMelee
     public override void OnStartSingle()
     {
         base.OnStartSingle();
-        if (IsLocalProjectile) 
+        if (IsLocalProjectile)
         {
             hitCounter = 0;
             if (randAngleRange > 0)
@@ -231,8 +232,8 @@ public class SwooshInfo : LSLMelee
             if (mode == SwooshMode.Slash)
                 Flip ^= true;
         }
-        if(!Main.dedServ)
-        NewSwoosh();
+        if (!Main.dedServ)
+            NewSwoosh();
     }
 
     public override void OnEndSingle()
@@ -249,12 +250,48 @@ public class SwooshInfo : LSLMelee
 
     public override void OnAttack()
     {
-        for (int n = 0; n < 30 * (1 - Factor) * StandardInfo.dustAmount; n++)
+        if (Main.dedServ)
+            goto label;
+        int amount = (int)(30 * (1 - Factor) * StandardInfo.dustAmount);
+        if (amount > 0)
         {
-            var Center = Owner.Center + OffsetCenter + targetedVector * Main.rand.NextFloat(0.5f, 1f);//
-            var velocity = -Owner.velocity * 2 + targetedVector.RotatedBy(MathHelper.PiOver2 * (Flip ? -1 : 1) + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)) * Main.rand.NextFloat(.125f, .25f);
-            MiscMethods.FastDust(Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), velocity * .25f, StandardInfo.standardColor);
+            float timerOrig = fTimer;
+
+            Vector2 lastTarget = default;
+            for (int n = 0; n < amount; n++)
+            {
+                float f = n / (float)amount;
+                fTimer = timerOrig - f;
+
+
+                Vector2 finalOrigin = OffsetOrigin + StandardInfo.standardOrigin;
+                float finalRotation = OffsetRotation + StandardInfo.standardRotation;
+                Vector2 drawCen = OffsetCenter + Owner.Center;
+
+                float k = 1f;
+                if (StandardInfo.VertexStandard.scaler > 0 && TextureAssets.Item[Main.LocalPlayer.HeldItem.type] is { } textureAsset)
+                    k = StandardInfo.VertexStandard.scaler / textureAsset.Value.Size().Length();
+                float sc = 1;
+                if (Owner is Player plr)
+                    sc = plr.GetAdjustedItemScale(plr.HeldItem);
+                CustomVertexInfo[] c = DrawingMethods.GetItemVertexes(finalOrigin, StandardInfo.standardRotation, OffsetRotation, Rotation, TextureAssets.Item[Main.LocalPlayer.HeldItem.type].Value, KValue, OffsetSize * ModifyData.Size * sc * k, drawCen, !Flip);
+                var targetedVector = c[4].Position - (OffsetCenter + Owner.Center);
+
+                if (lastTarget == default)
+                {
+                    lastTarget = targetedVector;
+                    continue;
+                }
+
+                var Center = c[4].Position;
+                var velocity = (lastTarget - targetedVector) * Main.rand.NextFloat(.15f, 1f) * -12 * StandardInfo.dustAmount;
+                var dust = MiscMethods.FastDust(Center, Owner.velocity - velocity * .25f, StandardInfo.standardColor);
+                dust.scale *= MathF.Pow(1 - Factor, 2);
+                lastTarget = targetedVector;
+            }
+            fTimer = timerOrig;
         }
+    label:
         base.OnAttack();
     }
 

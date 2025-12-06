@@ -64,9 +64,9 @@ public class ChargingInfo : ExtendedMelee
             for (int n = 0; n < 4; n++)
             {
                 Vector2 unit = (MathHelper.PiOver2 * n + 4 * Factor).ToRotationVector2();
-                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 2f, shaderID);
+                MiscMethods.FastDust(Owner.Center + unit * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1f, shaderID);
 
-                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 1.5f, shaderID);
+                MiscMethods.FastDust(Owner.Center + new Vector2(unit.X + unit.Y, -unit.X + unit.Y) * (MathF.Exp(Factor) - 1) * 128, default, StandardInfo.standardColor, 0.75f, shaderID);
             }
 
         #endregion 蓄力粒子效果
@@ -84,8 +84,8 @@ public class ChargingInfo : ExtendedMelee
             int dustAmount = max ? 40 : 10;
             for (int n = 0; n < dustAmount; n++)
             {
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4), shaderID);
-                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + OffsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2), shaderID);
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 32), StandardInfo.standardColor, Main.rand.NextFloat(1, 4) * .75f, shaderID);
+                MiscMethods.FastDust(Owner.Center, Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4) + (Rotation + OffsetRotation).ToRotationVector2() * Main.rand.NextFloat(0, 64), StandardInfo.standardColor, Main.rand.NextFloat(1, 2) * .75f, shaderID);
             }
         }
 

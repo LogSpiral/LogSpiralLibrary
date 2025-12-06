@@ -153,7 +153,6 @@ public class CutInfo : LSLMelee
         if (Main.rand.NextFloat(0, 1) < StandardInfo.dustAmount)
             for (int k = 0; k < 2; k++)
             {
-                var flag = k == 0;
                 var unit = Rotation.ToRotationVector2();//((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
                 var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
                 var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +

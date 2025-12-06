@@ -160,10 +160,10 @@ public class StabInfo : LSLMelee
                 for (int k = 0; k < 2; k++)
                 {
                     var flag = k == 0;
-                    var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(1, .75f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
+                    var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(.5f, 2f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
                     var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
                     var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
-                    velocity *= 2;
+                    velocity *= 2 * (flag ? 1:1.5f) * Main.rand.NextFloat(0.95f,1f);
                     MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
                 }
         }

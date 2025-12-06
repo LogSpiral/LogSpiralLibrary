@@ -28,6 +28,8 @@ public partial class MeleeSequenceProj
 
         else
         {
+            return;
+
             var element = CurrentElement;
             bool towradsRight = Player.direction == 1;
 

@@ -4,6 +4,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core;
 using LogSpiralLibrary.CodeLibrary.Utilties;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using Terraria.Audio;
 using Terraria.ModLoader.Config;
@@ -27,9 +28,9 @@ public class SwooshInfo : LSLMelee
 
     //int cutTime => 8;
     //float k => 0.25f;
-    private const int cutTime = 8;
+    // private const int CutTime = 8;
 
-    private const float k = 0.25f;
+    // private const float AttackStartupRecoverRatio = 0.25f;
 
     #endregion 常数
 
@@ -65,6 +66,20 @@ public class SwooshInfo : LSLMelee
     [Increment(MathHelper.Pi / 24)]
     public float randAngleRange = MathHelper.Pi / 6;
 
+    [DefaultValue(false)]
+    [ElementCustomData]
+    public bool enableNailBouncingMode = false;
+
+    [Range(4,12)]
+    [DefaultValue(4)]
+    [ElementCustomData]
+    public int CutTime = 4;
+
+    [Range(0.05f, 0.95f)]
+    [DefaultValue(0.8f)]
+    [Increment(0.05f)]
+    [ElementCustomData]
+    public float AttackStartupRecoverRatio = 0.8f;//0.25f;
     #endregion 参数字段
 
     #region 重写属性
@@ -76,8 +91,8 @@ public class SwooshInfo : LSLMelee
     {
         get
         {
-            float t = (TimerMax - cutTime) * k;
-            return fTimer > t && fTimer < t + cutTime;
+            float t = (TimerMax - CutTime) * AttackStartupRecoverRatio;
+            return fTimer > t && fTimer < t + CutTime;
         }
     }
 
@@ -85,14 +100,14 @@ public class SwooshInfo : LSLMelee
 
     #region 辅助函数
 
-    private float TimeToAngle(float t)
+    private float GetCutFactor(float t)
     {
         float max = TimerMax;
         var fac = t / max;
-        if (max > cutTime * 1.5f)
+        if (max > CutTime * 1.5f)
         {
-            float tier2 = (max - cutTime) * k;
-            float tier1 = tier2 + cutTime;
+            float tier2 = (max - CutTime) * AttackStartupRecoverRatio;
+            float tier1 = tier2 + CutTime;
             if (t > tier1)
                 fac = MathHelper.SmoothStep(mode == SwooshMode.Chop ? 160 / 99f : 1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
             else if (t < tier2)
@@ -102,6 +117,12 @@ public class SwooshInfo : LSLMelee
         }
         else
             fac = MathHelper.SmoothStep(-.125f, 1.25f, fac);
+        return fac;
+    }
+
+    private float TimeToAngle(float t)
+    {
+        var fac = GetCutFactor(t);
 
         fac = Flip ? 1 - fac : fac;
         float start = -.75f;
@@ -181,7 +202,7 @@ public class SwooshInfo : LSLMelee
         swoosh.angleRange = range;
         if (Flip)
             swoosh.angleRange = (swoosh.angleRange.from, -swoosh.angleRange.to);
-        swoosh.timeLeft = (int)(MathHelper.Clamp(MathF.Abs(swoosh.angleRange.Item1 - swoosh.angleRange.Item2), 0, 1) * swoosh.timeLeftMax) + 1;
+        swoosh.timeLeft = (int)(MathHelper.Clamp(MathF.Abs(swoosh.angleRange.from - swoosh.angleRange.to), 0, 1) * swoosh.timeLeftMax) + 1;
         if (swoosh.timeLeft < 2)
             swoosh.timeLeft = 2;
     }
@@ -192,7 +213,7 @@ public class SwooshInfo : LSLMelee
 
     public override void UpdateStatus(bool triggered)
     {
-        if (Timer > (TimerMax - cutTime) * k)
+        if (Timer > (TimerMax - CutTime) * AttackStartupRecoverRatio)
         {
             Timer--;
             UpdateSwoosh(swoosh, (mode == SwooshMode.Chop ? 0.625f - 2 : -1.25f + .5f * Factor, OffsetRotation / MathF.PI));
@@ -227,7 +248,7 @@ public class SwooshInfo : LSLMelee
         {
             hitCounter = 0;
             if (randAngleRange > 0)
-                Rotation += Main.rand.NextFloat(0, randAngleRange) * Main.rand.Next([-1, 1]);
+                Rotation += Main.rand.NextFloat(-randAngleRange, randAngleRange);
             KValue = minKValue + Main.rand.NextFloat(0, KValueRange);
             if (mode == SwooshMode.Slash)
                 Flip ^= true;
@@ -242,14 +263,19 @@ public class SwooshInfo : LSLMelee
         base.OnEndSingle();
     }
 
+    private CollisionHelper.EllipticSector _ellipticSector;
+
     public override void OnStartAttack()
     {
+        float size = StandardInfo.VertexStandard.scaler * ModifyData.Size * OffsetSize;
+        _ellipticSector = new CollisionHelper.EllipticSector(Owner.Center, size, size / KValue, Rotation, -MathHelper.PiOver4 * 3, MathHelper.PiOver2 * 3);
         SoundEngine.PlaySound((StandardInfo.soundStyle ?? MySoundID.Scythe) with { MaxInstances = -1 }, Owner?.Center);
         base.OnStartAttack();
     }
 
     public override void OnAttack()
     {
+        _ellipticSector.Center = Owner.Center;
         if (Main.dedServ)
             goto label;
         int amount = (int)(30 * (1 - Factor) * StandardInfo.dustAmount);
@@ -295,11 +321,59 @@ public class SwooshInfo : LSLMelee
         base.OnAttack();
     }
 
+    public override bool Collide(Rectangle rectangle)
+    {
+        var sector = _ellipticSector;
+
+        return
+            CollisionHelper.CheckEllipticSectorAndRectangle(
+            _ellipticSector,
+            CollisionHelper.OrthogonalRectangle.FromRectangle(rectangle));
+    }
+
     public override void OnHitEntity(Entity victim, int damageDone, object[] context)
     {
         hitCounter++;
         base.OnHitEntity(victim, damageDone, context);
+
+        if (!enableNailBouncingMode) return;
+
+        if (Owner is Player plr)
+        {
+            if (MathF.Abs(Rotation - MathHelper.PiOver2 * plr.gravDir) < MathHelper.PiOver4)
+                Owner.velocity = -Vector2.UnitY * 8 * plr.gravDir;
+
+            if (Main.netMode == NetmodeID.MultiplayerClient && plr.whoAmI == Main.myPlayer)
+                SyncPlayerVelocity.Get(plr.whoAmI, plr.velocity).Send(-1, plr.whoAmI);
+
+        }
+
+
     }
+
+    public override CustomVertexInfo[] GetWeaponVertex(Texture2D texture, float alpha)
+    {
+
+        float t = fTimer;
+        float max = TimerMax;
+        var fac = t / max;
+        if (max > CutTime * 1.5f)
+        {
+            float tier2 = (max - CutTime) * AttackStartupRecoverRatio;
+            float tier1 = tier2 + CutTime;
+            if (t > tier1)
+                fac = 1;
+            else if (t < tier2)
+                fac = 0;
+            else
+                fac = MathHelper.SmoothStep(0, 1f, Utils.GetLerpValue(tier2, tier1, t, true));
+        }
+        else
+            fac = MathHelper.SmoothStep(0f, 1f, fac);
+
+        return base.GetWeaponVertex(texture, 1 - 4 * fac * (1 - fac));
+    }
+
     public override void NetSendInitializeElement(BinaryWriter writer)
     {
         base.NetSendInitializeElement(writer);

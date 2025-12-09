@@ -91,6 +91,9 @@ MeleeAction: {
 		KValueRange.Label: Flat Range
 		mode.Label: mode
 		randAngleRange.Label: randAngleRange
+		enableNailBouncingMode.Label: Enable Nail-Bouncing
+		CutTime.Label: Cut Time
+		AttackStartupRecoverRatio.Label: Attack-Recover Ratio
 	}
 
 	RapidlyStabInfo: {

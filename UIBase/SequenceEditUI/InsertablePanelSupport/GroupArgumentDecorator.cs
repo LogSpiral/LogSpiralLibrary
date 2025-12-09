@@ -53,18 +53,18 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
             Top = new Anchor(0, 0, .5f),
             IgnoreMouseInteraction = true
         };
-        if (Argument != null)
-        {
-            ArgumentText.Text = $"->{Argument}";
-            if (Argument.IsHidden)
-                HiddenTimer.ImmediateReverseCompleted();
-            else
-                HiddenTimer.ImmediateCompleted();
-        }
         ArgumentText.ContentChanged += delegate
         {
             UpdateVisuals();
         };
+        if (Argument != null)
+        {
+            if (Argument.IsHidden)
+                HiddenTimer.ImmediateReverseCompleted();
+            else
+                HiddenTimer.ImmediateCompleted();
+            ArgumentText.Text = $"->{Argument}";
+        }
         ArgumentText.OnUpdateStatus += (gameTime) =>
         {
             HiddenTimer.Update(gameTime);
@@ -78,19 +78,17 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
                 ArgumentText.Text = $"->{Argument}";
             }
             UpdateVisuals();
-
-            // Main.NewText((HorizontalRule.Width, HorizontalRule.Parent.Bounds, HorizontalRule.Bounds));
         };
         container.AddChild(ArgumentText);
 
         panel.AddChild(mask);
 
-        //panel.DrawAction += DrawGroupArg;
+        // panel.DrawAction += DrawGroupArg;
     }
 
     private void UpdateVisuals()
     {
-        var factor = HiddenTimer.Schedule;
+        var factor = HiddenTimer.IsReverseCompleted ? 0 : HiddenTimer.IsCompleted ? 1 : HiddenTimer.Schedule; // HiddenTimer.Schedule
         HorizontalRule.SetHeight(factor * 4, 0);
         HorizontalRule.Border = factor;
         Mask.SetHeight(InnerContainer.Bounds.Height * factor, 0);
@@ -101,12 +99,12 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
     {
         HorizontalRule.RemoveFromParent();
         ArgumentText.RemoveFromParent();
-        //panel.DrawAction -= DrawGroupArg;
+        // panel.DrawAction -= DrawGroupArg;
     }
 
     private void DrawGroupArg(GameTime gameTime, SpriteBatch spriteBatch)
     {
-#if true
+#if false
         spriteBatch.DrawString(FontAssets.MouseText.Value, Argument.ToString(), InsertablePanel.Bounds.GetPercentedCoord(0, .33f), Color.Lime);
 #else
         spriteBatch.DrawString(FontAssets.MouseText.Value, "□", InsertablePanel.Bounds.GetPercentedCoord(0, .33f), Color.Lime);

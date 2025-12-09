@@ -91,6 +91,9 @@ MeleeAction: {
 		KValueRange.Label: 扁平范围
 		mode.Label: 模式
 		randAngleRange.Label: 角度偏移范围
+		enableNailBouncingMode.Label: 启用下劈
+		CutTime.Label: 斩切时间
+		AttackStartupRecoverRatio.Label: 后摇比
 	}
 
 	RapidlyStabInfo: {

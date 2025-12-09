@@ -60,11 +60,11 @@ public partial class MeleeAction
         switch (Owner)
         {
             case Player player:
-                {
-                    player.itemTime = 2;
-                    player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, CompositeArmRotation);
-                    break;
-                }
+            {
+                player.itemTime = 2;
+                player.SetCompositeArmFront(true, Player.CompositeArmStretchAmount.Full, CompositeArmRotation);
+                break;
+            }
         }
     }
 
@@ -104,12 +104,12 @@ public partial class MeleeAction
         switch (Owner)
         {
             case Player player:
-                {
-                    //SoundEngine.PlaySound(SoundID.Item71);
-                    player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
-                    Rotation = (Main.MouseWorld - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
-                    break;
-                }
+            {
+                //SoundEngine.PlaySound(SoundID.Item71);
+                player.direction = Math.Sign(Main.MouseWorld.X - player.Center.X);
+                Rotation = (Main.MouseWorld - Owner.Center).ToRotation();//TODO 给其它实体用的时候也有传入方向的手段
+                break;
+            }
         }
         NetUpdateNeeded = true;
     }
@@ -164,6 +164,7 @@ public partial class MeleeAction
     }
     public virtual bool Collide(Rectangle rectangle)
     {
+        // TODO 这一坨伤害判定的我真得想办法肘飞了
         if (!Attacktive) return false;
         /*float point1 = 0f;
         return Collision.CheckAABBvLineCollision(rectangle.TopLeft(), rectangle.Size(), Projectile.Center,
@@ -206,14 +207,28 @@ public partial class MeleeAction
         {
             SequenceSystem.elementDelegates[OnHitTargetDelegate.Key].Invoke(this);
         }
+        float damage = damageDone;
         if (Owner is Player player)
-            damageDone /= MathHelper.Clamp(player.GetWeaponDamage(player.HeldItem), 1, int.MaxValue);
-        float delta = Main.rand.NextFloat(0.85f, 1.15f) * MathF.Log(damageDone + 1);
-        if (Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake < 4f)
-            Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake += delta;//
+            damage /= MathHelper.Clamp(player.GetWeaponDamage(player.HeldItem), 1, int.MaxValue);
+        // TODO 添加其它Owner的支持
 
-        for (int n = 0; n < 30 * delta * (StandardInfo.dustAmount + .2f); n++)
-            MiscMethods.FastDust(victim.Center + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 16f), Main.rand.NextVector2Unit() * Main.rand.NextFloat(Main.rand.NextFloat(0, 8), 16), StandardInfo.standardColor);
+        float delta = Main.rand.NextFloat(0.85f, 1.15f) * MathF.Log(damage + 1);
+
+        // 只给特定的组件加得了
+        /*if (Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake < 4f)
+            Main.LocalPlayer.GetModPlayer<LogSpiralLibraryPlayer>().strengthOfShake += delta;*/
+
+        float dustMax = 30 * delta * (StandardInfo.dustAmount + .2f);
+        float dustAngle = Main.rand.NextFloat(0, MathHelper.TwoPi);
+        for (int n = 0; n < dustMax; n++)
+            MiscMethods.FastDust(
+                victim.Center
+                + Main.rand.NextVector2Unit() * Main.rand.NextFloat(0, 4f),
+
+                (dustAngle + Main.rand.NextFloat(-MathHelper.Pi / 12, MathHelper.Pi / 12)).ToRotationVector2()
+                * Main.rand.NextFloat(Main.rand.NextFloat(0, 8), 16) * Main.rand.Next([-1, 1]),
+
+                StandardInfo.standardColor,Main.rand.NextFloat(1,1.5f));
     }
 
     /// <summary>

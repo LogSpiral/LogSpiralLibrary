@@ -154,18 +154,18 @@ public class StabInfo : LSLMelee
     public override void OnStartAttack()
     {
         SoundEngine.PlaySound(StandardInfo.soundStyle ?? MySoundID.SwooshNormal_1, Owner?.Center);
-        for (int n = 0; n < 30; n++)
+        int amount = (int)(20 * StandardInfo.dustAmount);
+        for (int n = 0; n < amount; n++)
         {
-            if (Main.rand.NextFloat(0, 1) < StandardInfo.dustAmount)
-                for (int k = 0; k < 2; k++)
-                {
-                    var flag = k == 0;
-                    var unit = ((MathHelper.TwoPi / 30 * n).ToRotationVector2() * new Vector2(.5f, 2f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
-                    var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
-                    var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
-                    velocity *= 2 * (flag ? 1:1.5f) * Main.rand.NextFloat(0.95f,1f);
-                    MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
-                }
+            for (int k = 0; k < 2; k++)
+            {
+                var flag = k == 0;
+                var unit = ((MathHelper.TwoPi *Main.rand.NextFloat()).ToRotationVector2() * new Vector2(.5f, 2f)).RotatedBy(Rotation) * (flag ? 2 : 1) * .5f;
+                var Center = Owner.Center + OffsetCenter + targetedVector * .75f;
+                var velocity = unit - targetedVector * .125f;//-Owner.velocity * 2 +
+                velocity *= 2 * (flag ? 1 : 1.5f) * Main.rand.NextFloat(0.95f, 1f);
+                MiscMethods.FastDust(Center, velocity, StandardInfo.standardColor);
+            }
         }
         if (!Main.dedServ)
             UltraStab = NewStab();
@@ -281,8 +281,8 @@ public class RapidlyStabInfo : StabInfo
     private void ResetCycle()
     {
         CounterMax = Math.Clamp(
-            rangeOffsetMin == rangeOffsetMax 
-            ? givenCycle + rangeOffsetMin 
+            rangeOffsetMin == rangeOffsetMax
+            ? givenCycle + rangeOffsetMin
             : givenCycle + Main.rand.Next(rangeOffsetMin, rangeOffsetMax),
             1,
             int.MaxValue);

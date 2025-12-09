@@ -65,7 +65,7 @@ public class StormInfo : ExtendedMelee
         {
             var verS = StandardInfo.VertexStandard;
 
-            var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler, Owner.Center, (0, 0));
+            var u = swoosh = UltraSwoosh.NewUltraSwoosh(verS.canvasName, verS.timeLeft, verS.scaler * ModifyData.Size * OffsetSize, Owner.Center, (0, 0));
             u.heatMap = verS.heatMap;
             u.negativeDir = Flip;
             u.rotation = Rotation;

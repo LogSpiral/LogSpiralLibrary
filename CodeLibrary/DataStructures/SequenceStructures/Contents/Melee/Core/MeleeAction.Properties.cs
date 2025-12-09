@@ -18,7 +18,7 @@ namespace LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Content
 // Factor -> Rotation -> Center -> Origin -> Damage -> Attactive
 
 // 其中重写函数按如下顺序排序
-// Update -> Active -> Single -> Charge -> Attack -> Collide -> Draw -> Net(目前无效)
+// Update -> Active -> Single -> Charge -> Attack -> Collide -> Draw -> Net
 // Start -> End
 public partial class MeleeAction
 {
@@ -54,6 +54,8 @@ public partial class MeleeAction
     public float KValue { get; set; } = 1f;
 
     public int Counter { get; set; }
+
+    // 我不行了fTimer太异端了，这个必须要整改
     protected float fTimer;
 
     public int Timer

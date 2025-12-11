@@ -70,16 +70,16 @@ public class SwooshInfo : LSLMelee
     [ElementCustomData]
     public bool enableNailBouncingMode = false;
 
-    [Range(4,12)]
-    [DefaultValue(4)]
+    [Range(4, 12)]
+    [DefaultValue(8)]
     [ElementCustomData]
-    public int CutTime = 4;
+    public int CutTime = 8;
 
     [Range(0.05f, 0.95f)]
-    [DefaultValue(0.8f)]
+    [DefaultValue(0.25f)]
     [Increment(0.05f)]
     [ElementCustomData]
-    public float AttackStartupRecoverRatio = 0.8f;//0.25f;
+    public float AttackStartupRecoverRatio = 0.25f;
     #endregion 参数字段
 
     #region 重写属性
@@ -111,7 +111,19 @@ public class SwooshInfo : LSLMelee
             if (t > tier1)
                 fac = MathHelper.SmoothStep(mode == SwooshMode.Chop ? 160 / 99f : 1, 1.125f, Utils.GetLerpValue(max, tier1, t, true));
             else if (t < tier2)
-                fac = 0;
+            {
+                // fac = 0;
+                if (mode == SwooshMode.Chop)
+                {
+                    var f = Utils.GetLerpValue(tier2, 0, t, true);
+                    fac = MathHelper.SmoothStep(0, -tier2 / 280f, f * f);
+                }
+                else
+                {
+                    var f = Utils.GetLerpValue(tier2, 0, t, true);
+                    fac = MathHelper.SmoothStep(0, -tier2 / 140f, 4 * f * (1 - f));
+                }
+            }
             else
                 fac = MathHelper.SmoothStep(0, 1.125f, Utils.GetLerpValue(tier2, tier1, t, true));
         }
@@ -278,7 +290,29 @@ public class SwooshInfo : LSLMelee
         _ellipticSector.Center = Owner.Center;
         if (Main.dedServ)
             goto label;
-        int amount = (int)(30 * (1 - Factor) * StandardInfo.dustAmount);
+        int amount;
+        float fac;
+        {
+            float t = fTimer;
+            float max = TimerMax;
+            fac = t / max;
+            if (max > CutTime * 1.5f)
+            {
+                float tier2 = (max - CutTime) * AttackStartupRecoverRatio;
+                float tier1 = tier2 + CutTime;
+                if (t > tier1)
+                    fac = 1;
+                else if (t < tier2)
+                    fac = 0;
+                else
+                    fac = MathHelper.SmoothStep(0, 1f, Utils.GetLerpValue((int)tier2, (int)tier1, t, true));
+
+            }
+            else
+                fac = MathHelper.SmoothStep(0f, 1f, fac);
+            amount = (int)(30 * 64f / CutTime / CutTime * (4 * fac * (1 - fac)) * StandardInfo.dustAmount);
+        }
+
         if (amount > 0)
         {
             float timerOrig = fTimer;
@@ -310,9 +344,9 @@ public class SwooshInfo : LSLMelee
                 }
 
                 var Center = c[4].Position;
-                var velocity = (lastTarget - targetedVector) * Main.rand.NextFloat(.15f, 1f) * -12 * StandardInfo.dustAmount;
+                var velocity = (lastTarget - targetedVector) * Main.rand.NextFloat(.15f, 1f) * -12 * StandardInfo.dustAmount * 8f / CutTime;
                 var dust = MiscMethods.FastDust(Center, Owner.velocity - velocity * .25f, StandardInfo.standardColor);
-                dust.scale *= MathF.Pow(1 - Factor, 2);
+                dust.scale *= 1 - fac;
                 lastTarget = targetedVector;
             }
             fTimer = timerOrig;
@@ -323,8 +357,6 @@ public class SwooshInfo : LSLMelee
 
     public override bool Collide(Rectangle rectangle)
     {
-        var sector = _ellipticSector;
-
         return
             CollisionHelper.CheckEllipticSectorAndRectangle(
             _ellipticSector,

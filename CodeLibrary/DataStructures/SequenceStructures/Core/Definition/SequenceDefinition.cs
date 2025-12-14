@@ -53,7 +53,11 @@ public class SequenceDefinition<T> : EntityDefinition where T : ISequenceElement
     {
     }
 
-    public static SequenceDefinition<T> FromString(string s) => new(s);
+    public static SequenceDefinition<T> FromString(string s) 
+    {
+        var contents = s.Split('/');
+        return new(contents[0], contents[1]);
+    }
 
     public static SequenceDefinition<T> Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
 

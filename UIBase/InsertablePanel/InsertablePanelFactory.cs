@@ -39,18 +39,8 @@ public class InsertablePanelFactory : UIElementGroup
         //SilkyUI.SetFocus(mousePanel);
         //SilkyUI.MouseElement[MouseButtonType.Left] = mousePanel;
 
-        PropertyPanelLibrary.PropertyPanelLibrary.UpdateFocusedElementMethod?.Invoke(SilkyUI, [mousePanel]);
-        if (PropertyPanelLibrary
-            .PropertyPanelLibrary
-            ._inputStateField
-            ?.GetValue(SilkyUISystem.Instance.SilkyUIManager)
-            is SilkyUIInputState _inputState
-            &&
-            PropertyPanelLibrary
-            .PropertyPanelLibrary
-            .PressedElementsProperty
-            ?.GetValue(_inputState)
-            is Dictionary<MouseButtonType, UIView> dictionary)
+        PropertyPanelLibrary.PropertyPanelLibrary.UpdateFocusedElementCall(mousePanel);
+        if (PropertyPanelLibrary.PropertyPanelLibrary.PressedElementsDictionary is { } dictionary)
             dictionary[MouseButtonType.Left] = mousePanel;
 
 

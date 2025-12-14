@@ -330,6 +330,7 @@ public static class VectorMethods
 
     #endregion 矩阵
 
+#if false
     #region 抽象向量
 
     public static T Sum<T, TValue>(T[] values) where T : IVector<T, TValue>
@@ -341,6 +342,7 @@ public static class VectorMethods
     }
 
     #endregion 抽象向量
+#endif
 
     #region 参数或者结果里有向量就姑且塞着了
 

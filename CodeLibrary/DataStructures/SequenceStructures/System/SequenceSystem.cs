@@ -4,6 +4,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.MI
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Contents.MIDI.Core;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.BuiltInGroups.Arguments;
+using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helpers;
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Interfaces;
 using LogSpiralLibrary.UI.SequenceEditUI;
 using System.Collections.Generic;
@@ -120,6 +121,7 @@ public class SequenceSystem : ModSystem
     public override void Unload()
     {
         Instance = null;
+        SequenceSaveHelper.ClearSavingEvent();
         base.Unload();
     }
 }

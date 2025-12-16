@@ -97,7 +97,7 @@ public partial class SequenceEditUI
 
     private void SetupSequenceLib()
     {
-        if (!_pendingUpdateElementLib) return;
+        if (!_pendingUpdateSequenceLib) return;
 
         SequenceLibrary.Container.RemoveAllChildren();
 
@@ -129,14 +129,18 @@ public partial class SequenceEditUI
             factory.Join(mask);
             List<KeyValuePair<string, string>> path = [new(modName, ModLoader.GetMod(modName).DisplayName)];
             var length = strs.Length;
-            for (int i = 1; i < length - 1; i++)
+            for (int i = 2; i < length - 1; i++)
             {
                 var folderName = strs[i];
                 path.Add(new KeyValuePair<string, string>(folderName, folderName));
             }
             return new KeyValuePair<UIView, IReadOnlyList<KeyValuePair<string, string>>>(mask, path);
         }
-        SUIFolder.BuildFoldersToTarget(SequenceLibrary.Container, from pair in CurrentCategory.Maganger.Sequences select SpawnContentFromPair(pair));
+        SUIFolder.BuildFoldersToTarget(
+            SequenceLibrary.Container,
+            from pair in CurrentCategory.Maganger.Sequences
+            where !pair.Value.Data.Hidden
+            select SpawnContentFromPair(pair));
     }
 
     private void SetupRootElement()

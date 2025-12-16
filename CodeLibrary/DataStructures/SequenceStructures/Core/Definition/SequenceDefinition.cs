@@ -53,7 +53,7 @@ public class SequenceDefinition<T> : EntityDefinition where T : ISequenceElement
     {
     }
 
-    public static SequenceDefinition<T> FromString(string s) 
+    public static SequenceDefinition<T> FromString(string s)
     {
         var contents = s.Split('/');
         return new(contents[0], contents[1]);
@@ -62,7 +62,11 @@ public class SequenceDefinition<T> : EntityDefinition where T : ISequenceElement
     public static SequenceDefinition<T> Load(TagCompound tag) => new(tag.GetString("mod"), tag.GetString("name"));
 
     public static readonly Func<TagCompound, SequenceDefinition<T>> DESERIALIZER = Load;
-    public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : SequenceManager<T>.Instance.Sequences[$"{Mod}/{typeof(T).Name}/{Name}"].Data.DisplayName);
+    public override string DisplayName => IsUnloaded ? Language.GetTextValue("LegacyInterface.23") : (Name == "None" ? "None" : GetSequenceNoCheck().Data.DisplayName);
+
+    public Sequence GetSequence() => IsUnloaded || Name == "None" ? null : SequenceManager<T>.Instance.Sequences[$"{Mod}/{typeof(T).Name}/{Name}"];
+
+    private Sequence GetSequenceNoCheck() => SequenceManager<T>.Instance.Sequences[$"{Mod}/{typeof(T).Name}/{Name}"];
 }
 public class SequenceDefinitionElement<T> : DefinitionElement<SequenceDefinition<T>> where T : ISequenceElement
 {

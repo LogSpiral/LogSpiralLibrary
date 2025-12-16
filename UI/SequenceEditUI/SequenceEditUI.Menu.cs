@@ -169,6 +169,9 @@ public partial class SequenceEditUI
             if (!CurrentCategory.Maganger.Sequences.TryGetValue(recents, out var sequence))
                 continue;
 
+            if (sequence.Data.Hidden)
+                continue;
+
             var view = MenuHelper.SpawnViewFromPair(this, new KeyValuePair<string, Sequence>(recents, sequence));
             view.Join(MenuPanel.RecentList.Container);
         }
@@ -182,6 +185,9 @@ public partial class SequenceEditUI
             if (!CurrentCategory.Maganger.Sequences.TryGetValue(favorite, out var sequence))
                 continue;
 
+            if (sequence.Data.Hidden) 
+                continue;
+            
             var view = MenuHelper.SpawnViewFromPair(this, new KeyValuePair<string, Sequence>(favorite, sequence));
             view.Join(MenuPanel.FavoriteList.Container);
         }
@@ -194,7 +200,8 @@ public partial class SequenceEditUI
             MenuPanel.FinishedList.Container,
             from pair
             in CurrentCategory.Maganger.Sequences
-            where pair.Value!.Data!.Finished
+            let data = pair.Value!.Data
+            where data!.Finished && !data.Hidden
             select MenuHelper.SpawnContentFromPair(this, pair));
     }
 
@@ -205,7 +212,8 @@ public partial class SequenceEditUI
             MenuPanel.LibraryList.Container,
             from pair
             in CurrentCategory.Maganger.Sequences
-            where !pair.Value!.Data!.Finished
+            let data = pair.Value!.Data
+            where !data!.Finished && !data.Hidden
             select MenuHelper.SpawnContentFromPair(this, pair));
     }
     private void SetupMenu()

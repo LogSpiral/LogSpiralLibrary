@@ -24,6 +24,8 @@ public class SequenceData : IMemberLocalized
     public DateTime ModifyTime { get; set; }
     public bool Finished { get; set; } = true;
 
+    public bool Hidden { get; set; } = false;
+
     public string GetSequenceKeyName(string elementTypeName)
     {
         return $"{ModDefinition.Name}/{elementTypeName}/{FileName}";
@@ -54,6 +56,7 @@ public class SequenceData : IMemberLocalized
         CreateTime = DateTime.TryParse(elementReader[nameof(CreateTime)]?.Value ?? string.Empty, out DateTime dateTime) ? dateTime : DateTime.MinValue;
         ModifyTime = DateTime.TryParse(elementReader[nameof(ModifyTime)]?.Value ?? string.Empty, out dateTime) ? dateTime : DateTime.MinValue;
         Finished = !bool.TryParse(elementReader[nameof(ModifyTime)]?.Value ?? string.Empty, out bool finished) || finished;
+        Hidden = bool.TryParse(elementReader[nameof(Hidden)]?.Value ?? string.Empty, out bool hidden) && hidden;
         Load(elementReader);
     }
 
@@ -72,6 +75,8 @@ public class SequenceData : IMemberLocalized
         writer.WriteElementString(nameof(ModifyTime), ModifyTime.ToString("yyyy-MM-dd HH:mm:ss"));
         if (!Finished)
             writer.WriteElementString(nameof(Finished), Finished.ToString());
+        if (Hidden)
+            writer.WriteElementString(nameof(Hidden), Hidden.ToString());
         Save(writer);
     }
 

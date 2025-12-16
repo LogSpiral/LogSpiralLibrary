@@ -188,7 +188,8 @@ public partial class Sequence
             Description = reader["Description"] ?? "",
             CreateTime = new DateTime(long.TryParse(reader["createTime"] ?? "0", out var tick) ? tick : 0),
             ModifyTime = new DateTime(long.TryParse(reader["lastModifyTime"] ?? "0", out tick) ? tick : 0),
-            Finished = !bool.TryParse(reader["Finished"] ?? "True", out var finished) || finished
+            Finished = !bool.TryParse(reader["Finished"] ?? "True", out var finished) || finished,
+            Hidden = bool.TryParse(reader["Hidden"] ?? "False",out var hidden) && hidden,
         };
         Data = data;
     }

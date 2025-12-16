@@ -33,6 +33,10 @@ CreateNewButton: {
 		'''
 		用于新建一个序列
 		虽然我觉得直接在文件夹里新建一个xml要方便得多
+
+		顺带一提，现在路径支持文件夹了
+		比如新建的文件名写InnerFolder/MySequence
+		就会在InnerFolder文件夹内生成MySequence.xml文件
 		'''
 }
 

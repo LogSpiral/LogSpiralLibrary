@@ -33,6 +33,11 @@ CreateNewButton: {
 		'''
 		Used to create a new Sequence
 		Well, I think create a new xml file in folder is way much easier.
+
+		By the way, now the path supports folders
+		For example, in the FileName term, 
+		if you set InnerFolder/MySequence
+		Then there'll be a MySequence.xml in InnderFolder
 		'''
 }
 

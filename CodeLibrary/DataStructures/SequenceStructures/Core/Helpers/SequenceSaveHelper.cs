@@ -20,5 +20,12 @@ public static class SequenceSaveHelper
         using XmlWriter writer = XmlWriter.Create(finalPath, SequenceGlobalManager.WriterSettings);
         loadingSequence.Data.ModifyTime = DateTime.Now;
         SequenceGlobalManager.Serializer.Serialize(writer, loadingSequence);
+
+
+        OnSavingSequences?.Invoke(loadingSequence, elementName);
     }
+
+    public static event Action<Sequence, string> OnSavingSequences;
+
+    public static void ClearSavingEvent() => OnSavingSequences = null;
 }

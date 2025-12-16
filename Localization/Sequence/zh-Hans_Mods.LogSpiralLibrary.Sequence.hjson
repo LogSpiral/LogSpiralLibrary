@@ -207,4 +207,9 @@ SequenceData: {
 		Label: 是否标记为成品
 		Tooltip: 没有本质区别，仅供方便分类
 	}
+
+	Hidden: {
+		Label: 从编辑面板中隐藏
+		Tooltip: ""
+	}
 }

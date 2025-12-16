@@ -203,4 +203,9 @@ SequenceData: {
 		Label: Labeled as finished
 		Tooltip: __
 	}
+
+	Hidden: {
+		Label: Hidden in Edit Panel
+		Tooltip: ""
+	}
 }

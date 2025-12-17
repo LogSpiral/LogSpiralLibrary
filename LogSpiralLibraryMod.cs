@@ -8,8 +8,10 @@ global using Terraria.ID;
 global using Terraria.ModLoader;
 using LogSpiralLibrary.CodeLibrary.Utilties.BaseClasses;
 using NetSimplified;
+using SilkyUIFramework.Animation;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using Terraria.ModLoader.Config;
 using Terraria.ModLoader.UI;
 
@@ -23,6 +25,26 @@ public partial class LogSpiralLibraryMod : Mod
     public static double ModTime2 => GlobalTimeSystem.GlobalTimePaused;
 
     private static void FuckSDKCheck() => UIModSources.dotnetSDKFound = true;
+
+    private static void AnimationTimerFix() 
+    {
+        var type = typeof(AnimationTimer);
+        var scheduleProp = type.GetProperty(nameof(AnimationTimer.Schedule), BindingFlags.Public | BindingFlags.Instance);
+        var ImmediateComplete = type.GetMethod(nameof(AnimationTimer.ImmediateCompleted), BindingFlags.Public | BindingFlags.Instance);
+        var ImmediateReverseComplete = type.GetMethod(nameof(AnimationTimer.ImmediateReverseCompleted), BindingFlags.Public | BindingFlags.Instance);
+        if (ImmediateComplete == null || ImmediateReverseComplete == null) return;
+        MonoModHooks.Add(ImmediateComplete, (Action<AnimationTimer> orig, AnimationTimer self) =>
+        {
+            scheduleProp.SetValue(self, 1f);
+            orig?.Invoke(self);
+        });
+
+        MonoModHooks.Add(ImmediateReverseComplete, (Action<AnimationTimer> orig, AnimationTimer self) =>
+        {
+            scheduleProp.SetValue(self, 0f);
+            orig?.Invoke(self);
+        });
+    }
 
     #endregion Misc
 
@@ -44,7 +66,7 @@ public partial class LogSpiralLibraryMod : Mod
         AddOnResolutionChangedHook();
         FuckSDKCheck();
 
-
+        AnimationTimerFix();
         //MonoModHooks.Add(
         //    typeof(SoundEffectInstance)
         //    .GetMethod(nameof(SoundEffectInstance.UpdatePitch), BindingFlags.NonPublic | BindingFlags.Instance),

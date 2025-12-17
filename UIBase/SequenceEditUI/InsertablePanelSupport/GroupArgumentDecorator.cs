@@ -88,7 +88,7 @@ internal class GroupArgumentDecorator : IInsertPanelDecorator
 
     private void UpdateVisuals()
     {
-        var factor = HiddenTimer.IsReverseCompleted ? 0 : HiddenTimer.IsCompleted ? 1 : HiddenTimer.Schedule; // HiddenTimer.Schedule
+        var factor = HiddenTimer.Schedule;
         HorizontalRule.SetHeight(factor * 4, 0);
         HorizontalRule.Border = factor;
         Mask.SetHeight(InnerContainer.Bounds.Height * factor, 0);

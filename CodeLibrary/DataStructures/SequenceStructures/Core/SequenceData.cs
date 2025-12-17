@@ -3,6 +3,7 @@ using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.Core.Helper
 using LogSpiralLibrary.CodeLibrary.DataStructures.SequenceStructures.System;
 using LogSpiralLibrary.CodeLibrary.Utilties.Extensions;
 using PropertyPanelLibrary.EntityDefinition;
+using PropertyPanelLibrary.PropertyPanelComponents.Attributes;
 using PropertyPanelLibrary.PropertyPanelComponents.Interfaces;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,7 @@ public class SequenceData : IMemberLocalized
     public DateTime ModifyTime { get; set; }
     public bool Finished { get; set; } = true;
 
+    [PropertyPanelIgnore]
     public bool Hidden { get; set; } = false;
 
     public string GetSequenceKeyName(string elementTypeName)

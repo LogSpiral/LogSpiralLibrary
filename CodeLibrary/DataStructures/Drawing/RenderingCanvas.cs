@@ -1,6 +1,7 @@
 ﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingContents;
 using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.RenderDrawingEffects;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace LogSpiralLibrary.CodeLibrary.DataStructures.Drawing;
@@ -161,7 +162,6 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
     public void DrawContents(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
         HashSet<HashSet<IRenderEffect>> renderPipeLines = ActiveRenderEffects;
-
         if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null || graphicsDevice.GetRenderTargets().Length == 0)
             DirectlyDrawAllGroups(spriteBatch, graphicsDevice);
         else
@@ -169,11 +169,11 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
             var origRender = LogSpiralLibraryMod.Instance.RenderOrig;
             var contentRender = LogSpiralLibraryMod.Instance.Render;
             var assistRender = LogSpiralLibraryMod.Instance.Render_Swap;
-
+            var screenTarget = graphicsDevice.GetRenderTargets()[0].RenderTarget as RenderTarget2D ?? Main.screenTarget;
             spriteBatch.Begin();
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
-            spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+            spriteBatch.Draw(screenTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
 
             graphicsDevice.SetRenderTarget(origRender);
@@ -208,7 +208,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 }
 
                 foreach (var renderEffect in pipeLine)
-                    renderEffect.ProcessRender(spriteBatch, graphicsDevice, ref contentRender, ref assistRender);
+                    renderEffect.ProcessRender(spriteBatch, graphicsDevice, screenTarget, Main.screenTargetSwap, ref contentRender, ref assistRender);
 
                 var last = pipeLine.Last();
                 // last.DrawToScreenTarget(spriteBatch, graphicsDevice, contentRender, assistRender);
@@ -217,10 +217,10 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 if (last.DoRealDraw)
                 {
                     bool flip = counter % 2 == 1;
-                    graphicsDevice.SetRenderTarget(flip ? Main.screenTargetSwap : Main.screenTarget);
+                    graphicsDevice.SetRenderTarget(flip ? Main.screenTargetSwap : screenTarget);
                     graphicsDevice.Clear(Color.Transparent);
                     spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                    spriteBatch.Draw(flip ? Main.screenTarget : Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    spriteBatch.Draw(flip ? screenTarget : Main.screenTargetSwap, Vector2.Zero, Color.White);
                     spriteBatch.Draw(contentRender, Vector2.Zero, Color.White);
                     spriteBatch.End();
                     counter++;
@@ -230,7 +230,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
             // 如果未曾绘制过实体就将原始内容绘制上一次
             if (counter == 0)
             {
-                graphicsDevice.SetRenderTarget(Main.screenTarget);
+                graphicsDevice.SetRenderTarget(screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
                 spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
@@ -239,7 +239,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
             }
             else if (counter % 2 == 0)
             {
-                graphicsDevice.SetRenderTarget(Main.screenTarget);
+                graphicsDevice.SetRenderTarget(screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
                 spriteBatch.Begin();
                 spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);

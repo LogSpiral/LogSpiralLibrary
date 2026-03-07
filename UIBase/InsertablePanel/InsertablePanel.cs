@@ -483,6 +483,14 @@ public class InsertablePanel : UIElementGroup
     public static void ForceEnablePV() => IsPVExists = false;
 
     public event MouseEventHandler OnDraggingOut;
+
+    public event Action<GameTime, SpriteBatch> DrawAction;
+
+    protected override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+    {
+        DrawAction?.Invoke(gameTime, spriteBatch);
+        base.Draw(gameTime, spriteBatch);
+    }
 }
 
 //  public class ElementPanel : InsertablePanel

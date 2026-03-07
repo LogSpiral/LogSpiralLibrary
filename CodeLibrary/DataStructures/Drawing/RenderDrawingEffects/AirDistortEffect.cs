@@ -51,7 +51,7 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
         return true;
     }
 
-    public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
+    public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget, RenderTarget2D screenTargetSwap, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
         // 这里对内容画布没有调整，而是修改Main.screenTarget以达成扭曲效果
 
@@ -63,7 +63,7 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
 
         #region 切换绘制目标至备用画布
 
-        graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+        graphicsDevice.SetRenderTarget(screenTargetSwap);
         graphicsDevice.Clear(Color.Transparent);
 
         #endregion 切换绘制目标至备用画布
@@ -83,7 +83,7 @@ public class AirDistortEffect(float intensity, float scaler, float rotation = 0f
 
         #region 绘制内容
 
-        spriteBatch.Draw(Main.screenTarget, Vector2.Zero, Color.White);
+        spriteBatch.Draw(screenTarget, Vector2.Zero, Color.White);
 
         #endregion 绘制内容
 

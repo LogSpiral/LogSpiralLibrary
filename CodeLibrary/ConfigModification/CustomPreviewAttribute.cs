@@ -1,8 +1,6 @@
-﻿using LogSpiralLibrary.CodeLibrary.DataStructures.Drawing.ComplexPanel;
-using LogSpiralLibrary.CodeLibrary.Utilties;
-using MonoMod.Cil;
-using PropertyPanelLibrary;
+﻿using MonoMod.Cil;
 using SilkyUIFramework;
+using SilkyUIFramework.Graphics2D;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -55,25 +53,16 @@ public abstract class SimplePreview<T> : ICustomConfigPreview
 
     public void Draw(SpriteBatch spriteBatch, CalculatedStyle dimension, OptionMetaData metaData)
     {
-        //ComplexPanelInfo panel = new()
-        //{
-        //    destination = dimension.ToRectangle(),
-        //    StyleTexture = ModContent.Request<Texture2D>("LogSpiralLibrary/Images/ComplexPanel/panel_2").Value,
-        //    glowEffectColor = Color.MediumPurple with { A = 102 },
-        //    glowShakingStrength = .1f,
-        //    glowHueOffsetRange = 0.1f,
-        //    backgroundTexture = Main.Assets.Request<Texture2D>("Images/UI/HotbarRadial_1").Value,
-        //    backgroundFrame = new Rectangle(4, 4, 28, 28),
-        //    backgroundUnitSize = new Vector2(28, 28) * 2f,
-        //    backgroundColor = Color.Lerp(Color.Purple, Color.Pink, MathF.Sin(Main.GlobalTimeWrappedHourly) * .5f + .5f) * .5f
-        //};
-        //panel.DrawComplexPanel(spriteBatch);
-        SDFGraphics.HasBorderRoundedBox(
-            dimension.Position(), default,
-            new Vector2(dimension.Width, dimension.Height),
-            new Vector4(8f), Color.MediumPurple * .25f,
-            1, SUIColor.Border, PropertyPanelLibrary.Graphics2D.SDFGraphics.GetMatrix(true));
+        var matrix = PropertyPanelLibrary.Graphics2D.SDFGraphics.GetMatrix(true);
 
+        SDFRectangle.SampleVersion(BlurMakeSystem.BlurRenderTarget, dimension.Position() * Main.UIScale, new Vector2(dimension.Width, dimension.Height) * Main.UIScale,
+            new Vector4(8f) * Main.UIScale, Matrix.Identity);
+
+        PropertyPanelLibrary.Graphics2D.SDFGraphics.HasBorderRoundedBox(
+    dimension.Position(), default,
+    new Vector2(dimension.Width, dimension.Height),
+    new Vector4(8f), Color.MediumPurple * .25f,
+    1, SUIColor.Border, matrix);
         if (metaData.Value is T instance)
             Draw(spriteBatch, dimension, instance, metaData);
     }

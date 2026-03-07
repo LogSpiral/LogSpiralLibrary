@@ -21,5 +21,5 @@ public interface IRenderEffect
     /// <summary>
     /// 对输入的画布进行自己的加工处理
     /// </summary>
-    void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender);
+    void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget, RenderTarget2D screenTargetSwap, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender);
 }

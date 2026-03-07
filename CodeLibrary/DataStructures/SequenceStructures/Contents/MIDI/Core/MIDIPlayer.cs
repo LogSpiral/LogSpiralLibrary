@@ -21,11 +21,15 @@ public class MIDIPlayer : ModItem
 
     public override bool? UseItem(Player player)
     {
-        if (CurrentScore == null || player.altFunctionUse == 2)
+        if (CurrentScore == null && player.altFunctionUse == 0)
         {
             Main.NewText("Please Select a score via right click first.\n You need Install SilkyUIFramework To Open it.");
             return base.UseItem(player);
         }
+
+        if(player.altFunctionUse == 2)
+            return base.UseItem(player);
+
 
         if (player.itemAnimation == player.itemAnimationMax)
             SequenceModel = new SequenceModel(CurrentScore);
@@ -43,13 +47,13 @@ public class MIDIPlayer : ModItem
     public override bool CanUseItem(Player player)
     {
         // if (ModLoader.HasMod("SilkyUIFramework"))
-            if (player.altFunctionUse == 2)
-            {
-                if (MIDIScoreSelectorUI.Active)
-                    MIDIScoreSelectorUI.Close();
-                else
-                    MIDIScoreSelectorUI.Open(this);
-            }
+        if (player.altFunctionUse == 2)
+        {
+            if (MIDIScoreSelectorUI.Active)
+                MIDIScoreSelectorUI.Close();
+            else
+                MIDIScoreSelectorUI.Open(this);
+        }
         return base.CanUseItem(player);
     }
     public override bool AltFunctionUse(Player player) => true;

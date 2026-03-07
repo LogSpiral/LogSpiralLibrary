@@ -23,7 +23,7 @@ public class DyeEffect(int dyeType = 0) : IRenderEffect
 
     public bool DoRealDraw => true;
 
-    public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
+    public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget, RenderTarget2D screenTargetSwap, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
         #region 准备状态
 

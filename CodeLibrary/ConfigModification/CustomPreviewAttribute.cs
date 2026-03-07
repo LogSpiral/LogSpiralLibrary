@@ -303,14 +303,14 @@ public class ConfigPreviewSystem : ModSystem
 
     public static void PreviewDrawing(CustomPreviewAttribute previewAttribute, CalculatedStyle dimension, OptionMetaData metaData)
     {
+        var drawer = (ICustomConfigPreview)Activator.CreateInstance(previewAttribute.pvType); // TODO 单例注册式
+        if (!drawer.UsePreview) return;
         var spriteBatch = Main.spriteBatch;
         var rect = Main.instance.GraphicsDevice.ScissorRectangle;
         Main.spriteBatch.End();
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.None, RasterizerState.CullNone, null, Main.UIScaleMatrix);
         Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
-        var drawer = (ICustomConfigPreview)Activator.CreateInstance(previewAttribute.pvType); // TODO 单例注册式
-        if (drawer.UsePreview)
-            drawer.Draw(spriteBatch, dimension, metaData);
+        drawer.Draw(spriteBatch, dimension, metaData);
         Main.spriteBatch.End();
         Main.instance.GraphicsDevice.ScissorRectangle = rect;
         Main.instance.GraphicsDevice.RasterizerState = UIElement.OverflowHiddenRasterizerState;

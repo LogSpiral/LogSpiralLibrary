@@ -10,15 +10,15 @@ public class RenderBasedDrawingSystem : ModSystem
 
     public override void Load()
     {
-        On_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 += AddRenderBasedDrawings;
-        // IL_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 += AddRenderBasedDrawings;
+        // On_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 += AddRenderBasedDrawings;
+        IL_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 += AddRenderBasedDrawings;
         On_Main.DrawProjectiles += AddNoRenderDrawings;
     }
 
     public override void Unload()
     {
-        On_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 -= AddRenderBasedDrawings;
-        // IL_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 -= AddRenderBasedDrawings;
+        // On_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 -= AddRenderBasedDrawings;
+        IL_FilterManager.EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 -= AddRenderBasedDrawings;
         On_Main.DrawProjectiles -= AddNoRenderDrawings;
     }
 
@@ -26,14 +26,16 @@ public class RenderBasedDrawingSystem : ModSystem
     {
         var cursor = new ILCursor(il);
         if (!cursor.TryGotoNext(i => i.MatchBr(out _))) return;
-        cursor.EmitDelegate(() =>
+        cursor.EmitLdloc(2);
+        cursor.EmitLdloc(3);
+        cursor.EmitDelegate<Action<RenderTarget2D, RenderTarget2D>>((screenTarget1, screenTarget2) =>
         {
             if (!LogSpiralLibraryMod.CanUseRender || LogSpiralLibraryMod.Instance is not { } instance) return;
             foreach (var renderDrawing in RenderBasedDrawings)
             {
                 try
                 {
-                    renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, instance.Render, instance.Render_Swap);
+                    renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, screenTarget1, screenTarget2);
                 }
                 catch
                 {
@@ -45,12 +47,12 @@ public class RenderBasedDrawingSystem : ModSystem
 
     private static void AddRenderBasedDrawings(On_FilterManager.orig_EndCapture_RenderTarget2D_RenderTarget2D_RenderTarget2D_Vector2_Vector2_Vector2 orig, FilterManager self, RenderTarget2D finalTexture, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2, Vector2 screenSize, Vector2 sceneSize, Vector2 sceneOffset)
     {
-        if (!LogSpiralLibraryMod.CanUseRender || LogSpiralLibraryMod.Instance is not { } instance) goto label;
+        if (!LogSpiralLibraryMod.CanUseRender || LogSpiralLibraryMod.Instance == null) goto label;
         foreach (var renderDrawing in RenderBasedDrawings)
         {
             try
             {
-                renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, instance.Render, instance.Render_Swap);
+                renderDrawing.RenderDrawingMethods(Main.spriteBatch, Main.instance.GraphicsDevice, screenTarget1, screenTarget2);
             }
             catch
             {

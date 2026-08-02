@@ -14,7 +14,7 @@ public interface IRenderBasedDrawing
     /// <param name="graphicsDevice"></param>
     /// <param name="render">缓存画布</param>
     /// <param name="renderSwap">缓存画布二号</param>
-    public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap);
+    public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2);
 
     /// <summary>
     /// 哦但是，如果那些要用到Render的弹幕在Render不可用的时候应该怎么办呢？？
@@ -33,7 +33,7 @@ public interface IRenderBasedDrawing
 /// </summary>
 public abstract class RenderBasedDrawing : ModType, IRenderBasedDrawing
 {
-    public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderSwap);
+    public abstract void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2);
 
     public abstract void CommonDrawingMethods(SpriteBatch spriteBatch);
 

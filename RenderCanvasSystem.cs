@@ -74,9 +74,9 @@ public class RenderCanvasSystem : ModSystem
             _renderingCanvases.Remove(pendingName);
     }
 
-    public override void PostUpdateEverything() 
+    public override void PostUpdateEverything()
     {
-        if(!Main.dedServ)
+        if (!Main.dedServ)
             UpdateCanvases();
     }
 
@@ -180,16 +180,16 @@ public class RenderCanvasSystem : ModSystem
 
 public class RenderCanvasDrawing : RenderBasedDrawing
 {
-    private static void DrawCanvases(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    private static void DrawCanvases(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2)
     {
         foreach (var renderCanvas in RenderCanvasSystem.RenderingCanvases.Values)
             if (renderCanvas.RenderDrawingContents.Count > 0)
-                renderCanvas.DrawContents(spriteBatch, graphicsDevice);
+                renderCanvas.DrawContents(spriteBatch, graphicsDevice, screenTarget1, screenTarget2);
     }
 
     public override void CommonDrawingMethods(SpriteBatch spriteBatch)
-        => DrawCanvases(spriteBatch, Main.graphics.GraphicsDevice);
+        => DrawCanvases(spriteBatch, Main.graphics.GraphicsDevice, null, null);
 
-    public override void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D render, RenderTarget2D renderAirDistort)
-        => DrawCanvases(spriteBatch, graphicsDevice);
+    public override void RenderDrawingMethods(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget1, RenderTarget2D screenTarget2)
+        => DrawCanvases(spriteBatch, graphicsDevice, screenTarget1, screenTarget2);
 }

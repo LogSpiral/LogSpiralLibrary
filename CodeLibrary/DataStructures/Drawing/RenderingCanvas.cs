@@ -159,20 +159,21 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
         }
     }
 
-    public void DrawContents(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
+    public void DrawContents(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget1 = null, RenderTarget2D screenTarget2 = null)
     {
+        screenTarget1 ??= Main.screenTarget;
+        screenTarget2 ??= Main.screenTargetSwap;
         HashSet<HashSet<IRenderEffect>> renderPipeLines = ActiveRenderEffects;
-        var targets = graphicsDevice.GetRenderTargets();
-        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null)//  || targets.Length == 0
+        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null)
             DirectlyDrawAllGroups(spriteBatch, graphicsDevice);
         else
         {
             var origRender = LogSpiralLibraryMod.Instance.RenderOrig;
             var contentRender = LogSpiralLibraryMod.Instance.Render;
             var assistRender = LogSpiralLibraryMod.Instance.Render_Swap;
-            var screenTarget = targets.Length != 0 && targets[0].RenderTarget is RenderTarget2D { } target ? target : Main.screenTarget;
+            var screenTarget = screenTarget1;
             spriteBatch.Begin();
-            graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
+            graphicsDevice.SetRenderTarget(screenTarget2);
             graphicsDevice.Clear(Color.Transparent);
             spriteBatch.Draw(screenTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
@@ -209,7 +210,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 }
 
                 foreach (var renderEffect in pipeLine)
-                    renderEffect.ProcessRender(spriteBatch, graphicsDevice, screenTarget, Main.screenTargetSwap, ref contentRender, ref assistRender);
+                    renderEffect.ProcessRender(spriteBatch, graphicsDevice, screenTarget, screenTarget2, ref contentRender, ref assistRender);
 
                 var last = pipeLine.Last();
                 // last.DrawToScreenTarget(spriteBatch, graphicsDevice, contentRender, assistRender);
@@ -218,10 +219,10 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 if (last.DoRealDraw)
                 {
                     bool flip = counter % 2 == 1;
-                    graphicsDevice.SetRenderTarget(flip ? Main.screenTargetSwap : screenTarget);
+                    graphicsDevice.SetRenderTarget(flip ? screenTarget2 : screenTarget);
                     graphicsDevice.Clear(Color.Transparent);
                     spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                    spriteBatch.Draw(flip ? screenTarget : Main.screenTargetSwap, Vector2.Zero, Color.White);
+                    spriteBatch.Draw(flip ? screenTarget : screenTarget2, Vector2.Zero, Color.White);
                     spriteBatch.Draw(contentRender, Vector2.Zero, Color.White);
                     spriteBatch.End();
                     counter++;
@@ -234,7 +235,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 graphicsDevice.SetRenderTarget(screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-                spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                spriteBatch.Draw(screenTarget2, Vector2.Zero, Color.White);
                 spriteBatch.Draw(origRender, Vector2.Zero, Color.White);
                 spriteBatch.End();
             }
@@ -243,7 +244,7 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
                 graphicsDevice.SetRenderTarget(screenTarget);
                 graphicsDevice.Clear(Color.Transparent);
                 spriteBatch.Begin();
-                spriteBatch.Draw(Main.screenTargetSwap, Vector2.Zero, Color.White);
+                spriteBatch.Draw(screenTarget2, Vector2.Zero, Color.White);
                 spriteBatch.End();
             }
         }

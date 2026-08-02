@@ -66,7 +66,6 @@ public class BloomEffect(float threshold, float intensity, float range, int coun
     public void ProcessRender(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, RenderTarget2D screenTarget, RenderTarget2D screenTargetSwap, ref RenderTarget2D contentRender, ref RenderTarget2D assistRender)
     {
         #region 准备状态
-
         RenderTarget2D renderTiny = DownSampleLevel == 1 ? LogSpiralLibraryMod.Instance.Render_Tiny : LogSpiralLibraryMod.Instance.Render_Tiniest;
         RenderTarget2D renderTinySwap = DownSampleLevel == 1 ? LogSpiralLibraryMod.Instance.Render_Tiny_Swap : LogSpiralLibraryMod.Instance.Render_Tiniest_Swap;
         if (UseDownSample)

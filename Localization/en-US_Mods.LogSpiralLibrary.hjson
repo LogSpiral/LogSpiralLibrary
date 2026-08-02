@@ -17,6 +17,7 @@ Projectiles: {
 	TestBladeProj.DisplayName: Test Blade Proj
 	TestBlade2Proj.DisplayName: Test Blade2 Proj
 	TestBlade3Proj.DisplayName: Test Blade3 Proj
+	TwinBladeProj.DisplayName: Twin Blade Proj
 }
 
 SequenceElements: {

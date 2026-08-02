@@ -77,10 +77,10 @@ public class SequenceDefinitionElement<T> : DefinitionElement<SequenceDefinition
         if (!resetted)
         {
             resetted = true;
-            TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Label + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+            TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Label + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale, Language.ActiveCulture.CultureInfo);
             if (List != null)
             {
-                TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Index + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale);
+                TextDisplayFunction = () => FontAssets.MouseText.Value.CreateWrappedText(Index + ": " + OptionChoice.Tooltip, GetDimensions().Width - 130 * OptionScale, Language.ActiveCulture.CultureInfo);
             }
             var str = TextDisplayFunction.Invoke();
 

@@ -88,8 +88,9 @@ public class YoyoInfo : VanillaMelee
     public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
     {
         base.Draw(spriteBatch, texture);
-        Projectile.aiStyle = 99;
-        Main.instance.DrawProj_DrawYoyoString(Projectile, Owner.Center);
+        Projectile.aiStyle = ProjAIStyleID.Yoyo;
+        if (Owner is Player player)
+            Main.instance.DrawProj_DrawYoyoString(Projectile, player, player.MountedCenter);
         Projectile.aiStyle = -1;
     }
 

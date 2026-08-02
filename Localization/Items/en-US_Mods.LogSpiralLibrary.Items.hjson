@@ -47,3 +47,8 @@ MIDIPlayer: {
 	DisplayName: MIDI Player
 	Tooltip: ""
 }
+
+TwinBlade: {
+	DisplayName: Twin Blade
+	Tooltip: ""
+}

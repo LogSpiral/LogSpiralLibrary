@@ -2022,7 +2022,7 @@ public static class DrawingMethods
     /// <param name="c"></param>
     /// <param name="rotation"></param>
     /// <param name="light"></param>
-    public static void ShaderItemEffectInWorld(this Item item, SpriteBatch spriteBatch, Texture2D effectTex, Color c, float rotation, float light = 2)
+    public static void ShaderItemEffectInWorld(this WorldItem item, SpriteBatch spriteBatch, Texture2D effectTex, Color c, float rotation, float light = 2)
     {
         if (ItemEffect == null) return;
 

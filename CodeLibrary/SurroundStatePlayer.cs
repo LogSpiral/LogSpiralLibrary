@@ -64,7 +64,7 @@ public class SurroundStatePlayer : ModPlayer
                 Player plr => plr.hostile && plr.team != Player.team,
                 _ => false
             };
-            if (flag && entity.active && distance < distanceMax)
+            if (flag && entity switch { NPC npc => npc.active, Projectile proj => proj.active, Player plr => plr.active, _ => false } && distance < distanceMax)
             {
                 if (VectorMethods.Cos(entity.Center, Main.MouseWorld, Player.Center) > 0.5f)
                 {

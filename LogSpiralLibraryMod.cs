@@ -58,7 +58,10 @@ public partial class LogSpiralLibraryMod : Mod
     public override void Load()
     {
         Instance = this;
-        AddContent<NetModuleLoader>();
+        NetModuleLoader.CurrentMod = this;
+        NetModuleLoader.LoadAutoSyncsFrom(typeof(NetModuleLoader).Assembly);
+        NetModuleLoader.LoadAutoSyncsFrom(Assembly.GetExecutingAssembly());
+        NetModuleLoader.LoadNetModules();
 
         if (Main.dedServ) return;
 

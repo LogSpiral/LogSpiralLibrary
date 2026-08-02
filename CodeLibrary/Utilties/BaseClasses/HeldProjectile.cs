@@ -143,7 +143,7 @@ public abstract class RangedHeldProjectile : HeldProjectile
         #endregion 更新弹幕
     }
 
-    public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(Player player, ref Color lightColor)
     {
         Texture2D texture = TextureAssets.Projectile[Projectile.type].Value;
         Vector2 center = HeldCenter - Main.screenPosition + new Vector2(0, Player.gfxOffY);

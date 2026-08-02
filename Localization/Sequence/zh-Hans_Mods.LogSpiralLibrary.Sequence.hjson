@@ -141,6 +141,11 @@ MeleeAction: {
 		angleRange.Label: 回旋圈数
 		xScaler.Label: 扁平程度
 	}
+
+	// TwinBladeCharge.DisplayName: TwinBladeCharge
+	// TwinBladeDash.DisplayName: TwinBladeDash
+	// TwinBladeNormalAttack.DisplayName: TwinBladeNormalAttack
+	// TwinBladeStorm.DisplayName: TwinBladeStorm
 }
 
 NoteElement: {

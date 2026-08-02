@@ -141,6 +141,11 @@ MeleeAction: {
 		angleRange.Label: angleRange
 		xScaler.Label: xScaler
 	}
+
+	TwinBladeCharge.DisplayName: TwinBladeCharge
+	TwinBladeDash.DisplayName: TwinBladeDash
+	TwinBladeNormalAttack.DisplayName: TwinBladeNormalAttack
+	TwinBladeStorm.DisplayName: TwinBladeStorm
 }
 
 NoteElement: {

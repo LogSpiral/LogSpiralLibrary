@@ -1,6 +1,6 @@
 sampler uImage0 : register(s0); //±³¾°
 sampler uImage2 : register(s1); //¸ßË¹Ä£ºıÌùÍ¼
-sampler uImage3 : register(s2); //¸¨ÖúÔëÒôÍ¼?
+// sampler uImage3 : register(s2); //¸¨ÖúÔëÒôÍ¼?
 texture2D tex0; //»­µ½rendertarget2DÉÏµÄÄÚÈİ
 sampler2D uImage1 = sampler_state
 {

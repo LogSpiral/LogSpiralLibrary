@@ -65,10 +65,10 @@ public class DoubleBladeTest : ModItem
         return false;
     }
 
-    public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+    public override bool PreDrawInWorld(WorldItem item, SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
     {
-        spriteBatch.Draw(TextureAssets.Item[ItemID.Terragrim].Value, Item.position - Main.screenPosition, null, lightColor, MathHelper.Pi / 6 + rotation, new Vector2(0, 32), scale, 0, 0);
-        spriteBatch.Draw(TextureAssets.Item[ItemID.Arkhalis].Value, Item.position - Main.screenPosition, null, lightColor, rotation, new Vector2(0, 32), scale, 0, 0);
+        spriteBatch.Draw(TextureAssets.Item[ItemID.Terragrim].Value, item.position - Main.screenPosition, null, lightColor, MathHelper.Pi / 6 + rotation, new Vector2(0, 32), scale, 0, 0);
+        spriteBatch.Draw(TextureAssets.Item[ItemID.Arkhalis].Value, item.position - Main.screenPosition, null, lightColor, rotation, new Vector2(0, 32), scale, 0, 0);
         return false;
     }
 }

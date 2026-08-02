@@ -188,7 +188,7 @@ public abstract class HammerProj : HeldProjectile, IHammerProj
         projectile.Center = Player.Center + new Vector2(0, Player.gfxOffY);
     }
 
-    public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(Player player, ref Color lightColor)
     {
         if (size == default)
             size = projTex.Size();
@@ -279,11 +279,11 @@ public abstract class VertexHammerProj : HammerProj
         }
     }
 
-    public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(Player player, ref Color lightColor)
     {
         bool predraw = false;
         if (!RedrawSelf)
-            predraw = base.PreDraw(ref lightColor);
+            predraw = base.PreDraw(player, ref lightColor);
         var swooshUL = ShaderSwooshUL;
 
         if (!WhenVertexDraw || swooshUL == null || Main.GameViewMatrix == null || RenderEffect == null) goto mylabel; //
@@ -845,7 +845,7 @@ public abstract class HandMeleeProj : ModProjectile, IHammerProj
     public byte controlState;
     public byte controlTier;
 
-    public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(Player player, ref Color lightColor)
     {
         if (size == default)
             size = projTex.Size();

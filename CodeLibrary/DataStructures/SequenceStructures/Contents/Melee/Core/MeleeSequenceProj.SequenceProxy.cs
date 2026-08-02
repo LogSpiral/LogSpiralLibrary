@@ -14,7 +14,7 @@ public partial class MeleeSequenceProj
     }
 
     //下面这里实现手持弹幕的一些比较细枝末节的东西，像是绘制 攻击到目标的伤害修正之类
-    public override bool PreDraw(ref Color lightColor)
+    public override bool PreDraw(Player player,ref Color lightColor)
     {
         DrawBlade(TextureAssets.Projectile[Type].Value);
         return false;

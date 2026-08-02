@@ -85,10 +85,10 @@ namespace LogSpiralLibrary.ForFun.HyperCube
             }
         }
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        public override bool PreDrawInWorld(WorldItem worldItem, SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
-            DrawHyperCube(Item.Center);
-            return base.PreDrawInWorld(spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
+            DrawHyperCube(worldItem.Center);
+            return base.PreDrawInWorld(worldItem, spriteBatch, lightColor, alphaColor, ref rotation, ref scale, whoAmI);
         }
 
         public override bool PreDrawInInventory(SpriteBatch spriteBatch, Vector2 position, Rectangle frame, Color drawColor, Color itemColor, Vector2 origin, float scale)

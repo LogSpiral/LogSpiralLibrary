@@ -101,11 +101,11 @@ namespace LogSpiralLibrary.ForFun.FractalSpawn
             gd.SetRenderTarget(Main.screenTarget);
         }
 
-        public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
+        public override bool PreDrawInWorld(WorldItem item,SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
         {
             if (!LogSpiralLibraryMod.CanUseRender)
             {
-                spriteBatch.DrawString(FontAssets.MouseText.Value, "Color light mode required", Item.position - Main.screenPosition, Color.White);
+                spriteBatch.DrawString(FontAssets.MouseText.Value, "Color light mode required", item.position - Main.screenPosition, Color.White);
                 return true;
             }
             var gd = Main.instance.GraphicsDevice;

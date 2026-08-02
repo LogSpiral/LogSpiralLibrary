@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sequence>
+  <Data>
+    <DisplayName>双刃TwinBlade</DisplayName>
+    <AuthorName>螺线子</AuthorName>
+    <Description>!?飞飞?!</Description>
+    <CreateTime>2026-07-31 10:30:00</CreateTime>
+    <ModifyTime>2026-07-31 10:30:00</ModifyTime>
+  </Data>
+	<Group FullName="ConditionalMultiGroup">
+		<Element SingleGroupFullName="ConditionalSingleGroup" condition="MouseLeft" FullName="LogSpiralLibrary/TwinBladeNormalAttack" />
+		<Sequence condition="MouseRight">
+			<Element FullName="LogSpiralLibrary/TwinBladeCharge">
+				<ModifyData>
+					<TimeScaler>3</TimeScaler>
+				</ModifyData>
+			</Element>
+			<Element FullName="LogSpiralLibrary/TwinBladeDash">
+				<ModifyData>
+					<TimeScaler>0.5</TimeScaler>
+				</ModifyData>
+			</Element>
+			<Element FullName="LogSpiralLibrary/TwinBladeStorm">
+				<ModifyData>
+					<TimeScaler>2</TimeScaler>
+				</ModifyData>
+			</Element>
+		</Sequence>
+	</Group>
+</Sequence>

@@ -70,7 +70,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         Projectile.tileCollide = false;
         Projectile.penetrate = -1;
         Projectile.aiStyle = -1;
-        Projectile.hide = true;
+        Projectile.drawLayer = ProjectileDrawLayerID.HeldProj;
         Projectile.usesLocalNPCImmunity = true;
         Projectile.localNPCHitCooldown = 8;
         Projectile.ownerHitCheck = true;
@@ -88,7 +88,7 @@ public abstract partial class MeleeSequenceProj : ModProjectile
         if (Projectile.owner == Main.myPlayer)
             Projectile.velocity = (Main.MouseWorld - Player.Center).SafeNormalize(default);
         UpdateStandardInfo(StandardInfo, StandardInfo.VertexStandard);
-        if (Player.DeadOrGhost)
+        if (Player.dead)
         {
             CurrentElement?.OnDeactive();
             Projectile.Kill();

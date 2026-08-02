@@ -151,7 +151,8 @@ public class ConfigPreviewSystem : ModSystem
     public override void Load()
     {
         if (Main.dedServ) return;
-        Filters.Scene.OnPostDraw += () => { };
+        // Filters.Scene.OnPostDraw += () => { };
+
 
         var previewDrawingMethod = typeof(ConfigElement).GetMethod(nameof(ConfigElement.DrawSelf), BindingFlags.NonPublic | BindingFlags.Instance);
         MonoModHooks.Add(previewDrawingMethod, PreviewDrawing_Hook);

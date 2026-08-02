@@ -24,7 +24,7 @@
 
         public override string Texture => "Terraria/Images/Extra_98";
 
-        public override bool PreDraw(ref Color lightColor)
+        public override bool PreDraw(Player player,ref Color lightColor)
         {
             float t = Projectile.timeLeft / 15f;
             float fac = (1 - MathF.Cos(MathHelper.TwoPi * MathF.Sqrt(t))) * .5f;

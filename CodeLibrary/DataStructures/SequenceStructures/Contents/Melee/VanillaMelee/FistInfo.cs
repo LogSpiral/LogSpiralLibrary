@@ -40,8 +40,9 @@ public class FistInfo : VanillaMelee
     public override void Draw(SpriteBatch spriteBatch, Texture2D texture)
     {
         int type = Projectile.type;
-        Projectile.type = 947;
-        Main.DrawProj_FlailChains(Projectile, Owner.Center);
+        Projectile.type = ProjectileID.Mace;
+        if (Owner is Player player)
+            Main.DrawProj_FlailChains(Projectile, player, player.MountedCenter);
         Projectile.type = type;
         base.Draw(spriteBatch, texture);
     }

@@ -162,14 +162,15 @@ public sealed class RenderingCanvas // 应该没有继承的必要所以就直�
     public void DrawContents(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
         HashSet<HashSet<IRenderEffect>> renderPipeLines = ActiveRenderEffects;
-        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null || graphicsDevice.GetRenderTargets().Length == 0)
+        var targets = graphicsDevice.GetRenderTargets();
+        if (renderPipeLines.Count == 0 || !LogSpiralLibraryMod.CanUseRender || graphicsDevice == null)//  || targets.Length == 0
             DirectlyDrawAllGroups(spriteBatch, graphicsDevice);
         else
         {
             var origRender = LogSpiralLibraryMod.Instance.RenderOrig;
             var contentRender = LogSpiralLibraryMod.Instance.Render;
             var assistRender = LogSpiralLibraryMod.Instance.Render_Swap;
-            var screenTarget = graphicsDevice.GetRenderTargets()[0].RenderTarget as RenderTarget2D ?? Main.screenTarget;
+            var screenTarget = targets.Length != 0 && targets[0].RenderTarget is RenderTarget2D { } target ? target : Main.screenTarget;
             spriteBatch.Begin();
             graphicsDevice.SetRenderTarget(Main.screenTargetSwap);
             graphicsDevice.Clear(Color.Transparent);
